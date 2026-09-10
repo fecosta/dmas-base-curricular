@@ -20,8 +20,8 @@ Before changing code, read:
 6. `docs/SECURITY.md`
 7. `docs/ARCHITECTURE.md`
 8. `docs/DECISIONS.md`
-9. `specs/README.md`
-10. the specification under `specs/active/`
+9. `resources/specs/README.md`
+10. the specification under `resources/specs/active/`
 
 Then inspect the relevant code, schema, migrations, configuration, and tests for the task.
 
@@ -258,7 +258,8 @@ Unpublished, unauthorized, pending, historical, or archived content must not lea
 Specifications live under:
 
 ```text
-specs/
+resources/specs/
+├── README.md
 ├── active/
 ├── planned/
 └── completed/

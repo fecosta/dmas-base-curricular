@@ -33,10 +33,10 @@ AI coding agents and contributors must also read [`AGENTS.md`](AGENTS.md).
 
 ## Specifications
 
-Implementation work is governed by `specs/`.
+Implementation work is governed by `resources/specs/`.
 
 ```text
-specs/
+resources/specs/
 ├── README.md
 ├── active/
 ├── planned/
@@ -45,7 +45,7 @@ specs/
 
 The current active delivery slice is:
 
-[`specs/active/001-application-foundation-authentication.md`](specs/active/001-application-foundation-authentication.md)
+[`resources/specs/active/001-application-foundation-authentication.md`](resources/specs/active/001-application-foundation-authentication.md)
 
 Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
