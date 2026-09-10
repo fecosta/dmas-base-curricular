@@ -38,7 +38,7 @@ Implementation work is governed by `resources/specs/`.
 ```text
 resources/specs/
 ├── README.md
-├── active/
+├── active/clear
 ├── planned/
 └── completed/
 ```
