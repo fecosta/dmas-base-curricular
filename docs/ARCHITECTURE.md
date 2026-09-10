@@ -2,9 +2,9 @@
 
 ## 1. Status
 
-**Technical state: INITIAL STACK CONFIRMED**
+**Technical state: SPEC-001 FOUNDATION IMPLEMENTED — INDEPENDENT REVIEW PENDING**
 
-There is currently no production implementation.
+The Next.js application and Supabase identity foundation are implemented and locally tested. Hosted Supabase Cloud integration and Vercel deployment have not been verified. Sections describing curriculum, workflow, search, Storage, and Resend remain the approved architecture for later slices, not implemented functionality.
 
 This document defines the approved initial architecture for the MVP. These choices are intended to support the confirmed product, governance, and security contracts while keeping operational complexity low.
 
@@ -329,24 +329,18 @@ Until such needs are demonstrated, Strapi is not part of the approved architectu
 - completeness percentage is not part of the approved product contract;
 - published content is archived rather than destructively deleted as part of the normal workflow.
 
-## 18. Next architecture step
+## 18. SPEC-001 implemented structure
 
-The next step is not another broad architecture exercise.
+- **Runtime:** Next.js 16 App Router, React 19, strict TypeScript, Tailwind CSS 4, Node.js 22.x, npm lockfile.
+- **UI:** `src/app/login` (Spanish code request/verification), `src/app/app` (protected account shell), `src/app/access-denied`, and Spanish loading/error/not-found states.
+- **Auth:** Supabase email OTP for operationally provisioned, confirmed Auth identities; public signup is disabled. Server Actions request and verify codes and sign out the current session. The chosen method is within SPEC-001 implementation freedom.
+- **Client boundaries:** `src/lib/supabase/server.ts` is marked `server-only` and uses request cookies with the public project key; the proxy creates its own request-scoped server client for session refresh. Production code currently uses no browser Supabase client or privileged application client.
+- **Session refresh:** `src/proxy.ts` refreshes Supabase cookies with `getClaims()`, propagates cookies and cache-prevention headers, and sets `Cache-Control: private, no-store`. It is not the eligibility boundary.
+- **Server authorization:** `src/lib/auth/access.ts` calls Auth `getUser()` and the no-argument `current_access()` RPC. `requireAccess()` protects the page; `/api/access` independently returns the caller's minimal context or 401/403/503. An optional exact-role check and SQL `is_admin()` distinguish Admin authority without introducing governance features.
+- **Persistence:** `organizations`, `organization_domains`, `memberships`, and the two-value `product_role` enum. Membership is one organization per Auth user. Email remains canonical in `auth.users`. Tables have no ordinary client write privileges.
+- **RLS:** a restricted, read-only `private.current_access()` security-definer function joins live membership, organization, approved domain, and Auth identity. Qualified names and an empty search path prevent name substitution; avoiding policy-mediated recursive reads prevents RLS recursion. Public wrappers are security-invoker. Policies allow eligible users to read only their own membership and organization/domain configuration. This is identity-data minimization, not a published-content visibility tier.
+- **Database workflow:** versioned migration in `supabase/migrations`, local PostgreSQL 17 and CLI configuration in `supabase/config.toml`, rollback-only pgTAP tests under `supabase/tests`, schema types under `src/lib/supabase`.
+- **Testing:** Vitest validates server orchestration and deterministic inputs; SQL tests exercise real privileges/RLS; Playwright uses local Supabase Auth and Mailpit, ordinary user credentials for authorization checks, and local-only privileged setup/cleanup. Browser tests run against both development and production Next.js servers.
+- **Hosting:** conventional Vercel Next.js deployment with public project variables supplied through environment configuration. Local production builds are verified; hosted deployment is pending.
 
-The confirmed stack should now be translated into the first bounded implementation specification.
-
-Recommended first slice:
-
-**SPEC-001 — Application Foundation & Authentication**
-
-That specification should define observable behavior for:
-
-- project foundation;
-- Supabase connection;
-- institutional authentication;
-- organization/domain eligibility;
-- Contributor/Admin roles;
-- initial RLS boundaries;
-- protected application shell;
-- test foundation;
-- Vercel deployment baseline.
+The root `README.md` owns setup commands, provisioning mechanics, local port conventions, and deployment configuration. `SECURITY.md` owns implemented security boundaries and their operational limitations. SPEC-001 remains active for independent review; later slices have not been implemented.

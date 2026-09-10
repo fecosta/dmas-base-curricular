@@ -12,9 +12,9 @@ The platform supports discovery, contribution, review, publication, revision, ar
 
 The product baseline, governance model, security requirements, and initial technical stack are confirmed.
 
-The next step is to translate these decisions into bounded implementation specifications with observable acceptance criteria.
+The bounded implementation specifications are under `resources/specs/`; SPEC-001 is the active slice and awaits independent implementation review.
 
-There is currently no production implementation. The static prototype is the primary evidence for current UX and interaction behavior.
+The SPEC-001 application/authentication foundation is implemented and locally tested. Supabase Cloud and Vercel validation remain pending. The static prototype remains UX evidence for later library functionality; repository-local contracts remain authoritative.
 
 ## Initial technical stack
 

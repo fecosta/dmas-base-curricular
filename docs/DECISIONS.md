@@ -350,9 +350,9 @@ If a technical constraint requires changing product behavior, data semantics, go
 
 ### G-001 — SPEC-001 Application Foundation & Authentication
 
-**State:** SPECIFICATION REQUIRED
+**State:** ACTIVE SPECIFICATION — IMPLEMENTATION AWAITING INDEPENDENT REVIEW
 
-Produce an implementation-ready specification covering:
+The active specification at `resources/specs/active/001-application-foundation-authentication.md` covers:
 
 - Next.js application foundation;
 - Supabase project integration;
@@ -365,7 +365,9 @@ Produce an implementation-ready specification covering:
 - initial Vercel deployment;
 - required documentation updates.
 
-The specification must include observable acceptance criteria before implementation begins.
+The specification contains observable acceptance criteria. Its foundation implementation has passed local unit, SQL/RLS, browser, and production-build checks. Supabase Cloud and Vercel verification remain pending. Independent review must determine acceptance and lifecycle completion.
+
+App Router organization, email-code login, normalized identity tables, and operator-managed provisioning were selected within SPEC-001 implementation freedom. Their concrete implementation and operational requirements are documented in `ARCHITECTURE.md`, `SECURITY.md`, and the root README; no additional product roles, visibility tiers, or product-scope decisions were introduced.
 
 ---
 
@@ -375,8 +377,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-The next transition is:
-
-`DECISION READY -> IMPLEMENTATION READY`
-
-for the first bounded slice only, after `SPEC-001` is complete and passes the implementation-readiness gate.
+SPEC-001 is the active bounded delivery slice and remains active pending independent review and required hosted validation. This implementation report does not close the product-coherence or specification-completion gate. Planned specifications require their own dependency checks and activation.

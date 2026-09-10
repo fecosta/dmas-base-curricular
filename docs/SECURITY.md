@@ -257,7 +257,7 @@ Production implementation must replace local-only trust boundaries with authenti
 The following remain intentionally unresolved:
 
 - session duration and reauthentication policy;
-- exact Admin assignment process;
+- named Admin assignment approvers/operators and ongoing assignment procedure;
 - audit log retention;
 - login-log retention;
 - administrator notification destination/routing;
@@ -265,7 +265,47 @@ The following remain intentionally unresolved:
 
 These require future technical/product decisions before the relevant implementation is considered complete.
 
-## 19. Source basis
+## 19. SPEC-001 implemented security boundaries
+
+### Identity and eligibility
+
+The application uses Supabase email-code authentication with pre-provisioned confirmed identities. Public signup and anonymous sign-in are disabled. A trusted operator first verifies the institutional identity and provisions it through Supabase administration; the user subsequently proves mailbox possession with a one-time code. The closed-signup Supabase OTP flow requires a confirmed identity at provisioning. The application never auto-provisions membership or Admin authority from an email suffix.
+
+Authentication and product access remain independent. A real Auth identity may outlive eligibility and then reaches only a denial state. `current_access()` requires all of:
+
+1. A Supabase authenticated subject (`auth.uid()`).
+2. A confirmed, non-anonymous, non-deleted Auth user with no current ban.
+3. An active persisted membership for that subject.
+4. An active organization associated with that membership.
+5. An exact case-insensitive match of the live Auth email domain to an approved domain of that same organization.
+6. A persisted `Contributor` or `Admin` role.
+
+Unknown domains, implicit subdomains, lookalike suffixes, another organization's approved domain, missing/inactive memberships, inactive organizations, unconfirmed identities, and bans fail closed. Role and organization metadata supplied by the browser or held in `user_metadata` are never authoritative. Live rows are consulted rather than JWT email/role claims, so eligibility and role revocation take effect on the next data request.
+
+### Server and database enforcement
+
+`getAccess()` is server-only, validates identity through Supabase Auth `getUser()`, and obtains eligibility using a no-argument RPC. Protected page rendering and the access-context Route Handler each enforce it at their own data access point. No private context is serialized before eligibility succeeds. Authenticated ineligible requests get a protected-page redirect or an API 403; anonymous API requests get 401; eligibility lookup failures return no protected data.
+
+All three identity tables have RLS enabled. `anon` has no table/RPC access. Eligible `authenticated` users can read only their own membership, their organization, and its approved domains. Ineligible users read no rows. Both Contributor and Admin sessions lack insert/update/delete privileges and write policies on these configuration tables. Role assignment, activation, organization association, and allowlist maintenance use trusted operational administration, never request payloads or ordinary product credentials. The specific people authorized to perform provisioning must be designated operationally.
+
+`private.current_access()` is a read-only security-definer function owned by the migration's trusted database role. It intentionally bypasses identity-table RLS for the caller's eligibility join, avoiding recursive policies. It uses `auth.uid()`, accepts no subject/role arguments, has an empty `search_path`, and qualifies every relation. Execute is revoked from PUBLIC/anon and granted only to authenticated users. The `private` schema is not exposed through PostgREST. Public `current_access()` and `is_admin()` wrappers are security-invoker and also restricted to authenticated callers. No content-read visibility tiers are introduced by these identity policies.
+
+### Sessions, secrets, and operational configuration
+
+- The app uses the public Supabase URL and publishable key only. No service-role credential is present in the application. Test fixture administration uses locally obtained privileged keys in Node-only test code and refuses non-local projects.
+- Supabase SSR stores/refreshes sessions in cookies through the server client and proxy. Cookies use `SameSite=Lax`, path `/`, and `Secure` in production. They remain JavaScript-readable because the implementation retains Supabase SSR's default `httpOnly: false`; no production browser Supabase client is currently used. Tokens are not accepted as identity based on cookie contents alone. Evaluating HttpOnly cookie hardening is a separate follow-up that requires compatibility validation of the current SSR/session-refresh flow before changing behavior.
+- Proxy refresh propagates request/response cookies and non-cacheable headers. Protected data is fetched per request; authenticated responses must not be placed in shared CDN/ISR caches.
+- Local Auth uses one-hour access tokens, refresh-token rotation, six-digit email codes with a ten-minute expiry, and a one-minute resend interval. These are initial technical settings; the outstanding session-duration/reauthentication policy above is not closed by local configuration.
+- Sign-out revokes the current refresh session and clears its cookies. Supabase access JWTs can remain usable until expiry; sign-out is not an immediate offboarding mechanism for copied bearer tokens. Membership/domain/organization deactivation is enforced against live rows even with an existing token.
+- Supabase Auth owns OTP verification/rate limiting and login logs. Server-side requests may share an outbound IP; production rate limits and institutional SMTP delivery need verification on the intended project. OTPs, credentials, and private context must not be added to application logs.
+- The app returns Spanish validation and generic authentication errors rather than raw provider errors. Code-request responses avoid disclosing whether an account exists. This does not claim to eliminate account enumeration in Supabase's own externally accessible Auth API.
+- Provisioning and Cloud configuration instructions are in the root README. Production domain lists, approved initial Admin identities, SMTP configuration, session/offboarding policy, and operational log retention still require deployment/operator configuration.
+
+### Verification scope
+
+Vitest exercises the server guard, input manipulation, input validation, and configuration checks. Real PostgreSQL/pgTAP tests exercise RLS and grants, including role escalation, organization transfer, cross-user reads, exact domains, stale JWT claims, and revocation. Playwright uses actual local Auth email-code sessions and directly calls Supabase with ordinary credentials, including edited user metadata and disallowed membership writes. Local development and production-build browser journeys are verified. Supabase Cloud, institutional email delivery, Vercel hosting, and long-duration session renewal remain external validation work.
+
+## 20. Source basis
 
 This security baseline was derived from:
 
