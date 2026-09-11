@@ -13,11 +13,13 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed
 
-**Technical state:** application/authentication foundation implemented locally
+**Technical state:** application/authentication foundation implemented, locally tested, and independently reviewed
 
-**Delivery state:** SPEC-001 awaiting independent review and hosted validation
+**Delivery state:** SPEC-001 active for its authentication-strategy delta and remaining hosted validation
 
-SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. Local validation includes real Supabase Auth, database policies, and Chromium journeys against the production build. Supabase Cloud connection, institutional email delivery, and Vercel deployment have not yet been verified. The active specification remains in `active/`.
+**Authentication strategy:** the approved MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged. The **currently implemented** authentication flow is **Email OTP only**; Google OAuth is approved but not yet implemented.
+
+SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. That implementation has passed local validation (real Supabase Auth, database policies, and Chromium journeys against the production build) and independent security/RLS review. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture and baseline email/Auth settings inspected there. Google OAuth provider configuration, Google OAuth implementation, hosted OAuth/OTP validation, institutional email delivery, and Vercel deployment remain unverified. The active specification remains in `active/`.
 
 ## Documentation
 
@@ -118,7 +120,7 @@ The application needs **no service-role/secret key**. Never put one in a `NEXT_P
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000`. `/app` is protected; `/login` starts email-code authentication. Local Studio is at `http://127.0.0.1:55323`, and the email inbox is at `http://127.0.0.1:55324`. Ports `55320–55324` avoid conflicts with other local Supabase projects.
+Open `http://127.0.0.1:3000`. `/app` is protected; `/login` starts email-code (OTP) authentication — the currently implemented flow. Google OAuth is the approved primary method (see [Project status](#project-status)) and is not yet implemented. Local Studio is at `http://127.0.0.1:55323`, and the email inbox is at `http://127.0.0.1:55324`. Ports `55320–55324` avoid conflicts with other local Supabase projects.
 
 ### Provision an eligible account
 

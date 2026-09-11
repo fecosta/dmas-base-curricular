@@ -1,7 +1,7 @@
 # Base Curricular — Security
 
 **Status:** Product security baseline  
-**Last reconciled:** 2026-09-10
+**Last reconciled:** 2026-09-11
 
 ## 1. Purpose
 
@@ -38,6 +38,8 @@ A valid email address alone is insufficient; authorization still depends on the 
 ## 4. Authentication
 
 **Selected platform: Supabase Auth**
+
+**Approved MVP provider strategy:** Google OAuth (primary), Email OTP (fallback) — see `docs/DECISIONS.md` (D-028) and §20 below. Currently implemented: Email OTP only (§19).
 
 The production system must use real authentication.
 
@@ -305,7 +307,24 @@ All three identity tables have RLS enabled. `anon` has no table/RPC access. Elig
 
 Vitest exercises the server guard, input manipulation, input validation, and configuration checks. Real PostgreSQL/pgTAP tests exercise RLS and grants, including role escalation, organization transfer, cross-user reads, exact domains, stale JWT claims, and revocation. Playwright uses actual local Auth email-code sessions and directly calls Supabase with ordinary credentials, including edited user metadata and disallowed membership writes. Local development and production-build browser journeys are verified. Supabase Cloud, institutional email delivery, Vercel hosting, and long-duration session renewal remain external validation work.
 
-## 20. Source basis
+## 20. Approved authentication-strategy decision — Google OAuth primary, Email OTP fallback
+
+`docs/DECISIONS.md` D-028 approves Google OAuth through Supabase Auth as the primary MVP authentication method, with Email OTP through Supabase Auth retained as fallback. All participating organizations currently use Google Workspace. This is an authentication-experience decision; it does not weaken or redefine the authorization model in §6, §19, or the `current_access()` design.
+
+The following are explicit security requirements of this decision:
+
+- **OAuth identity creation is allowed without product access.** Google OAuth may create a Supabase Auth identity on a user's first successful sign-in. That identity's existence is necessary but never sufficient for product access.
+- **OAuth/JWT metadata is not authorization state.** Google Workspace membership, the authenticated email's domain/suffix alone, OAuth profile/metadata, and JWT claims must never be treated as authoritative membership, organization, or role information. Only live rows in `organizations`, `organization_domains`, and `memberships` are authoritative.
+- **The exact approved domain remains required.** The authenticated identity's live email domain must exactly (case-insensitively) match an approved domain of the user's organization, per the existing `current_access()` logic in §19.
+- **Explicit membership remains required.** A persisted, active `memberships` row for that identity is required; no membership is inferred from successful Google authentication.
+- **The organization must remain active.** An inactive organization denies access to all its memberships regardless of authentication method.
+- **The persisted role remains authoritative.** Contributor/Admin authority is read from the persisted role column, never from OAuth/JWT metadata or client state.
+- **The Email OTP fallback must not create an authorization bypass.** OTP authentication is subject to the identical eligibility chain and RLS/`current_access()` enforcement as Google OAuth; it must remain fail-closed and must not become an unrestricted signup mechanism.
+- **Existing RLS and `current_access()` authorization remain authoritative** for both authentication methods. Introducing Google OAuth does not add, remove, or relax an RLS policy or the `current_access()` contract described in §19.
+
+As of this reconciliation, only Email OTP is implemented (§19). Google OAuth provider configuration and application implementation are tracked as an active authentication-strategy delta on SPEC-001 (`resources/specs/active/001-application-foundation-authentication.md`); they are not yet built or hosted-validated.
+
+## 21. Source basis
 
 This security baseline was derived from:
 
@@ -313,4 +332,5 @@ This security baseline was derived from:
 - Platforms D+ meeting notes — 2026-08-12;
 - first static-prototype UX assessment — August 2026;
 - latest static prototype — `Base Curricular - Explorador (offline)(3).html`;
-- product and governance decisions confirmed on 2026-09-10.
+- product and governance decisions confirmed on 2026-09-10;
+- authentication-strategy decision (D-028) confirmed on 2026-09-11.

@@ -2,7 +2,7 @@
 
 **Status:** Product baseline confirmed  
 **Methodology state:** DECISION READY — PRODUCT BASELINE CONFIRMED  
-**Last reconciled:** 2026-09-10
+**Last reconciled:** 2026-09-11
 
 ## 1. Purpose
 
@@ -28,6 +28,14 @@ The product is intended for members of approved Democracia+ network organization
 Access is private and network-only. It is not intended for the general public.
 
 Authentication must rely on institutional identity, initially using approved organization email domains.
+
+The MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)**, because all participating organizations currently use Google Workspace. See `docs/DECISIONS.md` (D-028).
+
+Authentication remains strictly separate from product eligibility. Successfully authenticating — through Google OAuth or Email OTP — including the creation of a Supabase Auth identity on a user's first Google sign-in, never by itself grants product access. Product access still requires the existing live eligibility chain:
+
+`authenticated identity -> exact approved institutional domain -> explicit active membership -> active organization -> persisted Contributor/Admin role -> access`
+
+Explicit membership, an active organization, an exact approved domain match, and a persisted Contributor/Admin role remain required regardless of which authentication method was used. See `docs/SECURITY.md` and `docs/ARCHITECTURE.md` for the authorization model this preserves unchanged.
 
 ## 3. Product structure
 
@@ -305,4 +313,5 @@ This baseline was reconciled from:
 - Platforms D+ meeting notes — 2026-08-12;
 - first static-prototype UX assessment — August 2026;
 - latest static prototype — `Base Curricular - Explorador (offline)(3).html`;
-- product decisions confirmed on 2026-09-10.
+- product decisions confirmed on 2026-09-10;
+- authentication-strategy decision (D-028) confirmed on 2026-09-11.

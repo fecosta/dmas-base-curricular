@@ -2,9 +2,11 @@
 
 ## 1. Status
 
-**Technical state: SPEC-001 FOUNDATION IMPLEMENTED — INDEPENDENT REVIEW PENDING**
+**Technical state: SPEC-001 FOUNDATION IMPLEMENTED AND REVIEWED — AUTHENTICATION-STRATEGY DELTA ACTIVE**
 
-The Next.js application and Supabase identity foundation are implemented and locally tested. Hosted Supabase Cloud integration and Vercel deployment have not been verified. Sections describing curriculum, workflow, search, Storage, and Resend remain the approved architecture for later slices, not implemented functionality.
+The Next.js application and Supabase identity foundation are implemented, locally tested, and have passed independent security/RLS review. The SPEC-001 identity migration has been applied to the intended Supabase Cloud project and its RLS/grants/ownership posture inspected there; Google OAuth provider configuration, Google OAuth implementation, hosted OAuth/OTP validation, and Vercel deployment remain unverified. Sections describing curriculum, workflow, search, Storage, and Resend remain the approved architecture for later slices, not implemented functionality.
+
+**Current implementation vs. approved target:** the currently implemented authentication flow is Email OTP only. `docs/DECISIONS.md` (D-028) has since approved Google OAuth through Supabase Auth as the primary MVP authentication experience, with Email OTP retained as fallback. §7 below describes the target authentication architecture; §18 describes what is currently implemented. This does not change the authorization model in §8.
 
 This document defines the approved initial architecture for the MVP. These choices are intended to support the confirmed product, governance, and security contracts while keeping operational complexity low.
 
@@ -125,7 +127,29 @@ The application must validate:
 
 `authenticated user -> approved email/domain -> active organization/account -> allowed role`
 
-Provider-specific login methods may include Google, Microsoft, or email-based authentication as supported by the implementation plan. The authoritative access rule remains the organization's approved-domain/account policy.
+**Approved target authentication architecture** (`docs/DECISIONS.md` D-028):
+
+```text
+Google OAuth
+   |
+   v
+Supabase Auth
+   |
+   v
+authenticated identity
+   |
+   v
+product-owned eligibility evaluation
+   |
+   v
+protected application
+```
+
+Email OTP through Supabase Auth is the fallback authentication method and feeds the same downstream eligibility evaluation as Google OAuth — there is no separate authorization path per provider.
+
+Google OAuth may create a Supabase Auth identity on a user's first successful sign-in. Creation of that Auth identity, Google Workspace membership, email domain/suffix alone, or any OAuth/JWT metadata must never by themselves grant product access. Product access still requires the live eligibility chain in §8: exact approved domain, explicit active membership, active organization, and persisted Contributor/Admin role. The Email OTP fallback must remain fail-closed under the same eligibility checks and must not become an unrestricted signup mechanism.
+
+This target architecture describes the approved direction, not an implemented OAuth callback. §18 records what is currently implemented (Email OTP only).
 
 ## 8. Authorization
 
@@ -333,7 +357,7 @@ Until such needs are demonstrated, Strapi is not part of the approved architectu
 
 - **Runtime:** Next.js 16 App Router, React 19, strict TypeScript, Tailwind CSS 4, Node.js 22.x, npm lockfile.
 - **UI:** `src/app/login` (Spanish code request/verification), `src/app/app` (protected account shell), `src/app/access-denied`, and Spanish loading/error/not-found states.
-- **Auth:** Supabase email OTP for operationally provisioned, confirmed Auth identities; public signup is disabled. Server Actions request and verify codes and sign out the current session. The chosen method is within SPEC-001 implementation freedom.
+- **Auth (currently implemented):** Supabase email OTP for operationally provisioned, confirmed Auth identities; public signup is disabled. Server Actions request and verify codes and sign out the current session. **Approved target (not yet implemented):** Google OAuth through Supabase Auth as the primary method, with this Email OTP flow retained as fallback (`docs/DECISIONS.md` D-028). The provider mix itself is a fixed product decision, not implementation freedom; remaining OAuth implementation details (e.g. exact callback route naming) are implementation freedom within SPEC-001's active authentication-strategy delta.
 - **Client boundaries:** `src/lib/supabase/server.ts` is marked `server-only` and uses request cookies with the public project key; the proxy creates its own request-scoped server client for session refresh. Production code currently uses no browser Supabase client or privileged application client.
 - **Session refresh:** `src/proxy.ts` refreshes Supabase cookies with `getClaims()`, propagates cookies and cache-prevention headers, and sets `Cache-Control: private, no-store`. It is not the eligibility boundary.
 - **Server authorization:** `src/lib/auth/access.ts` calls Auth `getUser()` and the no-argument `current_access()` RPC. `requireAccess()` protects the page; `/api/access` independently returns the caller's minimal context or 401/403/503. An optional exact-role check and SQL `is_admin()` distinguish Admin authority without introducing governance features.
@@ -343,4 +367,4 @@ Until such needs are demonstrated, Strapi is not part of the approved architectu
 - **Testing:** Vitest validates server orchestration and deterministic inputs; SQL tests exercise real privileges/RLS; Playwright uses local Supabase Auth and Mailpit, ordinary user credentials for authorization checks, and local-only privileged setup/cleanup. Browser tests run against both development and production Next.js servers.
 - **Hosting:** conventional Vercel Next.js deployment with public project variables supplied through environment configuration. Local production builds are verified; hosted deployment is pending.
 
-The root `README.md` owns setup commands, provisioning mechanics, local port conventions, and deployment configuration. `SECURITY.md` owns implemented security boundaries and their operational limitations. SPEC-001 remains active for independent review; later slices have not been implemented.
+The root `README.md` owns setup commands, provisioning mechanics, local port conventions, and deployment configuration. `SECURITY.md` owns implemented security boundaries and their operational limitations. SPEC-001 remains active to deliver its authentication-strategy delta (Google OAuth primary + Email OTP fallback, per `docs/DECISIONS.md` D-028); later slices have not been implemented.

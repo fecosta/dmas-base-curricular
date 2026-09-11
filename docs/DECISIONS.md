@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-09-10
+**Last reconciled:** 2026-09-11
 
 ## Decision register
 
@@ -336,6 +336,36 @@ Technical implementation artifacts such as code identifiers, database names, com
 
 ---
 
+### D-028 — Google OAuth is the primary MVP authentication provider; Email OTP is fallback
+
+**State:** DECISION
+
+The MVP authentication strategy is:
+
+- **Primary:** Google OAuth through Supabase Auth.
+- **Fallback:** Email OTP through Supabase Auth.
+
+**Rationale:** all participating Democracia+ network organizations currently use Google Workspace, so Google OAuth provides the preferred institutional sign-in experience. Email OTP is retained as a fallback authentication path.
+
+This decision changes the **authentication user experience only**. It does not change, weaken, or redefine the authorization model established by D-005 and SPEC-001. The authoritative product-access chain remains unchanged:
+
+`authenticated identity -> exact approved institutional domain -> explicit active membership -> active organization -> persisted Contributor/Admin role -> access`
+
+Explicitly, none of the following may automatically create membership, organization association, or role authority:
+
+- Google Workspace membership;
+- successful Google authentication;
+- email suffix/domain alone;
+- OAuth provider metadata;
+- JWT metadata;
+- creation of a Supabase Auth identity.
+
+Google OAuth may create a Supabase Auth identity on first successful sign-in; that identity creation alone must not grant product access. The existing organization/domain/membership/role authorization model and RLS design are not changed by this decision. Email OTP remains available as a fallback and must remain fail-closed, subject to the same eligibility checks as Google OAuth, and must not become an unrestricted signup mechanism.
+
+As of this decision, only Email OTP is implemented (see `ARCHITECTURE.md` §18 and `SECURITY.md` §19). Google OAuth provider configuration and implementation are tracked as an active authentication-strategy delta on SPEC-001 (see `resources/specs/active/001-application-foundation-authentication.md`).
+
+---
+
 ## Decision gates still open
 
 There are no known product-baseline or stack-selection blockers preventing preparation of the first implementation specification.
@@ -365,9 +395,9 @@ The active specification at `resources/specs/active/001-application-foundation-a
 - initial Vercel deployment;
 - required documentation updates.
 
-The specification contains observable acceptance criteria. Its foundation implementation has passed local unit, SQL/RLS, browser, and production-build checks. Supabase Cloud and Vercel verification remain pending. Independent review must determine acceptance and lifecycle completion.
+The specification contains observable acceptance criteria. Its foundation implementation has passed local unit, SQL/RLS, browser, and production-build checks, independent security/RLS review, a narrow fix re-review, and merge/commit review. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture and baseline email/Auth settings inspected. Supabase Cloud OAuth configuration, Google OAuth implementation, hosted OAuth/OTP validation, and Vercel deployment verification remain pending.
 
-App Router organization, email-code login, normalized identity tables, and operator-managed provisioning were selected within SPEC-001 implementation freedom. Their concrete implementation and operational requirements are documented in `ARCHITECTURE.md`, `SECURITY.md`, and the root README; no additional product roles, visibility tiers, or product-scope decisions were introduced.
+App Router organization, normalized identity tables, and operator-managed provisioning were selected within SPEC-001 implementation freedom and remain current. Email-code (OTP) login was originally selected as first-implementation freedom; D-028 has since fixed the approved provider mix as Google OAuth (primary) with Email OTP (fallback), so the login-provider mix is no longer open implementation freedom. SPEC-001 remains active to deliver that narrow authentication-strategy delta. No additional product roles, visibility tiers, or product-scope decisions were introduced by either the original implementation or D-028.
 
 ---
 
