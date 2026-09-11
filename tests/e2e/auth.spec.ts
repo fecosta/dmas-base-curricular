@@ -41,6 +41,14 @@ async function provision(role: "Contributor" | "Admin", eligible = true) {
   return { id, email };
 }
 
+async function provisionIdentityOnly() {
+  const email = `${randomUUID()}@${domain}`;
+  const result = await operator.auth.admin.createUser({ email, email_confirm: true, user_metadata: { role: "Admin", provider: "google" } });
+  assertSuccess(result);
+  users.push(result.data.user!.id);
+  return { id: result.data.user!.id, email };
+}
+
 async function login(page: Page, email: string) {
   await page.goto("/login");
   await page.getByLabel("Correo institucional").fill(email);
@@ -82,9 +90,22 @@ test("unauthenticated routes and data are denied, including forged session cooki
   const anonymous = createClient<Database>(local.url, local.key);
   expect((await anonymous.from("memberships").select()).error).not.toBeNull();
   expect((await anonymous.rpc("current_access")).error).not.toBeNull();
-  expect((await anonymous.auth.signUp({ email: `self-register@${domain}`, password: randomUUID() })).error).not.toBeNull();
+  const unknownEmail = `self-register-${randomUUID()}@${domain}`;
+  await anonymous.auth.signInWithOtp({ email: unknownEmail, options: { shouldCreateUser: false } });
+  const listed = await operator.auth.admin.listUsers();
+  assertSuccess(listed);
+  const unexpectedUser = listed.data.users.find(user => user.email === unknownEmail);
+  if (unexpectedUser) users.push(unexpectedUser.id);
+  expect(unexpectedUser).toBeUndefined();
   await page.context().addCookies([{ name: "sb-127-auth-token", value: "forged-admin-session", domain: "127.0.0.1", path: "/" }]);
   expect((await appRequest(page, "/api/access?role=Admin")).status).toBe(401);
+});
+
+test("Google is primary and email code remains available as fallback", async ({ page }) => {
+  await page.goto("/login");
+  const buttons = page.getByRole("button");
+  await expect(buttons.first()).toHaveText("Continuar con Google");
+  await expect(page.getByRole("button", { name: "Enviar código" })).toBeVisible();
 });
 
 test("Spanish validation and invalid OTP do not establish access", async ({ page }) => {
@@ -160,4 +181,13 @@ test("a real authenticated identity with an unapproved domain gets no protected 
   expect(response.status).toBe(403);
   expect(JSON.parse(response.body)).toEqual({ error: "Acceso no autorizado." });
   await expect(page.getByText("Red de prueba", { exact: true })).toHaveCount(0);
+});
+
+test("an approved-domain Auth identity without membership remains ineligible", async ({ page }) => {
+  const user = await provisionIdentityOnly();
+  await login(page, user.email);
+  await expect(page).toHaveURL(/\/access-denied$/);
+  const response = await appRequest(page, "/api/access");
+  expect(response.status).toBe(403);
+  expect(JSON.parse(response.body)).toEqual({ error: "Acceso no autorizado." });
 });

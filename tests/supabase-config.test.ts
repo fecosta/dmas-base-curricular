@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from "vitest";
-import { getSupabaseConfig } from "@/lib/supabase/config";
+import { getApplicationUrl, getSupabaseConfig } from "@/lib/supabase/config";
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -23,4 +23,15 @@ it("accepts browser-safe publishable configuration", () => {
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://project.supabase.co");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_test-not-a-real-key");
   expect(getSupabaseConfig()).toEqual({ url: "https://project.supabase.co", key: "sb_publishable_test-not-a-real-key" });
+});
+
+it("accepts only an application origin suitable for OAuth callbacks", () => {
+  vi.stubEnv("APP_URL", "https://base.example.org");
+  expect(getApplicationUrl()).toBe("https://base.example.org");
+  vi.stubEnv("APP_URL", "https://base.example.org/untrusted-path");
+  expect(getApplicationUrl).toThrow("Invalid application URL");
+  vi.stubEnv("APP_URL", "http://base.example.org");
+  expect(getApplicationUrl).toThrow("Invalid application URL");
+  vi.stubEnv("APP_URL", "http://127.0.0.1:3000");
+  expect(getApplicationUrl()).toBe("http://127.0.0.1:3000");
 });

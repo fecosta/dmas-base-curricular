@@ -73,3 +73,6 @@ pids/
 
 # Misc
 *.tgz
+
+# Local security/test scripts
+resources/scripts/

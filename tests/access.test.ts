@@ -9,7 +9,7 @@ import { getAccess, requireAccess } from "@/lib/auth/access";
 describe("server authorization", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    getUser.mockResolvedValue({ data: { user: { id: "user-1", email: "user@partner.org", email_confirmed_at: "2026-09-10", user_metadata: { role: "Admin" } } }, error: null });
+    getUser.mockResolvedValue({ data: { user: { id: "user-1", email: "user@partner.org", email_confirmed_at: "2026-09-10", app_metadata: { provider: "google", role: "Admin" }, user_metadata: { role: "Admin" } } }, error: null });
     rpc.mockResolvedValue({ data: [{ user_id: "user-1", organization_id: "org-1", organization_name: "Organización", role: "Contributor" }], error: null });
   });
   it("denies unauthenticated requests without querying protected data", async () => {

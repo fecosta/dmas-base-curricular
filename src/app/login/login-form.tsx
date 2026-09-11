@@ -1,19 +1,27 @@
 "use client";
 
 import { useActionState } from "react";
-import { requestCode, verifyCode } from "./actions";
+import { requestCode, signInWithGoogle, verifyCode } from "./actions";
 
 export function LoginForm() {
   const [request, requestAction, requesting] = useActionState(requestCode, {});
   const [verification, verifyAction, verifying] = useActionState(verifyCode, {});
 
   return <div className="mt-6 space-y-6">
+    <form action={signInWithGoogle}>
+      <button type="submit" className="w-full">Continuar con Google</button>
+    </form>
+    <div className="flex items-center gap-3 text-sm text-slate-600" aria-hidden="true">
+      <span className="h-px flex-1 bg-stone-300" />
+      <span>o usa un código por correo</span>
+      <span className="h-px flex-1 bg-stone-300" />
+    </div>
     <form action={requestAction} noValidate className="space-y-4">
       <label className="block font-medium" htmlFor="email">Correo institucional
         <input id="email" name="email" type="email" autoComplete="email" required maxLength={254} />
       </label>
       {request.error && <p role="alert">{request.error}</p>}
-      <button type="submit" disabled={requesting}>{requesting ? "Enviando…" : "Enviar código"}</button>
+      <button type="submit" disabled={requesting} className="w-full bg-white text-teal-900 ring-1 ring-inset ring-teal-800">{requesting ? "Enviando…" : "Enviar código"}</button>
     </form>
     {request.sent && <>
       <p role="status">Si tu cuenta está habilitada, recibirás un código por correo. Puede tardar unos minutos. Espera un minuto antes de solicitar otro.</p>

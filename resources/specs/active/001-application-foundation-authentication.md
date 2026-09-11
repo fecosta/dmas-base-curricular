@@ -23,16 +23,15 @@ The application foundation described in this specification has been implemented 
 
 The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project. Cloud verification has confirmed RLS enabled on `organizations`, `organization_domains`, and `memberships` with no `FORCE RLS`, postgres ownership, expected `SELECT` policies, `private.current_access()` remaining `SECURITY DEFINER` with an empty `search_path` and the expected execution grants, and `authenticated` table access remaining `SELECT`-only. Relevant Cloud email/Auth baseline settings have also been reviewed.
 
-**Currently implemented authentication flow:** Email OTP through Supabase Auth, for operator-provisioned, confirmed Auth identities. See `docs/ARCHITECTURE.md` §18 and `docs/SECURITY.md` §19 for the verified implementation detail.
+**Currently implemented authentication flow:** Google OAuth through Supabase Auth as primary, with Email OTP retained as fallback. The application implements secure initiation, a fixed callback, server-side PKCE exchange, generic failure handling, and the unchanged shared eligibility boundary. See `docs/ARCHITECTURE.md` §18 and `docs/SECURITY.md` §19 for implementation detail.
 
-**Approved target (not yet implemented):** Google OAuth through Supabase Auth as the primary authentication method, with this Email OTP flow retained as fallback (`docs/DECISIONS.md` D-028), because all participating organizations currently use Google Workspace. This decision changes the authentication user experience only; it does not weaken or redefine the organization/domain/membership/role authorization model or RLS design already implemented and reviewed under this spec.
+**Approved strategy now implemented in application code:** Google OAuth through Supabase Auth is the primary authentication method, with Email OTP retained as fallback (`docs/DECISIONS.md` D-028), because all participating organizations currently use Google Workspace. This changes the authentication user experience only; it does not weaken or redefine the organization/domain/membership/role authorization model or RLS design already implemented and reviewed under this spec.
 
-Google OAuth provider configuration, Google OAuth application implementation, and hosted validation of both authentication methods under the revised model remain outstanding. This specification does not claim an OAuth callback implementation exists yet.
+Google OAuth provider configuration and hosted validation of both authentication methods under the revised model remain outstanding. This specification does not claim a real Google provider round trip has been completed.
 
 **Still required (hosted validation):**
 
 - Google OAuth provider configuration in Supabase;
-- Google OAuth implementation;
 - Google OAuth hosted authentication scenarios;
 - Email OTP fallback validation under the revised model;
 - institutional SMTP delivery for the Email OTP fallback;
@@ -297,14 +296,13 @@ Implementation may not silently change:
 
 ## 12. Knowledge Updates Required
 
-Already completed in this documentation-reconciliation pass:
+Completed in the authentication-strategy implementation pass:
 
-- `docs/PRODUCT.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, and `docs/DECISIONS.md` record the approved Google OAuth primary + Email OTP fallback strategy and distinguish it from the currently implemented Email OTP-only flow.
+- `README.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, and `docs/DECISIONS.md` record the implemented Google OAuth application flow, retained Email OTP fallback, unchanged authorization boundary, operator configuration, and remaining hosted validation.
 
-Still required after Google OAuth is implemented and verified:
+Still required after hosted Google OAuth is independently verified:
 
-- update `docs/ARCHITECTURE.md` §18 with the verified Google OAuth implementation detail (provider configuration, callback handling, session behavior) as current state;
-- update `docs/SECURITY.md` §19–20 to fold the verified Google OAuth implementation into the implemented-security-boundaries record;
+- reconcile the hosted provider and deployment validation results in the current-state documentation;
 - record any new meaningful architecture decision only if it materially exceeds the implementation freedom in §11;
 - move this spec from `active/` to `completed/` only after the authentication-strategy delta (§5, §9 items 20–30) is implemented and independently verified, and hosted validation (§2) is complete.
 

@@ -35,11 +35,13 @@ Example concept:
 
 A valid email address alone is insufficient; authorization still depends on the user's organization/account status and role.
 
+Because Supabase email authentication remains enabled for the OTP fallback, operators must not trust or provision an unexplained pre-existing unconfirmed email/password identity. Such identities must be replaced through the trusted provisioning flow or claimed through the verified Google OAuth flow before membership is granted.
+
 ## 4. Authentication
 
 **Selected platform: Supabase Auth**
 
-**Approved MVP provider strategy:** Google OAuth (primary), Email OTP (fallback) — see `docs/DECISIONS.md` (D-028) and §20 below. Currently implemented: Email OTP only (§19).
+**Implemented MVP application strategy:** Google OAuth (primary), Email OTP (fallback) — see `docs/DECISIONS.md` (D-028) and §§19–20 below. Hosted Google provider configuration and a real provider round trip remain unverified.
 
 The production system must use real authentication.
 
@@ -271,7 +273,7 @@ These require future technical/product decisions before the relevant implementat
 
 ### Identity and eligibility
 
-The application uses Supabase email-code authentication with pre-provisioned confirmed identities. Public signup and anonymous sign-in are disabled. A trusted operator first verifies the institutional identity and provisions it through Supabase administration; the user subsequently proves mailbox possession with a one-time code. The closed-signup Supabase OTP flow requires a confirmed identity at provisioning. The application never auto-provisions membership or Admin authority from an email suffix.
+The application uses Supabase Google OAuth as its primary authentication action and email-code authentication as fallback. Social Auth identity creation is enabled so a first Google sign-in may create an identity; anonymous sign-in remains disabled. The application OTP request always sets `shouldCreateUser: false`, so that fallback does not create an unknown identity. A trusted operator separately verifies institutional identity and provisions membership through trusted administration. The application never auto-provisions membership or Admin authority from either provider, an email suffix, or Auth/OAuth metadata.
 
 Authentication and product access remain independent. A real Auth identity may outlive eligibility and then reaches only a denial state. `current_access()` requires all of:
 
@@ -302,10 +304,12 @@ All three identity tables have RLS enabled. `anon` has no table/RPC access. Elig
 - Supabase Auth owns OTP verification/rate limiting and login logs. Server-side requests may share an outbound IP; production rate limits and institutional SMTP delivery need verification on the intended project. OTPs, credentials, and private context must not be added to application logs.
 - The app returns Spanish validation and generic authentication errors rather than raw provider errors. Code-request responses avoid disclosing whether an account exists. This does not claim to eliminate account enumeration in Supabase's own externally accessible Auth API.
 - Provisioning and Cloud configuration instructions are in the root README. Production domain lists, approved initial Admin identities, SMTP configuration, session/offboarding policy, and operational log retention still require deployment/operator configuration.
+- Google OAuth starts in a Server Action using the existing cookie-backed Supabase SSR client. `APP_URL` must be an exact HTTPS origin (HTTP is accepted only for loopback), and the callback is fixed to `/auth/callback`. The returned authorization URL is accepted only at the configured Supabase origin and `/auth/v1/authorize` path.
+- The OAuth callback exchanges the PKCE authorization code server-side. It accepts no `next` or arbitrary redirect destination: success returns to `/app`, where `requireAccess()` enforces live eligibility, and failure returns to a generic login error. No protected context is read or returned by the callback itself.
 
 ### Verification scope
 
-Vitest exercises the server guard, input manipulation, input validation, and configuration checks. Real PostgreSQL/pgTAP tests exercise RLS and grants, including role escalation, organization transfer, cross-user reads, exact domains, stale JWT claims, and revocation. Playwright uses actual local Auth email-code sessions and directly calls Supabase with ordinary credentials, including edited user metadata and disallowed membership writes. Local development and production-build browser journeys are verified. Supabase Cloud, institutional email delivery, Vercel hosting, and long-duration session renewal remain external validation work.
+Vitest exercises Google OAuth initiation/callback orchestration, fixed redirect behavior, the server guard, input manipulation, input validation, and configuration checks. Real PostgreSQL/pgTAP tests exercise RLS and grants, including role escalation, organization transfer, cross-user reads, exact domains, stale JWT claims, and revocation. Playwright uses actual local Auth email-code sessions to verify the provider-independent boundary, including approved-domain identities without membership, edited user metadata, and disallowed membership writes. Local Google credentials are not committed, so a real Google provider round trip remains hosted validation work. Supabase Cloud Google configuration, institutional email delivery, Vercel hosting, and long-duration session renewal remain external validation work.
 
 ## 20. Approved authentication-strategy decision — Google OAuth primary, Email OTP fallback
 
@@ -322,7 +326,7 @@ The following are explicit security requirements of this decision:
 - **The Email OTP fallback must not create an authorization bypass.** OTP authentication is subject to the identical eligibility chain and RLS/`current_access()` enforcement as Google OAuth; it must remain fail-closed and must not become an unrestricted signup mechanism.
 - **Existing RLS and `current_access()` authorization remain authoritative** for both authentication methods. Introducing Google OAuth does not add, remove, or relax an RLS policy or the `current_access()` contract described in §19.
 
-As of this reconciliation, only Email OTP is implemented (§19). Google OAuth provider configuration and application implementation are tracked as an active authentication-strategy delta on SPEC-001 (`resources/specs/active/001-application-foundation-authentication.md`); they are not yet built or hosted-validated.
+The Google OAuth application flow is now implemented as described in §19. Supabase Cloud provider configuration and a real hosted Google round trip are not yet validated, so SPEC-001 remains active.
 
 ## 21. Source basis
 

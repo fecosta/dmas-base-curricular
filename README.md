@@ -13,13 +13,13 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed
 
-**Technical state:** application/authentication foundation implemented, locally tested, and independently reviewed
+**Technical state:** application/authentication foundation and Google OAuth application flow implemented; hosted provider validation pending
 
 **Delivery state:** SPEC-001 active for its authentication-strategy delta and remaining hosted validation
 
-**Authentication strategy:** the approved MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged. The **currently implemented** authentication flow is **Email OTP only**; Google OAuth is approved but not yet implemented.
+**Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged.
 
-SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. That implementation has passed local validation (real Supabase Auth, database policies, and Chromium journeys against the production build) and independent security/RLS review. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture and baseline email/Auth settings inspected there. Google OAuth provider configuration, Google OAuth implementation, hosted OAuth/OTP validation, institutional email delivery, and Vercel deployment remain unverified. The active specification remains in `active/`.
+SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. That foundation passed local validation (real Supabase Auth, database policies, and Chromium journeys against the production build) and independent security/RLS review. The Google OAuth initiation, fixed callback, server-side PKCE exchange, and shared post-authentication access boundary are now implemented and locally tested at the application/provider-independent layers. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture inspected there. Google provider configuration and a real hosted Google round trip, hosted OTP validation, institutional email delivery, and Vercel deployment remain unverified. The active specification remains in `active/`.
 
 ## Documentation
 
@@ -113,6 +113,7 @@ Set `.env.local` using the local status output:
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `http://127.0.0.1:55321` locally; the project's HTTPS URL on Cloud | Browser-safe |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `PUBLISHABLE_KEY` from local status or Cloud project settings (local `ANON_KEY` also supported) | Browser-safe |
+| `APP_URL` | `http://127.0.0.1:3000` locally; the exact deployed HTTPS origin on Vercel | Server runtime, not secret |
 
 The application needs **no service-role/secret key**. Never put one in a `NEXT_PUBLIC_*` variable. Local status also prints privileged development credentials; those are not application configuration. `.env.local` is ignored by Git.
 
@@ -120,7 +121,17 @@ The application needs **no service-role/secret key**. Never put one in a `NEXT_P
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000`. `/app` is protected; `/login` starts email-code (OTP) authentication — the currently implemented flow. Google OAuth is the approved primary method (see [Project status](#project-status)) and is not yet implemented. Local Studio is at `http://127.0.0.1:55323`, and the email inbox is at `http://127.0.0.1:55324`. Ports `55320–55324` avoid conflicts with other local Supabase projects.
+Open `http://127.0.0.1:3000`. `/app` is protected; `/login` presents Google OAuth first and email-code (OTP) authentication as fallback. A real local Google round trip requires separate local Google credentials and provider configuration; without them, use the tested OTP fallback. Local Studio is at `http://127.0.0.1:55323`, and the email inbox is at `http://127.0.0.1:55324`. Ports `55320–55324` avoid conflicts with other local Supabase projects.
+
+The committed local configuration allows Auth identity creation but intentionally leaves the Google provider disabled because no Google credentials are committed. To exercise Google locally, create a separate Google Web OAuth client with `http://127.0.0.1:55321/auth/v1/callback` as an authorized redirect URI, put `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET` in ignored `supabase/.env`, and add the provider block below to `supabase/config.toml` while testing. Restart Supabase after changing it. Do not commit the real Client ID or Secret.
+
+```toml
+[auth.external.google]
+enabled = true
+client_id = "<local Google Web client ID>"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET)"
+skip_nonce_check = false
+```
 
 ### Provision an eligible account
 
@@ -138,8 +149,22 @@ SPEC-001 uses operator-managed provisioning through trusted Supabase administrat
    values ('example.org', '<organization UUID returned above>');
    ```
 
-3. In **Authentication → Users**, create the institutional Auth identity with **Auto Confirm User** enabled. If the dashboard requires a password, generate a random one and discard it; the application uses email codes. Supabase's closed-signup OTP flow requires an already-confirmed identity. Do not insert directly into `auth.users`.
-4. Copy the Auth user's UUID and provision an active membership using trusted SQL:
+3. For OTP-only provisioning, first check whether the institutional email
+   already exists in **Authentication → Users**.
+
+   - If no Auth identity exists, create the institutional Auth identity with
+     **Auto Confirm User** enabled. If the dashboard requires a password,
+     generate a random one and discard it; the application uses email OTP.
+   - If an existing identity is unconfirmed or was not created through the
+     expected operator workflow, do **not** confirm or reuse it as-is. Treat it
+     as untrusted and either remove/recreate it through the trusted provisioning
+     flow or have the user authenticate with Google first.
+   - Never grant membership or an Admin role to an unexplained pre-existing
+     Auth identity.
+
+   Do not insert directly into `auth.users`.
+   
+4. After independently verifying the person and institutional address, copy the Auth user's UUID and provision an active membership using trusted SQL:
 
    ```sql
    insert into public.memberships (user_id, organization_id, is_active)
@@ -194,20 +219,23 @@ npx supabase db push --dry-run
 npx supabase db push
 ```
 
-Configure Cloud Auth to match the verified local flow:
+Configure Cloud Auth for the implemented provider strategy:
 
-- Enable the email provider; disable public signups and anonymous sign-ins. Locally, global `auth.enable_signup=false` disables registration, while `auth.email.enable_signup=true` keeps the email provider enabled (verified CLI behavior).
+- Enable new Auth-user creation, which is required for a first-time Google OAuth identity, and keep anonymous sign-ins disabled. Auth identity creation is not product signup: no membership, organization association, or role is created, and `current_access()` still denies product access by default.
+- Enable Google in **Authentication → Providers → Google** and enter the Google Web OAuth Client ID and Secret there. These credentials belong in Supabase, never in Vercel or browser code.
+- In Google Auth Platform, configure the Web client and use the Supabase callback shown by the provider screen as an authorized redirect URI, normally `https://<project-ref>.supabase.co/auth/v1/callback`. Add the deployed application origin as an authorized JavaScript origin.
+- Set the Supabase Site URL to the exact deployed HTTPS origin and add `https://<application-origin>/auth/callback` to the redirect allow list. The application always supplies this fixed callback and always returns successful exchanges to `/app`; it accepts no caller-selected destination.
+- Enable the email provider for fallback. The application calls `signInWithOtp` with `shouldCreateUser: false`, so its OTP request does not create an unknown identity even though Auth identity creation is enabled for Google.
 - Enable email confirmation and double confirmation for email changes.
 - Set the email OTP length to 6 digits, expiry to 600 seconds, and resend interval to at least 60 seconds.
 - Set the Magic Link email subject to `Tu código de acceso a D+ Base Curricular` and use `supabase/templates/login-code.html` as its body. It displays `{{ .Token }}` rather than a callback link.
 - Configure institutional email delivery through Supabase Auth's SMTP settings. SMTP credentials belong in Supabase, not Vercel/browser variables. Verify delivery and rate limits on the intended project; local Mailpit does not prove external delivery.
-- Set Site URL to the deployed HTTPS origin. This OTP flow uses no callback route or arbitrary `next` redirect. Keep provider redirects limited to approved origins if later needed.
 - Match the local one-hour access-token lifetime and refresh-token rotation. Longer-term session/offboarding policy remains an operational decision in `docs/SECURITY.md`.
 - Expose only the `public` API schema; keep `private` unexposed. Provision approved organizations, memberships, and the authorized initial Admin separately.
 
-In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables for each deployment environment. Redeploy after changing browser-safe build-time variables. Preview environments should point to the intended test project. No `vercel.json`, custom server, Storage bucket, or Resend application integration is needed for this slice.
+In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables and the exact HTTPS `APP_URL` origin for each deployment environment. Redeploy after changing browser-safe build-time variables. Every preview origin used for OAuth needs its own exact `APP_URL` and Supabase redirect-allow-list entry; do not use an arbitrary redirect wildcard. Preview environments should point to the intended test project. No `vercel.json`, custom server, Storage bucket, or Resend application integration is needed for this slice.
 
-Before hosted acceptance, verify Contributor/Admin login, denial for an authenticated ineligible identity, direct API/RLS denial, sign-out, session renewal, and account/domain revocation against the deployed origin. No hosted deployment is claimed by the local test results.
+Before hosted acceptance, exercise a real first-time Google sign-in and returning Google sign-in, approved-domain/no-membership denial, non-approved-domain denial, eligible Contributor/Admin access, the OTP fallback, direct API/RLS denial, sign-out, session renewal, and account/domain revocation against the deployed origin. No hosted Google provider or deployment validation is claimed by the local test results.
 
 ## Git
 

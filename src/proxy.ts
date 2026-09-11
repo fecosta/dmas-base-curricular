@@ -24,5 +24,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/access-denied", "/app/:path*", "/api/:path*"],
+  matcher: ["/", "/login", "/auth/callback", "/access-denied", "/app/:path*", "/api/:path*"],
 };

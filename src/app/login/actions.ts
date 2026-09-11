@@ -2,9 +2,32 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getApplicationUrl, getSupabaseConfig } from "@/lib/supabase/config";
 import { isEmailCode, normalizeEmail } from "@/lib/auth/validation";
 
 export type LoginState = { email?: string; sent?: boolean; error?: string };
+
+export async function signInWithGoogle() {
+  const supabase = await createClient();
+  const redirectTo = `${getApplicationUrl()}/auth/callback`;
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo },
+  });
+  if (error || !data.url) redirect("/login?error=oauth");
+
+  let providerUrl: URL;
+  try {
+    providerUrl = new URL(data.url);
+  } catch {
+    redirect("/login?error=oauth");
+  }
+  const expectedUrl = new URL("/auth/v1/authorize", getSupabaseConfig().url);
+  if (providerUrl.origin !== expectedUrl.origin || providerUrl.pathname !== expectedUrl.pathname) {
+    redirect("/login?error=oauth");
+  }
+  redirect(providerUrl.toString());
+}
 
 export async function requestCode(_state: LoginState, form: FormData): Promise<LoginState> {
   const email = normalizeEmail(form.get("email"));
