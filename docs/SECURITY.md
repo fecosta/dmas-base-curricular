@@ -41,7 +41,7 @@ Because Supabase email authentication remains enabled for the OTP fallback, oper
 
 **Selected platform: Supabase Auth**
 
-**Implemented MVP application strategy:** Google OAuth (primary), Email OTP (fallback) — see `docs/DECISIONS.md` (D-028) and §§19–20 below. Hosted Google provider configuration and a real provider round trip remain unverified.
+**Implemented MVP application strategy:** Google OAuth (primary), Email OTP (fallback) — see `docs/DECISIONS.md` (D-028) and §§19–20 below. Hosted Google provider configuration and a real provider round trip have been validated against the deployed Vercel application and the intended Supabase Cloud project.
 
 The production system must use real authentication.
 
@@ -309,7 +309,7 @@ All three identity tables have RLS enabled. `anon` has no table/RPC access. Elig
 
 ### Verification scope
 
-Vitest exercises Google OAuth initiation/callback orchestration, fixed redirect behavior, the server guard, input manipulation, input validation, and configuration checks. Real PostgreSQL/pgTAP tests exercise RLS and grants, including role escalation, organization transfer, cross-user reads, exact domains, stale JWT claims, and revocation. Playwright uses actual local Auth email-code sessions to verify the provider-independent boundary, including approved-domain identities without membership, edited user metadata, and disallowed membership writes. Local Google credentials are not committed, so a real Google provider round trip remains hosted validation work. Supabase Cloud Google configuration, institutional email delivery, Vercel hosting, and long-duration session renewal remain external validation work.
+Vitest exercises Google OAuth initiation/callback orchestration, fixed redirect behavior, the server guard, input manipulation, input validation, and configuration checks. Real PostgreSQL/pgTAP tests exercise RLS and grants, including role escalation, organization transfer, cross-user reads, exact domains, stale JWT claims, and revocation. Playwright uses actual local Auth email-code sessions to verify the provider-independent boundary, including approved-domain identities without membership, edited user metadata, and disallowed membership writes. Local Google credentials are not committed, so a real Google provider round trip was completed as hosted validation instead: against the deployed Vercel application and the intended Supabase Cloud project, it confirmed first-time Google identity creation, approved-domain/no-membership denial (redirect and `/api/access` 403), eligible Admin access with persisted role context, live membership revocation without waiting for token refresh, hosted sign-out, and Email OTP delivery through custom SMTP (Resend, verified domain `auth.democraciamas.com`) converging on the same eligibility model. A hosted adversarial test also confirmed Supabase transitions a pre-created unconfirmed email/password identity to Google on first legitimate Google sign-in, so the previously hypothesized pre-account-takeover mechanism was not reproduced. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that never completes Google OAuth first, and operational rate-limit monitoring remain external validation work.
 
 ## 20. Approved authentication-strategy decision — Google OAuth primary, Email OTP fallback
 
@@ -326,7 +326,7 @@ The following are explicit security requirements of this decision:
 - **The Email OTP fallback must not create an authorization bypass.** OTP authentication is subject to the identical eligibility chain and RLS/`current_access()` enforcement as Google OAuth; it must remain fail-closed and must not become an unrestricted signup mechanism.
 - **Existing RLS and `current_access()` authorization remain authoritative** for both authentication methods. Introducing Google OAuth does not add, remove, or relax an RLS policy or the `current_access()` contract described in §19.
 
-The Google OAuth application flow is now implemented as described in §19. Supabase Cloud provider configuration and a real hosted Google round trip are not yet validated, so SPEC-001 remains active.
+The Google OAuth application flow is implemented as described in §19. Supabase Cloud provider configuration and a real hosted Google round trip have been validated, and SPEC-001 is completed.
 
 ## 21. Source basis
 

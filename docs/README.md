@@ -12,9 +12,9 @@ The platform supports discovery, contribution, review, publication, revision, ar
 
 The product baseline, governance model, security requirements, and initial technical stack are confirmed.
 
-The bounded implementation specifications are under `resources/specs/`; SPEC-001 is the active slice and awaits independent implementation review.
+The bounded implementation specifications are under `resources/specs/`; SPEC-001 has been implemented, independently reviewed, and hosted-validated, and has moved to `resources/specs/completed/`. No specification is currently active.
 
-The SPEC-001 application/authentication foundation is implemented and locally tested. Supabase Cloud and Vercel validation remain pending. The static prototype remains UX evidence for later library functionality; repository-local contracts remain authoritative.
+The SPEC-001 application/authentication foundation is implemented, locally tested, deployed to Vercel, and hosted-validated against the intended Supabase Cloud project (real Google OAuth round trip, eligible/ineligible access, live membership revocation, sign-out, and Email OTP delivery through custom SMTP). The static prototype remains UX evidence for later library functionality; repository-local contracts remain authoritative.
 
 ## Initial technical stack
 

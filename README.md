@@ -13,13 +13,13 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed
 
-**Technical state:** application/authentication foundation and Google OAuth application flow implemented; hosted provider validation pending
+**Technical state:** application/authentication foundation and Google OAuth application flow implemented and hosted-validated
 
-**Delivery state:** SPEC-001 active for its authentication-strategy delta and remaining hosted validation
+**Delivery state:** SPEC-001 completed and moved to [`resources/specs/completed/`](resources/specs/completed/001-application-foundation-authentication.md); SPEC-002 has not been activated
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged.
 
-SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. That foundation passed local validation (real Supabase Auth, database policies, and Chromium journeys against the production build) and independent security/RLS review. The Google OAuth initiation, fixed callback, server-side PKCE exchange, and shared post-authentication access boundary are now implemented and locally tested at the application/provider-independent layers. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture inspected there. Google provider configuration and a real hosted Google round trip, hosted OTP validation, institutional email delivery, and Vercel deployment remain unverified. The active specification remains in `active/`.
+SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. That foundation passed local validation (real Supabase Auth, database policies, and Chromium journeys against the production build) and independent security/RLS review. The Google OAuth initiation, fixed callback, server-side PKCE exchange, and shared post-authentication access boundary are implemented and were first locally tested at the application/provider-independent layers. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture inspected there. The application is deployed to Vercel at `https://dmas-base-curricular.vercel.app`, and hosted validation has since confirmed: a real Google OAuth round trip (first-time identity creation and eligible Admin access), ineligible-identity denial (redirect to `/access-denied` and `/api/access` 403), live membership revocation taking effect without waiting for token refresh, hosted sign-out, and Email OTP delivery through custom SMTP (Resend, verified domain `auth.democraciamas.com`) converging on the same eligibility model as Google OAuth. A real hosted adversarial test also confirmed that Supabase transitions a pre-created unconfirmed email/password identity to Google on first legitimate Google sign-in, so the previously hypothesized pre-account-takeover mechanism was not reproduced. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that authenticates without ever completing Google OAuth first, and operational rate-limit monitoring remain open follow-ups; see the completed spec for detail.
 
 ## Documentation
 
@@ -47,9 +47,11 @@ resources/specs/
 └── completed/
 ```
 
-The current active delivery slice is:
+The most recently completed delivery slice is:
 
-[`resources/specs/active/001-application-foundation-authentication.md`](resources/specs/active/001-application-foundation-authentication.md)
+[`resources/specs/completed/001-application-foundation-authentication.md`](resources/specs/completed/001-application-foundation-authentication.md)
+
+There is currently no active specification. SPEC-002 is next in the dependency sequence and has not been promoted to `active/`.
 
 Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
@@ -210,7 +212,7 @@ git diff --check
 
 ### Supabase Cloud and Vercel setup
 
-Hosted validation remains required. After independent migration review, link the intended Supabase project and apply the versioned migration:
+Hosted validation has been completed against the intended Supabase Cloud project and the deployed Vercel application (see below). After independent migration review, link the intended Supabase project and apply the versioned migration:
 
 ```sh
 npx supabase login
@@ -235,7 +237,7 @@ Configure Cloud Auth for the implemented provider strategy:
 
 In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables and the exact HTTPS `APP_URL` origin for each deployment environment. Redeploy after changing browser-safe build-time variables. Every preview origin used for OAuth needs its own exact `APP_URL` and Supabase redirect-allow-list entry; do not use an arbitrary redirect wildcard. Preview environments should point to the intended test project. No `vercel.json`, custom server, Storage bucket, or Resend application integration is needed for this slice.
 
-Before hosted acceptance, exercise a real first-time Google sign-in and returning Google sign-in, approved-domain/no-membership denial, non-approved-domain denial, eligible Contributor/Admin access, the OTP fallback, direct API/RLS denial, sign-out, session renewal, and account/domain revocation against the deployed origin. No hosted Google provider or deployment validation is claimed by the local test results.
+Hosted acceptance has exercised, against the deployed origin (`https://dmas-base-curricular.vercel.app`): a real first-time Google sign-in, approved-domain/no-membership denial (redirect to `/access-denied` and `/api/access` 403), eligible Admin access with persisted user/organization/role context, the Email OTP fallback (including institutional SMTP delivery via Resend), live membership revocation without waiting for token refresh (and restoration), and hosted sign-out. A real hosted adversarial pre-account-takeover test was also performed and did not reproduce the previously hypothesized Google-linking vulnerability. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that never completes Google OAuth first, and operational rate-limit monitoring were not part of this validation pass and remain open follow-ups.
 
 ## Git
 

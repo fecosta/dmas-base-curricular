@@ -1,8 +1,8 @@
 # SPEC-001 — Application Foundation & Authentication
 
-**Status:** FOUNDATION IMPLEMENTED AND REVIEWED — AUTHENTICATION-STRATEGY DELTA ACTIVE  
+**Status:** COMPLETED — FOUNDATION AND AUTHENTICATION-STRATEGY DELTA IMPLEMENTED, REVIEWED, AND HOSTED-VALIDATED
 **Depends on:** Confirmed product baseline and initial stack  
-**Authority:** Product and stack decisions confirmed 2026-09-10; authentication-strategy decision (D-028) confirmed 2026-09-11
+**Authority:** Product and stack decisions confirmed 2026-09-10; authentication-strategy decision (D-028) confirmed 2026-09-11; hosted validation confirmed 2026-09-11
 
 ## 1. Purpose / Objective
 
@@ -10,7 +10,7 @@ Create the production application foundation and establish secure network-only a
 
 At the end of this slice, an eligible user must be able to authenticate and reach a protected application shell, while ineligible users are denied access. The application must also establish the initial Contributor/Admin authorization model, Supabase integration, test foundation, and deployable Vercel baseline required by subsequent specs.
 
-A subsequent product decision (D-028) approved Google OAuth through Supabase Auth as the primary MVP authentication experience, with Email OTP through Supabase Auth retained as fallback. This spec remains active to deliver that narrow authentication-strategy delta on top of the already-implemented and reviewed foundation. See §5.
+A subsequent product decision (D-028) approved Google OAuth through Supabase Auth as the primary MVP authentication experience, with Email OTP through Supabase Auth retained as fallback. This spec delivered that narrow authentication-strategy delta on top of the already-implemented and reviewed foundation and is now completed. See §5.
 
 ## 2. Current State
 
@@ -25,23 +25,30 @@ The SPEC-001 identity migration has also been applied to the intended Supabase C
 
 **Currently implemented authentication flow:** Google OAuth through Supabase Auth as primary, with Email OTP retained as fallback. The application implements secure initiation, a fixed callback, server-side PKCE exchange, generic failure handling, and the unchanged shared eligibility boundary. See `docs/ARCHITECTURE.md` §18 and `docs/SECURITY.md` §19 for implementation detail.
 
-**Approved strategy now implemented in application code:** Google OAuth through Supabase Auth is the primary authentication method, with Email OTP retained as fallback (`docs/DECISIONS.md` D-028), because all participating organizations currently use Google Workspace. This changes the authentication user experience only; it does not weaken or redefine the organization/domain/membership/role authorization model or RLS design already implemented and reviewed under this spec.
+**Approved strategy implemented in application code and hosted-validated:** Google OAuth through Supabase Auth is the primary authentication method, with Email OTP retained as fallback (`docs/DECISIONS.md` D-028), because all participating organizations currently use Google Workspace. This changes the authentication user experience only; it does not weaken or redefine the organization/domain/membership/role authorization model or RLS design already implemented and reviewed under this spec.
 
-Google OAuth provider configuration and hosted validation of both authentication methods under the revised model remain outstanding. This specification does not claim a real Google provider round trip has been completed.
+Google OAuth provider configuration and hosted validation of both authentication methods under the revised model are complete. This specification confirms a real Google provider round trip has been completed against the deployed Vercel application and the intended Supabase Cloud project.
 
-**Still required (hosted validation):**
+**Hosted validation completed (2026-09-11):**
 
-- Google OAuth provider configuration in Supabase;
-- Google OAuth hosted authentication scenarios;
-- Email OTP fallback validation under the revised model;
-- institutional SMTP delivery for the Email OTP fallback;
-- Vercel deployment and hosted access smoke tests.
+- Google OAuth provider configuration in Supabase — done;
+- Google OAuth hosted authentication scenarios (first-time identity creation, approved-domain/no-membership denial, eligible Admin access) — done;
+- Email OTP fallback validation under the revised model, including convergence with Google OAuth on the same eligibility model — done;
+- institutional SMTP delivery for the Email OTP fallback (Resend, verified domain `auth.democraciamas.com`) — done;
+- Vercel deployment and hosted access smoke tests, including live membership revocation and sign-out, against `https://dmas-base-curricular.vercel.app` — done.
 
-None of the above are complete; do not treat them as implemented.
+A real hosted adversarial pre-account-takeover test was also performed and did not reproduce the previously hypothesized Google-linking vulnerability.
+
+**Residual, non-blocking follow-ups (not required for this spec's acceptance criteria):**
+
+- long-duration session-expiry/renewal behavior beyond the scenarios above;
+- browser coverage beyond Chromium;
+- an OTP pre-registration variant that authenticates without ever completing Google OAuth first;
+- operational rate-limit monitoring in production.
 
 ## 3. Problem / Gap
 
-The product is defined as private and network-only. The production identity, organization-eligibility, authorization-boundary, database-connection, test-foundation, and deployable-application-shell work described by this spec has been implemented and reviewed (§2), but the authentication strategy approved for the MVP (Google OAuth primary, Email OTP fallback) is not yet fully realized: only the Email OTP fallback exists today.
+The product is defined as private and network-only. The production identity, organization-eligibility, authorization-boundary, database-connection, test-foundation, and deployable-application-shell work described by this spec has been implemented and reviewed (§2). At the time this delta began, the authentication strategy approved for the MVP (Google OAuth primary, Email OTP fallback) was not yet fully realized: only the Email OTP fallback existed. Both are now implemented and hosted-validated (§2).
 
 All subsequent product features depend on a trustworthy user identity and secure application foundation, and on the authentication experience matching the approved strategy before broader institutional rollout.
 
@@ -298,18 +305,20 @@ Implementation may not silently change:
 
 Completed in the authentication-strategy implementation pass:
 
-- `README.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, and `docs/DECISIONS.md` record the implemented Google OAuth application flow, retained Email OTP fallback, unchanged authorization boundary, operator configuration, and remaining hosted validation.
+- `README.md`, `docs/ARCHITECTURE.md`, `docs/SECURITY.md`, and `docs/DECISIONS.md` record the implemented Google OAuth application flow, retained Email OTP fallback, unchanged authorization boundary, operator configuration, and hosted validation results.
 
-Still required after hosted Google OAuth is independently verified:
+Completed after hosted Google OAuth was independently verified:
 
-- reconcile the hosted provider and deployment validation results in the current-state documentation;
-- record any new meaningful architecture decision only if it materially exceeds the implementation freedom in §11;
-- move this spec from `active/` to `completed/` only after the authentication-strategy delta (§5, §9 items 20–30) is implemented and independently verified, and hosted validation (§2) is complete.
+- the hosted provider and deployment validation results are reconciled in the current-state documentation;
+- no new architecture decision was required beyond the implementation freedom in §11;
+- this spec has moved from `active/` to `completed/` because the authentication-strategy delta (§5, §9 items 20–30) is implemented and independently verified, and hosted validation (§2) is complete.
 
 ## 13. Open Questions / Blockers
 
-No known product blocker prevents implementation of the authentication-strategy delta.
+No known product blocker prevented implementation of the authentication-strategy delta, and none remain open for this spec.
 
-Exact Google OAuth implementation details (callback route naming, UI composition) not already established by repository convention remain implementation freedom, provided the institutional eligibility contract and the approved provider mix are preserved.
+Exact Google OAuth implementation details (callback route naming, UI composition) were resolved as implementation freedom, consistent with the institutional eligibility contract and the approved provider mix.
+
+The following residual items are explicitly non-blocking for this spec's completion and are carried forward as operational/future follow-ups rather than acceptance-criteria gaps: long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that authenticates without ever completing Google OAuth first, and operational rate-limit monitoring.
 
 If Google Workspace/OAuth provider constraints require changing who may access the product, or require weakening the eligibility chain in §5, return `BLOCKED / DECISION REQUIRED`.

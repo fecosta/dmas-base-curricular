@@ -362,7 +362,7 @@ Explicitly, none of the following may automatically create membership, organizat
 
 Google OAuth may create a Supabase Auth identity on first successful sign-in; that identity creation alone must not grant product access. The existing organization/domain/membership/role authorization model and RLS design are not changed by this decision. Email OTP remains available as a fallback and must remain fail-closed, subject to the same eligibility checks as Google OAuth, and must not become an unrestricted signup mechanism.
 
-As of this decision, only Email OTP is implemented (see `ARCHITECTURE.md` §18 and `SECURITY.md` §19). Google OAuth provider configuration and implementation are tracked as an active authentication-strategy delta on SPEC-001 (see `resources/specs/active/001-application-foundation-authentication.md`).
+Both Google OAuth and Email OTP are now implemented and hosted-validated (see `ARCHITECTURE.md` §18 and `SECURITY.md` §19). This delta was delivered on SPEC-001, now completed (see `resources/specs/completed/001-application-foundation-authentication.md`).
 
 ---
 
@@ -380,9 +380,9 @@ If a technical constraint requires changing product behavior, data semantics, go
 
 ### G-001 — SPEC-001 Application Foundation & Authentication
 
-**State:** ACTIVE SPECIFICATION — IMPLEMENTATION AWAITING INDEPENDENT REVIEW
+**State:** COMPLETED — IMPLEMENTATION, INDEPENDENT REVIEW, AND HOSTED VALIDATION VERIFIED
 
-The active specification at `resources/specs/active/001-application-foundation-authentication.md` covers:
+The completed specification at `resources/specs/completed/001-application-foundation-authentication.md` covers:
 
 - Next.js application foundation;
 - Supabase project integration;
@@ -395,9 +395,9 @@ The active specification at `resources/specs/active/001-application-foundation-a
 - initial Vercel deployment;
 - required documentation updates.
 
-The specification contains observable acceptance criteria. Its foundation implementation has passed local unit, SQL/RLS, browser, and production-build checks, independent security/RLS review, a narrow fix re-review, and merge/commit review. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture and baseline email/Auth settings inspected. The Google OAuth application flow is implemented; Supabase Cloud OAuth configuration, a real hosted Google round trip, hosted OTP validation, and Vercel deployment verification remain pending.
+The specification contains observable acceptance criteria, all of which are now satisfied. Its foundation implementation has passed local unit, SQL/RLS, browser, and production-build checks, independent security/RLS review, a narrow fix re-review, and merge/commit review. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture and baseline email/Auth settings inspected. The Google OAuth application flow is implemented; Supabase Cloud OAuth configuration, a real hosted Google round trip, hosted OTP validation (including institutional SMTP delivery through Resend), and Vercel deployment have all been verified against the deployed application at `https://dmas-base-curricular.vercel.app`.
 
-App Router organization, normalized identity tables, and operator-managed provisioning were selected within SPEC-001 implementation freedom and remain current. Email-code (OTP) login was originally selected as first-implementation freedom; D-028 has since fixed the approved provider mix as Google OAuth (primary) with Email OTP (fallback), so the login-provider mix is no longer open implementation freedom. SPEC-001 remains active to deliver that narrow authentication-strategy delta. No additional product roles, visibility tiers, or product-scope decisions were introduced by either the original implementation or D-028.
+App Router organization, normalized identity tables, and operator-managed provisioning were selected within SPEC-001 implementation freedom and remain current. Email-code (OTP) login was originally selected as first-implementation freedom; D-028 has since fixed the approved provider mix as Google OAuth (primary) with Email OTP (fallback), so the login-provider mix is no longer open implementation freedom. SPEC-001 delivered that narrow authentication-strategy delta and is now completed. No additional product roles, visibility tiers, or product-scope decisions were introduced by either the original implementation or D-028. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an untested OTP pre-registration variant, and operational rate-limit monitoring remain open, non-blocking follow-ups (see the completed spec).
 
 ---
 
@@ -407,4 +407,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001 is the active bounded delivery slice and remains active pending independent review and required hosted validation. This implementation report does not close the product-coherence or specification-completion gate. Planned specifications require their own dependency checks and activation.
+SPEC-001, the first bounded delivery slice, is completed: implementation, independent review, and required hosted validation are all verified, and the specification has moved to `resources/specs/completed/`. No specification is currently active. Planned specifications require their own dependency checks and activation.
