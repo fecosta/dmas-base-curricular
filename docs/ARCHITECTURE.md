@@ -209,6 +209,8 @@ While `v2` is under review:
 
 Publication promotes the approved revision without destroying historical revisions.
 
+**Established starting with SPEC-002** (`docs/DECISIONS.md` D-029): governed curriculum persistence (Module, Program Topic, Instructor, Teaching Note, Material/Study, Institution/Reference Center) must support this Content/Content Revision distinction from its initial implementation, even though SPEC-002 itself creates and exposes only already-published, single revisions and implements no contribution/review/approval/revision-authoring workflow. This avoids a destructive schema redesign when SPEC-003–005 introduce draft, review, and archival revisions for the same identities. The physical schema shape (normalization, join structure, revision-payload storage) remains SPEC-002 implementation freedom, provided the invariant holds.
+
 ## 10. Search
 
 The MVP uses PostgreSQL full-text search and SQL filters.

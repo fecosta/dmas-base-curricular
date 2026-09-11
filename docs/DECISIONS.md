@@ -366,6 +366,27 @@ Both Google OAuth and Email OTP are now implemented and hosted-validated (see `A
 
 ---
 
+### D-029 — Governed curriculum content uses revision-capable persistence starting with SPEC-002
+
+**State:** DECISION
+
+`docs/CONTENT_MODEL.md` §11 conceptually distinguishes **Content** (a durable knowledge-object identity) from **Content Revision** (a versioned representation of that identity), and requires that a published revision remain stable and visible while a newer revision is under review. This distinction applies to every governed curriculum object type: Module, Program Topic, Instructor, Teaching Note, Material/Study, and Institution/Reference Center.
+
+SPEC-003 (contribution), SPEC-004 (review/approval/publication), and SPEC-005 (revisions/audit/archival) all assume this distinction already exists as a persistence capability. If SPEC-002 instead persisted governed curriculum content as flat, non-revisionable rows, introducing revision history later would require a destructive schema migration after production curriculum data already exists and is already being read.
+
+**Decision:** governed curriculum persistence must, from its initial implementation in SPEC-002, support the following invariant:
+
+- each governed object has a stable identity that survives across revisions;
+- the persisted representation can resolve exactly one current published revision per identity;
+- a published revision remains stable and reader-visible while a later draft/review revision may coexist for the same identity;
+- SPEC-002 itself creates and exposes only already-published revisions (one published revision per identity is sufficient at this stage) and implements no contribution, review, approval, revision-authoring, or audit workflow — those remain SPEC-003/004/005 responsibilities.
+
+This decision fixes the durable invariant, not the physical schema. Table normalization, join structure, and storage representation of the revision payload remain implementation freedom, provided the invariant above holds without requiring a destructive redesign when SPEC-003–005 are implemented.
+
+This decision does not change product scope, visibility rules, or any SPEC-002 acceptance criterion beyond requiring that its persistence choice satisfy the invariant above. See `resources/specs/active/002-core-curriculum-library.md` and `docs/ARCHITECTURE.md` §9.
+
+---
+
 ## Decision gates still open
 
 There are no known product-baseline or stack-selection blockers preventing preparation of the first implementation specification.
@@ -401,10 +422,20 @@ App Router organization, normalized identity tables, and operator-managed provis
 
 ---
 
+### G-002 — SPEC-002 Core Curriculum Library
+
+**State:** ACTIVATED — PENDING IMPLEMENTATION AND VERIFICATION
+
+A pre-activation review (2026-09-11) found SPEC-002 required narrow spec edits rather than a product decision, plus the persistence-architecture decision recorded as D-029. Those edits are reconciled directly in the specification, D-029 is recorded above, and the specification has moved from `resources/specs/planned/` to `resources/specs/active/002-core-curriculum-library.md`.
+
+SPEC-002 remains unimplemented. Activation authorizes implementation to begin against the specification's current text; it does not itself satisfy any acceptance criterion. The spec moves to `resources/specs/completed/` only after implementation and independent verification, per `resources/specs/README.md`.
+
+---
+
 ## Product Coherence OS state
 
 Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001, the first bounded delivery slice, is completed: implementation, independent review, and required hosted validation are all verified, and the specification has moved to `resources/specs/completed/`. No specification is currently active. Planned specifications require their own dependency checks and activation.
+SPEC-001, the first bounded delivery slice, is completed: implementation, independent review, and required hosted validation are all verified, and the specification has moved to `resources/specs/completed/`. SPEC-002 — Core Curriculum Library is the currently active specification (activated 2026-09-11, per D-029 and G-002 above); it is not yet implemented. Remaining planned specifications require their own dependency checks and activation.

@@ -15,7 +15,7 @@ It is a library, not a Learning Management System (LMS).
 
 **Technical state:** application/authentication foundation and Google OAuth application flow implemented and hosted-validated
 
-**Delivery state:** SPEC-001 completed and moved to [`resources/specs/completed/`](resources/specs/completed/001-application-foundation-authentication.md); SPEC-002 has not been activated
+**Delivery state:** SPEC-001 completed and moved to [`resources/specs/completed/`](resources/specs/completed/001-application-foundation-authentication.md); SPEC-002 — Core Curriculum Library is now active at [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md) and not yet implemented
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged.
 
@@ -51,7 +51,7 @@ The most recently completed delivery slice is:
 
 [`resources/specs/completed/001-application-foundation-authentication.md`](resources/specs/completed/001-application-foundation-authentication.md)
 
-There is currently no active specification. SPEC-002 is next in the dependency sequence and has not been promoted to `active/`.
+The currently active specification is [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md) — SPEC-002, Core Curriculum Library. It is authorized for implementation but not yet implemented.
 
 Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
