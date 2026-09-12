@@ -16,7 +16,8 @@
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
     "db:lint": "supabase db lint --local --fail-on warning",
-    "test:db": "supabase test db"
+    "test:db": "supabase test db",
+    "db:import-curriculum": "node scripts/import-curriculum.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

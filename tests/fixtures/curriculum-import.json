@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "axes": [
+    { "id": "a1000000-0000-4000-8000-000000000001", "name": "Strategy & Campaign", "display_order": 1, "is_active": true },
+    { "id": "a1000000-0000-4000-8000-000000000002", "name": "Evidence-based Public Policy", "display_order": 2, "is_active": true }
+  ],
+  "identities": {
+    "modules": [{ "id": "70000000-0000-4000-8000-000000000001", "current_published_revision_id": "71000000-0000-4000-8000-000000000001" }],
+    "program_topics": [{ "id": "72000000-0000-4000-8000-000000000001", "current_published_revision_id": "72100000-0000-4000-8000-000000000001" }],
+    "instructors": [{ "id": "73000000-0000-4000-8000-000000000001", "current_published_revision_id": "73100000-0000-4000-8000-000000000001" }],
+    "teaching_notes": [{ "id": "74000000-0000-4000-8000-000000000001", "current_published_revision_id": "74100000-0000-4000-8000-000000000001" }],
+    "materials": [{ "id": "75000000-0000-4000-8000-000000000001", "current_published_revision_id": "75100000-0000-4000-8000-000000000001" }],
+    "institutions": [{ "id": "76000000-0000-4000-8000-000000000001", "current_published_revision_id": "76100000-0000-4000-8000-000000000001" }]
+  },
+  "revisions": {
+    "module_revisions": [{
+      "id": "71000000-0000-4000-8000-000000000001", "module_id": "70000000-0000-4000-8000-000000000001", "revision_number": 1,
+      "status": "Published", "axis_id": "a1000000-0000-4000-8000-000000000001", "title": "Módulo ficticio importado", "theme": "Participación",
+      "description": "Contenido representativo exclusivo para validar la importación.", "learning_outcomes": ["Validar relaciones"], "published_at": "2026-09-11T12:00:00Z"
+    }],
+    "program_topic_revisions": [{
+      "id": "72100000-0000-4000-8000-000000000001", "program_topic_id": "72000000-0000-4000-8000-000000000001", "revision_number": 1,
+      "status": "Published", "module_id": "70000000-0000-4000-8000-000000000001", "title": "Tema ficticio", "position": 1, "published_at": "2026-09-11T12:00:00Z"
+    }],
+    "instructor_revisions": [{
+      "id": "73100000-0000-4000-8000-000000000001", "instructor_id": "73000000-0000-4000-8000-000000000001", "revision_number": 1,
+      "status": "Published", "name": "Docente Ficticio", "thematic_axis_or_themes": ["Participación"], "published_at": "2026-09-11T12:00:00Z"
+    }],
+    "teaching_note_revisions": [{
+      "id": "74100000-0000-4000-8000-000000000001", "teaching_note_id": "74000000-0000-4000-8000-000000000001", "revision_number": 1,
+      "status": "Published", "module_id": "70000000-0000-4000-8000-000000000001", "program_topic_id": "72000000-0000-4000-8000-000000000001",
+      "title": "Nota ficticia", "text": "Nota representativa.", "published_at": "2026-09-11T12:00:00Z"
+    }],
+    "material_revisions": [{
+      "id": "75100000-0000-4000-8000-000000000001", "material_id": "75000000-0000-4000-8000-000000000001", "revision_number": 1,
+      "status": "Published", "title": "Material ficticio", "material_type": "Manual", "theme": "Participación", "published_at": "2026-09-11T12:00:00Z"
+    }],
+    "institution_revisions": [{
+      "id": "76100000-0000-4000-8000-000000000001", "institution_id": "76000000-0000-4000-8000-000000000001", "revision_number": 1,
+      "status": "Published", "name": "Institución Ficticia", "institution_type": "Centro de referencia", "themes": ["Participación"], "published_at": "2026-09-11T12:00:00Z"
+    }]
+  },
+  "relationships": {
+    "module_instructors": [{ "module_revision_id": "71000000-0000-4000-8000-000000000001", "instructor_id": "73000000-0000-4000-8000-000000000001" }],
+    "module_materials": [{ "module_revision_id": "71000000-0000-4000-8000-000000000001", "material_id": "75000000-0000-4000-8000-000000000001" }],
+    "module_institutions": [{ "module_revision_id": "71000000-0000-4000-8000-000000000001", "institution_id": "76000000-0000-4000-8000-000000000001" }],
+    "teaching_note_materials": [{ "teaching_note_revision_id": "74100000-0000-4000-8000-000000000001", "material_id": "75000000-0000-4000-8000-000000000001" }]
+  }
+}

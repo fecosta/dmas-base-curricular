@@ -359,21 +359,41 @@ or:
 
 Do not overload content taxonomy fields to represent review state.
 
-## 17. Open technical modeling decisions
+## 17. Technical modeling decisions
 
-The following are implementation decisions, not unresolved product behavior:
+SPEC-002 resolves normalized revision tables, the initial many-to-many joins, reader search indexing, URL-backed reader filters, and stable UUID/revision-number mechanics as described in §18. The following remain implementation decisions for their later authorized slices, not unresolved product behavior:
 
-- normalized tables versus structured revision payloads;
-- exact many-to-many join structures;
 - attachment storage implementation;
-- search indexing strategy;
-- URL-state representation;
 - notification delivery provider;
-- internal IDs and revision-number generation.
+- audit-event storage and workflow-transition mechanics.
 
 These decisions must preserve the semantic contracts in this document.
 
-## 18. Source basis
+## 18. Verified SPEC-002 physical persistence
+
+SPEC-002 implements the D-029 identity/revision distinction with normalized per-entity table pairs for Module, Program Topic, Instructor, Teaching Note, Material/Study, and Institution/Reference Center.
+
+For each governed type:
+
+- the identity table owns the stable UUID, creation metadata, archival metadata, and `current_published_revision_id`;
+- the typed revision table owns revision-numbered semantic fields, publication status, and publication timestamp;
+- a composite foreign key guarantees that the current pointer belongs to the same stable identity;
+- a trigger requires the selected current revision to have `Published` status;
+- published revision fields are immutable;
+- module and teaching-note relationships are revision-scoped and become immutable once the identity resolves its published revision.
+
+Reader policies expose an identity only when it has a current pointer and is not archived. Revision policies expose only the pointed-to `Published` row. A later Draft or review revision can therefore coexist under the same identity while readers continue resolving the unchanged published row. Axis remains a directly persisted structural classification rather than a governed revision pair; the two approved axes have stable UUIDs and are inserted idempotently by migration.
+
+Typed relationships are:
+
+- Program Topic revision -> stable Module identity;
+- Teaching Note revision -> stable Module identity and optional stable Program Topic identity;
+- Module revision -> stable Instructor, Material, and Institution identities through join tables;
+- Teaching Note revision -> stable Material identity through a join table.
+
+This physical design stores semantic fields relationally rather than as generic JSON revision payloads. JSON is used only as a composed RPC return representation and as the trusted import interchange format; PostgreSQL tables remain canonical.
+
+## 19. Source basis
 
 This model was derived from:
 

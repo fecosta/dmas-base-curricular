@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "axes": [
+    {
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Strategy & Campaign",
+      "display_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Evidence-based Public Policy",
+      "display_order": 2,
+      "is_active": true
+    }
+  ],
+  "identities": {
+    "modules": [],
+    "program_topics": [],
+    "instructors": [],
+    "teaching_notes": [],
+    "materials": [],
+    "institutions": []
+  },
+  "revisions": {
+    "module_revisions": [],
+    "program_topic_revisions": [],
+    "instructor_revisions": [],
+    "teaching_note_revisions": [],
+    "material_revisions": [],
+    "institution_revisions": []
+  },
+  "relationships": {
+    "module_instructors": [],
+    "module_materials": [],
+    "module_institutions": [],
+    "teaching_note_materials": []
+  }
+}

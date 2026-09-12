@@ -424,11 +424,11 @@ App Router organization, normalized identity tables, and operator-managed provis
 
 ### G-002 — SPEC-002 Core Curriculum Library
 
-**State:** ACTIVATED — PENDING IMPLEMENTATION AND VERIFICATION
+**State:** ACTIVE — IMPLEMENTED LOCALLY, REVIEW CORRECTIONS RECONCILED, CLOUD/HOSTED VALIDATION PENDING
 
 A pre-activation review (2026-09-11) found SPEC-002 required narrow spec edits rather than a product decision, plus the persistence-architecture decision recorded as D-029. Those edits are reconciled directly in the specification, D-029 is recorded above, and the specification has moved from `resources/specs/planned/` to `resources/specs/active/002-core-curriculum-library.md`.
 
-SPEC-002 remains unimplemented. Activation authorizes implementation to begin against the specification's current text; it does not itself satisfy any acceptance criterion. The spec moves to `resources/specs/completed/` only after implementation and independent verification, per `resources/specs/README.md`.
+SPEC-002 has been implemented locally in the working tree and has undergone independent adversarial review. That review found no merge blocker and identified narrow documentation, hardening, and regression-test corrections, which have now been reconciled locally. The migration has not been applied to Supabase Cloud and the library has not received hosted validation. SPEC-002 therefore remains active and is not yet closed; SPEC-003 must not be activated until the remaining verification and closure gates are satisfied.
 
 ---
 
@@ -438,4 +438,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001, the first bounded delivery slice, is completed: implementation, independent review, and required hosted validation are all verified, and the specification has moved to `resources/specs/completed/`. SPEC-002 — Core Curriculum Library is the currently active specification (activated 2026-09-11, per D-029 and G-002 above); it is not yet implemented. Remaining planned specifications require their own dependency checks and activation.
+SPEC-001, the first bounded delivery slice, is completed: implementation, independent review, and required hosted validation are all verified, and the specification has moved to `resources/specs/completed/`. SPEC-002 — Core Curriculum Library is implemented locally and has undergone independent adversarial review plus reconciliation of its narrow findings, but remains the active specification pending Cloud migration/application, hosted validation, and formal closure. SPEC-003 remains planned and must not be activated yet.

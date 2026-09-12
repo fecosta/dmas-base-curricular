@@ -12,6 +12,12 @@ const organizationId = randomUUID();
 const otherOrganizationId = randomUUID();
 const domain = `network-${randomUUID()}.test`;
 const users: string[] = [];
+const curriculum = {
+  module: randomUUID(), moduleRevision: randomUUID(), draftRevision: randomUUID(),
+  topic: randomUUID(), topicRevision: randomUUID(), instructor: randomUUID(), instructorRevision: randomUUID(),
+  note: randomUUID(), noteRevision: randomUUID(), material: randomUUID(), materialRevision: randomUUID(),
+  institution: randomUUID(), institutionRevision: randomUUID(),
+};
 
 function assertSuccess(result: { error: { message: string } | null }) {
   if (result.error) throw new Error(result.error.message);
@@ -23,9 +29,41 @@ test.beforeAll(async () => {
     { id: otherOrganizationId, name: "Otra organización privada", is_active: true },
   ]));
   assertSuccess(await operator.from("organization_domains").insert({ domain, organization_id: organizationId }));
+  assertSuccess(await operator.from("modules").insert({ id: curriculum.module }));
+  assertSuccess(await operator.from("program_topics").insert({ id: curriculum.topic }));
+  assertSuccess(await operator.from("instructors").insert({ id: curriculum.instructor }));
+  assertSuccess(await operator.from("teaching_notes").insert({ id: curriculum.note }));
+  assertSuccess(await operator.from("materials").insert({ id: curriculum.material }));
+  assertSuccess(await operator.from("institutions").insert({ id: curriculum.institution }));
+  const publishedAt = new Date().toISOString();
+  assertSuccess(await operator.from("module_revisions").insert([
+    { id: curriculum.moduleRevision, module_id: curriculum.module, revision_number: 1, status: "Published", axis_id: "a1000000-0000-4000-8000-000000000001", title: "Política democrática de prueba", theme: "Participación", description: "Módulo ficticio para validar la biblioteca.", learning_outcomes: ["Analizar estrategias"], published_at: publishedAt },
+    { id: curriculum.draftRevision, module_id: curriculum.module, revision_number: 2, status: "Draft", axis_id: "a1000000-0000-4000-8000-000000000001", title: "Borrador secreto E2E", description: "No debe ser visible.", learning_outcomes: [], published_at: null },
+  ]));
+  assertSuccess(await operator.from("program_topic_revisions").insert({ id: curriculum.topicRevision, program_topic_id: curriculum.topic, revision_number: 1, status: "Published", module_id: curriculum.module, title: "Mapeo de actores", description: "Tema ficticio del Programa.", position: 1, published_at: publishedAt }));
+  assertSuccess(await operator.from("instructor_revisions").insert({ id: curriculum.instructorRevision, instructor_id: curriculum.instructor, revision_number: 1, status: "Published", name: "Persona Ficticia", role_or_title: "Especialista", institution: "Organización de prueba", profile: "Perfil exclusivo para validación automatizada.", thematic_axis_or_themes: ["Participación"], country: "Perú", published_at: publishedAt }));
+  assertSuccess(await operator.from("material_revisions").insert({ id: curriculum.materialRevision, material_id: curriculum.material, revision_number: 1, status: "Published", title: "Guía ficticia de participación", material_type: "Manual", description: "Material representativo para E2E.", source_or_institution: "Fuente ficticia", source_url: "https://example.test/guia", country_or_scope: "Perú", theme: "Participación", published_at: publishedAt }));
+  assertSuccess(await operator.from("institution_revisions").insert({ id: curriculum.institutionRevision, institution_id: curriculum.institution, revision_number: 1, status: "Published", name: "Centro Ficticio Regional", institution_type: "Centro de referencia", country_or_scope: "Regional", description: "Institución representativa para E2E.", website_url: "https://example.test/centro", themes: ["Participación"], published_at: publishedAt }));
+  assertSuccess(await operator.from("program_topics").update({ current_published_revision_id: curriculum.topicRevision }).eq("id", curriculum.topic));
+  assertSuccess(await operator.from("teaching_note_revisions").insert({ id: curriculum.noteRevision, teaching_note_id: curriculum.note, revision_number: 1, status: "Published", module_id: curriculum.module, program_topic_id: curriculum.topic, title: "Nota docente ficticia", text: "Orientación representativa para la prueba.", source_url: null, published_at: publishedAt }));
+  assertSuccess(await operator.from("instructors").update({ current_published_revision_id: curriculum.instructorRevision }).eq("id", curriculum.instructor));
+  assertSuccess(await operator.from("teaching_notes").update({ current_published_revision_id: curriculum.noteRevision }).eq("id", curriculum.note));
+  assertSuccess(await operator.from("materials").update({ current_published_revision_id: curriculum.materialRevision }).eq("id", curriculum.material));
+  assertSuccess(await operator.from("institutions").update({ current_published_revision_id: curriculum.institutionRevision }).eq("id", curriculum.institution));
+  assertSuccess(await operator.from("module_instructors").insert({ module_revision_id: curriculum.moduleRevision, instructor_id: curriculum.instructor }));
+  assertSuccess(await operator.from("module_materials").insert({ module_revision_id: curriculum.moduleRevision, material_id: curriculum.material }));
+  assertSuccess(await operator.from("module_institutions").insert({ module_revision_id: curriculum.moduleRevision, institution_id: curriculum.institution }));
+  assertSuccess(await operator.from("modules").update({ current_published_revision_id: curriculum.moduleRevision }).eq("id", curriculum.module));
 });
 
 test.afterAll(async () => {
+  const archived_at = new Date().toISOString();
+  assertSuccess(await operator.from("modules").update({ archived_at }).eq("id", curriculum.module));
+  assertSuccess(await operator.from("program_topics").update({ archived_at }).eq("id", curriculum.topic));
+  assertSuccess(await operator.from("instructors").update({ archived_at }).eq("id", curriculum.instructor));
+  assertSuccess(await operator.from("teaching_notes").update({ archived_at }).eq("id", curriculum.note));
+  assertSuccess(await operator.from("materials").update({ archived_at }).eq("id", curriculum.material));
+  assertSuccess(await operator.from("institutions").update({ archived_at }).eq("id", curriculum.institution));
   for (const id of users) assertSuccess(await operator.auth.admin.deleteUser(id));
   assertSuccess(await operator.from("organization_domains").delete().eq("organization_id", organizationId));
   assertSuccess(await operator.from("organizations").delete().in("id", [organizationId, otherOrganizationId]));
@@ -65,6 +103,7 @@ async function login(page: Page, email: string) {
   }, { timeout: 15_000 }).toBe(true);
   await page.getByLabel("Código de acceso").fill(code!);
   await page.getByRole("button", { name: "Ingresar", exact: true }).click();
+  await expect(page).toHaveURL(/\/(app|access-denied)$/);
 }
 
 async function userClient(page: Page) {
@@ -90,6 +129,8 @@ test("unauthenticated routes and data are denied, including forged session cooki
   const anonymous = createClient<Database>(local.url, local.key);
   expect((await anonymous.from("memberships").select()).error).not.toBeNull();
   expect((await anonymous.rpc("current_access")).error).not.toBeNull();
+  expect((await anonymous.from("modules").select()).error).not.toBeNull();
+  expect((await anonymous.rpc("search_curriculum", { search_query: "politica" })).error).not.toBeNull();
   const unknownEmail = `self-register-${randomUUID()}@${domain}`;
   await anonymous.auth.signInWithOtp({ email: unknownEmail, options: { shouldCreateUser: false } });
   const listed = await operator.auth.admin.listUsers();
@@ -99,6 +140,51 @@ test("unauthenticated routes and data are denied, including forged session cooki
   expect(unexpectedUser).toBeUndefined();
   await page.context().addCookies([{ name: "sb-127-auth-token", value: "forged-admin-session", domain: "127.0.0.1", path: "/" }]);
   expect((await appRequest(page, "/api/access?role=Admin")).status).toBe(401);
+});
+
+test("eligible Contributor explores one published dataset through Grilla and Programa", async ({ page }) => {
+  const user = await provision("Contributor");
+  await login(page, user.email);
+  await page.goto("/app/library");
+  await expect(page.getByRole("heading", { name: "Biblioteca", exact: true })).toBeVisible();
+  const libraryCache = (await appRequest(page, "/app/library")).cache;
+  if (process.env.E2E_PRODUCTION) expect(libraryCache).toContain("no-store");
+  else expect(libraryCache).toContain("no-cache");
+  await expect(page.getByText("Política democrática de prueba", { exact: true })).toHaveCount(1);
+  await expect(page.getByText("Borrador secreto E2E", { exact: true })).toHaveCount(0);
+
+  await page.getByLabel("Buscar").fill("politica");
+  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  await expect(page.getByText("Política democrática de prueba", { exact: true })).toHaveCount(1);
+  await page.getByRole("link", { name: "Programa", exact: true }).click();
+  await expect(page).toHaveURL(/view=programa/);
+  await expect(page.getByText("Política democrática de prueba", { exact: true })).toHaveCount(1);
+  await page.getByRole("link", { name: "Ver programa" }).click();
+  await expect(page.getByRole("heading", { name: "Programa", exact: true })).toBeVisible();
+  await expect(page.getByText("Mapeo de actores", { exact: true })).toBeVisible();
+  await expect(page.getByText("Persona Ficticia", { exact: true })).toBeVisible();
+  await expect(page.getByText("Nota docente ficticia", { exact: true })).toBeVisible();
+  await expect(page.getByText("Guía ficticia de participación", { exact: true })).toBeVisible();
+  await expect(page.getByText("Centro Ficticio Regional", { exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole("heading", { name: "Programa", exact: true })).toBeVisible();
+});
+
+test("references are first-class and Admin reader visibility matches Contributor", async ({ page }) => {
+  const user = await provision("Admin");
+  await login(page, user.email);
+  await page.goto("/app/library?entity=reference");
+  await expect(page.getByText("Política democrática de prueba", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Guía ficticia de participación", { exact: true })).toBeVisible();
+  await expect(page.getByText("Centro Ficticio Regional", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Explorar referencia" }).first().click();
+  await expect(page.getByText(/Material o estudio|Institución o centro de referencia/)).toBeVisible();
+
+  const ordinary = await userClient(page);
+  expect((await ordinary.from("module_revisions").select("title")).data).toEqual([
+    expect.objectContaining({ title: "Política democrática de prueba" }),
+  ]);
+  expect((await ordinary.from("module_revisions").update({ title: "Manipulado" }).eq("id", curriculum.moduleRevision)).error).not.toBeNull();
 });
 
 test("Google is primary and email code remains available as fallback", async ({ page }) => {
@@ -177,6 +263,8 @@ test("a real authenticated identity with an unapproved domain gets no protected 
     expect(result.data).toEqual([]);
   }
   expect((await ordinary.rpc("current_access")).data).toEqual([]);
+  expect((await ordinary.from("modules").select()).data).toEqual([]);
+  expect((await ordinary.rpc("search_curriculum", { search_query: "politica" })).data).toEqual([]);
   const response = await appRequest(page, "/api/access");
   expect(response.status).toBe(403);
   expect(JSON.parse(response.body)).toEqual({ error: "Acceso no autorizado." });

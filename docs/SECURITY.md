@@ -328,7 +328,19 @@ The following are explicit security requirements of this decision:
 
 The Google OAuth application flow is implemented as described in §19. Supabase Cloud provider configuration and a real hosted Google round trip have been validated, and SPEC-001 is completed.
 
-## 21. Source basis
+## 21. SPEC-002 curriculum reader boundary
+
+SPEC-002 leaves `private.current_access()` unchanged and reuses it through `private.is_eligible_curriculum_reader()`. Every curriculum identity, revision, and relationship table has RLS enabled. `authenticated` has `SELECT` only; `anon` has no table or reader-RPC privilege. Eligible Contributor and Admin sessions evaluate the same policies network-wide, without content-organization matching or Admin-only reader visibility.
+
+Identity policies require a non-archived stable identity with a current published pointer. Revision policies require `Published` status and require that exact revision to be the identity's current pointer. Relationship policies require both the owning current revision and target stable identity to remain reader-visible. The public listing, search, module-detail, and reference-detail RPCs are security-invoker and restricted to `authenticated`, so direct PostgREST calls cannot bypass these policies.
+
+Published typed revision rows and their revision-scoped relationships are immutable after initial published-pointer resolution. A future draft/review revision can coexist but receives no SPEC-002 reader policy. Search executes under the same invoker/RLS boundary and cannot return pending, historical, or archived representations.
+
+At the application boundary, each server-only curriculum query calls `requireAccess()` before the RLS-protected RPC. Protected curriculum routes are dynamically rendered per request, prefetch is disabled on protected navigation, and proxy responses remain `private, no-store`. No service-role credential is present in application code. The trusted import script requires an operator credential and an exact target confirmation outside the browser.
+
+These controls have been validated locally with pgTAP and real local Auth/PostgREST browser journeys and have undergone independent adversarial review plus narrow correction reconciliation. Supabase Cloud migration/application and hosted curriculum validation remain pending.
+
+## 22. Source basis
 
 This security baseline was derived from:
 

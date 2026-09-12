@@ -7,6 +7,13 @@
   p { @apply leading-relaxed; }
   a { @apply underline underline-offset-4; }
   button { @apply cursor-pointer rounded-md bg-teal-800 px-4 py-3 font-semibold text-white disabled:cursor-wait disabled:opacity-60; }
-  input { @apply mt-2 block w-full rounded-md border border-slate-400 bg-white px-3 py-3; }
+  input, select { @apply mt-2 block w-full rounded-md border border-slate-400 bg-white px-3 py-3; }
   :focus-visible { @apply outline-2 outline-offset-4 outline-teal-700; }
+}
+
+@layer components {
+  .eyebrow { @apply text-xs font-black uppercase tracking-[0.18em] text-[#9d3b29]; }
+  .filter-label { @apply text-xs font-bold uppercase tracking-wide text-slate-700; }
+  .library-card { @apply rounded-2xl border border-slate-900/15 bg-white/65 p-6 shadow-[0_12px_35px_rgba(23,63,58,0.06)]; }
+  .empty-state { @apply rounded-2xl border border-dashed border-slate-900/25 bg-white/40 p-8 text-slate-600; }
 }

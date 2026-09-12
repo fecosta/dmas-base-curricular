@@ -13,9 +13,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed
 
-**Technical state:** application/authentication foundation and Google OAuth application flow implemented and hosted-validated
+**Technical state:** application/authentication foundation hosted-validated; SPEC-002 core curriculum library implemented locally, independently reviewed, and reconciled for narrow review findings, with Cloud migration and hosted validation still pending
 
-**Delivery state:** SPEC-001 completed and moved to [`resources/specs/completed/`](resources/specs/completed/001-application-foundation-authentication.md); SPEC-002 — Core Curriculum Library is now active at [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md) and not yet implemented
+**Delivery state:** SPEC-001 completed and moved to [`resources/specs/completed/`](resources/specs/completed/001-application-foundation-authentication.md); SPEC-002 — Core Curriculum Library remains active at [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md), with its reviewed implementation and correction pass present in the working tree pending Cloud/hosted validation and formal closure
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged.
 
@@ -51,7 +51,7 @@ The most recently completed delivery slice is:
 
 [`resources/specs/completed/001-application-foundation-authentication.md`](resources/specs/completed/001-application-foundation-authentication.md)
 
-The currently active specification is [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md) — SPEC-002, Core Curriculum Library. It is authorized for implementation but not yet implemented.
+The currently active specification is [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md) — SPEC-002, Core Curriculum Library. It is implemented locally and independently reviewed, with narrow findings reconciled in the working tree; Cloud migration, hosted validation, and formal closure remain pending.
 
 Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
@@ -188,7 +188,7 @@ npm run test:db
 npm run db:lint
 ```
 
-`db:reset` deletes local database contents. The SQL tests run in a rollback transaction. No production organizations or users are seeded. After changing `supabase/config.toml`, restart this project's services with `npx supabase stop` and `npm run db:start`. Schema types in `src/lib/supabase/database.types.ts` can be compared with `npx supabase gen types typescript --local` after migrations.
+`db:reset` deletes local database contents. The SQL tests run in a rollback transaction. No production organizations, users, modules, or references are seeded; only the two approved curriculum axes are persisted by migration. After changing `supabase/config.toml`, restart this project's services with `npx supabase stop` and `npm run db:start`. Schema types in `src/lib/supabase/database.types.ts` can be compared with `npx supabase gen types typescript --local` after migrations. The trusted curriculum-import workflow is documented in `resources/curriculum/README.md`.
 
 ### Validation commands
 
