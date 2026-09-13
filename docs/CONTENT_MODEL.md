@@ -1,7 +1,7 @@
 # Base Curricular — Content Model
 
 **Status:** Baseline content model  
-**Last reconciled:** 2026-09-10
+**Last reconciled:** 2026-09-12
 
 ## 1. Purpose
 

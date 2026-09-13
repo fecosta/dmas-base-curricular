@@ -22,12 +22,12 @@ Do not move a spec to `completed/` merely because an implementation agent report
 
 ## Current sequence
 
-1. `SPEC-001` — Application Foundation & Authentication
-2. `SPEC-002` — Core Curriculum Library
-3. `SPEC-003` — Content Contribution
-4. `SPEC-004` — Review, Approval & Publication
-5. `SPEC-005` — Revisions, Audit History & Archival
-6. `SPEC-006` — Personal Itinerary
+1. `SPEC-001` — Application Foundation & Authentication — completed
+2. `SPEC-002` — Core Curriculum Library — completed
+3. `SPEC-003` — Content Contribution — active
+4. `SPEC-004` — Review, Approval & Publication — planned
+5. `SPEC-005` — Revisions, Audit History & Archival — planned
+6. `SPEC-006` — Personal Itinerary — planned
 
 ## Dependency model
 

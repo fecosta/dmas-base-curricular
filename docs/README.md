@@ -12,7 +12,7 @@ The platform supports discovery, contribution, review, publication, revision, ar
 
 The product baseline, governance model, security requirements, and initial technical stack are confirmed.
 
-The bounded implementation specifications are under `resources/specs/`; SPEC-001 has been implemented, independently reviewed, and hosted-validated, and has moved to `resources/specs/completed/`. SPEC-002 — Core Curriculum Library is implemented locally, has undergone independent adversarial review, and has had its narrow review findings reconciled in the working tree. It remains active at `resources/specs/active/002-core-curriculum-library.md` pending Cloud migration, hosted validation, and formal closure.
+The bounded implementation specifications are under `resources/specs/`. SPEC-001 and SPEC-002 have been implemented, independently verified, Cloud-applied where required, hosted-validated, and moved to `resources/specs/completed/`. SPEC-003 — Content Contribution is the active specification at `resources/specs/active/003-content-contribution.md`; implementation has not begun.
 
 The SPEC-001 application/authentication foundation is implemented, locally tested, deployed to Vercel, and hosted-validated against the intended Supabase Cloud project (real Google OAuth round trip, eligible/ineligible access, live membership revocation, sign-out, and Email OTP delivery through custom SMTP). The static prototype remains UX evidence for later library functionality; repository-local contracts remain authoritative.
 

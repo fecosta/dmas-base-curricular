@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-09-11
+**Last reconciled:** 2026-09-12
 
 ## Decision register
 
@@ -383,7 +383,7 @@ SPEC-003 (contribution), SPEC-004 (review/approval/publication), and SPEC-005 (r
 
 This decision fixes the durable invariant, not the physical schema. Table normalization, join structure, and storage representation of the revision payload remain implementation freedom, provided the invariant above holds without requiring a destructive redesign when SPEC-003–005 are implemented.
 
-This decision does not change product scope, visibility rules, or any SPEC-002 acceptance criterion beyond requiring that its persistence choice satisfy the invariant above. See `resources/specs/active/002-core-curriculum-library.md` and `docs/ARCHITECTURE.md` §9.
+This decision does not change product scope, visibility rules, or any SPEC-002 acceptance criterion beyond requiring that its persistence choice satisfy the invariant above. See `resources/specs/completed/002-core-curriculum-library.md` and `docs/ARCHITECTURE.md` §9.
 
 ---
 
@@ -424,11 +424,23 @@ App Router organization, normalized identity tables, and operator-managed provis
 
 ### G-002 — SPEC-002 Core Curriculum Library
 
-**State:** ACTIVE — IMPLEMENTED LOCALLY, REVIEW CORRECTIONS RECONCILED, CLOUD/HOSTED VALIDATION PENDING
+**State:** COMPLETED — IMPLEMENTATION, INDEPENDENT VERIFICATION, CLOUD APPLICATION, AND HOSTED VALIDATION VERIFIED
 
-A pre-activation review (2026-09-11) found SPEC-002 required narrow spec edits rather than a product decision, plus the persistence-architecture decision recorded as D-029. Those edits are reconciled directly in the specification, D-029 is recorded above, and the specification has moved from `resources/specs/planned/` to `resources/specs/active/002-core-curriculum-library.md`.
+A pre-activation review (2026-09-11) found SPEC-002 required narrow spec edits rather than a product decision, plus the persistence-architecture decision recorded as D-029. Those edits were reconciled directly in the specification, D-029 was recorded above, and the specification then moved from planned to active before implementation.
 
-SPEC-002 has been implemented locally in the working tree and has undergone independent adversarial review. That review found no merge blocker and identified narrow documentation, hardening, and regression-test corrections, which have now been reconciled locally. The migration has not been applied to Supabase Cloud and the library has not received hosted validation. SPEC-002 therefore remains active and is not yet closed; SPEC-003 must not be activated until the remaining verification and closure gates are satisfied.
+SPEC-002 was implemented in commit `23564067774ba9ec314fbdace3733f34d096e142`. Local validation passed migration replay, database/RLS tests, DB lint, unit/integration tests, typecheck, lint, production build, and development/production browser journeys. Independent adversarial review found no merge blocker and all 22 acceptance criteria passed; its narrow correction pass was independently re-reviewed successfully.
+
+Migration `20260911000100_core_curriculum_library.sql` was the sole proposed Cloud delta, was applied to the intended `dmas-base-curricular` Supabase project (`qcxcgwpfgclyebkxawyh`), and was confirmed in remote migration history. Cloud schema, D-029 persistence, search indexes, RLS, grants, function security, axes, and private-schema isolation were verified. Vercel served the implementation commit and hosted Google OAuth, Email OTP, eligible library access, authenticated-ineligible denial, and protected caching posture were validated. A legacy privileged API-key exposure discovered during validation was remediated by verifying modern publishable/secret-key consumers and disabling the legacy anon/service-role family before closure.
+
+Real module/reference population remains an operational content-owner activity and was intentionally not performed. This does not block completion of the implementation specification.
+
+---
+
+### G-003 — SPEC-003 Content Contribution
+
+**State:** ACTIVATED — PENDING IMPLEMENTATION AND VERIFICATION
+
+SPEC-003 is active at `resources/specs/active/003-content-contribution.md` because its SPEC-002 dependency is satisfied and no product blocker is known. Activation does not authorize publication behavior: Contributor drafts and submission must preserve the existing D-029 model and must not grant publication authority. The future trusted/workflow-aware publication write path remains a SPEC-004 concern.
 
 ---
 
@@ -438,4 +450,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001, the first bounded delivery slice, is completed: implementation, independent review, and required hosted validation are all verified, and the specification has moved to `resources/specs/completed/`. SPEC-002 — Core Curriculum Library is implemented locally and has undergone independent adversarial review plus reconciliation of its narrow findings, but remains the active specification pending Cloud migration/application, hosted validation, and formal closure. SPEC-003 remains planned and must not be activated yet.
+SPEC-001 and SPEC-002 are completed with implementation, independent verification, and required Cloud/hosted validation reconciled. SPEC-003 — Content Contribution is now the active delivery slice; its implementation has not begun. SPEC-004, SPEC-005, and SPEC-006 remain planned.

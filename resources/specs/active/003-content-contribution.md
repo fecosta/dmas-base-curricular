@@ -1,6 +1,6 @@
 # SPEC-003 — Content Contribution
 
-**Status:** PLANNED  
+**Status:** ACTIVE
 **Depends on:** SPEC-002
 
 ## 1. Purpose / Objective

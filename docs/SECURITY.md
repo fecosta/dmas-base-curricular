@@ -1,7 +1,7 @@
 # Base Curricular — Security
 
 **Status:** Product security baseline  
-**Last reconciled:** 2026-09-11
+**Last reconciled:** 2026-09-12
 
 ## 1. Purpose
 
@@ -338,7 +338,11 @@ Published typed revision rows and their revision-scoped relationships are immuta
 
 At the application boundary, each server-only curriculum query calls `requireAccess()` before the RLS-protected RPC. Protected curriculum routes are dynamically rendered per request, prefetch is disabled on protected navigation, and proxy responses remain `private, no-store`. No service-role credential is present in application code. The trusted import script requires an operator credential and an exact target confirmation outside the browser.
 
-These controls have been validated locally with pgTAP and real local Auth/PostgREST browser journeys and have undergone independent adversarial review plus narrow correction reconciliation. Supabase Cloud migration/application and hosted curriculum validation remain pending.
+These controls passed local pgTAP and real Auth/PostgREST browser journeys, independent adversarial review, and verification on Supabase Cloud project `qcxcgwpfgclyebkxawyh`. Cloud inspection confirmed RLS on all curriculum/relationship tables, no unintended FORCE RLS, intended SELECT/reader-RPC grants only for authenticated readers, hardened trigger-function ACLs, preserved `private.current_access()`, and no ordinary PostgREST exposure of `private`. Hosted validation confirmed eligible access, authenticated-ineligible denial, and private/no-store protected responses.
+
+The deployed application uses a modern Supabase publishable key and no privileged Vercel credential. The trusted operator/import path uses the `SUPABASE_SECRET_KEY` convention with an `sb_secret_*` key. During Cloud validation, an exposed legacy privileged API credential was treated as compromised; inventory found no deployed application, Edge Function, webhook, cron, CI, or known external automation dependent on legacy privileged access. The legacy anon/service-role key family was disabled, both legacy keys subsequently returned HTTP 401, and Google OAuth, Email OTP, `/app`, and `/app/library` remained functional. JWT signing keys were not rotated.
+
+Only the two approved axes are present as authoritative production curriculum data. No real module/reference import has occurred, and test fixtures remain local/test-only.
 
 ## 22. Source basis
 

@@ -13,9 +13,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed
 
-**Technical state:** application/authentication foundation hosted-validated; SPEC-002 core curriculum library implemented locally, independently reviewed, and reconciled for narrow review findings, with Cloud migration and hosted validation still pending
+**Technical state:** application/authentication foundation and SPEC-002 core curriculum library implemented, independently reviewed, applied to Supabase Cloud, and hosted-validated
 
-**Delivery state:** SPEC-001 completed and moved to [`resources/specs/completed/`](resources/specs/completed/001-application-foundation-authentication.md); SPEC-002 — Core Curriculum Library remains active at [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md), with its reviewed implementation and correction pass present in the working tree pending Cloud/hosted validation and formal closure
+**Delivery state:** SPEC-001 and SPEC-002 are completed; SPEC-003 — Content Contribution is now active at [`resources/specs/active/003-content-contribution.md`](resources/specs/active/003-content-contribution.md) and has not yet been implemented
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged.
 
@@ -49,9 +49,9 @@ resources/specs/
 
 The most recently completed delivery slice is:
 
-[`resources/specs/completed/001-application-foundation-authentication.md`](resources/specs/completed/001-application-foundation-authentication.md)
+[`resources/specs/completed/002-core-curriculum-library.md`](resources/specs/completed/002-core-curriculum-library.md)
 
-The currently active specification is [`resources/specs/active/002-core-curriculum-library.md`](resources/specs/active/002-core-curriculum-library.md) — SPEC-002, Core Curriculum Library. It is implemented locally and independently reviewed, with narrow findings reconciled in the working tree; Cloud migration, hosted validation, and formal closure remain pending.
+The currently active specification is [`resources/specs/active/003-content-contribution.md`](resources/specs/active/003-content-contribution.md) — SPEC-003, Content Contribution. Its dependency on the completed core library is satisfied; implementation has not begun.
 
 Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
@@ -118,6 +118,8 @@ Set `.env.local` using the local status output:
 | `APP_URL` | `http://127.0.0.1:3000` locally; the exact deployed HTTPS origin on Vercel | Server runtime, not secret |
 
 The application needs **no service-role/secret key**. Never put one in a `NEXT_PUBLIC_*` variable. Local status also prints privileged development credentials; those are not application configuration. `.env.local` is ignored by Git.
+
+Production uses a modern Supabase publishable key for browser-safe application access. Privileged operator tasks such as the trusted curriculum importer use an `sb_secret_*` key only through the uncommitted `SUPABASE_SECRET_KEY` operator environment convention. Legacy anon/service-role API keys are disabled on the production project.
 
 ```sh
 npm run dev

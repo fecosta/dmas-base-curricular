@@ -1,8 +1,8 @@
 # SPEC-002 — Core Curriculum Library
 
-**Status:** ACTIVE
+**Status:** COMPLETED — IMPLEMENTED, INDEPENDENTLY VERIFIED, CLOUD-APPLIED, AND HOSTED-VALIDATED
 **Depends on:** SPEC-001 (completed)
-**Authority:** Product/content/security baseline confirmed 2026-09-10/2026-09-11; persistence-architecture decision (D-029) confirmed 2026-09-11; pre-activation review completed and reconciled 2026-09-11
+**Authority:** Product/content/security baseline confirmed 2026-09-10/2026-09-11; persistence-architecture decision (D-029) confirmed 2026-09-11; implementation and closure gates verified 2026-09-12
 
 ## 1. Purpose / Objective
 
@@ -10,9 +10,9 @@ Implement the read-oriented Base Curricular library so authenticated network use
 
 ## 2. Current State
 
-No production curriculum library exists.
+The read-only production curriculum library is implemented in commit `23564067774ba9ec314fbdace3733f34d096e142`, applied to the intended Supabase Cloud project, deployed on Vercel, and independently verified against all 22 acceptance criteria.
 
-`docs/PRODUCT.md`, `docs/CONTENT_MODEL.md`, `docs/GOVERNANCE.md`, and `docs/SECURITY.md` define the approved semantics this slice must implement. The static prototype referenced by those documents (`Base Curricular - Explorador (offline)(3).html`) is not currently present in this repository or in any available project resource. Its absence is not an activation blocker: the documents above already carry the product/content/security contracts this spec needs. Where the prototype would otherwise have supplied exact visual/interaction fidelity (see §4 Grilla/Programa, §12), that fidelity is limited until a reference becomes available, and implementation must not invent or recreate prototype behavior already rejected by product decisions — in particular the module-card completeness percentage (D-015) and any LMS-style mandatory sequencing.
+`docs/PRODUCT.md`, `docs/CONTENT_MODEL.md`, `docs/GOVERNANCE.md`, and `docs/SECURITY.md` remain the semantic authority. The static prototype referenced by those documents (`Base Curricular - Explorador (offline)(3).html`) was unavailable during implementation; repository-local contracts supplied the verified UX/product boundaries, including exclusion of the module-card completeness percentage (D-015) and LMS-style mandatory sequencing.
 
 ## 3. Problem / Gap
 
@@ -146,18 +146,27 @@ Implementation may choose:
 
 ## 11. Knowledge Updates Required
 
-After verification:
+Completed:
 
-- reconcile the physical schema with `docs/CONTENT_MODEL.md`, including the verified revision-capable shape against D-029;
-- update `docs/ARCHITECTURE.md` with verified search/data implementation details;
-- move the spec to `completed/`.
+- reconciled the physical schema with `docs/CONTENT_MODEL.md`, including the verified revision-capable shape against D-029;
+- updated `docs/ARCHITECTURE.md` with verified search/data implementation details;
+- moved this spec to `completed/` after independent, Cloud, hosted, and credential-remediation verification.
 
 ## 12. Open Questions / Blockers
 
-No product-authority blocker remains.
+No product-authority or closure blocker remains.
 
 Two initial-content activities are distinguished and must not be conflated:
 
 **A. Seed/import mechanism (in scope of this spec):** an idempotent, operator-safe mechanism for loading curriculum content, sufficient to satisfy this spec's acceptance criteria using representative fixture data for tests and local validation.
 
 **B. Real production curriculum population (out of scope, operational):** sourcing and supplying actual Democracia+ curriculum content is an activity for content owners through an approved source, not something the implementation agent fabricates. No authoritative real module inventory currently exists in the repository beyond the two approved axis names (§4), which may be persisted directly. Acceptance criteria in §9 must be — and are — satisfiable with representative fixtures; they do not require fabricated real-world module data.
+
+## 13. Completion Evidence
+
+- Local validation passed migration replay, 108 pgTAP assertions, DB lint, 43 Vitest tests, typecheck, lint, production build, 9 development Chromium E2E journeys, 9 production Chromium E2E journeys, dynamic protected-route checks, and diff checks.
+- Independent adversarial review found all 22 acceptance criteria, D-029, security/RLS, importer, search/filter, and UI/product boundaries passing. A narrow correction pass was independently re-reviewed as verified.
+- Migration `20260911000100_core_curriculum_library.sql` was the sole Cloud dry-run delta, was applied successfully to project `qcxcgwpfgclyebkxawyh`, and its schema/RLS/grant/function posture was verified.
+- Vercel served commit `2356406`; Google OAuth, Email OTP, eligible library access, authenticated-ineligible denial, Spanish empty states, and private/no-store responses were hosted-validated.
+- A legacy privileged API credential exposed during validation was remediated before closure by validating modern publishable/secret keys and disabling the legacy anon/service-role family. JWT signing keys were unchanged.
+- Production contains only the two approved axes. No authoritative module/reference payload was supplied or imported; real-content search/accent/filter validation remains an operational follow-up after approved population.
