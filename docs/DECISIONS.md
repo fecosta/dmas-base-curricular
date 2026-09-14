@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-09-12
+**Last reconciled:** 2026-09-14
 
 ## Decision register
 
@@ -404,6 +404,12 @@ An eligible Admin may:
 - manage permitted relationships and attachments;
 - publish valid revisions.
 
+Admin Draft authority is role-wide rather than creator-owned.
+
+Any currently eligible Admin may access and edit any active Admin-managed Draft, regardless of which Admin originally created the content or revision. `created_by` and creation-time organization remain immutable provenance; they do not create exclusive mutation authority.
+
+Revoking Admin authority removes Draft-management authority on the next authoritative request, including for Drafts originally created by that user.
+
 Eligible authenticated non-Admin users are readers only for governed curriculum content.
 
 They may access current published content but may not create, edit, submit, review, approve, or publish governed content.
@@ -452,7 +458,7 @@ SPEC-003 remains a completed implementation record. Its persistence and provenan
 
 The current implementation must instead enforce the new authority boundary:
 
-`Admin = governed-content writer/publisher`
+`Admin = role-wide governed-content writer/publisher`
 
 `non-Admin = published-content reader`
 

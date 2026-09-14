@@ -162,15 +162,17 @@ Must not:
 An eligible Admin may:
 
 - access current published content;
-- access authorized Admin Drafts;
+- access any active Admin Draft;
 - create governed curriculum content;
-- edit unpublished Admin Drafts;
+- edit any active Admin Draft regardless of original creator;
 - manage permitted Draft relationships;
 - manage permitted private attachments;
 - create later Draft revisions from published content;
 - publish valid Drafts;
 - access governance/history information required for administration;
 - archive and restore published content where separately implemented.
+
+`created_by` and creation-time organization are provenance, not exclusive authorization boundaries between Admins.
 
 Admin authority must derive from the live persisted role.
 
@@ -211,6 +213,12 @@ Where narrow privileged database functions are required, they must:
 - expose only the minimum required operation;
 - use hardened grants and function configuration;
 - fail closed.
+
+Admin Draft authorization must derive from the caller's current live Admin role.
+
+An implementation must not require the current Admin to equal the Draft's `created_by` value in order to manage an active Admin Draft.
+
+Role revocation must remove Draft-management authority on the next authoritative request, including for Drafts originally created by that user.
 
 ---
 

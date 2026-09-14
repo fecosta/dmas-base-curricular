@@ -65,7 +65,8 @@ An eligible Admin manages governed curriculum knowledge.
 An Admin may:
 
 - create governed content;
-- edit Admin Drafts;
+- access any active Admin Draft;
+- edit any active Admin Draft regardless of original creator;
 - manage permitted Draft relationships;
 - manage permitted private attachments;
 - publish valid Drafts;
@@ -74,11 +75,17 @@ An Admin may:
 - archive/restore published content where separately implemented;
 - access lifecycle/history information required for administration.
 
-Admin authority must derive from the live persisted role and not from UI visibility, OAuth metadata, JWT metadata, or user-entered role information.
+Admin Draft authority is based on the current live Admin role, not creator ownership.
+
+`created_by` and creation-time organization remain provenance and do not grant exclusive editing authority to the Admin who originally created the Draft.
 
 ---
 
 ## 4. New-content workflow
+
+Any currently eligible Admin may continue editing an active Admin Draft.
+
+The Draft creator does not have exclusive mutation authority.
 
 The active workflow is:
 
@@ -102,6 +109,10 @@ Publication itself remains an explicit Admin action.
 ---
 
 ## 5. Published-content revision workflow
+
+Any currently eligible Admin may create or continue editing the active successor Draft.
+
+Original revision creator identity remains provenance only.
 
 Published content is never edited destructively in place.
 
@@ -296,6 +307,8 @@ Detailed archival implementation remains owned by SPEC-005.
 ---
 
 ## 15. Security boundary
+
+Active Admin Draft management is role-wide across currently eligible Admins. Authorization must not require `created_by = current user` for Admin-managed Drafts.
 
 Governance authority follows:
 
