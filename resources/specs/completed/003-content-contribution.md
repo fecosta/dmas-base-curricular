@@ -1,8 +1,10 @@
 SPEC-003 — Content Contribution
 
-Status: ACTIVE
-Methodology state: IMPLEMENTATION READY
+Status: COMPLETED — IMPLEMENTED, INDEPENDENTLY VERIFIED, CLOUD-APPLIED, AND HOSTED-VALIDATED
+Methodology state: CLOSED
 Depends on: SPEC-002
+Implementation: e50feabc698e29c7bac6cf8b33e98b2a0cbfce20
+Closure verified: 2026-09-14
 
 1. Purpose / Objective
 
@@ -13,6 +15,8 @@ SPEC-003 introduces the first user-write surface for governed curriculum content
 ⸻
 
 2. Current State
+
+SPEC-003 is implemented in commit e50feabc698e29c7bac6cf8b33e98b2a0cbfce20, independently verified, applied to the intended Supabase Cloud project, and hosted-validated. The predecessor capabilities below describe the foundation against which this delivery slice was implemented.
 
 SPEC-001 provides:
 
@@ -626,27 +630,27 @@ Implementation must not:
 
 20. Knowledge Updates Required
 
-After verified implementation:
+Completed:
 
-* reconcile physical provenance/contribution model with docs/CONTENT_MODEL.md;
-* reconcile pending authorization and Storage controls with docs/SECURITY.md;
-* reconcile caller-owned Draft/Submitted dependency resolution with docs/CONTENT_MODEL.md where relationship behavior is documented;
-* update docs/ARCHITECTURE.md with verified:
+* reconciled the physical provenance/contribution model with docs/CONTENT_MODEL.md;
+* reconciled pending authorization and Storage controls with docs/SECURITY.md;
+* reconciled caller-owned Draft/Submitted dependency resolution with docs/CONTENT_MODEL.md;
+* updated docs/ARCHITECTURE.md with verified:
     * write operations;
     * relationship-resolution behavior;
     * event foundation;
     * Storage architecture;
     * failure-handling model;
-* update docs/DECISIONS.md only if a genuinely material new durable decision emerges;
-* update setup/config docs for local Storage if needed;
-* keep SPEC-003 active through implementation and independent verification;
-* move the spec only after Cloud/hosted closure validation.
+* no new durable architecture decision was required;
+* updated setup/config documentation for local Storage;
+* kept SPEC-003 active through implementation and independent verification;
+* moved the spec only after Cloud and hosted closure validation.
 
 ⸻
 
 21. Validation / Closure Gate
 
-SPEC-003 is not complete because local tests pass.
+SPEC-003 was not eligible for completion based on local tests alone. The additional gates below are now satisfied as recorded in §23.
 
 Before closure validate, as applicable:
 
@@ -701,3 +705,21 @@ if satisfying SPEC-003 requires changing an authoritative contract for:
 * authoritative content relationships.
 
 Reversible technical choices under Implementation Freedom do not require a new product decision.
+
+⸻
+
+23. Completion Evidence
+
+* implementation commit e50feabc698e29c7bac6cf8b33e98b2a0cbfce20 delivers authenticated Draft creation/editing, Draft -> Submitted, caller-owned Draft/Submitted dependencies, immutable Submitted contributions, provenance, lifecycle events, private attachments, Spanish contribution UI, and published-surface isolation;
+* final local validation passed fresh migration replay, 276 pgTAP assertions, database lint, 52 Vitest tests, typecheck, lint, production build, targeted contribution E2E, 10 development Chromium journeys, 10 production-mode Chromium journeys, and diff checks;
+* independent adversarial review identified one merge blocker and four fix-before-merge findings; the corrective pass resolved all five, and the independent Opus delta review returned PASS with no remaining merge blocker or fix-before-merge finding;
+* migration 20260913000100_content_contribution_persistence.sql is recorded on Supabase Cloud project qcxcgwpfgclyebkxawyh alongside migrations 20260910000100 and 20260911000100;
+* Cloud verification confirmed the expected Teaching Note constraint reconciliation, RLS on attachment/event tables, intended narrow SECURITY DEFINER functions and grants, no unexpected anonymous authority, and the private governed-attachments bucket with its 3 MiB limit, MIME allowlist, SELECT/INSERT/DELETE policies, and no UPDATE policy;
+* hosted functional validation passed contribution creation/editing/submission, dependency ordering and Submitted dependencies, attachment workflow, Submitted read-only behavior, cross-user and revoked-user denial, and published library/search isolation;
+* all 27 SPEC-003 acceptance criteria are satisfied. SPEC-003 is therefore closed without activating SPEC-004.
+
+⸻
+
+24. Residual Non-blocking Follow-ups
+
+The following remain non-blocking follow-ups rather than SPEC-003 acceptance gaps: aggregate attachment quotas; malware/content scanning and stronger MIME/content validation; generalized committed concurrency coverage; positional relationship INSERT cleanup; E2E organization/refactoring; Unicode filename percent/double encoding in Storage download behavior; the application/database C1 filename strictness mismatch; browser validation beyond Chromium; and lifecycle hardening belonging to SPEC-004 or later.

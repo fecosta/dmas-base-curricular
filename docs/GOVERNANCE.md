@@ -83,6 +83,8 @@ or, when adjustments are required:
 
 `Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
 
+The implemented workflow currently stops at `Submitted` under completed SPEC-003. Review, change requests, resubmission, approval, publication, and their notifications remain planned behavior for SPEC-004 or later.
+
 ### Step-by-step behavior
 
 1. A Contributor creates new content.

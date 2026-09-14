@@ -24,7 +24,7 @@ Do not move a spec to `completed/` merely because an implementation agent report
 
 1. `SPEC-001` — Application Foundation & Authentication — completed
 2. `SPEC-002` — Core Curriculum Library — completed
-3. `SPEC-003` — Content Contribution — active
+3. `SPEC-003` — Content Contribution — completed
 4. `SPEC-004` — Review, Approval & Publication — planned
 5. `SPEC-005` — Revisions, Audit History & Archival — planned
 6. `SPEC-006` — Personal Itinerary — planned
@@ -53,6 +53,8 @@ SPEC-006 Personal Itinerary
 ```
 
 `SPEC-006` does not depend on completion of the governance workflow and may be implemented after the core library is stable.
+
+No implementation specification is currently active. SPEC-004 remains planned until a separate technical/product preflight and explicit promotion.
 
 ## Authoritative product sources
 
@@ -93,4 +95,4 @@ After implementation of each spec:
 3. compare actual behavior with the spec;
 4. update durable documentation if verified current state changed;
 5. move the spec to `completed/` only after verification;
-6. activate the next spec when its dependencies are satisfied.
+6. promote a next spec to `active/` only through a separate preflight and explicit activation after its dependencies are satisfied.

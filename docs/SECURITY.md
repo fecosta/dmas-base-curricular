@@ -344,7 +344,7 @@ The deployed application uses a modern Supabase publishable key and no privilege
 
 Only the two approved axes are present as authoritative production curriculum data. No real module/reference import has occurred, and test fixtures remain local/test-only.
 
-## 22. SPEC-003 local contribution and Storage boundary
+## 22. SPEC-003 contribution and Storage boundary
 
 SPEC-003 adds owner-only pending visibility without changing `private.current_access()`. Every pending read and write requires a currently eligible authenticated identity. Ownership follows the authenticated user; the revision separately preserves the immutable creation-time organization snapshot. Membership, organization, domain, identity, or role invalidation removes pending database and file access on the next request. Admin authoring uses the same owner boundary and gains no cross-user review visibility in this slice.
 
@@ -354,7 +354,7 @@ The private `governed-attachments` bucket accepts only an opaque reserved object
 
 The Storage/database consistency model is compensating rather than transactional: failed pre-object reservations are cancellable; uploaded but unfinalized objects remain `Reserved` and can be finalized or discarded; deletion marks metadata `Deleting` before byte removal and can be restored only when removal fails while matching bytes still exist. If byte removal succeeds but metadata finalization fails, metadata remains `Deleting` for an idempotent deletion retry. No cleanup worker or privileged browser/server credential is introduced.
 
-These controls are locally implemented and tested. Supabase Cloud migration, bucket/policy inspection, and hosted cross-user/revocation validation remain required before SPEC-003 closure.
+These controls passed local and independent adversarial validation. Migration 20260913000100 is applied to Supabase Cloud project `qcxcgwpfgclyebkxawyh`; Cloud inspection confirmed the intended RLS, grants, SECURITY DEFINER posture, private bucket, and Storage policies. Hosted validation confirmed contribution, attachment, dependency-ordering, cross-user, revocation, Submitted-immutability, and published-isolation boundaries.
 
 ## 23. Source basis
 

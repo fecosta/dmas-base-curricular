@@ -393,9 +393,9 @@ Typed relationships are:
 
 This physical design stores semantic fields relationally rather than as generic JSON revision payloads. JSON is used only as a composed RPC return representation and as the trusted import interchange format; PostgreSQL tables remain canonical.
 
-## 19. SPEC-003 local contribution persistence
+## 19. Verified SPEC-003 contribution persistence
 
-The active SPEC-003 implementation extends each typed revision with `contributor_organization_id`, an immutable creation-time organization snapshot, and `submitted_at`. New contributions use the existing stable identity and typed revision pairs: the database creates a new identity with a null current-published pointer and revision 1 in `Draft`, then permits only the owner transition to `Submitted`.
+SPEC-003 extends each typed revision with `contributor_organization_id`, an immutable creation-time organization snapshot, and `submitted_at`. New contributions use the existing stable identity and typed revision pairs: the database creates a new identity with a null current-published pointer and revision 1 in `Draft`, then permits only the owner transition to `Submitted`.
 
 `curriculum_lifecycle_events` is an append-only event foundation for content/revision creation, Draft edits, submission, and retained Draft-deletion evidence. Revision status remains the sole lifecycle authority.
 
@@ -405,7 +405,7 @@ An owned Draft may resolve compatible current-published, caller-owned Draft, or 
 
 Teaching Note Drafts may omit both `text` and `source_url` so attachment-only contributions are physically representable. The authoritative submission operation enforces the cross-table source rule: a Teaching Note reaches Submitted only with non-empty text, a valid HTTPS source URL, or at least one authorized `Ready` private attachment.
 
-This is verified local implementation state while SPEC-003 remains active. Review, approval, publication, published-content revision authoring, archival, and audit-history UI remain later specifications.
+This persistence model is independently verified, applied to the intended Supabase Cloud project, and hosted-validated. Review, approval, publication, published-content revision authoring, archival, and audit-history UI remain later specifications.
 
 ## 20. Source basis
 

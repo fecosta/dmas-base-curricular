@@ -13,9 +13,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed
 
-**Technical state:** SPEC-001 and SPEC-002 are completed; SPEC-003 is implemented locally and awaiting independent review, Cloud migration/Storage verification, and hosted validation
+**Technical state:** SPEC-001, SPEC-002, and SPEC-003 are implemented, independently verified, applied to the intended Supabase Cloud project where required, and hosted-validated
 
-**Delivery state:** SPEC-003 — Content Contribution remains active at [`resources/specs/active/003-content-contribution.md`](resources/specs/active/003-content-contribution.md); local implementation does not complete its independent or hosted closure gates
+**Delivery state:** SPEC-003 — Content Contribution is completed at [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md); SPEC-004 remains planned and no implementation slice is currently active
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged.
 
@@ -49,9 +49,9 @@ resources/specs/
 
 The most recently completed delivery slice is:
 
-[`resources/specs/completed/002-core-curriculum-library.md`](resources/specs/completed/002-core-curriculum-library.md)
+[`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md)
 
-The currently active specification is [`resources/specs/active/003-content-contribution.md`](resources/specs/active/003-content-contribution.md) — SPEC-003, Content Contribution. Its local implementation remains uncommitted and pending independent review and Cloud/hosted closure validation.
+There is currently no active implementation specification. SPEC-004 — Review, Approval & Publication remains under `resources/specs/planned/` pending a separate preflight and activation decision.
 
 Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
@@ -237,7 +237,7 @@ Configure Cloud Auth for the implemented provider strategy:
 - Match the local one-hour access-token lifetime and refresh-token rotation. Longer-term session/offboarding policy remains an operational decision in `docs/SECURITY.md`.
 - Expose only the `public` API schema; keep `private` unexposed. Provision approved organizations, memberships, and the authorized initial Admin separately.
 
-In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables and the exact HTTPS `APP_URL` origin for each deployment environment. Redeploy after changing browser-safe build-time variables. Every preview origin used for OAuth needs its own exact `APP_URL` and Supabase redirect-allow-list entry; do not use an arbitrary redirect wildcard. Preview environments should point to the intended test project. SPEC-003 requires its reviewed migration and private Storage bucket/policies to be applied to the intended Supabase project before hosted authoring validation; do not create a public bucket or add a privileged Vercel credential.
+In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables and the exact HTTPS `APP_URL` origin for each deployment environment. Redeploy after changing browser-safe build-time variables. Every preview origin used for OAuth needs its own exact `APP_URL` and Supabase redirect-allow-list entry; do not use an arbitrary redirect wildcard. Preview environments should point to the intended test project. The reviewed SPEC-003 migration and private Storage bucket/policies are applied to the intended Supabase project and hosted authoring validation is complete; do not create a public bucket or add a privileged Vercel credential.
 
 Hosted acceptance has exercised, against the deployed origin (`https://dmas-base-curricular.vercel.app`): a real first-time Google sign-in, approved-domain/no-membership denial (redirect to `/access-denied` and `/api/access` 403), eligible Admin access with persisted user/organization/role context, the Email OTP fallback (including institutional SMTP delivery via Resend), live membership revocation without waiting for token refresh (and restoration), and hosted sign-out. A real hosted adversarial pre-account-takeover test was also performed and did not reproduce the previously hypothesized Google-linking vulnerability. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that never completes Google OAuth first, and operational rate-limit monitoring were not part of this validation pass and remain open follow-ups.
 

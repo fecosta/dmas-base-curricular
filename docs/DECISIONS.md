@@ -438,9 +438,9 @@ Real module/reference population remains an operational content-owner activity a
 
 ### G-003 — SPEC-003 Content Contribution
 
-**State:** ACTIVATED — PENDING IMPLEMENTATION AND VERIFICATION
+**State:** COMPLETED — IMPLEMENTATION, INDEPENDENT VERIFICATION, CLOUD APPLICATION, AND HOSTED VALIDATION VERIFIED
 
-SPEC-003 is active at `resources/specs/active/003-content-contribution.md` because its SPEC-002 dependency is satisfied and no product blocker is known. Activation does not authorize publication behavior: Contributor drafts and submission must preserve the existing D-029 model and must not grant publication authority. The future trusted/workflow-aware publication write path remains a SPEC-004 concern.
+SPEC-003 is completed at `resources/specs/completed/003-content-contribution.md`. Implementation commit `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20` passed final local validation, independent adversarial review, corrective re-review with PASS verdict, Supabase Cloud migration/security/Storage verification, and hosted functional validation. Contribution remains limited to new Draft creation/editing and `Draft -> Submitted`; review and publication authority remain future SPEC-004 concerns.
 
 ---
 
@@ -450,4 +450,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001 and SPEC-002 are completed with implementation, independent verification, and required Cloud/hosted validation reconciled. SPEC-003 — Content Contribution is now the active delivery slice; its implementation has not begun. SPEC-004, SPEC-005, and SPEC-006 remain planned.
+SPEC-001, SPEC-002, and SPEC-003 are completed with implementation, independent verification, and required Cloud/hosted validation reconciled. SPEC-004, SPEC-005, and SPEC-006 remain planned. No implementation specification is currently active.
