@@ -1,5 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
+create extension if not exists dblink with schema extensions;
 select no_plan();
 
 insert into public.organizations(id, name, is_active)
@@ -138,6 +139,163 @@ select throws_ok($$update public.material_revisions
   '55000', 'submission is inactive', 'direct Draft to Submitted transition is disabled');
 select is((select current_published_revision_id from public.materials where id = '83000000-0000-4000-8000-000000000001'),
   null::uuid, 'rejected pointer mutation leaves identity consistent');
+
+select is(extensions.dblink_connect(
+  'dependency_setup',
+  'host=host.docker.internal port=55322 dbname=' || current_database() || ' user=postgres password=postgres'
+), 'OK', 'concurrency fixture connection opens');
+select is(extensions.dblink_connect(
+  'dependency_publisher',
+  'host=host.docker.internal port=55322 dbname=' || current_database() || ' user=postgres password=postgres'
+), 'OK', 'concurrent publication connection opens');
+select is(extensions.dblink_connect(
+  'dependency_mutator',
+  'host=host.docker.internal port=55322 dbname=' || current_database() || ' user=postgres password=postgres'
+), 'OK', 'concurrent dependency mutation connection opens');
+
+select is(extensions.dblink_exec('dependency_setup', $setup$
+  insert into public.organizations(id, name, is_active)
+  values ('89000000-0000-4000-8000-000000000001', 'Red concurrente', true);
+  insert into public.organization_domains(domain, organization_id)
+  values ('concurrency.test', '89000000-0000-4000-8000-000000000001');
+  insert into auth.users(id, email, email_confirmed_at)
+  values ('89100000-0000-4000-8000-000000000001', 'admin@concurrency.test', now());
+  insert into public.memberships(user_id, organization_id, role, is_active)
+  values ('89100000-0000-4000-8000-000000000001', '89000000-0000-4000-8000-000000000001', 'Admin', true);
+  insert into public.instructors(id)
+  values ('89200000-0000-4000-8000-000000000001');
+  insert into public.instructor_revisions(id, instructor_id, revision_number, status, name, published_at)
+  values (
+    '89210000-0000-4000-8000-000000000001', '89200000-0000-4000-8000-000000000001', 1,
+    'Published', 'Dependencia concurrente', now()
+  );
+  update public.instructors
+  set current_published_revision_id = '89210000-0000-4000-8000-000000000001'
+  where id = '89200000-0000-4000-8000-000000000001';
+  insert into public.modules(id, created_by)
+  values ('89300000-0000-4000-8000-000000000001', '89100000-0000-4000-8000-000000000001');
+  insert into public.module_revisions(
+    id, module_id, revision_number, status, axis_id, title, description, created_by, contributor_organization_id
+  ) values (
+    '89310000-0000-4000-8000-000000000001', '89300000-0000-4000-8000-000000000001', 1, 'Draft',
+    'a1000000-0000-4000-8000-000000000001', 'Publicación concurrente', 'Prueba de bloqueo.',
+    '89100000-0000-4000-8000-000000000001', '89000000-0000-4000-8000-000000000001'
+  );
+  insert into public.module_instructors(module_revision_id, instructor_id)
+  values ('89310000-0000-4000-8000-000000000001', '89200000-0000-4000-8000-000000000001');
+$setup$), 'INSERT 0 1', 'committed concurrency fixture is created');
+
+select is(extensions.dblink_exec('dependency_publisher', 'set role authenticated'), 'SET', 'publication session uses the application role');
+select is(extensions.dblink_exec(
+  'dependency_publisher',
+  $claims$set request.jwt.claims = '{"sub":"89100000-0000-4000-8000-000000000001","role":"authenticated"}'$claims$
+), 'SET', 'publication session receives authenticated claims');
+
+create temporary table dependency_concurrency_sessions(name text primary key, pid integer);
+insert into dependency_concurrency_sessions
+select 'publisher', remote.pid
+from extensions.dblink('dependency_publisher', 'select pg_backend_pid()') as remote(pid integer);
+insert into dependency_concurrency_sessions
+select 'mutator', remote.pid
+from extensions.dblink('dependency_mutator', 'select pg_backend_pid()') as remote(pid integer);
+
+savepoint dependency_concurrency_barrier;
+lock table public.curriculum_lifecycle_events in access exclusive mode;
+select is(extensions.dblink_send_query(
+  'dependency_publisher',
+  $$select public.publish_content_draft('module', '89310000-0000-4000-8000-000000000001')$$
+), 1, 'publication starts in a separate transaction');
+
+do $$
+declare attempt integer;
+begin
+  for attempt in 1..100 loop
+    exit when exists (
+      select 1 from pg_stat_activity activity
+      where activity.pid = (select pid from dependency_concurrency_sessions where name = 'publisher')
+        and activity.wait_event_type = 'Lock'
+    );
+    perform pg_sleep(0.02);
+  end loop;
+end;
+$$;
+select ok(exists (
+  select 1 from pg_stat_activity activity
+  where activity.pid = (select pid from dependency_concurrency_sessions where name = 'publisher')
+    and activity.wait_event_type = 'Lock'
+), 'publication reaches its final event write after dependency validation');
+
+select is(extensions.dblink_send_query(
+  'dependency_mutator',
+  $$update public.instructors set archived_at = clock_timestamp()
+    where id = '89200000-0000-4000-8000-000000000001' returning id$$
+), 1, 'a concurrent dependency-state mutation starts');
+
+do $$
+declare attempt integer;
+begin
+  for attempt in 1..100 loop
+    exit when (select pid from dependency_concurrency_sessions where name = 'publisher') = any (
+      pg_blocking_pids((select pid from dependency_concurrency_sessions where name = 'mutator'))
+    );
+    perform pg_sleep(0.02);
+  end loop;
+end;
+$$;
+select ok(
+  (select pid from dependency_concurrency_sessions where name = 'publisher') = any (
+    pg_blocking_pids((select pid from dependency_concurrency_sessions where name = 'mutator'))
+  ),
+  'publication holds the authoritative dependency identity against concurrent state mutation'
+);
+select is(extensions.dblink_is_busy('dependency_publisher'), 1, 'publication remains open before commit');
+select is(extensions.dblink_is_busy('dependency_mutator'), 1, 'dependency mutation remains blocked before publication commit');
+
+rollback to savepoint dependency_concurrency_barrier;
+
+select is(
+  (select result->>'status' from extensions.dblink_get_result('dependency_publisher') as remote(result jsonb)),
+  'Published',
+  'publication commits successfully after the test barrier is released'
+);
+select is(
+  (select id from extensions.dblink_get_result('dependency_mutator') as remote(id uuid)),
+  '89200000-0000-4000-8000-000000000001'::uuid,
+  'dependency mutation proceeds only after publication releases its transaction lock'
+);
+select is(
+  (select pointer from extensions.dblink(
+    'dependency_setup',
+    $$select current_published_revision_id from public.modules where id = '89300000-0000-4000-8000-000000000001'$$
+  ) as remote(pointer uuid)),
+  '89310000-0000-4000-8000-000000000001'::uuid,
+  'concurrent publication leaves the current pointer consistent'
+);
+select ok(
+  (select archived_at is not null from extensions.dblink(
+    'dependency_setup',
+    $$select archived_at from public.instructors where id = '89200000-0000-4000-8000-000000000001'$$
+  ) as remote(archived_at timestamptz)),
+  'serialized dependency mutation is visible after publication commit'
+);
+
+select is(extensions.dblink_exec('dependency_setup', $cleanup$
+  set session_replication_role = replica;
+  delete from public.curriculum_lifecycle_events where content_id = '89300000-0000-4000-8000-000000000001';
+  delete from public.module_instructors where module_revision_id = '89310000-0000-4000-8000-000000000001';
+  delete from public.module_revisions where id = '89310000-0000-4000-8000-000000000001';
+  delete from public.modules where id = '89300000-0000-4000-8000-000000000001';
+  delete from public.instructor_revisions where id = '89210000-0000-4000-8000-000000000001';
+  delete from public.instructors where id = '89200000-0000-4000-8000-000000000001';
+  delete from public.memberships where user_id = '89100000-0000-4000-8000-000000000001';
+  delete from public.organization_domains where domain = 'concurrency.test';
+  delete from auth.users where id = '89100000-0000-4000-8000-000000000001';
+  delete from public.organizations where id = '89000000-0000-4000-8000-000000000001';
+  set session_replication_role = origin;
+$cleanup$), 'SET', 'committed concurrency fixtures are removed');
+select is(extensions.dblink_disconnect('dependency_mutator'), 'OK', 'dependency mutation connection closes');
+select is(extensions.dblink_disconnect('dependency_publisher'), 'OK', 'publication connection closes');
+select is(extensions.dblink_disconnect('dependency_setup'), 'OK', 'concurrency fixture connection closes');
 
 select ok(strpos(pg_get_functiondef('public.publish_content_draft(public.curriculum_content_type,uuid)'::regprocedure), 'for update') > 0,
   'publication operation locks its revision and stable identity');
