@@ -1,303 +1,390 @@
 # Base Curricular — Knowledge Governance
 
-**Status:** Governance core confirmed  
-**Last reconciled:** 2026-09-10
+**Status:** Initial operational governance confirmed  
+**Last reconciled:** 2026-09-14
 
 ## 1. Purpose
 
-Base Curricular is collaborative, but collaboration does not imply automatic publication.
+Base Curricular is a private shared curriculum-knowledge library.
 
-Knowledge governance exists to make the shared base trustworthy, maintainable, attributable, and safe for collaboration across organizations.
+During the initial operational phase, governed curriculum content is centrally managed by authorized Admins.
 
-This document defines the active governance contract for contributions, review, revisions, approval, publication, provenance, and audit history.
+Authenticated non-Admin users consume published knowledge but do not author or submit governed content.
 
-## 2. Governance principles
+This simplified governance model reduces initial operational complexity while preserving the revision, provenance, publication, security, and audit foundations required for future collaborative governance.
 
-1. **External contributions require review before publication.**
-2. **Contribution does not equal publication authority.**
-3. **Contributor identity and organization must be preserved.**
-4. **Review decisions must be auditable.**
-5. **Published content must remain stable while updates are reviewed.**
-6. **Review feedback must be visible to the contributor responsible for the revision.**
-7. **Publication is an Admin action.**
-8. **Permissions applied at publication must respect the content's required access level.**
-9. **Governance state must not be confused with content taxonomy.**
-10. **Current published knowledge must remain distinguishable from drafts, pending revisions, and historical versions.**
+---
+
+## 2. Active governance principles
+
+1. **Only Admins may create or modify governed curriculum content.**
+2. **Only Admins may publish governed curriculum content.**
+3. **Non-Admin users have read-only access to current published governed content.**
+4. **Published content is never edited destructively in place.**
+5. **A newer Draft revision must not replace the current published revision until publication succeeds.**
+6. **Current published knowledge must remain distinguishable from Draft and historical revisions.**
+7. **Publication actions must be attributable and auditable.**
+8. **Actor and organization identity must derive from trusted authenticated access.**
+9. **Publication authority must be enforced at the server/data boundary.**
+10. **Governance state must remain separate from content taxonomy.**
+11. **Historical provenance must not be rewritten when governance policy changes.**
+12. **Published content is archived rather than destructively deleted as the normal retirement mechanism.**
+
+---
 
 ## 3. Roles
 
-### Contributor
+### User
 
-A user from an approved organization who can contribute knowledge.
+An eligible authenticated non-Admin user is a reader.
 
-A Contributor may:
+A User may:
 
-- create content;
-- edit their draft or revision;
-- submit content for review;
-- receive review comments;
-- make requested adjustments;
-- resubmit content.
+- browse current published content;
+- search current published content;
+- use published-content filters and references;
+- access published attachments they are authorized to read;
+- use reader features such as personal itinerary where separately implemented.
 
-A Contributor must not publish externally governed content directly.
+A User must not:
+
+- create governed curriculum content;
+- edit governed curriculum content;
+- create Draft revisions;
+- submit or resubmit content;
+- review content;
+- approve content;
+- publish content;
+- mutate governed attachments;
+- access Admin Drafts.
 
 ### Admin
 
-An authorized Democracia+ administrator responsible for review and publication.
+An eligible Admin manages governed curriculum knowledge.
 
 An Admin may:
 
-- access submitted content;
-- review a revision;
-- add review comments;
-- request changes;
-- approve content;
-- publish approved content;
-- assign the permissions required for publication.
+- create governed content;
+- edit Admin Drafts;
+- manage permitted Draft relationships;
+- manage permitted private attachments;
+- publish valid Drafts;
+- create later Draft revisions from published content;
+- publish later revisions;
+- archive/restore published content where separately implemented;
+- access lifecycle/history information required for administration.
 
-Additional roles may be introduced later, but these authority boundaries must be preserved.
+Admin authority must derive from the live persisted role and not from UI visibility, OAuth metadata, JWT metadata, or user-entered role information.
 
-For the initial product, review, approval, publication, archival, and platform governance responsibilities remain consolidated in the single **Admin** role. A separate Reviewer or Publisher role is not required.
+---
 
-## 4. Initial approval scope
+## 4. New-content workflow
 
-At the initial stage, **all content submitted by users from other organizations requires Admin approval before publication**.
+The active workflow is:
 
-This is the default policy regardless of content type.
+`Draft -> Published`
 
-The product may support differentiated governance rules in the future.
+### Behavior
 
-### Democracia+ / Admin-authored content
+1. An Admin creates governed content.
+2. The system creates the stable content identity and Draft revision.
+3. The Admin edits the Draft and its permitted relationships/attachments.
+4. The Draft remains invisible to ordinary users.
+5. The Admin explicitly publishes the Draft.
+6. Publication validates the complete content and its dependencies.
+7. The revision becomes Published and the stable identity resolves it as current.
+8. Ordinary users can then access it through normal reader surfaces.
 
-An Admin may create and publish Democracia+ content directly.
+There is no approval step between Draft and publication in this phase.
 
-The mandatory external-contribution review cycle applies to submissions made by users from other organizations.
+Publication itself remains an explicit Admin action.
 
-## 5. New-content workflow
+---
 
-### State flow
-
-`Draft -> Submitted -> Under Review -> Approved -> Published`
-
-or, when adjustments are required:
-
-`Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
-
-The implemented workflow currently stops at `Submitted` under completed SPEC-003. Review, change requests, resubmission, approval, publication, and their notifications remain planned behavior for SPEC-004 or later.
-
-### Step-by-step behavior
-
-1. A Contributor creates new content.
-2. The Contributor submits the content.
-3. The revision enters the review queue.
-4. An Admin receives an email notification with a direct link to the content or review surface.
-5. The Admin reviews the contribution.
-6. The Admin either:
-   - approves it; or
-   - requests changes and records review notes.
-7. When changes are requested, the Contributor receives an email notification.
-8. The Contributor makes the requested adjustments while preserving review history.
-9. The Contributor resubmits.
-10. An Admin is notified again.
-11. The Admin reviews the updated submission.
-12. When accepted, the Admin approves it.
-13. The Admin publishes the approved content with the appropriate permissions.
-
-## 6. Published-content revision workflow
+## 5. Published-content revision workflow
 
 Published content is never edited destructively in place.
 
-### State flow
+The active revision flow is:
 
-`Published v1 -> Draft Revision v2 -> Submitted -> Under Review -> Approved -> Published v2`
+`Published v1 -> Draft v2 -> Published v2`
 
-When changes are requested:
+While v2 is Draft:
 
-`Published v1 -> Draft Revision v2 -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published v2`
+- v1 remains the current published revision;
+- ordinary users continue to receive v1;
+- v2 is Admin-only;
+- edits to v2 do not modify v1.
 
-### Stability rule
+Once v2 is successfully published:
 
-While revision `v2` is under review:
+- v2 becomes the current published revision;
+- ordinary users begin resolving v2;
+- v1 remains preserved as historical content.
 
-- `v1` remains the active published version;
-- ordinary users continue to see `v1`;
-- `v2` is visible only to actors permitted to participate in its contribution/review workflow.
+Only one active editable successor Draft should normally exist for a stable identity.
 
-Once `v2` is published:
+---
 
-- it becomes the current published revision;
-- `v1` remains preserved in history.
+## 6. Publication
 
-## 7. Review comments
+Publication is an Admin-only governance action.
 
-When an Admin requests adjustments:
+A revision may be published only when:
 
-- comments must be associated with the revision being reviewed;
-- comments must identify the Admin who created them;
-- comments must preserve their timestamp;
-- comments must remain in history after resubmission;
-- the Contributor must be able to identify what needs to change.
+- the actor has live Admin authority;
+- the Draft satisfies required structural validation;
+- required relationships are valid;
+- required attachments are ready;
+- required published dependencies resolve to current-published content.
 
-Whether comments support threads, field-level anchors, or simple revision-level notes is an implementation choice unless later specified.
+Publication must atomically keep revision status and the stable identity's current-published pointer consistent.
 
-## 8. Notifications
+Publication must not be exposed as an arbitrary client-controlled status change.
 
-Email is part of the baseline governance workflow.
+---
 
-**Initial delivery provider: Resend.**
+## 7. Reader isolation
 
-The notification provider is an implementation mechanism and does not hold workflow or authorization authority.
+Ordinary users resolve only current published content.
 
-### Required notification events
+Admin Drafts must not leak through:
 
-**Contributor submits**
-- recipient: Admin or configured review destination;
-- contains: link to the submitted content or review page.
+- library;
+- search;
+- filters;
+- references;
+- Grilla;
+- Programa;
+- detail routes;
+- autocomplete;
+- exports;
+- preload payloads;
+- direct unauthorized data access.
 
-**Admin requests changes**
-- recipient: Contributor;
-- contains: indication that adjustments are required and a link to the content/revision.
+When Published v1 and Draft v2 coexist, ordinary readers continue to receive v1.
 
-**Contributor resubmits**
-- recipient: Admin or configured review destination;
-- contains: link to the resubmitted content.
+---
 
-Other notification events, such as publication confirmation, may be added later but are not currently required.
+## 8. Attachments
+
+Governed attachments remain private.
+
+Admins may manage permitted attachments while the associated revision is Draft.
+
+Non-Admin users must not create, replace, or delete governed attachments.
+
+Once associated content is published, attachment access follows the authorization of the published content.
+
+Storage privacy must remain enforced independently of UI visibility.
+
+---
 
 ## 9. Provenance
 
-Every governed content lifecycle must preserve, where applicable:
+The platform must preserve trusted provenance for governed content.
 
-- content creator;
-- contributor organization;
-- revision author(s);
-- source/reference;
+Where applicable this includes:
+
+- original creator;
+- original creator organization;
+- revision creator;
+- publication actor;
 - creation time;
-- submission time;
-- reviewer;
-- review time;
-- review outcome;
-- review comments;
-- resubmission events;
-- approver;
-- approval time;
-- publisher;
+- revision time;
 - publication time.
 
-Where possible, identity metadata must be derived from the authenticated user rather than manually entered.
+Historical Contributor provenance delivered under earlier product phases must remain preserved.
 
-## 10. Audit log
+Changing the active governance model must not rewrite historical authorship.
 
-The platform must maintain an append-oriented history sufficient to reconstruct significant content lifecycle events.
+---
 
-At minimum, the history should represent events equivalent to:
+## 10. Lifecycle history
 
-- `content_created`
-- `revision_created`
-- `content_submitted`
-- `review_started` — if explicitly modeled
-- `changes_requested`
-- `revision_edited`
-- `content_resubmitted`
-- `content_approved`
-- `content_published`
+The platform maintains append-oriented history for significant governance events.
 
-Future events may include:
+Active events should represent actions equivalent to:
 
-- `content_unpublished`
-- `content_archived`
-- `permission_changed`
+- `content_created`;
+- `revision_created`;
+- `revision_edited`;
+- `content_published`;
+- future archive/restore events where applicable.
 
-The exact event-store implementation is a technical decision.
+Historical events from previously implemented contribution behavior, including `content_submitted`, remain valid history.
 
-## 11. Publication and permissions
+Inactive review event types may remain structurally available but are not required active behavior.
 
-Approval and publication are distinct concepts.
+Audit records should preserve, as applicable:
 
-**Approval** means the Admin considers the submitted revision valid.
+- actor;
+- organization;
+- action;
+- content/revision;
+- timestamp;
+- previous status;
+- resulting status.
 
-**Publication** means the approved revision becomes available to its intended audience with the required access permissions.
+---
 
-This distinction allows the system to support sensitive content and differentiated access later without changing review semantics.
+## 11. Deferred collaborative governance
 
-The current platform remains private and network-only.
+The following workflow is not part of the initial operational phase:
 
-For the initial product, all published content is visible to all authenticated users from approved network organizations. Organization-specific or content-specific publication scopes are not part of the MVP.
+`Contributor Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
 
-## 12. Change governance
+Deferred capabilities include:
 
-Changes that alter any of the following require explicit product authority:
+- partner/user authoring;
+- contribution submission;
+- review queues;
+- review comments;
+- requested changes;
+- resubmission;
+- approval;
+- governance workflow email.
 
-- meaning of a content type;
-- taxonomy or axis structure;
-- publication/review rules;
-- ownership semantics;
-- visibility/access boundaries;
-- deletion versus archival behavior;
-- authoritative relationship types.
+Existing technical foundations delivered by SPEC-003 may remain in the system.
 
-Routine implementation details that preserve these contracts may be decided technically.
+They must not grant non-Admin authoring authority while the active Admin-only governance decision remains in force.
 
-## 13. Deletion and archival
+Reactivating collaborative governance requires a new explicit product decision/specification.
 
-Published governed content is retired through **archival**, not permanent deletion.
+---
+
+## 12. Notifications
+
+Governance workflow email is not required during the active Admin-only phase.
+
+Resend remains an approved infrastructure choice but no submission, review, change-request, approval, or publication notification is required by the current governance contract.
+
+---
+
+## 13. Publication visibility
+
+The platform remains private and network-only.
+
+All current published content is visible to eligible authenticated users from approved Democracia+ network organizations.
+
+The initial product does not implement:
+
+- organization-specific publication scopes;
+- user-specific publication scopes;
+- content sensitivity tiers.
+
+Future differentiated visibility requires a separate product decision.
+
+---
+
+## 14. Archival
+
+Published governed content is retired through archival rather than destructive deletion.
 
 When an Admin archives published content:
 
-- it is removed from normal browsing, discovery, and search;
-- its revisions, provenance, review history, and audit events remain preserved;
+- it disappears from normal browse/search/discovery;
+- its revision history remains preserved;
+- provenance remains preserved;
+- lifecycle history remains preserved;
 - it may be restored by an Admin.
 
-Permanent destructive deletion of published governed content is not part of the normal product workflow.
+Permanent deletion of published governed content is not normal product behavior.
 
-A Contributor may delete their own unsubmitted draft when doing so does not erase required governance or audit history.
+Detailed archival implementation remains owned by SPEC-005.
 
-## 14. Governance boundaries
+---
 
-This workflow governs content publication. It does not define:
+## 15. Security boundary
+
+Governance authority follows:
+
+`authenticated identity -> approved domain -> active membership -> active organization -> persisted role`
+
+Only the live persisted Admin role grants governed-content mutation authority.
+
+Security must not rely on:
+
+- hidden buttons;
+- disabled controls;
+- navigation visibility;
+- client-provided roles;
+- OAuth profile metadata;
+- JWT user metadata.
+
+A non-Admin caller invoking legacy contribution endpoints directly must still be denied.
+
+---
+
+## 16. Change governance
+
+Changes affecting any of the following require explicit product authority:
+
+- who may create governed content;
+- who may edit governed content;
+- who may publish;
+- revision semantics;
+- publication visibility;
+- archival/deletion semantics;
+- content taxonomy;
+- authoritative relationships;
+- reactivation of collaborative contribution/review.
+
+Routine implementation details that preserve these contracts may be resolved technically.
+
+---
+
+## 17. Governance boundaries
+
+This governance model controls curriculum-content management and publication.
+
+It does not define:
 
 - curriculum learning order;
-- user enrollment;
+- enrollment;
 - certification;
 - course completion;
-- learning progress.
+- progress tracking.
 
-The personal itinerary is outside the editorial lifecycle except where the selected underlying content itself is governed.
+Personal itinerary remains separate from editorial governance except that it references published governed content.
 
-## 15. Future governance flexibility
+---
 
-The architecture may support future policies such as:
+## 18. Future governance flexibility
 
-- trusted organizations with simplified approval;
-- content-specific sensitivity levels;
-- multiple reviewer groups;
+The architecture intentionally preserves the possibility of future collaborative governance, including:
+
+- partner contributions;
+- review workflows;
+- review comments;
+- trusted organizations;
+- multiple reviewer roles;
+- approval workflows;
 - differentiated publication scopes.
 
 These are future possibilities, not current product requirements.
 
-## 16. Knowledge reconciliation
+---
 
-When the product evolves:
+## 19. Knowledge reconciliation
 
-1. verify implemented behavior;
-2. update current-state documentation;
-3. preserve historical reasoning separately;
-4. remove or mark contradictory active guidance;
-5. keep future concepts clearly labeled as future;
-6. ensure the interface, data semantics, governance rules, and docs describe the same product.
+When governance changes:
 
-## 17. Superseded document
+1. preserve historical implementation evidence;
+2. update active product decisions;
+3. update current-state documentation;
+4. prevent inactive capabilities from remaining accidentally authorized;
+5. preserve provenance and audit history;
+6. clearly separate current behavior from future vision;
+7. ensure UI, authorization, persistence, tests, and documentation describe the same active product.
 
-This document supersedes the former active `KNOWLEDGE_GOVERNANCE.md`.
+---
 
-If that file is retained, it should be moved to an archive/history location and must not be treated as authoritative current guidance.
+## 20. Source basis
 
-## 18. Source basis
+This governance state reflects:
 
-This governance baseline was derived from:
-
-- stakeholder meeting notes — 2026-08-06;
-- Platforms D+ meeting notes — 2026-08-12;
-- first static-prototype UX assessment — August 2026;
-- latest static prototype — `Base Curricular - Explorador (offline)(3).html`;
-- governance decisions confirmed on 2026-09-10.
+- the original collaborative-governance baseline;
+- completed SPEC-001 through SPEC-003;
+- D-030 — Admin-only initial operational content management;
+- product decision confirmed 2026-09-14.

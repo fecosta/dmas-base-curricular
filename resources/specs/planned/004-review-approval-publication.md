@@ -1,449 +1,395 @@
-# SPEC-004 — Review, Approval & Publication
+# SPEC-004 — Admin Content Management & Publication
 
 **Status:** PLANNED  
 **Methodology state:** IMPLEMENTATION READY  
-**Depends on:** SPEC-003
+**Depends on:** SPEC-003  
+**Supersedes:** planned SPEC-004 — Review, Approval & Publication
 
 ## 1. Purpose / Objective
 
-Implement the Admin governance workflow for reviewing submitted contributions, requesting changes, receiving resubmissions, approving valid revisions, publishing governed content, and sending the required workflow notifications.
+Implement the simplified initial governance model for Base Curricular in which Admins are the only actors allowed to create, edit, revise, and publish governed curriculum content.
 
-SPEC-004 extends the verified contribution foundation delivered by SPEC-003 without changing its stable identity, typed revision, provenance, private attachment, or published-reader architecture.
+Authenticated non-Admin users are readers only.
 
-The objective is to complete the new-content governance path:
+SPEC-004 must provide a complete Admin publication path while preserving the revision-capable persistence, provenance, private attachment architecture, lifecycle-event foundation, and current-published reader isolation already delivered by SPEC-002 and SPEC-003.
 
-`Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
+The active initial lifecycle is:
 
-with the shorter valid path:
+`Draft -> Published`
 
-`Draft -> Submitted -> Under Review -> Approved -> Published`
+For later changes to already-published content:
 
-while preserving Admin-only publication authority and current-published reader isolation.
+`Published v1 -> Draft v2 -> Published v2`
+
+While `v2` is being prepared, ordinary readers continue to resolve `v1`.
+
+The contribution/review lifecycle implemented or prepared by earlier specifications is temporarily inactive as product behavior and is explicitly outside this phase.
 
 ---
 
 ## 2. Current State
 
+SPEC-002 provides:
+
+- stable governed content identities;
+- typed revision tables;
+- exactly one current-published revision pointer per identity;
+- published-reader isolation;
+- revision-scoped relationships;
+- current-published library, search, filters, references, Grilla, Programa, and detail readers;
+- revision-capable persistence supporting coexistence of a published revision and later unpublished revision.
+
 SPEC-003 provides:
 
-- new governed content identities with first typed revisions;
-- authenticated Contributor/Admin Draft authoring;
-- immutable contributor-user provenance;
-- immutable contributor-organization provenance;
+- creation of new governed identities with first typed revisions;
+- Draft authoring;
+- contributor-user provenance;
+- contributor-organization provenance;
 - Draft ownership;
-- owner-only pending visibility;
 - private Teaching Note and Material attachments;
-- caller-owned Draft/Submitted relationship dependencies;
+- revision-scoped pending relationships;
 - lifecycle-event persistence;
 - `Draft -> Submitted`;
 - Submitted immutability;
-- published-reader isolation;
-- no cross-user Admin review visibility;
-- no review comments;
-- no changes-request workflow;
-- no approval;
-- no publication;
-- no workflow notifications.
+- owner-only pending visibility;
+- published-reader isolation.
 
-SPEC-002 already provides:
+SPEC-003 has been completed and verified.
 
-- Under Review;
-- Changes Requested;
-- Resubmitted;
-- Approved;
-- Published;
+Its implementation remains valid repository history and persistence capability.
 
-in the governed revision-status enum.
+However, the active product contract has changed before implementation of the previous SPEC-004 review workflow.
 
-The physical identity/revision model already supports a stable identity resolving a current published revision.
+The initial operational phase now restricts governed-content mutation and publication to Admins.
 
-SPEC-004 must extend that existing authority rather than introduce a parallel workflow status model.
+Non-Admin authenticated users must have read-only access to published curriculum content.
+
+The following previously planned workflow is therefore deferred:
+
+`Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
+
+No implementation should destructively remove SPEC-003 persistence solely because this workflow is temporarily inactive.
 
 ---
 
 ## 3. Problem / Gap
 
-The contribution workflow currently stops at Submitted.
+The existing implementation has the technical foundation for contribution but does not yet provide the simplified Admin content-management workflow now required for the initial operational phase.
 
-Without SPEC-004:
+The product needs:
 
-- Admins cannot review another contributor’s pending revision;
-- submitted revisions cannot enter an Admin governance workflow;
-- Contributors cannot receive or act on review feedback;
-- revisions cannot be approved;
-- approved revisions cannot become current published content;
-- external contributions cannot complete their governance lifecycle;
-- required review notifications do not exist.
+- an Admin-only content-management surface;
+- Admin creation of governed content;
+- Admin editing of unpublished Drafts;
+- Admin publication;
+- Admin creation of later revisions from already-published content;
+- safe replacement of the current-published revision;
+- read-only published-content access for non-Admin users;
+- Admin attachment management;
+- publication lifecycle evidence.
 
-The product requires a server/data-enforced review and publication process that preserves:
+The product does not currently need:
 
-- contributor provenance;
-- review attribution;
-- lifecycle evidence;
-- pending-content isolation;
-- publication authority;
-- current-published reader behavior.
+- Contributor authoring;
+- submission;
+- review queues;
+- review comments;
+- change requests;
+- resubmission;
+- approval;
+- workflow email notifications.
 
----
-
-## 4. Authoritative Decisions
-
-The following decisions are already approved and remain authoritative:
-
-- external contributions require Admin review before publication;
-- contribution does not grant publication authority;
-- the MVP uses one Admin role for:
-  - review;
-  - change requests;
-  - approval;
-  - publication;
-- Contributors cannot approve or publish;
-- review feedback must remain visible to the responsible Contributor;
-- review decisions must remain attributable;
-- publication is distinct from approval;
-- all published content is visible network-wide to authenticated eligible users in the MVP;
-- email links do not grant authorization;
-- Resend is the workflow-email provider;
-- Admin-authored Democracia+ content may be directly published without approval from a second Admin;
-- already-published content is not edited in place;
-- creation of later revisions from published content belongs to SPEC-005.
-
-SPEC-004 does not introduce new governance roles, publication scopes, sensitivity tiers, or published-content revision authoring.
+Implementing those workflows now would introduce operational and product complexity that is intentionally deferred.
 
 ---
 
-## 5. Lifecycle Authority
+## 4. Authoritative Decision
 
-For externally governed new contributions, SPEC-004 owns:
+For the initial operational phase:
 
-- `Submitted -> Under Review`
-- `Under Review -> Changes Requested`
-- `Changes Requested -> Resubmitted`
-- `Resubmitted -> Under Review`
-- `Under Review -> Approved`
-- `Approved -> Published`
+### Admin
 
-SPEC-003 remains authoritative for:
+An eligible Admin may:
 
-- `Draft -> Submitted`
+- create governed curriculum content;
+- edit Admin-managed Drafts;
+- manage permitted Draft relationships;
+- manage private attachments;
+- publish valid Drafts;
+- create later Draft revisions from published content;
+- edit those later Draft revisions;
+- publish those later revisions;
+- access lifecycle information required for content administration.
 
-Invalid transitions must be rejected.
+### Non-Admin authenticated user
 
-Examples that must fail:
+An eligible non-Admin user may:
 
-- `Submitted -> Approved`;
-- `Submitted -> Published`;
-- `Changes Requested -> Approved`;
-- `Changes Requested -> Published`;
-- `Resubmitted -> Approved`;
-- `Under Review -> Published`;
-- Contributor-driven Approved;
-- Contributor-driven Published.
+- browse published content;
+- search published content;
+- use published-content filters;
+- open published content;
+- access published attachments they are authorized to read;
+- use other reader capabilities built on published content.
 
-Lifecycle status remains the governed revision’s authoritative workflow state.
+A non-Admin user must not:
 
-Do not introduce a second workflow-status authority.
+- create governed content;
+- edit governed content;
+- create governed revisions;
+- submit content;
+- review content;
+- request changes;
+- approve content;
+- publish content;
+- mutate governed attachments;
+- access unpublished Admin Drafts.
 
----
+These authority boundaries must be enforced at the server/data boundary.
 
-## 6. Starting Review
-
-Moving a revision from Submitted or Resubmitted to Under Review requires an explicit Admin action.
-
-Opening or viewing a review page must not mutate lifecycle state.
-
-Examples of acceptable UI actions include:
-
-- `Iniciar revisión`;
-- equivalent explicit Admin review action.
-
-The transition must:
-
-- verify live Admin authority;
-- lock the target revision;
-- verify its current status;
-- persist lifecycle evidence;
-- remain safe under concurrent review attempts.
-
-Multiple Admins may have visibility, but SPEC-004 does not introduce reviewer assignment or ownership of a review.
+Hidden UI controls are not sufficient authorization.
 
 ---
 
-## 7. Admin Review Visibility
+## 5. Temporary Governance Simplification
 
-SPEC-004 introduces cross-user pending visibility for eligible Admins only.
+The following capabilities are deferred from the active product contract:
 
-An eligible Admin may read pending governed revisions required for review when status is:
+- external/user contribution authoring;
+- `Draft -> Submitted`;
+- Admin review queue;
+- `Submitted -> Under Review`;
+- review comments;
+- `Under Review -> Changes Requested`;
+- Contributor editing after changes requested;
+- `Changes Requested -> Resubmitted`;
+- approval;
+- `Under Review -> Approved`;
+- `Approved -> Published`;
+- submission notifications;
+- resubmission notifications;
+- change-request notifications.
 
-- Submitted;
-- Under Review;
-- Changes Requested;
-- Resubmitted;
-- Approved.
+Existing database structures, enums, functions, event history, provenance fields, or other implementation delivered by SPEC-003 should not be removed merely because these capabilities are inactive.
 
-Admin review access may include:
+Where previously exposed contribution UI or mutation paths conflict with the new active authority model, they must become inaccessible to non-Admin users.
 
-- stable identity;
-- typed revision;
-- revision-scoped relationships;
-- attachments;
-- contributor identity;
-- contributor organization;
-- lifecycle evidence required for governance;
-- review comments.
+The implementation should prefer disabling/restricting obsolete product paths over destructive schema rollback.
 
-Ordinary Contributors must not gain cross-user pending visibility.
-
-Admin review visibility must not widen ordinary published-reader RPCs or library/search surfaces.
-
----
-
-## 8. Review Queue
-
-Provide an Admin-only review queue for pending contributions.
-
-At minimum, queue entries should expose information equivalent to:
-
-- content type;
-- title/name;
-- contributor;
-- contributor organization;
-- current workflow status;
-- submission/resubmission time;
-- link to review detail.
-
-The queue must be authorized at the server/data boundary.
-
-It must not rely on hidden navigation or client-side role checks.
-
-Exact filtering, ordering, pagination, and layout remain implementation freedom.
+Future reactivation of collaborative contribution requires a new explicit product decision/specification.
 
 ---
 
-## 9. Review Detail
+## 6. Active Lifecycle
 
-The Admin review surface must allow an authorized Admin to inspect the submitted revision in sufficient context to make a governance decision.
+### New content
 
-Where applicable, the review view must include:
+The active Admin lifecycle is:
 
-- semantic content fields;
-- relationships;
-- attachments;
-- contributor attribution;
-- contributor organization;
-- current lifecycle status;
-- review notes;
-- relevant lifecycle timestamps.
+`Draft -> Published`
 
-Pending relationships and attachments must remain governed by their existing authorization model.
+A Draft:
 
-Email/direct links may route to this surface but must still pass normal authentication and Admin authorization.
+- belongs to a stable governed content identity;
+- has a typed revision;
+- is visible only through authorized Admin management surfaces;
+- may be edited by authorized Admins;
+- may have Draft relationships;
+- may have permitted private attachments;
+- is invisible to ordinary readers.
 
----
+Publication promotes the valid Draft revision to Published and makes it the stable identity's current published revision.
 
-## 10. Review Comments
+### Existing published content
 
-SPEC-004 uses revision-level review comments.
+Published content must never be edited destructively in place.
 
-For the MVP, review comments are:
+Editing current published content uses:
 
-- associated with one governed revision;
-- authored by an authenticated Admin;
-- timestamped;
-- append-oriented;
-- preserved across resubmission;
-- readable by the revision owner;
-- readable by authorized Admins.
+`Published v1 -> Draft v2 -> Published v2`
 
-The MVP does not require:
+During Draft v2:
 
-- threads;
-- replies;
-- field-level anchors;
-- comment resolution workflows;
-- rich-text collaboration;
-- per-comment assignment.
+- `v1` remains Published;
+- `v1` remains the stable identity's `current_published_revision_id`;
+- ordinary users continue to see `v1`;
+- `v2` remains Admin-only;
+- changes to `v2` do not alter the reader representation of `v1`.
 
-Requesting changes must include at least one meaningful review note describing the required adjustment.
+When `v2` is successfully published:
 
-Ordinary users must not be able to forge, edit destructively, or delete Admin review attribution/history.
+- `v2` becomes Published;
+- the stable identity's current-published pointer moves atomically to `v2`;
+- `v1` remains preserved as historical content.
 
-Review comments and lifecycle events preserve governance evidence, but SPEC-004 does not require immutable snapshots of revision contents at each review cycle. The same physical revision may change while in Changes Requested. Historical content snapshots and arbitrary reconstruction of every prior review-state payload are outside the MVP scope.
+The implementation must not mutate `v1` to create the appearance of revisioning.
 
 ---
 
-## 11. Changes Requested
+## 7. Admin Content Management Surface
 
-An Admin reviewing a revision in Under Review may request changes.
+Provide an Admin-only content-management experience.
 
-The operation must:
+It must support management of the governed types already established by the content model:
+
+- Module;
+- Program Topic;
+- Instructor;
+- Teaching Note;
+- Material / Study;
+- Institution / Reference Center.
+
+The Admin surface must allow an authorized Admin to distinguish at least:
+
+- published content;
+- Admin Drafts;
+- content with a newer Draft revision.
+
+Exact navigation, filtering, ordering, pagination, grouping, and visual presentation remain implementation freedom.
+
+Access to Admin content-management data must be server/data authorized.
+
+A non-Admin caller must not gain Draft visibility by calling the underlying API/RPC directly.
+
+---
+
+## 8. Admin Creation of New Content
+
+An eligible Admin may create new governed content.
+
+Creation must:
 
 1. verify live Admin authority;
-2. lock the revision;
-3. require meaningful review feedback;
-4. persist the review comment/note;
-5. transition `Under Review -> Changes Requested`;
-6. persist lifecycle evidence;
-7. trigger the required Contributor notification.
+2. create or use the established stable identity;
+3. create the first typed revision as Draft;
+4. derive actor and organization from trusted authenticated access;
+5. persist appropriate provenance;
+6. preserve lifecycle evidence;
+7. return only data the Admin is authorized to access.
 
-After Changes Requested, the owner Contributor may again edit the same physical revision.
+Admin identity and organization must not be accepted as authoritative user-entered mutation fields.
 
-This is a deliberate exception to the SPEC-003 Submitted immutability rule.
-
-The implementation must reconcile the SPEC-003 mutation guards accordingly.
+The creation flow should reuse the existing governed identity/revision architecture rather than introduce a parallel Admin content model.
 
 ---
 
-## 12. Editing After Changes Requested
+## 9. Admin Draft Editing
 
-A caller-owned revision in Changes Requested becomes editable by its original Contributor for the purpose of addressing review feedback.
+An authorized Admin may edit an unpublished Admin-managed Draft.
 
-The Contributor may modify the same categories of data they could modify while Draft:
+Editable state may include, where applicable:
 
 - semantic content fields;
-- permitted revision relationships;
+- revision-scoped relationships;
 - permitted private attachments.
 
-The revision remains the same physical revision and retains the same `revision_number`.
+Draft editing must preserve:
 
-SPEC-004 must not create a new revision merely because changes were requested.
+- stable identity;
+- revision identity;
+- revision number;
+- trusted provenance;
+- published-reader isolation.
 
-Creating a later revision of already-published content belongs to SPEC-005.
+Ordinary users must not read or mutate the Draft.
 
-During Changes Requested:
-
-- the Contributor may read Admin review feedback;
-- the Contributor may edit their own revision;
-- the Contributor may not approve;
-- the Contributor may not publish;
-- another Contributor may not edit it;
-- review/audit evidence must remain preserved.
+Published revisions remain immutable.
 
 ---
 
-## 13. Resubmission
+## 10. Creating a Draft Revision from Published Content
 
-After making required changes, the owner Contributor may explicitly resubmit.
+An eligible Admin may begin editing existing published content.
 
-The transition is:
+This operation must create a later Draft revision under the same stable content identity.
 
-`Changes Requested -> Resubmitted`
+For example:
 
-Resubmission must:
+`Module identity A`
+- revision 1 — Published — current
+- revision 2 — Draft — Admin-only
 
-- validate live eligibility;
-- validate ownership;
-- re-run complete structural submission validation;
-- verify relationships;
-- verify attachments;
-- persist lifecycle evidence;
-- record trusted submission/resubmission timing;
-- trigger an Admin notification.
+The new Draft should begin from the current published semantic state sufficiently to allow the Admin to edit the existing content rather than recreate it manually.
 
-After Resubmitted, Contributor mutation stops again.
+Where applicable, revision-scoped relationships must also be copied or initialized consistently from the current published revision.
 
-An explicit Admin action then moves:
+Creating Draft v2 must not:
 
-`Resubmitted -> Under Review`
+- change the current-published pointer;
+- change v1;
+- remove v1 from reader surfaces;
+- expose v2 to ordinary readers.
 
-Resubmission itself must not automatically grant approval or publication authority.
+The implementation must prevent ambiguous competing editable Draft revisions for the same stable identity unless a later product decision explicitly allows them.
 
----
-
-## 14. Approval
-
-An Admin may approve a revision only when:
-
-- status = Under Review;
-- the revision satisfies complete structural validation;
-- required relationships are valid;
-- attachment state is valid;
-- publication dependency requirements are satisfied;
-- live Admin authority is valid.
-
-Approval transitions:
-
-`Under Review -> Approved`
-
-Approval must be server/data enforced and attributed to the authenticated Admin.
-
-Approval does not publish.
-
-An Approved revision:
-
-- remains unavailable to ordinary published readers;
-- remains visible to authorized Admin governance surfaces;
-- remains immutable except for the allowed publication action;
-- does not update the stable identity’s `current_published_revision_id`.
+The simplest valid contract is at most one active Admin Draft successor per governed identity.
 
 ---
 
-## 15. Publication Dependency Rule
+## 11. Publication Validation
+
+A Draft may become Published only when it satisfies the complete structural rules for its governed content type.
+
+Publication validation must include, where applicable:
+
+- required semantic fields;
+- valid URLs;
+- valid relationships;
+- required Teaching Note source rules;
+- attachment readiness;
+- relationship compatibility;
+- publication dependency readiness.
 
 A revision may become Published only when every dependency required by its published representation resolves to eligible current-published content.
 
-Caller-owned pending dependencies are permitted during Draft/contribution authoring, but must not survive as unresolved dependencies in published content.
-
-Therefore:
-
-- approval should validate publication dependency readiness;
-- publication must always revalidate the dependency invariant.
-
 Required dependency rules include:
 
-- Program Topic -> Module dependencies must resolve to a current-published Module;
-- Teaching Note -> Module must resolve to a current-published Module;
-- Teaching Note -> Program Topic, when present, must resolve to a current-published Program Topic;
-- Module relationships to Instructor, Material, and Institution must resolve to current-published identities;
-- Teaching Note relationships to Material must resolve to current-published identities.
+- Program Topic -> Module resolves to a current-published Module;
+- Teaching Note -> Module resolves to a current-published Module;
+- Teaching Note -> Program Topic, when present, resolves to a current-published Program Topic;
+- Module relationships to Instructor, Material, and Institution resolve to current-published identities;
+- Teaching Note relationships to Material resolve to current-published identities.
 
-A revision depending on Draft, Submitted, Under Review, Changes Requested, Resubmitted, or Approved-but-unpublished identities must not be published.
+A Draft depending on another unpublished Draft must not become Published until the required dependency is itself current-published.
 
-Publication must resolve required dependencies from authoritative current-published pointers under a concurrency strategy that prevents the validated dependency set from becoming stale before commit.
+Publication must revalidate dependencies against authoritative current-published pointers.
 
 ---
 
-## 16. Publication
+## 12. Publication Operation
 
-An Admin may publish only an Approved revision in the external-review path.
+Only an eligible Admin may publish.
 
-Publication transitions:
-
-`Approved -> Published`
-
-Publication must atomically, within the database transaction:
+For a valid Draft, publication must atomically:
 
 1. verify live Admin authority;
-2. lock the revision and stable identity;
-3. verify status = Approved;
-4. re-run publication validity, resolving required dependencies from authoritative current-published pointers under a concurrency strategy that prevents the validated dependency set from becoming stale before commit;
-5. set revision status = Published;
-6. set trusted publication timestamp;
-7. update the stable identity’s `current_published_revision_id` to this revision;
-8. persist lifecycle evidence.
+2. lock or otherwise concurrency-protect the target revision and stable identity;
+3. verify that the target revision is the eligible Draft for that identity;
+4. validate the complete publication invariant;
+5. validate required dependencies from authoritative current-published pointers;
+6. set the target revision status to Published;
+7. set trusted publication metadata;
+8. update the stable identity's `current_published_revision_id`;
+9. persist lifecycle evidence.
 
-Publication must not expose a state where:
+The operation must not expose an intermediate state where:
 
-- the revision is Published but the pointer is stale; or
-- the pointer references a non-Published revision.
+- a revision is Published but the current pointer incorrectly resolves another revision due to a partial operation; or
+- the current pointer references a non-Published revision.
 
-Existing current-published reader RPCs should begin resolving the revision through the existing identity pointer without requiring a second reader architecture.
+Publication authority must not be implemented as a generic client-controlled status mutation.
+
+There must be no general-purpose "force status" capability available to ordinary application callers.
 
 ---
 
-## 17. Published Reader Boundary
+## 13. Published Reader Boundary
 
-SPEC-004 must preserve the existing current-published reader contract.
+The existing current-published reader architecture remains authoritative.
 
-Before publication, revisions in:
+Ordinary eligible users resolve only current published content.
 
-- Submitted;
-- Under Review;
-- Changes Requested;
-- Resubmitted;
-- Approved
-
-must remain absent from ordinary:
+Admin Drafts must remain absent from ordinary:
 
 - library;
 - search;
@@ -451,640 +397,482 @@ must remain absent from ordinary:
 - references;
 - Grilla;
 - Programa;
-- direct published-detail readers;
-- autocomplete/preload payloads intended for ordinary readers.
+- published detail routes;
+- autocomplete;
+- preload payloads;
+- exports or other reader-oriented surfaces.
 
-After successful publication, the newly Published revision becomes visible through the existing current-published reader surfaces.
+For an identity with:
 
-Do not add separate reader queries that bypass the stable identity’s current-published pointer.
+- Published v1;
+- Draft v2;
 
----
+ordinary readers must receive v1.
 
-## 18. Admin Direct Publication
+After successful publication of v2, ordinary readers must receive v2 through the existing current-published pointer.
 
-An eligible Admin may create and directly publish new Democracia+ content without requiring a second Admin review.
-
-This path applies only to content authored by an eligible Admin acting under a Democracia+ organization context.
-
-Direct publication must still:
-
-- create governed stable identity + typed revision;
-- derive actor/organization from trusted live access;
-- validate complete content structure;
-- validate relationships;
-- validate attachments;
-- require all published dependencies to already be current-published;
-- set trusted publication metadata;
-- update the current-published pointer atomically;
-- persist lifecycle events.
-
-Direct Admin publication is a separate bounded lifecycle operation for newly Admin-authored Democracia+ content. It may atomically create a Draft revision and promote it directly to Published after full publication validation.
-
-This does not imply that `Draft -> Published` is a generally valid lifecycle transition and must not expose that transition through generic workflow operations.
-
-Direct publication must not provide a generic “force status” capability.
-
-It must not permit arbitrary transitions on:
-
-- another contributor’s revision;
-- external Submitted content;
-- revisions already governed by the external review workflow.
-
-Implementation may model this as:
-
-- a dedicated direct-publish operation; or
-- an Admin-specific bounded creation/publication flow.
-
-Do not weaken the external review workflow to implement this capability.
+Do not create a second reader architecture for Admin-published content.
 
 ---
 
-## 19. Workflow Metadata and Lifecycle Events
+## 14. Non-Admin Read-Only Boundary
 
-SPEC-004 extends the append-oriented lifecycle-event foundation.
+An eligible non-Admin authenticated user is a reader of governed curriculum content.
 
-At minimum represent events equivalent to:
+At the data boundary, non-Admin users must not be able to:
 
-- `review_started`;
-- `changes_requested`;
-- `content_resubmitted`;
-- `content_approved`;
+- insert governed identities;
+- insert governed revisions;
+- mutate governed revisions;
+- create later revisions;
+- mutate revision relationships;
+- create or mutate governed attachments;
+- change lifecycle status;
+- change current-published pointers;
+- publish;
+- access Admin-only Draft payloads.
+
+This applies even if legacy SPEC-003 contribution routes, RPC names, database functions, or UI code still physically exist.
+
+The active authorization contract must win over obsolete product exposure.
+
+The implementation must include adversarial tests demonstrating that non-Admin users cannot invoke legacy mutation paths to bypass this rule.
+
+---
+
+## 15. Attachment Behavior
+
+The existing private `governed-attachments` architecture remains.
+
+For an Admin Draft, an eligible Admin may, where supported by the governed content type:
+
+- reserve/upload an attachment;
+- read it;
+- replace it;
+- delete it.
+
+Attachment mutation must remain tied to authorization over the associated Draft revision.
+
+For published content:
+
+- attachment accessibility follows published reader authorization;
+- ordinary eligible users may access attachments associated with content they are authorized to read;
+- bucket privacy remains enforced;
+- published attachment access must not depend on original Draft ownership.
+
+A non-Admin user must not upload, replace, or delete governed attachments.
+
+---
+
+## 16. Provenance
+
+Existing provenance must be preserved.
+
+For Admin-created or Admin-revised content, trusted metadata should preserve, where applicable:
+
+- creator;
+- creator organization;
+- revision creator;
+- revision organization context;
+- publication actor;
+- publication time.
+
+Historical contributor provenance created under SPEC-003 must not be rewritten merely because contribution is now inactive.
+
+A later Admin revision of historically contributed content must preserve the earlier historical attribution.
+
+---
+
+## 17. Lifecycle Events
+
+Continue using the append-oriented lifecycle-event foundation.
+
+The active Admin workflow must represent significant events equivalent to:
+
+- `content_created`;
+- `revision_created`;
+- `revision_edited`;
 - `content_published`.
 
-Events must derive trusted actor and organization context.
+Existing historical events such as:
+
+- `content_submitted`
+
+remain valid history and must not be deleted or rewritten.
+
+Future review-related event types may remain structurally available but are not active requirements.
+
+Lifecycle events must derive actor and organization from trusted authenticated context.
 
 Event metadata should preserve, as applicable:
 
 - content type;
 - stable content ID;
 - revision ID;
-- actor user;
+- actor;
 - actor organization;
 - action;
 - previous status;
 - resulting status;
 - timestamp.
 
-The implementation must also preserve enough durable information to identify:
+---
 
-- reviewer;
-- review time;
-- review outcome;
-- approver;
-- approval time;
-- publisher;
-- publication time.
+## 18. Notifications
 
-The exact distribution between:
+Workflow email notifications are not part of this phase.
 
-- revision metadata;
-- review-comment records;
-- lifecycle events
+SPEC-004 does not require:
 
-is implementation freedom, provided the resulting data is authoritative, attributable, queryable, and not dependent on user-entered actor identity.
+- submission email;
+- resubmission email;
+- changes-request email;
+- approval email;
+- publication email.
 
-Revision status remains the lifecycle authority.
+Resend may remain an approved infrastructure option, but no governance-email implementation is required by this specification.
+
+No notification infrastructure should be introduced solely to satisfy superseded review-workflow requirements.
 
 ---
 
-## 20. Attachment Behavior Through Review
+## 19. Existing SPEC-003 Data and Capabilities
 
-Private attachment authorization must follow lifecycle authority.
+SPEC-003 remains completed historical implementation evidence.
 
-For external contributions:
+SPEC-004 must not rewrite its completion record to imply that its original scope was never implemented.
 
-### Submitted / Under Review
+However, current product behavior changes.
 
-Contributor:
+If the production database contains existing non-Admin:
 
-- may read own attachments;
-- may not add, replace, or delete.
+- Draft revisions;
+- Submitted revisions;
+- attachments;
+- lifecycle events;
 
-Admin:
+the implementation must not silently destroy them.
 
-- may read attachments required for review;
-- may not mutate contributor attachments merely by reviewing them.
+Before implementation completion, repository/database inspection must determine whether such real records exist in the intended Cloud environment.
 
-### Changes Requested
+If they exist, the implementation must preserve them in a safe non-reader-visible state unless an explicit migration/operational decision authorizes another treatment.
 
-Owner Contributor may:
+They must not automatically become Published.
 
-- read;
-- add;
-- replace;
-- delete
-
-permitted attachments while correcting the revision.
-
-Admin may read.
-
-### Resubmitted / Approved
-
-Contributor may read but not mutate.
-
-Admin may read.
-
-### Published
-
-Attachment accessibility must follow the published content’s reader authorization.
-
-Published attachment access must not remain dependent on contributor ownership.
-
-The private bucket remains private.
-
-No public governed-content bucket is introduced.
+No historical Submitted contribution may bypass the new Admin-only publication contract merely because the previous review workflow was deferred.
 
 ---
 
-## 21. Notification Routing
+## 20. Security and Authorization
 
-Required notifications:
+Authorization must derive from the existing live access model:
 
-### Submission
+`authenticated identity -> approved institutional domain -> active membership -> active organization -> persisted role`
 
-Event:
+Admin authority must come from the persisted live role.
 
-`Draft -> Submitted`
+The implementation must not trust:
 
-Recipient:
+- client-provided role;
+- JWT role metadata as product authority;
+- OAuth profile metadata;
+- hidden UI;
+- route visibility;
+- user-provided organization or actor IDs.
 
-all currently eligible active Admin users.
+Revoking Admin role must remove Admin content-management authority on the next authoritative data request according to the existing live-access model.
 
-### Resubmission
-
-Event:
-
-`Changes Requested -> Resubmitted`
-
-Recipient:
-
-all currently eligible active Admin users.
-
-### Changes Requested
-
-Event:
-
-`Under Review -> Changes Requested`
-
-Recipient:
-
-the original Contributor responsible for the revision.
-
-Admin-recipient resolution must derive from the authoritative organization/membership/role model.
-
-Do not hardcode personal email addresses in application code.
-
-Do not create a second parallel Admin allowlist solely for email routing.
-
-Only users whose current access resolves to Admin should receive Admin workflow notifications.
-
-Operational suppression/deduplication/retry strategy remains implementation freedom.
+Ordinary users must retain their existing network-wide access to current published content.
 
 ---
 
-## 22. Resend Integration
+## 21. Concurrency and Integrity
 
-Resend is the required workflow-email provider.
+Publication and revision creation must preserve data integrity under concurrent actions.
 
-Email notifications must:
+At minimum:
 
-- be sent server-side;
-- contain no privileged credentials;
-- avoid embedding sensitive content unnecessarily;
-- use secure application links;
-- preserve Spanish-first product language;
-- not act as authorization.
+- duplicate successor Draft creation must not create ambiguous active editing state;
+- concurrent publication attempts must not corrupt the current-published pointer;
+- dependency validation must not knowingly publish against stale dependency state;
+- current-published pointer integrity must remain enforced;
+- published revision immutability must remain enforced.
 
-Application access after following an email link must still require:
-
-- authentication;
-- current eligibility;
-- correct role/ownership for the requested surface.
-
-A forwarded email must not grant access to the linked content.
-
-Email-delivery failure must not silently corrupt lifecycle state.
-
-A successful workflow transition that requires notification must durably record the notification intent as part of, or consistently with, the authoritative workflow operation. Failure or process interruption after lifecycle persistence must not cause the required notification to be silently lost.
-
-Delivery may be synchronous or asynchronous. Retry, outbox, job, delivery-log, suppression, and deduplication design remain implementation freedom.
-
-The lifecycle transition remains authoritative in PostgreSQL; email is a side effect, not the workflow source of truth.
+Exact locking, transaction, RPC, constraint, or serialization mechanisms remain implementation freedom.
 
 ---
 
-## 23. Admin Authorization
+## 22. UX Language
 
-All Admin review actions must derive authority from live access state.
+Spanish remains the primary product language.
 
-Admin authority must fail closed when any of the following is invalid:
+Admin content-management UI must use Spanish user-facing copy.
 
-- authenticated identity;
-- active membership;
-- active organization;
-- approved email domain;
-- persisted Admin role.
+Examples of acceptable concepts include:
 
-Stale JWT/client metadata must not preserve Admin capability.
+- `Administrar contenido`;
+- `Crear contenido`;
+- `Borrador`;
+- `Editar`;
+- `Publicar`;
+- `Crear nueva versión`.
 
-Contributor requests must not gain review authority by manipulating:
+Exact copy and layout remain implementation freedom provided the workflow is understandable and does not expose inactive review concepts as current behavior.
 
-- user IDs;
-- organization IDs;
-- revision IDs;
-- status values;
-- reviewer fields;
-- approver fields;
-- publisher fields;
-- request payloads;
-- URLs.
+Non-Admin navigation must not advertise contribution or editorial actions that the user cannot perform.
 
 ---
 
-## 24. Concurrency and Transaction Boundaries
-
-High-risk governance transitions must lock authoritative rows before validating/mutating lifecycle state.
-
-At minimum protect against:
-
-- two Admins starting review simultaneously;
-- request-changes racing approval;
-- approval racing publication;
-- Contributor resubmission racing Admin actions;
-- publication racing dependency changes;
-- double publication;
-- stale role/revocation requests.
-
-Transitions must re-check state after lock acquisition.
-
-Publication must atomically update revision publication state and the stable current-published pointer.
-
-The implementation must use an appropriate locking, isolation, or equivalent database strategy so that publication dependency validation remains valid through transaction commit.
-
-The implementation must not rely only on UI button disabling for concurrency safety.
-
----
-
-## 25. Product UI
-
-The governance experience is Spanish-first.
-
-Provide surfaces equivalent to:
-
-### Admin
-
-- Revisión de contribuciones;
-- pending review queue;
-- review detail;
-- explicit start-review action;
-- review comments;
-- request-changes action;
-- approve action;
-- publish action;
-- direct publication flow for authorized Democracia+ Admin content.
-
-### Contributor
-
-Within Mis contribuciones or equivalent:
-
-- current review status;
-- review feedback;
-- edit behavior when Changes Requested;
-- resubmit action;
-- read-only behavior while Submitted, Under Review, Resubmitted, Approved;
-- Published state after publication.
-
-Exact navigation and route structure remain implementation freedom.
-
-Do not implement SPEC-005 history/archive UI in this slice.
-
----
-
-## 26. State-Specific Contributor Mutation
-
-Contributor mutation authority is:
-
-### Draft
-
-Editable under SPEC-003 rules.
-
-### Submitted
-
-Read-only.
-
-### Under Review
-
-Read-only.
-
-### Changes Requested
-
-Editable by original owner.
-
-### Resubmitted
-
-Read-only.
-
-### Approved
-
-Read-only.
-
-### Published
-
-Read-only under the new-content workflow.
-
-Editing Published content into a new revision is SPEC-005.
-
-Relationship and attachment mutation guards must follow the same lifecycle distinction.
-
----
-
-## 27. Security / RLS Contract
-
-SPEC-004 must preserve defense in depth.
-
-Do not implement governance solely through Server Actions or client route guards.
-
-Database/server boundaries must enforce:
-
-- Admin cross-user pending reads;
-- Contributor owner-only pending reads;
-- Contributor mutation only in Draft / Changes Requested where permitted;
-- Admin-only review transitions;
-- Admin-only approval;
-- Admin-only publication;
-- valid state transitions;
-- publication dependency rules;
-- append-oriented review/audit evidence;
-- private attachment access;
-- current-published reader isolation.
-
-Avoid generic client-controlled UPDATE authority over revision status.
-
-Prefer narrow workflow operations.
-
----
-
-## 28. Scope
+## 23. Scope
 
 ### In Scope
 
-- Admin review queue;
-- Admin cross-user pending visibility;
-- direct authenticated review links;
-- review detail surface;
-- explicit start-review action;
-- revision-level review comments;
-- request-changes action;
-- Contributor review-feedback visibility;
-- Contributor editing while Changes Requested;
-- resubmission;
-- approval;
-- publication;
-- atomic current-published pointer promotion;
+- Admin-only governed-content management;
+- Admin creation of new content;
+- Admin Draft editing;
+- Admin Draft relationship management;
+- Admin private attachment management;
+- direct Admin publication;
+- creation of Draft revisions from published content;
+- `Published v1 -> Draft v2 -> Published v2`;
+- preservation of current-published content during Draft editing;
+- atomic current-published promotion;
+- publication validation;
 - publication dependency validation;
-- Admin direct publication of Democracia+ authored new content;
-- workflow lifecycle events;
-- Resend notifications;
-- Contributor and Admin Spanish UI;
-- RLS/authorization updates;
-- Storage access reconciliation across review states;
-- tests for lifecycle, authority, isolation, notifications, and publication.
+- publication lifecycle events;
+- read-only governed-content behavior for non-Admin users;
+- restriction of legacy Contributor mutation paths;
+- preservation of SPEC-003 historical data and provenance;
+- Spanish Admin UX;
+- authorization and adversarial tests.
 
 ### Out of Scope
 
-- editing Published content into Draft Revision v2;
-- SPEC-005 published-content revision workflow;
-- archival/restoration;
-- destructive deletion of published content;
-- full audit-history UI;
-- arbitrary historical revision browsing;
-- separate Reviewer/Approver/Publisher roles;
+- user/Contributor content creation;
+- user/Contributor Draft editing;
+- submission;
+- resubmission;
+- review queue;
 - review assignment;
-- threaded review comments;
-- field-level review annotations;
-- organization-specific publication scope;
-- sensitivity tiers;
+- review comments;
+- changes requested;
+- approval;
+- second-Admin approval;
+- workflow notifications;
+- trusted-partner contribution;
+- multiple governance roles;
 - scheduled publication;
-- scheduled review;
-- notification preferences;
-- generic workflow engine;
-- immutable snapshots of revision contents at each review cycle.
+- publication scopes;
+- content sensitivity tiers;
+- bulk content management;
+- collaborative editing;
+- destructive deletion of published content;
+- archival/restoration, except where separately owned by SPEC-005;
+- personal itinerary.
 
 ---
 
-## 29. Impact Surface
+## 24. Impact Surface
 
-Expected impact includes:
+Expected implementation impact includes:
 
-- new Supabase migration(s);
-- review-comment persistence;
-- lifecycle-transition operations;
-- SPEC-003 mutation-trigger reconciliation;
-- Admin pending-content RLS;
-- publication authorization;
-- current-published pointer mutation;
-- attachment authorization changes by review status;
+### Authorization
+
+- Contributor/non-Admin mutation access delivered by SPEC-003;
+- Admin mutation authorization;
+- RLS;
+- RPC/function grants;
+- server actions and route handlers.
+
+### Persistence
+
+- later revision creation;
+- publication transition;
+- current-published pointer promotion;
 - lifecycle events;
-- durable notification-intent persistence;
-- generated database types;
-- Admin review queries/actions;
-- Contributor correction/resubmission actions;
-- Admin UI;
-- Contributor review-feedback UI;
-- Resend server integration;
-- email templates;
-- environment/config documentation;
-- pgTAP authorization/state-machine tests;
-- Vitest notification/action tests;
-- Playwright multi-user governance journeys;
-- Cloud migration/security verification;
-- hosted review/publication validation.
+- potentially existing contribution functions that require tightened authorization.
+
+### UI
+
+- Admin content-management navigation;
+- Admin content list;
+- create/edit flows;
+- publication action;
+- revision editing;
+- removal/hiding of Contributor authoring surfaces for non-Admins.
+
+### Attachments
+
+- Admin Draft attachment operations;
+- published attachment reader access.
+
+### Reader surfaces
+
+Existing reader semantics should remain unchanged except that newly Admin-published content becomes available through them.
+
+### Documentation
+
+- product decisions;
+- governance;
+- security;
+- content model;
+- architecture after implementation verification;
+- SPEC-005 alignment.
 
 ---
 
-## 30. Acceptance Criteria
+## 25. Acceptance Criteria
 
-1. Submitted external contributions enter the Admin review queue without becoming visible to ordinary readers.
-2. Only an eligible Admin can access cross-user review detail and governance actions.
-3. Viewing a review does not mutate lifecycle state.
-4. An Admin can explicitly transition `Submitted -> Under Review`.
-5. An Admin can request changes only from Under Review and must record meaningful review feedback.
-6. Requesting changes transitions `Under Review -> Changes Requested`.
-7. The original Contributor can read the review feedback.
-8. The original Contributor can edit their own revision while it is Changes Requested.
-9. Another Contributor cannot edit or read that pending revision.
-10. The Contributor can resubmit only after the revision passes complete structural validation.
-11. Resubmission transitions `Changes Requested -> Resubmitted`.
-12. Resubmission triggers the configured Admin-recipient notification.
-13. An Admin can explicitly transition `Resubmitted -> Under Review`.
-14. An Admin can approve only a valid Under Review revision.
-15. Approval transitions `Under Review -> Approved` without publishing.
-16. Approved content remains absent from ordinary published-reader/search surfaces.
-17. An Admin can publish only an Approved external revision.
-18. Publication atomically sets the revision Published and updates the stable identity’s current-published pointer.
-19. A revision cannot be published while any required dependency remains unpublished/pending.
-20. A Published revision becomes visible through existing authenticated current-published reader surfaces.
-21. A Contributor cannot approve or publish through UI, API, RPC, direct data access, or manipulated request state.
-22. Invalid lifecycle transitions are rejected at the authoritative data boundary.
-23. Review comments remain attributable and preserved across resubmission.
-24. Lifecycle events record review, change request, resubmission, approval, and publication with trusted actor/organization attribution and, where applicable, previous/resulting status.
-25. Admin workflow authority is revoked on the next request when membership, organization, domain, identity, or Admin role becomes invalid.
-26. Submitted/Under Review/Resubmitted/Approved attachments remain immutable to the Contributor while still readable where authorized.
-27. Changes Requested restores the owner’s permitted attachment mutation authority.
-28. Published attachment access follows published reader authorization rather than contributor ownership.
-29. Submission and resubmission notify currently eligible Admin recipients through Resend.
-30. Changes Requested notifies the responsible Contributor through Resend.
-31. Email links do not bypass authentication or authorization.
-32. Notification failure does not become workflow authority, corrupt persisted lifecycle state, or silently lose the durable notification intent.
-33. An eligible Democracia+ Admin can create and directly publish new governed content without a second Admin approval.
-34. Admin direct publication still performs full content, relationship, dependency, attachment, provenance, event, and publication validation.
-35. Direct publication cannot be used to bypass review for another contributor’s external submission.
-36. Published library/search/reference/Grilla/Programa surfaces remain current-published only.
-37. No Published-v1 -> Draft-v2 authoring behavior is introduced.
-38. Governance UI, status labels, review feedback, errors, and notification copy are Spanish-first.
-39. Tests cover the full happy path, change-request/resubmission path, direct Admin publication, invalid transitions, Contributor escalation attempts, cross-user isolation, revocation, dependency publication gating, attachment state behavior, notification authorization, and published-reader isolation.
-40. Review comments and lifecycle evidence remain durable even though SPEC-004 does not require immutable content snapshots for each review cycle.
-41. Publication dependency validation cannot commit using a dependency set that became invalid before transaction commit.
-42. Direct Admin publication is available only through its bounded Admin-authored Democracia+ flow and does not create generic `Draft -> Published` transition authority.
+1. An eligible Admin can create a new governed content Draft.
+
+2. A non-Admin authenticated user cannot create governed content through UI or direct server/data calls.
+
+3. An eligible Admin can edit an unpublished Admin Draft.
+
+4. A non-Admin user cannot read an Admin Draft through ordinary reader queries or direct unauthorized access.
+
+5. An eligible Admin can manage permitted relationships for an Admin Draft.
+
+6. An eligible Admin can manage permitted private attachments for supported Draft content types.
+
+7. A non-Admin user cannot create, replace, or delete governed attachments.
+
+8. An Admin can publish a structurally valid new Draft.
+
+9. Invalid Drafts cannot be published.
+
+10. Publication requires live Admin authority at the authoritative server/data boundary.
+
+11. Publication atomically sets the revision Published and makes it the identity's current published revision.
+
+12. Newly published content becomes visible through the existing current-published reader surfaces.
+
+13. Admin Draft content does not leak through library, search, filters, references, Grilla, Programa, detail readers, autocomplete, preload, or equivalent ordinary reader surfaces.
+
+14. An eligible Admin can create a new Draft revision from current published content.
+
+15. Creating Draft v2 does not mutate Published v1.
+
+16. Published v1 remains the current reader-visible revision while Draft v2 exists.
+
+17. The system prevents ambiguous competing active Admin Draft successors for the same identity.
+
+18. Publishing Draft v2 makes v2 the new current published revision atomically.
+
+19. Published v1 remains preserved after v2 publication.
+
+20. Publication rejects dependencies that do not resolve to eligible current-published content.
+
+21. Existing SPEC-003 historical provenance and lifecycle evidence are not destructively rewritten.
+
+22. Existing legacy Contributor mutation paths cannot be used by a non-Admin user after this specification is implemented.
+
+23. Revoking Admin authority removes content-management/publication authority according to the existing live-access model.
+
+24. Published attachments remain private at the storage boundary and accessible only according to associated published-content authorization.
+
+25. Lifecycle events record trusted actor, target, action, status, and time information sufficient for the active workflow.
+
+26. No review, approval, change-request, resubmission, or workflow-email capability is required for completion.
+
+27. Spanish is used for the Admin content-management user experience.
+
+28. Tests cover Admin creation, editing, revision creation, publication, dependency validation, reader isolation, attachment authorization, non-Admin mutation denial, current-published stability, publication promotion, concurrency-sensitive integrity, and live role revocation.
+
+29. Cloud verification confirms the intended RLS/grant/function/storage authorization posture after migration.
+
+30. Hosted validation confirms at least:
+    - Admin content creation/editing/publication;
+    - non-Admin published-content reading;
+    - non-Admin authoring denial;
+    - current-published stability during later Draft editing.
 
 ---
 
-## 31. Implementation Freedom
+## 26. Implementation Freedom
 
 Implementation may choose:
 
-- review queue layout;
-- review-detail layout;
-- exact route structure;
-- Server Action/RPC decomposition;
-- review-comment table shape;
-- review-event metadata shape;
-- whether reviewer/approver/publisher metadata is stored directly on revisions or derived from authoritative workflow records/events;
-- email-template implementation;
-- notification retry/logging/outbox/job mechanism;
-- concurrency mechanism used to keep dependency validation valid through publication commit;
-- transaction boundaries beyond the minimum required invariants;
-- test-fixture design.
+- Admin route structure;
+- component composition;
+- exact Admin list/detail UX;
+- pagination/filtering;
+- server action versus Route Handler composition;
+- database function naming;
+- locking/concurrency mechanism;
+- how published semantic state is copied into a later Draft;
+- exact lifecycle-event payload shape;
+- how inactive legacy contribution UI/code is isolated or removed.
 
-Implementation must not:
+Implementation may not silently change:
 
-- introduce a second lifecycle authority;
-- make page views mutate workflow state;
-- make approval equivalent to publication for external contributions;
-- permit publication with pending dependencies;
-- weaken current-published isolation;
-- broaden Contributor review/publication authority;
-- introduce SPEC-005 published-content revision authoring;
-- use email possession as authorization;
-- implement a generic status-update endpoint;
-- interpret Admin direct publication as generic `Draft -> Published` transition authority;
-- require immutable per-review content snapshots unless a later product decision introduces them.
+- Admin-only mutation authority;
+- non-Admin read-only authority;
+- published revision immutability;
+- stable identity semantics;
+- current-published reader isolation;
+- Draft isolation;
+- historical provenance;
+- private attachment boundary;
+- publication dependency requirements;
+- revision-based editing.
 
----
-
-## 32. Knowledge Updates Required
-
-After verified implementation:
-
-- reconcile actual workflow persistence with `docs/CONTENT_MODEL.md`;
-- reconcile lifecycle behavior with `docs/GOVERNANCE.md`;
-- reconcile Admin/pending authorization and publication controls with `docs/SECURITY.md`;
-- update `docs/ARCHITECTURE.md` with:
-  - review workflow;
-  - lifecycle operations;
-  - publication transaction;
-  - Admin pending-read model;
-  - notification architecture;
-  - durable notification-intent behavior;
-  - failure handling;
-- update `docs/DECISIONS.md` only if implementation discovers a genuinely new durable decision;
-- update setup/deployment docs for Resend/configuration if needed;
-- keep SPEC-004 active through independent verification and Cloud/hosted closure;
-- move to completed only after all closure gates pass.
-
----
-
-## 33. Validation / Closure Gate
-
-SPEC-004 is not complete because local tests pass.
-
-Before closure validate, as applicable:
-
-- local migration replay;
-- full database/RLS/grant tests;
-- lifecycle transition tests;
-- direct-data authorization;
-- review-comment integrity;
-- Contributor vs Admin boundaries;
-- revocation;
-- concurrent transition behavior;
-- publication atomicity;
-- dependency publication gating;
-- dependency concurrency behavior through transaction commit;
-- attachment authorization by workflow state;
-- Resend integration behavior;
-- durable notification-intent behavior;
-- notification failure behavior;
-- secure direct-link behavior;
-- production build;
-- multi-user browser E2E;
-- full external-contribution happy path;
-- change-request/resubmission path;
-- Admin direct-publication path;
-- published-reader isolation before publication;
-- reader visibility after publication;
-- Supabase Cloud migration dry-run/application;
-- Cloud RLS/grant/function verification;
-- hosted Admin review;
-- hosted Contributor correction/resubmission;
-- hosted publication;
-- hosted cross-user denial;
-- hosted revocation;
-- hosted notification delivery;
-- documentation reconciliation;
-- independent adversarial review.
-
-Do not populate production curriculum with fictional authoritative Published content merely for validation unless the test records are clearly controlled and removed/handled according to the project’s validation policy.
-
----
-
-## 34. Open Questions / Blockers
-
-No known product blocker remains.
-
-Admin notification routing for the MVP is resolved as:
-
-- currently eligible active Admin users;
-- derived from authoritative membership/organization/domain/role state;
-- no hardcoded personal recipient list.
-
-The following remain implementation freedom rather than product blockers:
-
-- email retry strategy;
-- queue sorting/pagination;
-- exact review-comment schema;
-- exact workflow-event schema extensions;
-- whether explicit reviewer/approver/publisher columns supplement lifecycle events;
-- exact Spanish wording/templates;
-- UI layout;
-- exact durable notification-intent mechanism;
-- exact publication dependency concurrency strategy.
-
-Implementation must stop with:
+If implementation discovers a constraint requiring any of those contracts to change, return:
 
 `BLOCKED / DECISION REQUIRED`
 
-if satisfying SPEC-004 requires changing an authoritative contract for:
+---
 
-- Contributor/Admin authority;
-- mandatory external review;
-- approval vs publication semantics;
-- current-published behavior;
-- pending-content visibility;
-- direct Admin publication;
-- relationship semantics;
-- published dependency rules;
-- revision identity semantics;
-- SPEC-004 / SPEC-005 scope boundary.
+## 27. Knowledge Updates Required
 
-Reversible technical choices under Implementation Freedom do not require a new product decision.
+Before closure, reconcile verified current state with:
+
+- `docs/DECISIONS.md`;
+- `docs/GOVERNANCE.md`;
+- `docs/SECURITY.md`;
+- `docs/CONTENT_MODEL.md`;
+- `docs/ARCHITECTURE.md`;
+- `README.md` where workflow/role behavior is described;
+- `resources/specs/README.md`;
+- SPEC-005.
+
+Do not rewrite completed SPEC-003 as though its original implementation never existed.
+
+After verified implementation, move SPEC-004 according to the repository lifecycle convention.
+
+---
+
+## 28. Open Questions / Blockers
+
+No known product blocker.
+
+Technical preflight must verify whether real non-Admin Draft/Submitted records exist in Supabase Cloud before choosing any migration treatment for legacy pending content.
+
+Their existence does not block implementation, but their treatment must be preservation-first and must not silently publish or destroy them.
+
+---
+
+## Future Vision Appendix — Collaborative Contribution Governance
+
+The following workflow remains a possible future product capability but is not active product behavior:
+
+`Contributor Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
+
+Possible future capabilities include:
+
+- partner contributions;
+- review queue;
+- review comments;
+- changes requested;
+- resubmission;
+- approval;
+- governance notifications;
+- trusted organizations;
+- multiple reviewer roles;
+- differentiated publication authority.
+
+Existing SPEC-003 architecture intentionally preserves useful foundations for this future direction.
+
+Reactivating collaborative contribution requires an explicit product decision and a new or revised implementation specification.
+
+It must not be inferred merely because dormant database states or code paths exist.

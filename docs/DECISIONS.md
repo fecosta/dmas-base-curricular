@@ -387,6 +387,79 @@ This decision does not change product scope, visibility rules, or any SPEC-002 a
 
 ---
 
+### D-030 — Initial operational phase uses Admin-only content management
+
+**State:** DECISION  
+**Date:** 2026-09-14
+
+The initial operational phase of Base Curricular simplifies the active knowledge-governance model.
+
+For this phase, governed curriculum content is managed exclusively by Admins.
+
+An eligible Admin may:
+
+- create governed content;
+- edit unpublished Drafts;
+- create later Draft revisions from published content;
+- manage permitted relationships and attachments;
+- publish valid revisions.
+
+Eligible authenticated non-Admin users are readers only for governed curriculum content.
+
+They may access current published content but may not create, edit, submit, review, approve, or publish governed content.
+
+The active lifecycle for new content is therefore:
+
+`Draft -> Published`
+
+For changes to already-published content:
+
+`Published v1 -> Draft v2 -> Published v2`
+
+While `v2` remains Draft, `v1` remains the current published revision visible to ordinary readers.
+
+Published revisions remain immutable and historical revisions remain preserved.
+
+The following collaborative-governance workflow is deferred:
+
+`Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
+
+Accordingly, the initial operational phase does not require:
+
+- Contributor authoring;
+- submission/resubmission;
+- review queues;
+- review comments;
+- changes requested;
+- approval;
+- workflow email notifications.
+
+This decision temporarily supersedes the active operational application of D-003, D-004, D-011, D-018, D-019, and D-023 where those decisions require collaborative contribution or review behavior.
+
+Those earlier decisions remain part of the product decision history and may inform a future collaborative-governance phase.
+
+D-012's revision-stability principle remains authoritative, but the active revision workflow is simplified from review-based revisioning to Admin-managed revisioning.
+
+D-013's auditability requirement remains authoritative for lifecycle events that actually occur during the active phase.
+
+D-016 remains unchanged: all current published content is visible across the eligible authenticated network.
+
+D-017 remains unchanged: published governed content is archived rather than destructively deleted.
+
+D-029 remains unchanged: stable content identity and revision-capable persistence remain foundational architecture.
+
+SPEC-003 remains a completed implementation record. Its persistence and provenance foundations must not be destructively removed merely because Contributor authoring is temporarily inactive.
+
+The current implementation must instead enforce the new authority boundary:
+
+`Admin = governed-content writer/publisher`
+
+`non-Admin = published-content reader`
+
+Reactivation of collaborative contribution, review, approval, or related workflow notifications requires a later explicit product decision/specification.
+
+---
+
 ## Decision gates still open
 
 There are no known product-baseline or stack-selection blockers preventing preparation of the first implementation specification.
