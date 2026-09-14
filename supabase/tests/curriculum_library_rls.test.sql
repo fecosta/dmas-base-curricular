@@ -204,7 +204,7 @@ set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"20000000-0000-0000-0000-000000000012","role":"authenticated"}', true);
 select is((select count(*) from public.modules where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002')), 1::bigint, 'eligible Admin sees the same published fixture module count');
 select is((select count(*) from public.search_curriculum() where id in ('30000000-0000-4000-8000-000000000001', '35000000-0000-4000-8000-000000000001', '36000000-0000-4000-8000-000000000001')), 3::bigint, 'eligible Admin sees the same fixture module and reference search set');
-select is((select count(*) from public.module_revisions where id = '31000000-0000-4000-8000-000000000003'), 0::bigint, 'Admin receives no draft visibility in SPEC-002');
+select is((select count(*) from public.module_revisions where id = '31000000-0000-4000-8000-000000000003'), 1::bigint, 'eligible Admin receives additive Draft visibility under SPEC-004');
 select is((select count(*) from public.modules where id = '30000000-0000-4000-8000-000000000002'), 0::bigint, 'Admin receives no archived visibility in SPEC-002');
 select is((select count(*) from public.module_materials where module_revision_id = '31000000-0000-4000-8000-000000000002'), 1::bigint, 'Admin and Contributor have equivalent fixture relationship visibility');
 

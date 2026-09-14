@@ -71,7 +71,8 @@ export type Database = {
         action: Database["public"]["Enums"]["curriculum_lifecycle_action"];
         actor_organization_id: string; actor_user_id: string; content_id: string;
         content_type: Database["public"]["Enums"]["curriculum_content_type"];
-        id: number; occurred_at: string; resulting_status: RevisionStatus | null; revision_id: string | null;
+        id: number; occurred_at: string; previous_status: RevisionStatus | null;
+        resulting_status: RevisionStatus | null; revision_id: string | null;
       }>;
       modules: Table<IdentityRow, IdentityInsert>;
       program_topics: Table<IdentityRow, IdentityInsert>;
@@ -159,6 +160,10 @@ export type Database = {
         Args: { requested_revision_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
         Returns: undefined;
       };
+      publish_content_draft: {
+        Args: { requested_revision_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: Json;
+      };
       reserve_attachment: {
         Args: {
           requested_filename: string; requested_mime_type: string; requested_revision_id: string;
@@ -175,7 +180,7 @@ export type Database = {
     Enums: {
       curriculum_content_type: "module" | "program_topic" | "instructor" | "teaching_note" | "material" | "institution";
       curriculum_attachment_state: "Reserved" | "Ready" | "Deleting";
-      curriculum_lifecycle_action: "content_created" | "revision_created" | "revision_edited" | "content_submitted" | "draft_deleted";
+      curriculum_lifecycle_action: "content_created" | "revision_created" | "revision_edited" | "content_submitted" | "draft_deleted" | "content_published";
       curriculum_revision_status: "Draft" | "Submitted" | "Under Review" | "Changes Requested" | "Resubmitted" | "Approved" | "Published";
       product_role: "Contributor" | "Admin";
     };
