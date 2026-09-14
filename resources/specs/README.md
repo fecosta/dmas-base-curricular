@@ -25,7 +25,7 @@ Do not move a spec to `completed/` merely because an implementation agent report
 1. `SPEC-001` — Application Foundation & Authentication — completed
 2. `SPEC-002` — Core Curriculum Library — completed
 3. `SPEC-003` — Content Contribution — completed historical foundation
-4. `SPEC-004` — Admin Content Management & Publication — planned
+4. `SPEC-004` — Admin Content Management & Publication — active
 5. `SPEC-005` — Audit History & Archival — planned
 6. `SPEC-006` — Personal Itinerary — planned
 

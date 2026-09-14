@@ -1,6 +1,6 @@
 # SPEC-004 — Admin Content Management & Publication
 
-**Status:** PLANNED  
+**Status:** ACTIVE  
 **Methodology state:** IMPLEMENTATION READY  
 **Depends on:** SPEC-003  
 **Supersedes:** planned SPEC-004 — Review, Approval & Publication
@@ -176,6 +176,16 @@ The Admin who originally created the Draft does not receive exclusive mutation a
 Admin authority must be re-evaluated from the current live access model on authoritative requests.
 
 An Admin whose role is revoked must lose Draft-management authority even for Drafts they originally created.
+
+### Admin-wide Draft management
+
+Active Admin Drafts are not personal/owner-exclusive records.
+
+Any currently eligible Admin may read and mutate any active Admin Draft through the bounded Admin-management operations.
+
+Original creator and organization values remain immutable provenance.
+
+The implementation must replace or supersede SPEC-003 owner-only authorization wherever that owner boundary would prevent role-wide Admin management.
 
 ---
 
