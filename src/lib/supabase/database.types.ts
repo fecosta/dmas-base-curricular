@@ -32,12 +32,14 @@ type IdentityInsert = {
 };
 type RevisionStatus = Database["public"]["Enums"]["curriculum_revision_status"];
 type RevisionMetadata = {
+  contributor_organization_id: string | null;
   created_at: string;
   created_by: string | null;
   id: string;
   published_at: string | null;
   revision_number: number;
   status: RevisionStatus;
+  submitted_at: string | null;
 };
 
 export type Database = {
@@ -59,6 +61,18 @@ export type Database = {
         { is_active: boolean; organization_id: string; role: Database["public"]["Enums"]["product_role"]; user_id: string },
         { is_active?: boolean; organization_id: string; role?: Database["public"]["Enums"]["product_role"]; user_id: string }
       >;
+      curriculum_attachments: Table<{
+        contributor_organization_id: string; created_at: string; created_by: string; id: string;
+        material_revision_id: string | null; mime_type: string; object_name: string; original_filename: string;
+        size_bytes: number; state: Database["public"]["Enums"]["curriculum_attachment_state"];
+        teaching_note_revision_id: string | null;
+      }>;
+      curriculum_lifecycle_events: Table<{
+        action: Database["public"]["Enums"]["curriculum_lifecycle_action"];
+        actor_organization_id: string; actor_user_id: string; content_id: string;
+        content_type: Database["public"]["Enums"]["curriculum_content_type"];
+        id: number; occurred_at: string; resulting_status: RevisionStatus | null; revision_id: string | null;
+      }>;
       modules: Table<IdentityRow, IdentityInsert>;
       program_topics: Table<IdentityRow, IdentityInsert>;
       instructors: Table<IdentityRow, IdentityInsert>;
@@ -129,8 +143,39 @@ export type Database = {
       };
       get_published_reference: { Args: { reference_type: string; target_id: string }; Returns: Json };
       import_published_curriculum: { Args: { payload: Json }; Returns: Json };
+      create_contribution: {
+        Args: { payload: Json; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: Json;
+      };
+      update_contribution: {
+        Args: { payload: Json; requested_revision_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: Json;
+      };
+      submit_contribution: {
+        Args: { requested_revision_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: Json;
+      };
+      delete_contribution: {
+        Args: { requested_revision_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: undefined;
+      };
+      reserve_attachment: {
+        Args: {
+          requested_filename: string; requested_mime_type: string; requested_revision_id: string;
+          requested_size_bytes: number; requested_type: Database["public"]["Enums"]["curriculum_content_type"];
+        };
+        Returns: Json;
+      };
+      cancel_attachment_reservation: { Args: { requested_attachment_id: string }; Returns: undefined };
+      finalize_attachment_upload: { Args: { requested_attachment_id: string }; Returns: undefined };
+      begin_attachment_deletion: { Args: { requested_attachment_id: string }; Returns: undefined };
+      cancel_attachment_deletion: { Args: { requested_attachment_id: string }; Returns: undefined };
+      finalize_attachment_deletion: { Args: { requested_attachment_id: string }; Returns: undefined };
     };
     Enums: {
+      curriculum_content_type: "module" | "program_topic" | "instructor" | "teaching_note" | "material" | "institution";
+      curriculum_attachment_state: "Reserved" | "Ready" | "Deleting";
+      curriculum_lifecycle_action: "content_created" | "revision_created" | "revision_edited" | "content_submitted" | "draft_deleted";
       curriculum_revision_status: "Draft" | "Submitted" | "Under Review" | "Changes Requested" | "Resubmitted" | "Approved" | "Published";
       product_role: "Contributor" | "Admin";
     };

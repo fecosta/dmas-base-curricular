@@ -72,9 +72,13 @@ Existing approved product and governance decisions remain authoritative:
 * pending/unpublished content must not leak into ordinary browse, detail, search, filters, exports, URLs, or preload payloads;
 * private governed attachments use Supabase Storage and inherit content/revision authorization;
 * significant lifecycle actions must remain attributable for later audit/history use;
-* publication remains an Admin-governed capability belonging to later workflow specs.
+* publication remains an Admin-governed capability belonging to later workflow specs;
+* a caller-owned compatible contribution that has already transitioned to Submitted remains a valid read-only dependency for that caller’s other Draft contributions while it remains unpublished;
+* submitting one owned contribution must not invalidate, strand, or force deletion of another owned Draft that depends on it.
 
-No new product behavior is introduced by this specification reconciliation.
+The Submitted-dependency rule clarifies relationship validity inside the existing contribution lifecycle. It does not grant new mutation, review, publication, or cross-user visibility authority.
+
+No broader product behavior is introduced by this specification reconciliation.
 
 ⸻
 
@@ -145,7 +149,10 @@ After submission:
 * the contributor may not add/remove/replace its attachments;
 * the revision remains unpublished;
 * no current-published pointer changes;
-* ordinary library/search/detail surfaces must not expose it.
+* ordinary library/search/detail surfaces must not expose it;
+* the Submitted contribution may remain a read-only dependency of the same contributor’s other Draft contributions where the relationship is semantically compatible.
+
+A Submitted dependency does not become editable merely because another Draft depends on it.
 
 SPEC-003 stops at Submitted.
 
@@ -235,6 +242,8 @@ A contributor may read:
 
 A contributor may mutate only their own editable Draft.
 
+A caller-owned Submitted contribution may be resolved as a read-only dependency for another owned Draft when the relationship is semantically compatible.
+
 Other users
 
 Another ordinary eligible user must not read or mutate someone else’s Draft or Submitted contribution through:
@@ -305,23 +314,48 @@ Do not create a separate proposed_program_topics model.
 
 Draft relationships must preserve the revision-scoped D-029 model from SPEC-002.
 
-Where semantically required, contribution forms/selectors may resolve:
+Where semantically required, contribution forms, selectors, and relationship validation may resolve:
 
 * eligible current-published content;
-* compatible Draft identities owned by the same contributor.
+* compatible Draft identities owned by the same contributor;
+* compatible Submitted identities owned by the same contributor, as read-only dependencies while they remain unpublished.
 
 Examples:
 
-* own Draft Program Topic may target own Draft Module;
-* own Draft Teaching Note may target own Draft Module;
-* own Draft Teaching Note may target own Draft Program Topic.
+* own Draft Program Topic may target own Draft or Submitted Module;
+* own Draft Teaching Note may target own Draft or Submitted Module;
+* own Draft Teaching Note may target own Draft or Submitted Program Topic.
 
-Pending content belonging to another contributor must never appear as a selectable dependency.
+Submitting one owned contribution must not invalidate, strand, or force deletion of another owned Draft that already depends on it.
 
-Draft relationship mutation must be limited to relationships anchored to revisions:
+A caller-owned Submitted dependency remains valid for relationship resolution, but it remains immutable under SPEC-003.
+
+A Submitted dependency must not permit:
+
+* editing the submitted revision;
+* changing its relationships;
+* adding, replacing, or deleting its attachments;
+* changing its lifecycle status;
+* obtaining review authority;
+* obtaining publication authority.
+
+Pending content belonging to another contributor must never:
+
+* appear as a selectable dependency;
+* resolve successfully through relationship validation;
+* become readable through an existing relationship;
+* become accessible through direct IDs or preload payloads.
+
+Relationship mutation must remain limited to relationships anchored to revisions:
 
 * owned by the caller;
 * still in Draft.
+
+The status of a dependency and the editability of the anchoring revision are separate concerns:
+
+* a Draft anchoring revision may reference an eligible Published, caller-owned Draft, or caller-owned Submitted dependency;
+* only the caller-owned anchoring revision while it remains Draft may have its relationships changed;
+* a Submitted dependency is valid for resolution but never gains mutation authority.
 
 ⸻
 
@@ -342,6 +376,10 @@ At minimum submission validation must cover:
 * current status = Draft;
 * valid Module / Program Topic relationships;
 * attachment requirements where applicable.
+
+Relationship validation must not depend on a particular submission order among caller-owned compatible contributions.
+
+A structurally valid Draft must remain submittable when one of its valid caller-owned dependencies has already transitioned from Draft to Submitted.
 
 Teaching Note
 
@@ -483,6 +521,12 @@ Provide protected contribution surfaces equivalent to:
 
 The implementation may choose exact route and form architecture.
 
+Where relationship selectors display caller-owned pending dependencies:
+
+* compatible Draft dependencies may be selectable;
+* compatible Submitted dependencies may remain selectable as read-only relationship targets for an editable Draft;
+* another contributor’s pending content must never appear.
+
 Do not implement:
 
 * review queue;
@@ -512,10 +556,12 @@ Expected implementation impact includes:
 * generated database types;
 * server contribution query/action layer;
 * Spanish contribution UI;
+* relationship resolution for caller-owned Draft and Submitted dependencies;
 * pgTAP/database authorization tests;
 * Storage authorization tests;
 * Vitest action/validation tests;
 * Playwright multi-user contribution flows;
+* submission-order regression coverage for owned dependent contributions;
 * Cloud migration and Storage verification before closure.
 
 ⸻
@@ -530,13 +576,13 @@ Expected implementation impact includes:
 6. The owner can read and edit their own structurally permitted Draft.
 7. Another eligible user cannot read or mutate the owner’s Draft/Submitted contribution.
 8. Membership, organization, or approved-domain revocation removes pending access on the next data request.
-9. The owner can submit a structurally valid Draft through Draft -> Submitted.
+9. The owner can submit a structurally valid Draft through Draft -> Submitted, including when a compatible caller-owned dependency has already transitioned to Submitted.
 10. A structurally invalid Draft cannot be submitted.
 11. After submission, the contributor may read but cannot edit/delete its revision, relationships, or attachments.
 12. Submission does not publish content, set a current-published pointer, or expose pending content through published library/search/detail surfaces.
 13. A contributor cannot force Under Review, Changes Requested, Resubmitted, Approved, or Published.
 14. New Program Topic proposals use governed Program Topic identities/revisions.
-15. Relationship selectors may use eligible published content and caller-owned compatible Draft dependencies, never another contributor’s pending content.
+15. Relationship selectors and validation may use eligible published content and caller-owned compatible Draft or Submitted dependencies, never another contributor’s pending content.
 16. Draft creation does not mutate any existing current-published representation or published relationship snapshot.
 17. SPEC-003 exposes no Draft-v2 creation from currently published content.
 18. Teaching Note and Material / Study attachments use private Supabase Storage plus authoritative typed revision metadata.
@@ -548,6 +594,7 @@ Expected implementation impact includes:
 24. Published reader RPCs, search, filters, Grilla, Programa, and references remain current-published only.
 25. Contribution UI, statuses, validation, empty states, and errors are Spanish-first.
 26. Tests cover ownership, cross-user denial, eligibility revocation, state transitions, publication escalation denial, relationship isolation, Storage access, post-submission attachment immutability, lifecycle-event integrity, and published-surface isolation.
+27. Tests cover dependency submission ordering so that submitting an owned Module or Program Topic before an owned dependent Draft does not strand that Draft or prevent valid subsequent editing/submission.
 
 ⸻
 
@@ -572,7 +619,8 @@ Implementation must not:
 * introduce a second lifecycle authority;
 * weaken D-029;
 * broaden review/publication authority;
-* expose pending data to published-reader surfaces.
+* expose pending data to published-reader surfaces;
+* make valid caller-owned dependency relationships depend on a specific submission order.
 
 ⸻
 
@@ -582,8 +630,10 @@ After verified implementation:
 
 * reconcile physical provenance/contribution model with docs/CONTENT_MODEL.md;
 * reconcile pending authorization and Storage controls with docs/SECURITY.md;
+* reconcile caller-owned Draft/Submitted dependency resolution with docs/CONTENT_MODEL.md where relationship behavior is documented;
 * update docs/ARCHITECTURE.md with verified:
     * write operations;
+    * relationship-resolution behavior;
     * event foundation;
     * Storage architecture;
     * failure-handling model;
@@ -610,6 +660,9 @@ Before closure validate, as applicable:
 * multi-user browser E2E;
 * owner vs unrelated-user denial;
 * submission/read-only behavior;
+* dependency submission ordering;
+* editing/submission of a Draft whose caller-owned dependency is already Submitted;
+* Submitted-dependency immutability;
 * published-library isolation;
 * Supabase Cloud migration dry-run/application;
 * Cloud RLS/grant/function verification;
@@ -626,6 +679,13 @@ Do not populate production curriculum with fictional authoritative content for v
 22. Open Questions / Blockers
 
 No known product blocker remains.
+
+The caller-owned Submitted-dependency behavior is resolved by this specification:
+
+* a compatible caller-owned Submitted contribution may remain a valid read-only dependency for another caller-owned Draft;
+* this does not grant mutation authority over the Submitted revision;
+* it does not make another user’s pending content visible;
+* it does not broaden review or publication authority.
 
 Implementation must stop with:
 

@@ -13,6 +13,7 @@ export default async function ApplicationLayout({ children }: { children: React.
           D+ <span className="font-normal text-[#e7c76e]">Base Curricular</span>
         </Link>
         <Link href="/app/library" prefetch={false} className="text-sm font-bold text-white decoration-[#e7c76e] decoration-2">Biblioteca</Link>
+        <Link href="/app/contributions" prefetch={false} className="text-sm font-bold text-white decoration-[#e7c76e] decoration-2">Mis contribuciones</Link>
         <span className="text-xs text-white/70">{access.organizationName} · {access.role === "Admin" ? "Administrador" : "Colaborador"}</span>
         <form action={signOut}><button type="submit" className="border border-white/30 bg-transparent px-3 py-2 text-sm hover:bg-white/10">Cerrar sesión</button></form>
       </nav>

@@ -344,7 +344,19 @@ The deployed application uses a modern Supabase publishable key and no privilege
 
 Only the two approved axes are present as authoritative production curriculum data. No real module/reference import has occurred, and test fixtures remain local/test-only.
 
-## 22. Source basis
+## 22. SPEC-003 local contribution and Storage boundary
+
+SPEC-003 adds owner-only pending visibility without changing `private.current_access()`. Every pending read and write requires a currently eligible authenticated identity. Ownership follows the authenticated user; the revision separately preserves the immutable creation-time organization snapshot. Membership, organization, domain, identity, or role invalidation removes pending database and file access on the next request. Admin authoring uses the same owner boundary and gains no cross-user review visibility in this slice.
+
+Ordinary authenticated roles retain no generic curriculum table DML. Narrow security-definer RPCs derive provenance and timestamps, lock the owned Draft, permit only `Draft -> Submitted`, and cannot set review/publication states or current-published pointers. Submitted revisions, relationships, and attachment metadata are immutable. Lifecycle events have no ordinary write grant and reject update/delete.
+
+The private `governed-attachments` bucket accepts only an opaque reserved object name tied by typed foreign key metadata to an owned Draft Teaching Note or Material. Original filenames are display metadata and the database rejects controls, quotes, backslashes, and path separators before they can reach download disposition. The bucket has a 3 MiB limit and document MIME allowlist. The application checks supported file signatures as defense-in-depth, forces database finalization against actual object size/MIME, and blocks submission during incomplete upload/deletion states. Direct authenticated Storage clients remain constrained by bucket MIME/size metadata rather than content scanning; files are forced to download and must not be treated as malware-scanned. Downloads require a fresh owner/live-eligibility check before a 60-second signed redirect. Object paths and signed URLs are not durable authority.
+
+The Storage/database consistency model is compensating rather than transactional: failed pre-object reservations are cancellable; uploaded but unfinalized objects remain `Reserved` and can be finalized or discarded; deletion marks metadata `Deleting` before byte removal and can be restored only when removal fails while matching bytes still exist. If byte removal succeeds but metadata finalization fails, metadata remains `Deleting` for an idempotent deletion retry. No cleanup worker or privileged browser/server credential is introduced.
+
+These controls are locally implemented and tested. Supabase Cloud migration, bucket/policy inspection, and hosted cross-user/revocation validation remain required before SPEC-003 closure.
+
+## 23. Source basis
 
 This security baseline was derived from:
 
