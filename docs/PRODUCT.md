@@ -2,13 +2,13 @@
 
 **Status:** Product baseline confirmed  
 **Methodology state:** DECISION READY — PRODUCT BASELINE CONFIRMED  
-**Last reconciled:** 2026-09-11
+**Last reconciled:** 2026-09-14
 
 ## 1. Purpose
 
 Base Curricular is a private, shared curriculum-content library for organizations in the Democracia+ network.
 
-It exists to make knowledge contributed by Democracia+ and partner organizations easier to find, understand, reuse, and enrich across the network.
+It exists to make structured curricular knowledge easier to find, understand, reuse, and enrich across the network.
 
 The platform organizes and connects:
 
@@ -35,7 +35,9 @@ Authentication remains strictly separate from product eligibility. Successfully 
 
 `authenticated identity -> exact approved institutional domain -> explicit active membership -> active organization -> persisted Contributor/Admin role -> access`
 
-Explicit membership, an active organization, an exact approved domain match, and a persisted Contributor/Admin role remain required regardless of which authentication method was used. See `docs/SECURITY.md` and `docs/ARCHITECTURE.md` for the authorization model this preserves unchanged.
+Explicit membership, an active organization, an exact approved domain match, and a persisted Contributor/Admin role remain required regardless of which authentication method was used. See `docs/SECURITY.md` and `docs/ARCHITECTURE.md` for the authorization model.
+
+During the initial operational phase, the persisted `Contributor` role means eligible non-Admin product access; governed-content mutation authority is reserved to `Admin`.
 
 ## 3. Product structure
 
@@ -74,17 +76,26 @@ A module may aggregate:
 - related institutions;
 - related materials and studies.
 
-### 4.3 Contribute knowledge
+### 4.3 Govern curriculum content
 
-Authorized users may propose or add:
+During the initial operational phase, governed curriculum content is managed exclusively by authorized Admins.
 
+Admins may create and maintain:
+
+- modules;
+- program topics;
 - instructors;
-- teaching notes and supporting materials;
-- institutions or reference centers;
-- studies, reports, manuals, courses, databases, presentations, and publications;
-- new modules when content does not fit the existing structure.
+- teaching notes;
+- materials and studies;
+- institutions and reference centers.
 
-When adding notes or materials to an existing module, users may associate them with an existing program topic or introduce a new topic.
+Any currently eligible Admin may create, access, and edit any active Admin-managed Draft regardless of which Admin originally created it.
+
+The original creator remains preserved as provenance but does not receive exclusive ownership of the Draft.
+
+Authenticated non-Admin users are readers of current published governed content and do not author or submit curriculum content during this phase.
+
+Collaborative partner contribution remains a future capability rather than current product behavior.
 
 ### 4.4 Build a personal itinerary
 
@@ -101,65 +112,115 @@ The itinerary does not imply:
 - certification;
 - completion tracking.
 
-## 5. Collaboration model
+## 5. Knowledge participation model
 
-The knowledge base is fed by both:
+The initial operational phase uses a centralized content-management model.
 
-- Democracia+;
-- participating partner organizations.
+### Admins
 
-Partner organizations may contribute their own experts, materials, links, institutional references, and other relevant knowledge.
+Authorized Admins manage the governed knowledge base.
 
-Democracia+ may also create, enrich, or suggest content.
+Any active Admin may:
+
+- create governed content;
+- access any active Admin Draft;
+- edit any active Admin Draft regardless of original creator;
+- create new revisions of published content;
+- manage permitted content relationships;
+- manage permitted private attachments;
+- publish valid Drafts.
+
+### Non-Admin users
+
+Eligible non-Admin users consume current published knowledge.
+
+They may browse, search, filter, open, reuse, and select published content through authorized reader features.
+
+They do not currently:
+
+- create contributions;
+- edit governed content;
+- create successor revisions;
+- mutate governed attachments;
+- submit content;
+- participate in review;
+- approve content;
+- publish content.
+
+### Future collaborative model
+
+The architecture preserves the possibility that Democracia+ and partner organizations may later contribute knowledge through a governed submission/review process.
+
+That collaborative model is deferred and requires a later explicit product decision before reactivation.
 
 ## 6. Knowledge governance
 
-Content submitted by users from other organizations must not become published content automatically.
+The active new-content workflow is:
 
-The baseline workflow is:
+`Draft -> Published`
 
-`Draft -> Submitted -> Under Review -> Changes Requested / Approved -> Published`
+An Admin:
 
-When a user submits content:
+1. creates governed content;
+2. edits the Draft;
+3. manages permitted relationships and attachments;
+4. explicitly publishes the Draft when valid.
 
-1. an Admin receives an email notification containing a link to the content;
-2. the Admin validates the contribution;
-3. the Admin either approves it or requests adjustments;
-4. if adjustments are required, review notes are attached to the revision and the contributor is notified by email;
-5. the contributor edits and resubmits;
-6. the Admin reviews again;
-7. when valid, the Admin approves and publishes the content with the appropriate permissions.
+There is no review or approval stage between Draft and publication in the initial operational phase.
+
+Publication remains an explicit Admin-only action.
+
+Any currently eligible Admin may continue editing any active Admin Draft. Draft creator identity is provenance, not an exclusive authorization boundary.
 
 ### Published content edits
 
-Published content is never modified in place.
+Published content is never modified destructively in place.
 
-Editing published content creates a new revision that must pass through review again:
+Editing published content creates a new revision:
 
-`Published v1 -> Draft Revision v2 -> Submitted -> Under Review -> Approved -> Published v2`
+`Published v1 -> Draft v2 -> Published v2`
 
-Until the new revision is approved and published, the previously published revision remains the active version.
+Any currently eligible Admin may create or continue editing `Draft v2`.
+
+While `v2` remains Draft:
+
+- `v1` remains the current published revision;
+- ordinary users continue to see `v1`;
+- `v2` remains Admin-only.
+
+When `v2` is published:
+
+- `v2` becomes current;
+- `v1` remains preserved as historical content.
+
+### Deferred collaborative governance
+
+The following workflow is not current product behavior:
+
+`Contributor Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
+
+Submission, review comments, requested changes, approval, resubmission, and governance workflow notifications are deferred.
 
 ## 7. Provenance and auditability
 
-The platform must preserve the lifecycle of contributed knowledge.
+The platform must preserve trusted lifecycle attribution for governed knowledge.
 
-The system must be able to determine, at minimum:
+The system must be able to determine, where applicable:
 
-- who created the content;
-- which organization they belong to;
-- when the content was created;
-- who edited it;
-- when it was submitted;
-- who reviewed it;
-- review outcome and review notes;
-- when it was resubmitted;
-- who approved it;
-- when it was approved;
-- who published it;
-- when it was published.
+- who originally created the stable content identity;
+- which organization that creator belonged to at creation time;
+- who created each revision;
+- who performed significant edits or lifecycle actions;
+- who published the revision;
+- when significant lifecycle actions occurred.
 
-Identity metadata should come from the authenticated session whenever possible rather than requiring contributors to enter their own identity manually.
+Creation provenance does not imply exclusive ongoing editing authority.
+
+Any currently eligible Admin may manage active Admin Drafts.
+
+Historical provenance from previously implemented contribution behavior must remain preserved and must not be rewritten merely because the active governance model changed.
+
+Identity and organization metadata should come from trusted authenticated state whenever possible rather than user-entered attribution.
 
 ## 8. Security posture
 
@@ -169,7 +230,7 @@ This applies particularly to information about:
 
 - instructors and experts;
 - teaching materials;
-- internal contributions;
+- unpublished Admin Drafts;
 - sensitive organizational knowledge.
 
 Security must therefore be enforced at the application and data-access layers, not only through hidden UI elements.
@@ -178,7 +239,7 @@ The initial product remains network-only even when some types of curriculum info
 
 ### Published-content visibility
 
-For the initial product, all published content is visible to all authenticated users from approved network organizations.
+For the initial product, all current published content is visible to all eligible authenticated users from approved network organizations.
 
 The MVP does not introduce organization-specific or content-specific visibility tiers.
 
@@ -192,10 +253,9 @@ The MVP must be Spanish-first for user-facing experiences, including:
 
 - navigation;
 - library exploration;
-- contribution forms;
-- Admin review flows;
+- Admin content-management surfaces;
 - validation and error states;
-- workflow email notifications;
+- personal itinerary;
 - user-facing exports.
 
 English is not the default product language and should not be treated as the first implementation with Spanish deferred to a future localization phase.
@@ -212,14 +272,15 @@ The following are part of the current product direction:
 - modules and references;
 - search and filters;
 - program terminology instead of `ementa`;
-- ability to add new program topics;
-- direct contribution of institutions and materials;
+- Admin-managed creation and revision of governed curriculum content;
 - personal itinerary as a non-hierarchical selection.
 
 ### Not part of the current UX contract
 
 The following should not be treated as current user-facing requirements:
 
+- collaborative contribution authoring by non-Admins;
+- submission/review/approval workflow;
 - learning trails;
 - LMS-style hierarchy;
 - module level labels such as `Intermediate` / `Advanced`;
@@ -232,11 +293,19 @@ The completeness indicator present in earlier/static prototype behavior is **sup
 
 ## 11. Administration and content retirement
 
-### Democracia+ / Admin-authored content
+### Admin-managed content
 
-An Admin may create, approve, and publish Democracia+ content directly without requiring a second reviewer.
+Governed curriculum content is managed by authorized Admins during the initial operational phase.
 
-The mandatory review workflow applies to content submitted by users from other organizations.
+Any currently eligible Admin may:
+
+- create governed content;
+- access active Admin Drafts;
+- edit active Admin Drafts regardless of original creator;
+- create successor revisions;
+- publish valid revisions.
+
+No second reviewer or second Admin approval is required.
 
 ### Published-content removal
 
@@ -250,7 +319,7 @@ Archived content:
 - remains preserved for governance and audit history;
 - may be restored by an Admin.
 
-A Contributor may delete their own unsubmitted draft when no governed history needs to be preserved.
+Archival/restoration implementation is owned by SPEC-005.
 
 ## 12. Product boundaries
 
@@ -269,34 +338,40 @@ These capabilities are outside the current baseline unless explicitly approved l
 ## 13. Product principles
 
 ### Structured knowledge, not a file dump
+
 The product should make relationships among curriculum concepts explicit.
 
 ### Library before course
+
 Content should remain browsable and reusable without imposing a learning sequence.
 
-### Collaboration with provenance
-Every contribution should preserve its source, authoring organization, and lifecycle.
+### Provenance without exclusive ownership
 
-### Review before publication
-Content submitted by users from other organizations requires administrative review before publication.
+Creation and revision provenance must remain attributable, but an Admin creator does not receive exclusive ongoing editing authority over active Admin Drafts.
+
+### Admin-only mutation in the initial phase
+
+Only currently eligible Admins may create, revise, attach files to, or publish governed curriculum content.
 
 ### Published content is stable
+
 Changes to published information happen through revisions, not destructive in-place edits.
 
-### Governance without blocking contribution
-Users should be able to propose useful knowledge while the platform retains review and publication controls.
+### Future collaboration remains possible
+
+The architecture should preserve a future collaborative contribution/review model without exposing it as current behavior.
 
 ## 14. Product north star
 
-A member of the Democracia+ network should be able to find a relevant topic, understand how it relates to the curriculum, access related experts and references, contribute new knowledge, and assemble a personal selection of modules — while the platform preserves provenance, review, permissions, and publication history.
+A member of the Democracia+ network should be able to find a relevant topic, understand how it relates to the curriculum, access related experts and references, and assemble a personal selection of modules, while authorized Admins keep the governed knowledge base current and the platform preserves provenance, permissions, revision stability, and publication history.
 
 ## 15. Technical baseline
 
-The initial product implementation will use:
+The initial product implementation uses:
 
 - Next.js + TypeScript;
 - Supabase for PostgreSQL, Auth, RLS, and private Storage;
-- Resend for workflow email;
+- Resend as an approved email-delivery provider;
 - PostgreSQL full-text search and SQL filters;
 - Vitest and Playwright for testing;
 - Vercel for application hosting.
@@ -314,4 +389,5 @@ This baseline was reconciled from:
 - first static-prototype UX assessment — August 2026;
 - latest static prototype — `Base Curricular - Explorador (offline)(3).html`;
 - product decisions confirmed on 2026-09-10;
-- authentication-strategy decision (D-028) confirmed on 2026-09-11.
+- authentication-strategy decision (D-028) confirmed on 2026-09-11;
+- D-030 Admin-only initial operational content-management decision — 2026-09-14.

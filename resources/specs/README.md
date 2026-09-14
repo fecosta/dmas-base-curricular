@@ -24,9 +24,9 @@ Do not move a spec to `completed/` merely because an implementation agent report
 
 1. `SPEC-001` — Application Foundation & Authentication — completed
 2. `SPEC-002` — Core Curriculum Library — completed
-3. `SPEC-003` — Content Contribution — completed
-4. `SPEC-004` — Review, Approval & Publication — planned
-5. `SPEC-005` — Revisions, Audit History & Archival — planned
+3. `SPEC-003` — Content Contribution — completed historical foundation
+4. `SPEC-004` — Admin Content Management & Publication — planned
+5. `SPEC-005` — Audit History & Archival — planned
 6. `SPEC-006` — Personal Itinerary — planned
 
 ## Dependency model
@@ -38,13 +38,13 @@ SPEC-001 Foundation & Authentication
 SPEC-002 Core Curriculum Library
           |
           v
-SPEC-003 Content Contribution
+SPEC-003 Content Contribution Foundation
           |
           v
-SPEC-004 Review, Approval & Publication
+SPEC-004 Admin Content Management & Publication
           |
           v
-SPEC-005 Revisions, Audit History & Archival
+SPEC-005 Audit History & Archival
 
 SPEC-002 Core Curriculum Library
           |
@@ -54,7 +54,11 @@ SPEC-006 Personal Itinerary
 
 `SPEC-006` does not depend on completion of the governance workflow and may be implemented after the core library is stable.
 
-No implementation specification is currently active. SPEC-004 remains planned until a separate technical/product preflight and explicit promotion.
+No implementation specification is currently active.
+
+SPEC-004 has completed technical preflight but remains planned until repository-authoritative documentation is reconciled with D-030 and the specification is explicitly promoted to `active/`.
+
+SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 
 ## Authoritative product sources
 

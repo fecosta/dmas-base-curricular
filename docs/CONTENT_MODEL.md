@@ -1,7 +1,7 @@
 # Base Curricular — Content Model
 
 **Status:** Baseline content model  
-**Last reconciled:** 2026-09-12
+**Last reconciled:** 2026-09-14
 
 ## 1. Purpose
 
@@ -86,12 +86,12 @@ Use the product term **Program**, not `Ementa`.
 - `description` — optional
 - `position` — optional
 
-Users contributing notes or materials may:
+Admins authoring governed curriculum content may:
 
-- associate the contribution with an existing program topic; or
-- propose a new topic when none of the existing topics fits.
+- associate a record with an existing current-published program topic; or
+- create a new program topic as governed content.
 
-A newly proposed program topic is governed content and therefore follows the review workflow before publication.
+During the initial operational phase, program-topic creation is Admin-only.
 
 ## 6. Instructor
 
@@ -124,7 +124,7 @@ A **Teaching Note** is contextual knowledge associated with a module and, when a
 - `id`
 - `module_id`
 - `program_topic_id` — optional when the note applies to the module more broadly
-- `text` — optional when the contribution is attachment/link based
+- `text` — optional when the note is attachment/link based
 - `source_url` — optional
 - `status`
 
@@ -191,22 +191,21 @@ Examples include:
 - `themes` — optional
 - `status`
 
-Institutions are directly addable knowledge objects, not only metadata embedded inside module cards.
+Institutions are directly addable governed knowledge objects, not only metadata embedded inside module cards.
 
-## 10. Contribution
+## 10. Contribution — inactive current behavior
 
-A **Contribution** represents a user's proposed addition or change to governed knowledge.
+A **Contribution** represents the collaborative user-submission concept implemented historically by SPEC-003 and retained for possible future governance use.
 
-A contribution may create or revise:
+It is **not active product behavior during the initial Admin-only operational phase defined by D-030**.
 
-- a module;
-- a program topic;
-- an instructor;
-- a teaching note;
-- a material;
-- an institution.
+Non-Admin users do not currently create, edit, submit, or resubmit governed curriculum content.
 
-### Baseline metadata
+Existing contribution provenance, statuses, lifecycle events, and persisted records remain valid historical data and must not be destructively removed merely because collaborative contribution is deferred.
+
+Future reactivation of Contribution requires an explicit product decision/specification.
+
+### Historical conceptual metadata
 
 - `id`
 - `content_type`
@@ -216,13 +215,13 @@ A contribution may create or revise:
 - `created_at`
 - `submission_status`
 
-The contributor's identity and organization should be derived from the authenticated session whenever possible.
+Historical contributor identity and organization remain provenance and must not be rewritten.
 
 ## 11. Content and revisions
 
 Published records require revision history.
 
-The conceptual model must distinguish a durable content identity from its editable versions.
+The conceptual model distinguishes a durable content identity from its editable versions.
 
 ### Content
 
@@ -249,21 +248,35 @@ Conceptual fields:
 - `content_payload`
 - `created_by`
 - `created_at`
-- `submitted_at`
-- `reviewed_by`
-- `reviewed_at`
-- `approved_by`
-- `approved_at`
+- `submitted_at` — historical/future workflow metadata
+- `reviewed_by` — future workflow metadata
+- `reviewed_at` — future workflow metadata
+- `approved_by` — future workflow metadata
+- `approved_at` — future workflow metadata
 - `published_by`
 - `published_at`
 
 The exact physical schema is an implementation decision.
 
-The product requirement is that a published revision remains stable and visible while a newer revision is under review.
+The product requirement is that a current published revision remains stable and visible while a newer unpublished revision exists.
 
-## 12. Review Comment
+During the initial Admin-only phase, that successor is an Admin Draft:
 
-A **Review Comment** records requested adjustments from an Admin.
+`Published v1 -> Draft v2 -> Published v2`
+
+Any currently eligible Admin may manage the active Draft successor.
+
+`created_by` remains provenance and does not imply exclusive Admin editing ownership.
+
+Future collaborative governance may add review states without changing the current-published stability invariant.
+
+## 12. Review Comment — inactive current behavior
+
+A **Review Comment** records requested adjustments in the conceptual collaborative-governance model.
+
+Review Comments are **inactive in the initial operational phase**.
+
+They remain part of the possible future collaborative-governance model but are not current product behavior under D-030.
 
 Conceptual fields:
 
@@ -274,7 +287,7 @@ Conceptual fields:
 - `created_at`
 - `resolved_at` — optional
 
-Review comments should remain part of the revision history rather than disappearing when a contribution is resubmitted.
+Future reactivation of review comments requires an explicit product decision/specification.
 
 ## 13. User and Organization
 
@@ -303,6 +316,8 @@ Conceptual fields:
 - `status`
 
 Detailed authorization rules are owned by `SECURITY.md` and `GOVERNANCE.md`.
+
+The persisted `Contributor` role currently represents an eligible non-Admin reader for governed content; the `Admin` role grants governed-content management authority.
 
 ## 14. Personal Itinerary
 
@@ -341,8 +356,6 @@ Possible fields include:
 
 Exact storage is an implementation decision.
 
-Unsubmitted personal drafts may be deletable by their author provided no required governance/audit history is lost.
-
 ## 16. Lifecycle status versus content classification
 
 Content classification and editorial status are separate concepts.
@@ -350,22 +363,24 @@ Content classification and editorial status are separate concepts.
 For example:
 
 - `material_type = Report`
-- `review_status = Under Review`
+- `status = Draft`
 
 or:
 
 - `instructor relationship = Reference`
-- `review_status = Published`
+- `status = Published`
 
-Do not overload content taxonomy fields to represent review state.
+Do not overload content taxonomy fields to represent governance lifecycle state.
+
+Historical statuses such as `Submitted`, `Under Review`, `Changes Requested`, `Resubmitted`, and `Approved` may remain in persistence for historical/future compatibility even when inactive in the current product.
 
 ## 17. Technical modeling decisions
 
-SPEC-002 resolves normalized revision tables, the initial many-to-many joins, reader search indexing, URL-backed reader filters, and stable UUID/revision-number mechanics as described in §18. The following remain implementation decisions for their later authorized slices, not unresolved product behavior:
+SPEC-002 resolves normalized revision tables, the initial many-to-many joins, reader search indexing, URL-backed reader filters, and stable UUID/revision-number mechanics as described in §18.
 
-- attachment storage implementation;
-- notification delivery provider;
-- audit-event storage and workflow-transition mechanics.
+SPEC-003 resolves contribution provenance, pending persistence, lifecycle-event foundation, and private attachment persistence as described in §19.
+
+SPEC-004 owns the active Admin-management/publication write path, successor revision creation, Admin-wide Draft access, published attachment reader access, and non-Admin mutation shutdown.
 
 These decisions must preserve the semantic contracts in this document.
 
@@ -382,7 +397,7 @@ For each governed type:
 - published revision fields are immutable;
 - module and teaching-note relationships are revision-scoped and become immutable once the identity resolves its published revision.
 
-Reader policies expose an identity only when it has a current pointer and is not archived. Revision policies expose only the pointed-to `Published` row. A later Draft or review revision can therefore coexist under the same identity while readers continue resolving the unchanged published row. Axis remains a directly persisted structural classification rather than a governed revision pair; the two approved axes have stable UUIDs and are inserted idempotently by migration.
+Reader policies expose an identity only when it has a current pointer and is not archived. Revision policies expose only the pointed-to `Published` row. A later Draft can therefore coexist under the same identity while readers continue resolving the unchanged published row. Axis remains a directly persisted structural classification rather than a governed revision pair; the two approved axes have stable UUIDs and are inserted idempotently by migration.
 
 Typed relationships are:
 
@@ -395,17 +410,19 @@ This physical design stores semantic fields relationally rather than as generic 
 
 ## 19. Verified SPEC-003 contribution persistence
 
-SPEC-003 extends each typed revision with `contributor_organization_id`, an immutable creation-time organization snapshot, and `submitted_at`. New contributions use the existing stable identity and typed revision pairs: the database creates a new identity with a null current-published pointer and revision 1 in `Draft`, then permits only the owner transition to `Submitted`.
+SPEC-003 extends each typed revision with `contributor_organization_id`, an immutable creation-time organization snapshot, and `submitted_at`. New contributions use the existing stable identity and typed revision pairs: the database creates a new identity with a null current-published pointer and revision 1 in `Draft`, then permits the owner transition to `Submitted`.
 
 `curriculum_lifecycle_events` is an append-only event foundation for content/revision creation, Draft edits, submission, and retained Draft-deletion evidence. Revision status remains the sole lifecycle authority.
 
 `curriculum_attachments` stores authoritative metadata only for Teaching Note or Material revisions through mutually exclusive typed foreign keys. Metadata uses `Reserved -> Ready` for upload and `Ready/Reserved -> Deleting` for recoverable deletion. Only `Ready` objects can satisfy submission validation; object bytes remain in the private `governed-attachments` Storage bucket.
 
-An owned Draft may resolve compatible current-published, caller-owned Draft, or caller-owned Submitted dependencies. Dependency status does not change the mutation boundary: only the caller-owned anchoring revision while it remains Draft may change its relationships, and Submitted dependencies remain read-only.
+An owned Draft may resolve compatible current-published, caller-owned Draft, or caller-owned Submitted dependencies. Dependency status does not change the SPEC-003 mutation boundary: only the caller-owned anchoring revision while it remains Draft may change its relationships, and Submitted dependencies remain read-only.
 
-Teaching Note Drafts may omit both `text` and `source_url` so attachment-only contributions are physically representable. The authoritative submission operation enforces the cross-table source rule: a Teaching Note reaches Submitted only with non-empty text, a valid HTTPS source URL, or at least one authorized `Ready` private attachment.
+Teaching Note Drafts may omit both `text` and `source_url` so attachment-only records are physically representable. The authoritative SPEC-003 submission operation enforces the cross-table source rule.
 
-This persistence model is independently verified, applied to the intended Supabase Cloud project, and hosted-validated. Review, approval, publication, published-content revision authoring, archival, and audit-history UI remain later specifications.
+This persistence model is independently verified, applied to the intended Supabase Cloud project, and hosted-validated.
+
+Under D-030, SPEC-003 remains historical implementation evidence, but its Contributor authoring/owner-only mutation authority is no longer the active target. SPEC-004 must reconcile it with Admin-only, Admin-wide Draft management without destructively removing provenance or history.
 
 ## 20. Source basis
 
@@ -415,4 +432,5 @@ This model was derived from:
 - Platforms D+ meeting notes — 2026-08-12;
 - first static-prototype UX assessment — August 2026;
 - latest static prototype — `Base Curricular - Explorador (offline)(3).html`;
-- product decisions confirmed on 2026-09-10.
+- product decisions confirmed on 2026-09-10;
+- D-030 Admin-only initial operational content-management decision — 2026-09-14.

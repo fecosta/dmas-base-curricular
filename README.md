@@ -2,24 +2,30 @@
 
 D+ Base Curricular is a private, shared curriculum-content library for organizations in the Democracia+ network.
 
-The product is designed to help network members discover, contribute, review, publish, and reuse structured curricular knowledge across two initial axes:
+The product helps network members discover and reuse structured curricular knowledge across two initial axes:
 
 1. **Strategy & Campaign**
 2. **Evidence-based Public Policy**
+
+Governed curriculum content is currently managed by authorized Admins. Eligible non-Admin users consume current published content.
 
 It is a library, not a Learning Management System (LMS).
 
 ## Project status
 
-**Product state:** baseline confirmed
+**Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
 **Technical state:** SPEC-001, SPEC-002, and SPEC-003 are implemented, independently verified, applied to the intended Supabase Cloud project where required, and hosted-validated
 
-**Delivery state:** SPEC-003 — Content Contribution is completed at [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md); SPEC-004 remains planned and no implementation slice is currently active
+**Delivery state:** SPEC-003 — Content Contribution is completed as historical implementation foundation at [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md). SPEC-004 — Admin Content Management & Publication has completed technical preflight and remains planned pending repository reconciliation and explicit activation.
 
-**Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model is unchanged.
+**Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model remains authoritative.
 
 SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. That foundation passed local validation (real Supabase Auth, database policies, and Chromium journeys against the production build) and independent security/RLS review. The Google OAuth initiation, fixed callback, server-side PKCE exchange, and shared post-authentication access boundary are implemented and were first locally tested at the application/provider-independent layers. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture inspected there. The application is deployed to Vercel at `https://dmas-base-curricular.vercel.app`, and hosted validation has since confirmed: a real Google OAuth round trip (first-time identity creation and eligible Admin access), ineligible-identity denial (redirect to `/access-denied` and `/api/access` 403), live membership revocation taking effect without waiting for token refresh, hosted sign-out, and Email OTP delivery through custom SMTP (Resend, verified domain `auth.democraciamas.com`) converging on the same eligibility model as Google OAuth. A real hosted adversarial test also confirmed that Supabase transitions a pre-created unconfirmed email/password identity to Google on first legitimate Google sign-in, so the previously hypothesized pre-account-takeover mechanism was not reproduced. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that authenticates without ever completing Google OAuth first, and operational rate-limit monitoring remain open follow-ups; see the completed spec for detail.
+
+SPEC-002 provides the current-published curriculum reader and stable identity/revision persistence.
+
+SPEC-003 provides verified contribution, provenance, pending-revision, lifecycle-event, and private-attachment foundations. D-030 supersedes Contributor authoring as active product behavior but does not erase SPEC-003 implementation history.
 
 ## Documentation
 
@@ -28,7 +34,7 @@ Start with:
 - [`docs/README.md`](docs/README.md) — documentation map and authority model
 - [`docs/PRODUCT.md`](docs/PRODUCT.md) — product purpose, capabilities, scope, and boundaries
 - [`docs/CONTENT_MODEL.md`](docs/CONTENT_MODEL.md) — semantic content model
-- [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) — contribution, review, publication, revision, and archival lifecycle
+- [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) — active Admin publication, revision, and archival governance
 - [`docs/SECURITY.md`](docs/SECURITY.md) — access, authorization, RLS, auditability, and data protection
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — approved technical architecture
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) — durable decision register
@@ -51,7 +57,9 @@ The most recently completed delivery slice is:
 
 [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md)
 
-There is currently no active implementation specification. SPEC-004 — Review, Approval & Publication remains under `resources/specs/planned/` pending a separate preflight and activation decision.
+There is currently no active implementation specification.
+
+SPEC-004 — Admin Content Management & Publication remains under `resources/specs/planned/` until repository-authoritative documentation is reconciled with D-030 and the specification is explicitly promoted to `active/`.
 
 Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
@@ -77,7 +85,7 @@ Strapi was evaluated as a possible CMS and is not part of the MVP architecture.
 
 **Spanish is the primary language of the platform.**
 
-User-facing interface copy, navigation, forms, validation messages, emails, review notifications, exports, and default seeded/product content should be presented in Spanish unless a specific product requirement establishes otherwise.
+User-facing interface copy, navigation, forms, validation messages, Admin content-management surfaces, exports, and default seeded/product content should be presented in Spanish unless a specific product requirement establishes otherwise.
 
 Repository code, identifiers, comments, commits, and technical documentation may remain in English unless the project later adopts a different convention.
 
@@ -87,12 +95,16 @@ Do not translate canonical product labels away from the Spanish UX terminology e
 
 - The application is private and network-only.
 - Authentication and product eligibility are separate.
-- Published content is visible to all authenticated eligible network users in the MVP.
-- Partner-organization contributions require Admin review before publication.
+- Current published content is visible to all eligible authenticated network users in the MVP.
+- Governed curriculum creation, editing, revision creation, attachment mutation, and publication are Admin-only during the initial operational phase.
+- Any currently eligible Admin may manage any active Admin Draft regardless of original creator.
+- `created_by` remains provenance, not exclusive Admin ownership.
+- Non-Admin users are read-only consumers of governed curriculum content.
 - Published content is edited through new revisions rather than in place.
 - Published content is archived rather than destructively deleted.
 - The personal itinerary is a private content selection, not a learning trail.
 - Authorization must be enforced beyond the UI, including at the server/data boundary.
+- Collaborative contribution/review is deferred and requires a later explicit product decision.
 
 See `docs/` for the complete contracts.
 
@@ -139,7 +151,7 @@ skip_nonce_check = false
 
 ### Provision an eligible account
 
-SPEC-001 uses operator-managed provisioning through trusted Supabase administration. No public signup or membership-management UI is implemented. Provisioning authority and the named people allowed to assign Admin remain operational responsibilities of Democracia+; see [`docs/SECURITY.md`](docs/SECURITY.md#19-spec-001-implemented-security-boundaries).
+SPEC-001 uses operator-managed provisioning through trusted Supabase administration. No public signup or membership-management UI is implemented. Provisioning authority and the named people allowed to assign Admin remain operational responsibilities of Democracia+; see [`docs/SECURITY.md`](docs/SECURITY.md).
 
 1. Verify the participating organization and institutional address with the network operator.
 2. In Studio/Cloud SQL Editor, create an active organization and its exact approved lowercase domains. An organization may have multiple domains; a domain belongs to one organization. Subdomains require their own explicit entry.
@@ -153,21 +165,14 @@ SPEC-001 uses operator-managed provisioning through trusted Supabase administrat
    values ('example.org', '<organization UUID returned above>');
    ```
 
-3. For OTP-only provisioning, first check whether the institutional email
-   already exists in **Authentication → Users**.
+3. For OTP-only provisioning, first check whether the institutional email already exists in **Authentication → Users**.
 
-   - If no Auth identity exists, create the institutional Auth identity with
-     **Auto Confirm User** enabled. If the dashboard requires a password,
-     generate a random one and discard it; the application uses email OTP.
-   - If an existing identity is unconfirmed or was not created through the
-     expected operator workflow, do **not** confirm or reuse it as-is. Treat it
-     as untrusted and either remove/recreate it through the trusted provisioning
-     flow or have the user authenticate with Google first.
-   - Never grant membership or an Admin role to an unexplained pre-existing
-     Auth identity.
+   - If no Auth identity exists, create the institutional Auth identity with **Auto Confirm User** enabled. If the dashboard requires a password, generate a random one and discard it; the application uses email OTP.
+   - If an existing identity is unconfirmed or was not created through the expected operator workflow, do **not** confirm or reuse it as-is. Treat it as untrusted and either remove/recreate it through the trusted provisioning flow or have the user authenticate with Google first.
+   - Never grant membership or an Admin role to an unexplained pre-existing Auth identity.
 
    Do not insert directly into `auth.users`.
-   
+
 4. After independently verifying the person and institutional address, copy the Auth user's UUID and provision an active membership using trusted SQL:
 
    ```sql
@@ -175,10 +180,10 @@ SPEC-001 uses operator-managed provisioning through trusted Supabase administrat
    values ('<Auth user UUID>', '<organization UUID>', true);
    ```
 
-   The role defaults to `Contributor`. Only for an explicitly authorized Democracia+ administrator, a trusted operator may set `role = 'Admin'`. Email domain and user metadata never make this assignment.
+   The role defaults to `Contributor`. Under D-030 this means eligible non-Admin reader access for governed content. Only for an explicitly authorized Democracia+ administrator may a trusted operator set `role = 'Admin'`. Email domain and user metadata never make this assignment.
 5. Request a code from `/login`, read the local inbox (or the institutional mailbox on Cloud), and enter it. A confirmed Auth identity alone still receives no product access without matching active membership/domain/organization records.
 
-Deactivate a membership with `update public.memberships set is_active = false where user_id = '<UUID>';`. Deactivate an organization to deny all its memberships. Revoking a domain or changing the Auth email also affects eligibility on the next request, without waiting for token renewal.
+Deactivate a membership with `update public.memberships set is_active = false where user_id = '<UUID>';`. Deactivate an organization to deny all its memberships. Revoking a domain, changing the Auth email, or revoking Admin role affects authority on the next authoritative request.
 
 ### Database and Storage workflow
 
@@ -190,7 +195,7 @@ npm run test:db
 npm run db:lint
 ```
 
-`db:reset` deletes local database and Storage contents. The SQL tests run in a rollback transaction. No production organizations, users, modules, or references are seeded; only the two approved curriculum axes are persisted by migration. Local Storage is enabled and the migration creates the private `governed-attachments` bucket with a 3 MiB per-file limit and a document MIME allowlist. After changing `supabase/config.toml`, restart this project's services with `npx supabase stop` and `npm run db:start`. Schema types in `src/lib/supabase/database.types.ts` can be compared with `npx supabase gen types typescript --local` after migrations. The trusted curriculum-import workflow is documented in `resources/curriculum/README.md`.
+`db:reset` deletes local database and Storage contents. The SQL tests run in a rollback transaction. No production organizations, users, modules, or references are seeded; only the two approved curriculum axes are persisted by migration. Local Storage is enabled and the SPEC-003 migration creates the private `governed-attachments` bucket with a 3 MiB per-file limit and a document MIME allowlist. After changing `supabase/config.toml`, restart this project's services with `npx supabase stop` and `npm run db:start`. Schema types in `src/lib/supabase/database.types.ts` can be compared with `npx supabase gen types typescript --local` after migrations. The trusted curriculum-import workflow is documented in `resources/curriculum/README.md`.
 
 ### Validation commands
 
@@ -214,7 +219,7 @@ git diff --check
 
 ### Supabase Cloud and Vercel setup
 
-Hosted validation has been completed against the intended Supabase Cloud project and the deployed Vercel application (see below). After independent migration review, link the intended Supabase project and apply the versioned migration:
+Hosted validation has been completed against the intended Supabase Cloud project and the deployed Vercel application. After independent migration review, link the intended Supabase project and apply the versioned migration:
 
 ```sh
 npx supabase login
@@ -240,6 +245,8 @@ Configure Cloud Auth for the implemented provider strategy:
 In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables and the exact HTTPS `APP_URL` origin for each deployment environment. Redeploy after changing browser-safe build-time variables. Every preview origin used for OAuth needs its own exact `APP_URL` and Supabase redirect-allow-list entry; do not use an arbitrary redirect wildcard. Preview environments should point to the intended test project. The reviewed SPEC-003 migration and private Storage bucket/policies are applied to the intended Supabase project and hosted authoring validation is complete; do not create a public bucket or add a privileged Vercel credential.
 
 Hosted acceptance has exercised, against the deployed origin (`https://dmas-base-curricular.vercel.app`): a real first-time Google sign-in, approved-domain/no-membership denial (redirect to `/access-denied` and `/api/access` 403), eligible Admin access with persisted user/organization/role context, the Email OTP fallback (including institutional SMTP delivery via Resend), live membership revocation without waiting for token refresh (and restoration), and hosted sign-out. A real hosted adversarial pre-account-takeover test was also performed and did not reproduce the previously hypothesized Google-linking vulnerability. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that never completes Google OAuth first, and operational rate-limit monitoring were not part of this validation pass and remain open follow-ups.
+
+SPEC-004 will require a new reviewed Cloud migration and hosted validation before its Admin-only/Admin-wide Draft behavior becomes verified current implementation.
 
 ## Git
 

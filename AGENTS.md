@@ -69,7 +69,7 @@ The approved MVP stack is:
 - Supabase Auth
 - Supabase Row Level Security (RLS)
 - Supabase Storage for private files
-- Resend for workflow email
+- Resend
 - PostgreSQL full-text search + SQL filters
 - Vitest
 - Playwright
@@ -112,41 +112,89 @@ The personal itinerary is a user-owned content selection, not a learning trail.
 
 ### Published visibility
 
-For the MVP, all published content is visible to all authenticated eligible users from approved network organizations.
+For the MVP, all current published content is visible to all authenticated eligible users from approved network organizations.
 
 Do not invent organization-specific or content-specific published visibility tiers.
 
-### Contributor and Admin
+### User and Admin
 
-The MVP has two product roles:
+The MVP retains two persisted product roles:
 
 - `Contributor`
 - `Admin`
 
-A Contributor must not obtain Admin authority through client state, form input, email domain, or request manipulation.
+During the initial operational phase defined by D-030, these persisted role names do not imply collaborative contribution authority.
 
-An Admin owns MVP governance actions including:
+An eligible `Contributor` is a non-Admin governed-content reader.
 
-- review;
-- change requests;
-- approval;
-- publication;
-- archival;
-- restoration.
+A non-Admin user may:
 
-An Admin may create and directly publish Democracia+ content.
+- browse current published content;
+- search and filter current published content;
+- open current published content;
+- access published attachments they are authorized to read;
+- use separately authorized personal features.
 
-### External contribution governance
+A non-Admin user must not:
 
-Content submitted by users from other organizations requires Admin approval.
+- create governed curriculum content;
+- create or edit governed Drafts;
+- create successor revisions;
+- mutate governed relationships;
+- upload, replace, or delete governed attachments;
+- submit or resubmit content;
+- review or approve content;
+- publish content;
+- access unpublished Admin Drafts.
 
-The governed lifecycle is:
+An eligible `Admin` owns governed-content management during the initial operational phase.
 
-`Draft -> Submitted -> Under Review -> Approved -> Published`
+Any currently eligible Admin may:
 
-When adjustments are required:
+- create governed content;
+- access any active Admin Draft;
+- edit any active Admin Draft regardless of who originally created it;
+- manage permitted Draft relationships;
+- manage permitted Draft attachments;
+- create successor Draft revisions from published content;
+- publish valid Drafts;
+- access governance/history information required for administration;
+- archive and restore published content where separately implemented.
 
-`Under Review -> Changes Requested -> Resubmitted -> Under Review`
+`created_by` and organization provenance remain immutable historical attribution. They do not create exclusive Draft ownership between Admins.
+
+Admin authority must come from the live persisted role.
+
+A Contributor must not obtain Admin authority through:
+
+- client state;
+- form input;
+- email domain;
+- request manipulation;
+- OAuth metadata;
+- JWT user metadata.
+
+### Initial Admin-only governance
+
+The active governed-content lifecycle is:
+
+`Draft -> Published`
+
+For changes to existing published content:
+
+`Published v1 -> Draft v2 -> Published v2`
+
+While `v2` remains Draft:
+
+- `v1` remains current and reader-visible;
+- `v2` remains Admin-only;
+- ordinary users continue to resolve `v1`.
+
+The following workflow is deferred and must not be implemented as current product behavior:
+
+`Contributor Draft -> Submitted -> Under Review -> Changes Requested -> Resubmitted -> Under Review -> Approved -> Published`
+
+Legacy SPEC-003 contribution structures may remain for historical/future compatibility, but they must not preserve non-Admin mutation authority.
 
 ### Published-content changes
 
@@ -154,9 +202,19 @@ Published content must not be destructively edited in place.
 
 Use revision-based editing:
 
-`Published v1 -> Draft Revision v2 -> review -> Published v2`
+`Published v1 -> Draft v2 -> Published v2`
 
-Until `v2` is approved and published, `v1` remains the current published version.
+Any currently eligible Admin may create or continue work on the active successor Draft.
+
+The creator of a Draft does not have exclusive editing ownership.
+
+Until `v2` is successfully published:
+
+- `v1` remains the current published revision;
+- ordinary users continue to read `v1`;
+- `v2` remains accessible only through authorized Admin management surfaces.
+
+Publishing `v2` atomically makes it current while preserving `v1` as historical content.
 
 ### Archival
 
@@ -187,8 +245,7 @@ Unless an active specification explicitly states otherwise, use Spanish for:
 - forms and field labels;
 - validation and error messages shown to users;
 - empty states and help text;
-- Admin/review workflow copy;
-- governance email notifications;
+- Admin content-management copy;
 - exports intended for end users;
 - default product-facing seeded content.
 
@@ -227,6 +284,16 @@ Do not rely solely on:
 - browser-local state.
 
 Authorization must be enforced through appropriate server-side logic and Supabase RLS/data-boundary controls.
+
+### Admin-wide Draft authority
+
+Draft mutation authority is based on current live Admin role, not creator ownership.
+
+Any currently eligible Admin may manage any active Admin Draft.
+
+`created_by` is provenance and must not be used to grant exclusive Draft editing rights to the original Admin.
+
+Role revocation must remove Draft-management authority on the next authoritative request, including for Drafts originally created by that user.
 
 ### Secrets
 

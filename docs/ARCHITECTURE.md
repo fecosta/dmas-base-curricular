@@ -2,13 +2,17 @@
 
 ## 1. Status
 
-**Technical state: SPEC-001, SPEC-002, AND SPEC-003 COMPLETED; NO ACTIVE IMPLEMENTATION SLICE**
+**Technical state: SPEC-001, SPEC-002, AND SPEC-003 COMPLETED; SPEC-004 PREFLIGHT COMPLETE, NOT YET ACTIVE**
 
-The Next.js application and Supabase identity foundation are implemented, locally tested, and have passed independent security/RLS review. The Google OAuth application flow is hosted-validated against the deployed Vercel application and intended Supabase Cloud project. The SPEC-002 read-only curriculum library is committed at `23564067774ba9ec314fbdace3733f34d096e142`; the SPEC-003 contribution and private-attachment implementation is committed at `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20`. Both slices are independently verified, applied to the intended Supabase Cloud project, and hosted-validated on Vercel. SPEC-004 remains planned. Review/publication, complete audit/archival, and itinerary functionality remain later slices.
+The Next.js application and Supabase identity foundation are implemented, locally tested, and have passed independent security/RLS review. The Google OAuth application flow is hosted-validated against the deployed Vercel application and intended Supabase Cloud project. The SPEC-002 read-only curriculum library is committed at `23564067774ba9ec314fbdace3733f34d096e142`; the SPEC-003 contribution and private-attachment implementation is committed at `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20`. Both slices are independently verified, applied to the intended Supabase Cloud project, and hosted-validated on Vercel.
 
-**Current implementation:** `docs/DECISIONS.md` (D-028) is implemented in application code as Google OAuth through Supabase Auth (primary), with Email OTP retained as fallback. §7 describes the authentication architecture and §18 records implementation detail. Hosted Google provider configuration and end-to-end validation have been completed. This does not change the authorization model in §8.
+D-030 changes the active product contract before SPEC-004 implementation: governed curriculum mutation and publication are now Admin-only, while non-Admin users are current-published readers.
 
-This document defines the approved initial architecture for the MVP. These choices are intended to support the confirmed product, governance, and security contracts while keeping operational complexity low.
+SPEC-003 remains valid implementation history, but its Contributor authoring authority is no longer the target authorization model. SPEC-004 will reconcile that implementation with D-030 without destructively removing historical provenance or persistence foundations.
+
+**Current implementation:** `docs/DECISIONS.md` (D-028) is implemented in application code as Google OAuth through Supabase Auth (primary), with Email OTP retained as fallback. §7 describes the authentication architecture and §18 records implementation detail.
+
+This document defines the approved initial architecture for the MVP. These choices support the confirmed product, governance, and security contracts while keeping operational complexity low.
 
 ## 2. Initial stack
 
@@ -20,7 +24,7 @@ This document defines the approved initial architecture for the MVP. These choic
 | Authentication | Supabase Auth |
 | Authorization | Application rules + Supabase RLS |
 | File storage | Supabase Storage (private) |
-| Email notifications | Resend |
+| Email delivery | Resend |
 | Search | PostgreSQL full-text search + SQL filters |
 | Unit/integration tests | Vitest |
 | End-to-end tests | Playwright |
@@ -35,15 +39,11 @@ Browser
    v
 Next.js
    |
-   |-- Product UI
-   |-- Contributor UI
-   |-- Admin / Review UI
+   |-- Reader UI
+   |-- Admin Content Management UI
    |-- Route Handlers / Server Actions
-   |-- Workflow orchestration
+   |-- Publication orchestration
    |-- Search orchestration
-   |-- Notification orchestration
-   |       |
-   |       `-- Resend
    |
    v
 Supabase
@@ -53,6 +53,8 @@ Supabase
    `-- Private Storage
 ```
 
+Resend remains available for authentication/institutional email delivery and future notification needs, but governance workflow email is not required by the active Admin-only phase.
+
 ## 4. Required product capabilities
 
 The architecture must support:
@@ -60,15 +62,17 @@ The architecture must support:
 - authenticated private access;
 - approved-organization eligibility;
 - structured knowledge entities and relationships;
-- search and filtering;
+- current-published browsing, search, and filtering;
 - relationship-driven navigation;
 - personal module selection/itinerary;
-- contribution/edit workflows;
-- governed review/publication workflows;
+- Admin-only governed-content creation and editing;
+- Admin-wide management of active Admin Drafts;
+- Admin-only successor revision authoring;
+- Admin-only publication;
 - versioned published content;
-- review comments;
-- email notifications for review events;
 - provenance and lifecycle metadata;
+- private attachment management;
+- published attachment reader access;
 - access and authorization controls;
 - administrative operations;
 - archival and restoration;
@@ -82,13 +86,16 @@ Responsibilities include:
 
 - library exploration and discovery;
 - module/reference detail pages;
-- contribution forms;
 - personal itinerary interaction;
-- Admin review queue;
-- review comments and change requests;
-- approval, publication, and archival actions;
+- Admin content-management surfaces;
+- Admin Draft creation and editing;
+- successor revision creation;
+- publication actions;
+- archival/restoration actions where implemented;
 - server-side authorization checks;
-- integration with Supabase and Resend.
+- integration with Supabase.
+
+The initial operational phase does not require contribution submission, review queues, review comments, approval workflows, or governance workflow notifications.
 
 The MVP should not introduce a separate custom backend service unless a concrete requirement makes it necessary.
 
@@ -96,7 +103,7 @@ The MVP should not introduce a separate custom backend service unless a concrete
 
 Supabase PostgreSQL is the canonical structured-data store.
 
-It must support:
+It supports or must support:
 
 - curriculum axes;
 - modules;
@@ -106,12 +113,14 @@ It must support:
 - materials/studies;
 - institutions/reference centers;
 - organizations and users;
-- contributions and revisions;
-- review comments;
+- stable content identities and typed revisions;
 - publication state;
 - archival state;
 - audit/lifecycle events;
+- private attachment metadata;
 - itinerary selections.
+
+Historical contribution/review-oriented states or metadata may remain for compatibility and provenance, but they are not current product behavior.
 
 Search indexes and other derived representations must not become competing sources of truth.
 
@@ -123,9 +132,9 @@ The product must support institutional identity while preserving product-owned e
 
 Authentication establishes identity; authorization determines whether that identity may access the product.
 
-The application must validate:
+The application validates:
 
-`authenticated user -> approved email/domain -> active organization/account -> allowed role`
+`authenticated user -> approved email/domain -> active organization/account -> persisted role -> access`
 
 **Approved target authentication architecture** (`docs/DECISIONS.md` D-028):
 
@@ -145,77 +154,93 @@ product-owned eligibility evaluation
 protected application
 ```
 
-Email OTP through Supabase Auth is the fallback authentication method and feeds the same downstream eligibility evaluation as Google OAuth — there is no separate authorization path per provider.
+Email OTP through Supabase Auth is the fallback authentication method and feeds the same downstream eligibility evaluation as Google OAuth.
 
-Google OAuth may create a Supabase Auth identity on a user's first successful sign-in. Creation of that Auth identity, Google Workspace membership, email domain/suffix alone, or any OAuth/JWT metadata must never by themselves grant product access. Product access still requires the live eligibility chain in §8: exact approved domain, explicit active membership, active organization, and persisted Contributor/Admin role. The Email OTP fallback must remain fail-closed under the same eligibility checks and must not become an unrestricted signup mechanism.
+Google OAuth may create a Supabase Auth identity on a user's first successful sign-in. Creation of that Auth identity, Google Workspace membership, email domain/suffix alone, or any OAuth/JWT metadata must never by themselves grant product access.
 
-This architecture is implemented in the application. Hosted Google provider configuration and a real provider round trip have been validated against the deployed Vercel application and the intended Supabase Cloud project.
+Product access still requires the live eligibility chain: exact approved domain, explicit active membership, active organization, and persisted Contributor/Admin role.
+
+This architecture is implemented in the application and hosted-validated.
 
 ## 8. Authorization
 
 Authorization is enforced through two complementary layers:
 
 1. **Application-level rules** in Next.js.
-2. **Supabase Row Level Security (RLS)** at the data boundary.
+2. **Supabase Row Level Security (RLS) and bounded database functions** at the data boundary.
 
 UI state alone is never sufficient authorization.
 
-The MVP must preserve at least these boundaries:
-
-### Contributor
+### Non-Admin / Contributor
 
 May:
 
-- access published content;
-- create and edit permitted drafts/revisions;
-- submit and resubmit contributions;
-- view review feedback for their own contributions.
+- access authorized current published content;
+- use authorized reader features.
 
 Must not:
 
-- approve or publish external contributions;
-- bypass valid lifecycle transitions;
-- read pending revisions they are not authorized to access.
+- create governed content;
+- edit Admin Drafts;
+- create successor revisions;
+- mutate governed relationships or attachments;
+- submit content;
+- publish content;
+- access Admin Drafts.
 
 ### Admin
 
 May:
 
-- review submitted content;
-- request changes;
-- approve revisions;
-- publish content;
-- archive and restore content;
-- access required governance/audit information;
-- create and publish Democracia+ content directly.
+- access current published content;
+- create governed content;
+- access any active Admin Draft;
+- edit any active Admin Draft regardless of creator;
+- manage Draft relationships and attachments;
+- create successor Draft revisions;
+- publish valid Drafts;
+- archive and restore content where implemented;
+- access required governance/history information.
 
-For the initial product, all published content is visible to all authenticated users from approved network organizations.
+`created_by` is provenance, not an exclusive Admin ownership boundary.
+
+Admin authority is based on the caller's current live persisted role. Role revocation removes Admin content-management authority on the next authoritative request, including for Drafts created by that user.
+
+For the initial product, all current published content is visible to all eligible authenticated users from approved network organizations.
 
 ## 9. Revisions and publication
 
-The data model must preserve stable published content while newer revisions are reviewed.
+The data model preserves stable published content while newer Admin Draft revisions are prepared.
 
 Conceptually:
 
 `Content -> many Content Revisions`
 
-with one revision identified as the current published revision.
+with exactly one current published revision.
 
-While `v2` is under review:
+The active revision lifecycle is:
 
-- `v1` remains published;
+`Published v1 -> Draft v2 -> Published v2`
+
+While `v2` is Draft:
+
+- `v1` remains current and published;
 - ordinary users continue to read `v1`;
-- `v2` remains restricted to permitted workflow participants.
+- `v2` is visible only to authorized Admin management surfaces.
 
-Publication promotes the approved revision without destroying historical revisions.
+Any currently eligible Admin may manage the active Draft successor.
 
-**Established starting with SPEC-002** (`docs/DECISIONS.md` D-029): governed curriculum persistence (Module, Program Topic, Instructor, Teaching Note, Material/Study, Institution/Reference Center) must support this Content/Content Revision distinction from its initial implementation, even though SPEC-002 itself creates and exposes only already-published, single revisions and implements no contribution/review/approval/revision-authoring workflow. This avoids a destructive schema redesign when SPEC-003–005 introduce draft, review, and archival revisions for the same identities. The physical schema shape (normalization, join structure, revision-payload storage) remains SPEC-002 implementation freedom, provided the invariant holds.
+Publication promotes the valid Draft revision without destroying prior history.
+
+**Established starting with SPEC-002** (`docs/DECISIONS.md` D-029): governed curriculum persistence uses stable identities plus typed revisions so current published content can remain stable while a later Draft coexists.
+
+SPEC-004 must implement a trusted Admin publication write path rather than relying on ordinary reader RLS.
 
 ## 10. Search
 
 The MVP uses PostgreSQL full-text search and SQL filters.
 
-This is sufficient for the initial requirements:
+This is sufficient for:
 
 - textual search across structured knowledge;
 - filters such as axis, country, and theme;
@@ -223,7 +248,7 @@ This is sufficient for the initial requirements:
 
 A dedicated external search service should not be introduced until scale or relevance requirements justify it.
 
-Search must respect publication and authorization rules.
+Search must respect current-published and authorization rules.
 
 ## 11. File storage
 
@@ -233,23 +258,23 @@ Buckets containing governed materials must be private.
 
 File access must remain consistent with the authorization of the record/revision to which a file belongs.
 
+Admin Draft attachments must remain Admin-only.
+
+Attachments associated with current published content must be readable by eligible readers according to published-content authorization.
+
 A private database row pointing to an unrestricted public file does not satisfy the security contract.
 
-Signed or authenticated access may be used as appropriate during implementation.
+Signed or authenticated access may be used as appropriate.
 
 ## 12. Email notifications
 
-Resend is the approved provider for workflow email notifications.
+Resend remains an approved infrastructure provider.
 
-Required initial events:
+Governance workflow email notifications are not required during the active Admin-only phase.
 
-- external contributor submits content -> Admin notification;
-- contributor resubmits content -> Admin notification;
-- Admin requests changes -> Contributor notification.
+Submission, review, requested-change, resubmission, approval, and publication notification workflows are deferred.
 
-Email messages should contain secure application links rather than unnecessary sensitive content.
-
-Receiving an email link never replaces authentication or authorization.
+Authentication-related email delivery through Supabase/Resend remains independent of this governance decision.
 
 ## 13. Testing
 
@@ -264,22 +289,37 @@ Use for unit and integration tests covering:
 - content/revision logic;
 - search/filter behavior where practical.
 
+### PostgreSQL / pgTAP
+
+Use focused real-database tests for:
+
+- role separation;
+- Admin-wide Draft access;
+- non-Admin mutation denial;
+- current-published isolation;
+- publication atomicity/integrity;
+- Storage metadata authorization;
+- role revocation.
+
 ### Playwright
 
 Use for critical end-to-end journeys such as:
 
-- authenticated access;
-- contribution submission;
-- Admin review;
-- change request and resubmission;
-- approval and publication;
-- published-content revision;
-- archival;
-- authorization boundaries.
+- authenticated eligible access;
+- non-Admin current-published reading;
+- non-Admin authoring denial;
+- Admin Draft creation/editing;
+- one Admin editing a Draft created by another Admin;
+- Admin attachment management;
+- Admin publication;
+- Published v1 remaining visible while Draft v2 exists;
+- publication of v2;
+- live role revocation;
+- archival/restoration when implemented.
 
 ## 14. Deployment
 
-The web application will be deployed on Vercel.
+The web application is deployed on Vercel.
 
 Supabase Cloud provides managed:
 
@@ -297,11 +337,11 @@ Strapi was evaluated as a possible headless CMS.
 
 It was **not selected for the MVP**.
 
-The current product has a relatively bounded, product-specific editorial workflow:
+The active product has a bounded, product-specific editorial lifecycle:
 
-`contribute -> review -> request changes -> resubmit -> approve -> publish -> archive`
+`Admin Draft -> Publish -> Create successor Draft -> Publish replacement -> Archive`
 
-Using Strapi would introduce an additional backend/CMS layer while the product would still need custom authentication, authorization, contributor UX, review UX, and product-specific workflow integration.
+Using Strapi would introduce an additional backend/CMS layer while the product would still need custom authentication, authorization, Admin UX, revision semantics, private Storage integration, and product-specific publication rules.
 
 The selected Next.js + Supabase architecture provides:
 
@@ -327,8 +367,10 @@ Until such needs are demonstrated, Strapi is not part of the approved architectu
 
 - Canonical structured content remains the source of truth.
 - Authorization is enforced at the application and data layers.
-- Governance transitions are explicit and testable.
-- Published revisions remain stable while new revisions are reviewed.
+- Admin content-management transitions are explicit and testable.
+- Published revisions remain stable while newer Admin Draft revisions are prepared.
+- Any currently eligible Admin may manage any active Admin Draft.
+- Creation provenance does not create exclusive Draft ownership.
 - Search and exports cannot leak unpublished or unauthorized content.
 - Uploaded files follow the access policy of their parent content/revision.
 - Keep the MVP operationally simple.
@@ -342,15 +384,15 @@ Until such needs are demonstrated, Strapi is not part of the approved architectu
 - library-oriented experience, not LMS behavior;
 - two initial curriculum axes;
 - personal itinerary as non-hierarchical content selection;
-- contribution by Democracia+ and partner organizations;
-- Admin review required for content submitted by users from other organizations;
-- Admin may create and publish Democracia+ content directly;
-- a single Admin role owns review, approval, publication, archival, and restoration in the MVP;
-- all published content is visible to all authenticated users from approved network organizations;
-- email notification on submit/resubmit and when changes are requested;
+- non-Admin users as current-published governed-content readers;
+- Admin-only governed-content mutation and publication;
+- Admin-wide management of active Admin Drafts regardless of creator;
+- `created_by` as provenance rather than exclusive authorization;
+- all current published content visible to all eligible authenticated users from approved network organizations;
 - published-content edits create a new revision;
-- prior published revision remains active until replacement is approved and republished;
+- prior published revision remains active until replacement is published;
 - lifecycle auditability;
+- collaborative contribution/review remains deferred;
 - `level` and `delivery_format` may remain as data but are not required in current UX;
 - completeness percentage is not part of the approved product contract;
 - published content is archived rather than destructively deleted as part of the normal workflow.
@@ -364,35 +406,50 @@ Until such needs are demonstrated, Strapi is not part of the approved architectu
 - **Session refresh:** `src/proxy.ts` refreshes Supabase cookies with `getClaims()`, propagates cookies and cache-prevention headers, and sets `Cache-Control: private, no-store`. It is not the eligibility boundary.
 - **Server authorization:** `src/lib/auth/access.ts` calls Auth `getUser()` and the no-argument `current_access()` RPC. `requireAccess()` protects the page; `/api/access` independently returns the caller's minimal context or 401/403/503. An optional exact-role check and SQL `is_admin()` distinguish Admin authority without introducing governance features.
 - **Persistence:** `organizations`, `organization_domains`, `memberships`, and the two-value `product_role` enum. Membership is one organization per Auth user. Email remains canonical in `auth.users`. Tables have no ordinary client write privileges.
-- **RLS:** a restricted, read-only `private.current_access()` security-definer function joins live membership, organization, approved domain, and Auth identity. Qualified names and an empty search path prevent name substitution; avoiding policy-mediated recursive reads prevents RLS recursion. Public wrappers are security-invoker. Policies allow eligible users to read only their own membership and organization/domain configuration. This is identity-data minimization, not a published-content visibility tier.
+- **RLS:** a restricted, read-only `private.current_access()` security-definer function joins live membership, organization, approved domain, and Auth identity. Qualified names and an empty search path prevent name substitution; avoiding policy-mediated recursive reads prevents RLS recursion. Public wrappers are security-invoker. Policies allow eligible users to read only their own membership and organization/domain configuration.
 - **Database workflow:** versioned migration in `supabase/migrations`, local PostgreSQL 17 and CLI configuration in `supabase/config.toml`, rollback-only pgTAP tests under `supabase/tests`, schema types under `src/lib/supabase`.
-- **Testing:** Vitest validates Google initiation/callback orchestration, fixed redirects, server authorization, and deterministic inputs; SQL tests exercise real privileges/RLS; Playwright uses local Supabase Auth and Mailpit to test the shared provider-independent access boundary, ordinary user credentials for authorization checks, and local-only privileged setup/cleanup. Browser tests run against both development and production Next.js servers. A real Google provider round trip has been hosted-validated against the deployed Vercel application; browser coverage beyond Chromium remains a follow-up.
-- **Hosting:** conventional Vercel Next.js deployment with public project variables supplied through environment configuration, deployed at `https://dmas-base-curricular.vercel.app`. Local production builds and the hosted deployment are both verified.
+- **Testing:** Vitest validates Google initiation/callback orchestration, fixed redirects, server authorization, and deterministic inputs; SQL tests exercise real privileges/RLS; Playwright uses local Supabase Auth and Mailpit to test the shared provider-independent access boundary.
+- **Hosting:** conventional Vercel Next.js deployment with public project variables supplied through environment configuration, deployed at `https://dmas-base-curricular.vercel.app`.
 
-The root `README.md` owns setup commands, provisioning mechanics, local port conventions, and deployment configuration. `SECURITY.md` owns implemented security boundaries and their operational limitations. SPEC-001 delivered its authentication-strategy delta (Google OAuth primary + Email OTP fallback, per `docs/DECISIONS.md` D-028) and is completed.
+The root `README.md` owns setup commands, provisioning mechanics, local port conventions, and deployment configuration. `SECURITY.md` owns implemented security boundaries and their operational limitations. SPEC-001 is completed.
 
 ## 19. SPEC-002 implemented structure
 
-- **Persistence:** each governed curriculum type uses a normalized stable-identity table and typed revision table. Composite foreign keys constrain each current pointer to its own identity, and triggers require current status `Published`. Published revision fields and revision-scoped relationships are immutable. Relationship rows for a newly prepared published revision must be established before that revision is assigned as the identity's `current_published_revision_id`; after pointer assignment, the relationship snapshot is immutable. Archive state lives on stable identities. Axis is direct structural data, with the two approved axes inserted idempotently.
+- **Persistence:** each governed curriculum type uses a normalized stable-identity table and typed revision table. Composite foreign keys constrain each current pointer to its own identity, and triggers require current status `Published`. Published revision fields and revision-scoped relationships are immutable. Archive state lives on stable identities.
 - **Relationships:** Program Topic and Teaching Note revisions target stable Module/Program Topic identities; module-to-instructor/material/institution and teaching-note-to-material joins are anchored to the owning revision. Target knowledge objects resolve through their own current published pointers.
-- **Reader data boundary:** all 17 curriculum/relationship tables have RLS and `authenticated` receives `SELECT` only. Policies call a narrow eligibility predicate backed by the unchanged `private.current_access()`, then require current-published, non-archived resolution. Contributor and Admin use identical reader policies. Public reader RPCs are security-invoker and executable only by `authenticated`.
-- **Read model:** `list_published_modules`, `get_published_module`, `search_curriculum`, and `get_published_reference` compose reader representations inside PostgreSQL while retaining RLS. Next.js server-only query functions also call `requireAccess()` at each protected data entry point.
-- **Search and filters:** GIN expression indexes use Spanish PostgreSQL text search over accent-normalized Module, Material/Study, and Institution fields. `search_curriculum` composes FTS with persisted axis, country/scope, and free-text/array theme filters. It returns only rows admitted by the same reader RLS as detail and browse.
-- **Rendering:** `/app` is forced dynamic and uses cookie-backed request APIs. Protected links disable prefetch, the proxy emits `Cache-Control: private, no-store`, and no ISR/shared application cache is used. Grilla and Programa render the same server result set as presentation alternatives.
-- **Trusted import:** `scripts/import-curriculum.mjs` accepts stable-ID versioned JSON with an administrative Supabase credential and exact target confirmation. One restricted security-invoker RPC transaction inserts identities, revisions, and revision-scoped relationships before setting current pointers, preserving the required relationship-before-pointer ordering. Repeated identical input is unchanged; invalid relationships, stable-ID drift, or pointer replacement roll back the complete import. Only the approved axes are committed as authoritative data.
-- **Future publication write path:** `private.enforce_current_published_revision()` intentionally runs as invoker under the SPEC-002 read-only model. Independent review verified that ordinary reader RLS does not make a non-current Published revision visible to a future RLS-bound Admin update. SPEC-004 must therefore explicitly design and test its publication write path, such as through an appropriately secured trusted function or workflow-aware policies, rather than assuming ordinary reader RLS is sufficient. This is a future write-path constraint, not a SPEC-002 reader defect or a decision about the final SPEC-004 mechanism.
-- **Cloud and hosted validation:** migration `20260911000100_core_curriculum_library.sql` was the sole Cloud dry-run delta and is recorded in remote history on project `qcxcgwpfgclyebkxawyh`. The resulting tables, D-029 constraints/triggers, RLS, grants, functions, FTS indexes, two axes, and private-schema boundary were verified. Vercel serves commit `2356406`; eligible Google OAuth and Email OTP sessions reach `/app/library`, a controlled authenticated-but-ineligible identity is denied, and tested protected responses remain private/no-store.
-- **Validation:** migration replay, 108 pgTAP assertions, DB lint, 43 Vitest tests, typecheck, lint, production build, and 9 development plus 9 production Chromium E2E journeys passed. Independent adversarial review found all 22 acceptance criteria satisfied, and its narrow correction pass passed independent re-review.
+- **Reader data boundary:** all curriculum/relationship tables have RLS and `authenticated` receives `SELECT` only. Policies require current-published, non-archived resolution. Contributor and Admin use identical reader policies.
+- **Read model:** public reader RPCs compose reader representations inside PostgreSQL while retaining RLS. Next.js server-only query functions call `requireAccess()` at each protected data entry point.
+- **Search and filters:** PostgreSQL full-text search and SQL filters operate under the same reader boundary.
+- **Rendering:** protected routes are dynamically rendered and protected responses remain private/no-store.
+- **Trusted import:** the operator import path inserts identities, revisions, and revision-scoped relationships before setting current pointers.
+- **Future publication write path:** SPEC-004 must explicitly implement and test its trusted Admin publication path rather than assuming ordinary reader RLS is sufficient.
+- **Validation:** SPEC-002 is independently verified and completed.
 
-SPEC-002 is completed. Production currently contains the two approved axes and no governed module/reference rows; real-content search/filter validation remains an operational follow-up after content owners provide an approved payload.
+Production currently contains the two approved axes and no governed module/reference rows from the trusted real-content importer.
 
 ## 20. SPEC-003 implemented structure
 
-- **Writes:** authenticated Server Actions call bounded `create_contribution`, `update_contribution`, `submit_contribution`, and `delete_contribution` RPCs. These security-definer operations use an empty search path, derive actor and organization from live `private.current_access()`, lock the owned Draft revision, and never accept lifecycle/publication authority fields.
-- **Pending reads:** additive owner-only RLS exposes the caller's Draft and Submitted identities, typed revisions, relationships, and attachment metadata. Admin receives no cross-user pending visibility. Existing current-published reader RPCs are unchanged.
-- **Provenance and events:** all contribution revisions snapshot creation-time organization and persist submission time. Append-only lifecycle events retain trusted actor, current actor organization, target, action, resulting status, and timestamp; Draft-deletion evidence survives target deletion.
-- **Relationships:** Draft forms resolve current-published targets and the caller's compatible Draft or Submitted identities. Submitted dependencies remain read-only; relationship mutation is anchored to the owned Draft revision and freezes when that anchoring revision is submitted.
-- **Storage:** `governed-attachments` is private, document-only, and limited to 3 MiB so multipart requests remain below the deployment routing limit. Typed metadata supports Teaching Notes and Materials only; display filenames reject disposition/path controls while object identity stays opaque. Upload reserves metadata, writes bytes with the caller session, and finalizes only after exact object size/MIME verification. Deletion marks metadata before removing bytes and finalizes afterward; failed post-byte finalization remains `Deleting` for retry instead of attempting an impossible rollback. Recoverable intermediate states prevent submission and allow manual cleanup without a worker.
-- **Application:** `/app/contributions` provides Spanish list, type selection, typed forms, attachment controls, Draft editing, and Submitted read-only views. Protected routes remain dynamic and queries/actions authorize at their data entry points.
-- **Deployment boundary:** download requests authorize current access and metadata before issuing a 60-second signed Storage redirect. No service/secret credential is added to the application.
-- **Verification:** migration `20260913000100_content_contribution_persistence.sql` is recorded on Supabase Cloud project `qcxcgwpfgclyebkxawyh`. Cloud inspection confirmed the reviewed Teaching Note constraint reconciliation, RLS/grants/function security, private `governed-attachments` bucket, intended SELECT/INSERT/DELETE Storage policies, and absence of a Storage UPDATE policy. Hosted validation passed contribution, dependency-ordering, attachment, Submitted-read-only, cross-user/revocation, and published-isolation journeys.
+- **Writes:** authenticated Server Actions currently call bounded `create_contribution`, `update_contribution`, `submit_contribution`, and `delete_contribution` RPCs. These operations derive actor and organization from live access, use owner-scoped Draft semantics, and do not provide publication authority.
+- **Pending reads:** additive owner-only RLS currently exposes the caller's Draft and Submitted identities, typed revisions, relationships, and attachment metadata. Admin currently receives no cross-user pending visibility.
+- **Provenance and events:** contribution revisions snapshot creation-time organization and persist lifecycle evidence.
+- **Relationships:** SPEC-003 Draft forms resolve current-published targets and caller-owned compatible pending identities.
+- **Storage:** `governed-attachments` is private, document-only, and limited to 3 MiB. Typed metadata supports Teaching Notes and Materials only. Upload/deletion use compensating metadata states.
+- **Application:** `/app/contributions` provides the historical SPEC-003 Spanish contribution flow.
+- **Deployment boundary:** downloads authorize current access and metadata before issuing a short-lived signed Storage redirect.
+- **Verification:** the SPEC-003 migration and hosted behavior are independently verified.
+
+SPEC-003 is completed historical implementation evidence.
+
+Under D-030, its Contributor authoring, owner-only Draft management, and submission path are no longer the active target authorization model.
+
+SPEC-004 must reconcile these verified primitives to:
+
+- Admin-only governed-content mutation;
+- Admin-wide active Draft visibility/editing;
+- direct `Draft -> Published`;
+- successor revision creation;
+- current-published replacement;
+- published attachment reader access;
+- legacy non-Admin write denial.
+
+This reconciliation should preserve SPEC-003 provenance, event history, attachment architecture, and dormant historical states where safe.
