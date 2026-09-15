@@ -1,6 +1,6 @@
 # SPEC-005 — Audit History & Archival
 
-**Status:** PLANNED  
+**Status:** ACTIVE
 **Methodology state:** IMPLEMENTATION READY  
 **Depends on:** SPEC-004
 
