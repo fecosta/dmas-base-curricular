@@ -164,6 +164,10 @@ export type Database = {
         Args: { requested_revision_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
         Returns: Json;
       };
+      create_successor_draft: {
+        Args: { requested_content_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: Json;
+      };
       reserve_attachment: {
         Args: {
           requested_filename: string; requested_mime_type: string; requested_revision_id: string;

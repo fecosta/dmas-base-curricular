@@ -15,9 +15,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
-**Technical state:** SPEC-001, SPEC-002, and SPEC-003 are implemented, independently verified, applied to the intended Supabase Cloud project where required, and hosted-validated
+**Technical state:** SPEC-001, SPEC-002, and SPEC-003 are completed; SPEC-004 is active, with its local publication and successor-revision database foundation implemented
 
-**Delivery state:** SPEC-003 — Content Contribution is completed as historical implementation foundation at [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md). SPEC-004 — Admin Content Management & Publication has completed technical preflight and remains planned pending repository reconciliation and explicit activation.
+**Delivery state:** SPEC-003 — Content Contribution is completed as historical implementation foundation at [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md). SPEC-004 — Admin Content Management & Publication is active and remains incomplete pending its remaining phases and closure gates.
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model remains authoritative.
 
@@ -53,15 +53,11 @@ resources/specs/
 └── completed/
 ```
 
-The most recently completed delivery slice is:
+The most recently completed specification is:
 
 [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md)
 
-There is currently no active implementation specification.
-
-SPEC-004 — Admin Content Management & Publication remains under `resources/specs/planned/` until repository-authoritative documentation is reconciled with D-030 and the specification is explicitly promoted to `active/`.
-
-Do not implement planned specifications before their dependencies are satisfied and they are promoted to `active/`.
+The active implementation specification is [`resources/specs/active/004-admin-content-management-publication.md`](resources/specs/active/004-admin-content-management-publication.md). Do not implement later planned specifications before their dependencies are satisfied and they are promoted to `active/`.
 
 ## Initial stack
 
