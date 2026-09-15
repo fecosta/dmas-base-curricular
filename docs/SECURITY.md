@@ -896,7 +896,7 @@ Under the current operational model:
 - submission/resubmission is inactive;
 - Admin-only governed-content management becomes authoritative.
 
-SPEC-004 must therefore restrict any previously implemented SPEC-003 Contributor mutation capability that would conflict with D-030.
+SPEC-004 therefore restricts previously implemented SPEC-003 Contributor mutation capabilities that conflict with D-030.
 
 Existing database structures, lifecycle events, provenance, attachments, and historical records must not be destructively removed merely to enforce the new authority boundary.
 
@@ -906,7 +906,7 @@ Their treatment must be preservation-first unless a separate explicit migration/
 
 ---
 
-## 24. SPEC-004 target Admin-management security boundary
+## 24. SPEC-004 verified Admin-management security boundary
 
 SPEC-004 establishes the active governed-content mutation boundary.
 
@@ -965,9 +965,13 @@ Removing Admin authority must remove content-management authority on the next au
 
 No cached client role may extend Admin privileges.
 
-The local Phase 3 application rechecks `requireAccess("Admin")` in management pages and Server Actions, requires live Admin context in Draft attachment mutation handlers, and continues to rely on the bounded database RPC/RLS boundary. Non-Admin navigation exposes no authoring entry point.
+The Phase 3 application rechecks `requireAccess("Admin")` in management pages and Server Actions, requires live Admin context in Draft attachment mutation handlers, and continues to rely on the bounded database RPC/RLS boundary. Non-Admin navigation exposes no authoring entry point.
 
-Local Phase 4 adds a separate current-published read predicate for governed attachments. It derives live eligibility from `private.current_access()`, requires `Ready` metadata, and requires the owning Teaching Note or Material revision to equal the non-archived stable identity's authoritative `current_published_revision_id`. Additive metadata and Storage `SELECT` policies use that predicate; existing Admin Draft read and mutation policies remain unchanged. Reader detail payloads expose only display metadata and attachment IDs, and the existing route performs a fresh access/RLS check before issuing a 60-second forced-download signed redirect. The `governed-attachments` bucket remains private; Draft and historical object paths remain unavailable to ordinary readers. This behavior is locally implemented and tested but has not been applied to Cloud or hosted-validated.
+Phase 4 adds a separate current-published read predicate for governed attachments. It derives live eligibility from `private.current_access()`, requires `Ready` metadata, and requires the owning Teaching Note or Material revision to equal the non-archived stable identity's authoritative `current_published_revision_id`. Additive metadata and Storage `SELECT` policies use that predicate; existing Admin Draft read and mutation policies remain unchanged. Reader detail payloads expose only display metadata and attachment IDs, and the existing route performs a fresh access/RLS check before issuing a 60-second forced-download signed redirect. The `governed-attachments` bucket remains private; Draft and historical object paths remain unavailable to ordinary readers.
+
+This behavior is applied to the intended Cloud project. Post-migration inspection confirmed the sensitive functions and grants, RLS, active-Draft indexes, private bucket, Admin Draft Storage mutation policies, and current-published `Ready` attachment `SELECT` policy.
+
+Controlled multi-user acceptance used real local Supabase Auth, PostgreSQL, RLS, Storage, Next.js, and Chromium boundaries. It verified two independent Admin sessions, an eligible non-Admin session, cross-Admin Draft editing with preserved creator provenance and actual edit attribution, initial and successor publication, current/historical attachment isolation, direct RPC/Storage denial, and live role revocation without token expiry. These journeys were not represented as hosted production validation. Production lacked two safe Admin accounts plus a reader and had no supported cleanup lifecycle for fictional Published validation content; Cloud posture and the deployed commit were therefore verified separately without mutating production curriculum.
 
 ---
 

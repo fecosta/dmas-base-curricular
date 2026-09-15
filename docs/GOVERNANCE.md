@@ -1,7 +1,7 @@
 # Base Curricular — Knowledge Governance
 
 **Status:** Initial operational governance confirmed  
-**Last reconciled:** 2026-09-14
+**Last reconciled:** 2026-09-15
 
 ## 1. Purpose
 
@@ -393,7 +393,15 @@ When governance changes:
 
 ---
 
-## 20. Source basis
+## 20. Implementation verification
+
+SPEC-004 is completed. Destructive multi-user acceptance used disposable identities and content in the real local Supabase/application/browser stack. This verified Admin-wide Draft authority, trusted cross-Admin lifecycle attribution, direct publication, successor promotion, current-published reader isolation, attachment currentness, non-Admin denial, and live role revocation.
+
+The intended Cloud project separately passed preservation inventory, migration application, and resulting schema/RLS/grant/function/Storage verification. Production deployment was verified without creating fictional authoritative curriculum. Local integrated acceptance is not hosted production validation; it was selected because production had neither the required safe multi-user accounts nor a supported cleanup lifecycle for Published test content.
+
+---
+
+## 21. Source basis
 
 This governance state reflects:
 

@@ -25,7 +25,7 @@ Do not move a spec to `completed/` merely because an implementation agent report
 1. `SPEC-001` — Application Foundation & Authentication — completed
 2. `SPEC-002` — Core Curriculum Library — completed
 3. `SPEC-003` — Content Contribution — completed historical foundation
-4. `SPEC-004` — Admin Content Management & Publication — active
+4. `SPEC-004` — Admin Content Management & Publication — completed
 5. `SPEC-005` — Audit History & Archival — planned
 6. `SPEC-006` — Personal Itinerary — planned
 
@@ -54,7 +54,7 @@ SPEC-006 Personal Itinerary
 
 `SPEC-006` does not depend on completion of the governance workflow and may be implemented after the core library is stable.
 
-SPEC-004 is the active implementation specification. Phases 1–4 are locally implemented, including private current-published attachment reading; the independent, Cloud, and hosted closure gates remain open. Completed implementation phases do not move it to `completed/` before independent verification and the required closure gates.
+SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation. No implementation specification is currently active.
 
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 

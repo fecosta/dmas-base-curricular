@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-09-14
+**Last reconciled:** 2026-09-15
 
 ## Decision register
 
@@ -519,7 +519,19 @@ Real module/reference population remains an operational content-owner activity a
 
 **State:** COMPLETED — IMPLEMENTATION, INDEPENDENT VERIFICATION, CLOUD APPLICATION, AND HOSTED VALIDATION VERIFIED
 
-SPEC-003 is completed at `resources/specs/completed/003-content-contribution.md`. Implementation commit `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20` passed final local validation, independent adversarial review, corrective re-review with PASS verdict, Supabase Cloud migration/security/Storage verification, and hosted functional validation. Contribution remains limited to new Draft creation/editing and `Draft -> Submitted`; review and publication authority remain future SPEC-004 concerns.
+SPEC-003 is completed at `resources/specs/completed/003-content-contribution.md`. Implementation commit `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20` passed final local validation, independent adversarial review, corrective re-review with PASS verdict, Supabase Cloud migration/security/Storage verification, and hosted functional validation. Its Draft creation/editing and `Draft -> Submitted` capability remains historical implementation foundation; D-030 and completed SPEC-004 make non-Admin contribution inactive and establish Admin-only publication authority.
+
+---
+
+### G-004 — SPEC-004 Admin Content Management & Publication
+
+**State:** COMPLETED — IMPLEMENTATION, INDEPENDENT VERIFICATION, CLOUD APPLICATION, CONTROLLED INTEGRATION ACCEPTANCE, AND DEPLOYMENT VERIFIED
+
+SPEC-004 is completed at `resources/specs/completed/004-admin-content-management-publication.md`. Independently reviewed Phases 1–4 provide Admin-only and Admin-wide Draft management, direct publication, successor revisions, non-Admin mutation shutdown, and private current-published attachment reads.
+
+The four SPEC-004 migrations are applied to Supabase Cloud project `qcxcgwpfgclyebkxawyh`. Preservation inventory found historical SPEC-003 Draft/Submitted data but no duplicate Draft conflict; post-migration inspection confirmed the intended functions, grants, RLS, partial unique indexes, private bucket, and Storage policies without transforming that history.
+
+Multi-user and disposable-content acceptance ran against the real local Supabase/application/browser stack rather than production. This was required because production lacked two safe Admin accounts plus a reader and had no supported cleanup lifecycle for fictional Published validation content. Production separately serves deployment commit `9dfd852345d42d5d628c0837d10692f95758ef2b`, and safe anonymous smoke checks remained fail-closed. This validation-governance clarification changes no product or authorization decision.
 
 ---
 
@@ -529,4 +541,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001, SPEC-002, and SPEC-003 are completed with implementation, independent verification, and required Cloud/hosted validation reconciled. SPEC-004 is active and its local publication/successor database foundation and Admin application surface are implemented; published attachment reader authorization, independent verification, and required Cloud/hosted closure gates remain incomplete. SPEC-005 and SPEC-006 remain planned.
+SPEC-001 through SPEC-004 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. No implementation specification is currently active. SPEC-005 and SPEC-006 remain planned.

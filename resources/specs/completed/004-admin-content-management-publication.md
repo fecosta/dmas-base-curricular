@@ -1,9 +1,10 @@
 # SPEC-004 — Admin Content Management & Publication
 
-**Status:** ACTIVE  
-**Methodology state:** IMPLEMENTATION READY  
+**Status:** COMPLETED — IMPLEMENTED, INDEPENDENTLY VERIFIED, CLOUD-APPLIED, AND CONTROLLED-INTEGRATION-VALIDATED
+**Methodology state:** CLOSED
 **Depends on:** SPEC-003  
 **Supersedes:** planned SPEC-004 — Review, Approval & Publication
+**Closure verified:** 2026-09-15
 
 ## 1. Purpose / Objective
 
@@ -31,7 +32,13 @@ The contribution/review lifecycle implemented or prepared by earlier specificati
 
 ## 2. Current State
 
-**Local implementation status (2026-09-15):** Phases 1–4 are implemented locally. Phase 4 keeps `governed-attachments` private and authorizes eligible readers only for `Ready` attachments on authoritative current-published Teaching Note and Material revisions. Draft and historical attachments remain isolated, and existing Admin Draft attachment management remains separate. Independent review, Cloud migration application, hosted validation, and SPEC closure remain pending; this specification remains ACTIVE.
+**Completion status (2026-09-15):** Phases 1–4 are implemented and independently verified. The intended Cloud project passed preservation inventory, migration application, and resulting schema/RLS/grant/function/Storage inspection. Controlled multi-user and disposable-content acceptance passed against real local Supabase/application/browser boundaries. Production deployment of the corresponding application commit and safe non-destructive smoke behavior were separately verified. The local acceptance journeys are not hosted production validation.
+
+### Validation environment policy
+
+Security- and data-destructive multi-user acceptance journeys may be executed in the repository's controlled local integration environment when performing them against production would require fictional authoritative curriculum data, unsafe account manipulation, or an unsupported cleanup lifecycle. Cloud closure must still independently verify applied schema/RLS/grants/Storage posture and the deployed application version. Local evidence must use the real local Supabase services and real application/browser boundaries rather than authorization mocks.
+
+This policy applies to SPEC-004 because production lacked two safe Admin accounts plus an eligible reader and had no supported cleanup lifecycle for Published validation content. It clarifies validation governance only and changes no product behavior, authorization semantic, or acceptance invariant.
 
 SPEC-002 provides:
 
@@ -883,7 +890,7 @@ Existing reader semantics remain unchanged except that newly Admin-published con
 32. Spanish is used for the Admin content-management user experience.
 33. Tests cover Admin creation, cross-Admin editing, revision creation, publication, dependency validation, reader isolation, attachment authorization, non-Admin mutation denial, current-published stability, publication promotion, concurrency-sensitive integrity, and live role revocation.
 34. Cloud verification confirms the intended RLS/grant/function/storage authorization posture after migration.
-35. Hosted validation confirms at least:
+35. Controlled integrated multi-user validation confirms at least:
     - Admin content creation/editing/publication;
     - a second Admin editing a Draft created by the first Admin;
     - non-Admin published-content reading;
@@ -943,17 +950,32 @@ Before closure, reconcile verified current state with:
 
 Do not rewrite completed SPEC-003 as though its original implementation never existed.
 
-After verified implementation, move SPEC-004 according to the repository lifecycle convention.
+After verified implementation and applicable closure validation, move SPEC-004 according to the repository lifecycle convention.
 
 ---
 
 ## 28. Open Questions / Blockers
 
-No known product blocker.
+No known product blocker remains.
 
 Before applying the implementation migration to the intended Cloud project, inspect whether real non-Admin Draft/Submitted records exist.
 
-Their existence does not block implementation, but their treatment must be preservation-first and must not silently publish, delete, or convert them.
+Cloud inventory found historical SPEC-003 Draft/Submitted records. They remained isolated and were not published, deleted, converted, or used as validation fixtures. No duplicate active Draft blocked the SPEC-004 indexes.
+
+---
+
+## 29. Completion Evidence
+
+- Independently verified implementation phases are preserved in commits `e19172a`, `eee766d`, `1672c36`, `6caccb5`, and `9dfd852`.
+- Local migration replay passed all seven migrations; pgTAP passed 332 assertions across six files; database lint reported no schema errors; Vitest passed 62 tests across 12 files; typecheck, ESLint, production build, and `git diff --check` passed.
+- Development and production-mode Chromium suites each passed 10 journeys. The controlled SPEC-004 journey provisioned Admin A, Admin B, and an eligible non-Admin through the real organization/domain/membership/role chain and used independent authenticated browser contexts.
+- Controlled acceptance verified Admin navigation, Admin A creation, Admin B cross-editing, immutable creator/organization provenance, actual cross-Admin lifecycle attribution, direct publication, non-Admin UI/RPC/Storage denial, successor numbering and promotion, current-published search/detail isolation, attachment non-copy/currentness/history denial, and immediate role revocation across management, creation, editing, publication, successor, and attachment operations.
+- Cloud project `qcxcgwpfgclyebkxawyh` was identified by linked configuration and the Supabase project list. Preservation inventory found one Module, two Program Topics, two Teaching Notes, four Submitted revisions, one Draft revision, one Ready attachment/object, no Published revision, and no duplicate active Draft.
+- Migrations `20260914000100`, `20260914000200`, `20260914000300`, and `20260915000100` were dry-run reviewed, applied, and reconfirmed in Cloud history. Historical SPEC-003 rows remained preserved.
+- Cloud inspection confirmed the intended sensitive functions and empty-search-path `SECURITY DEFINER` posture, execute grants and legacy submission revocation, RLS, six partial active-Draft indexes, private `governed-attachments` bucket, Admin Draft mutation policies, and current-published/Ready reader `SELECT` policies.
+- Vercel reported successful production deployment of `9dfd852345d42d5d628c0837d10692f95758ef2b`. Safe smoke checks confirmed the production application responds and anonymous `/api/access` remains denied with HTTP 401. No production curriculum or account was mutated for acceptance.
+- Controlled local acceptance was selected because production lacked two safe Admin accounts plus a reader and no supported lifecycle could remove fictional Published validation data. This evidence is intentionally distinct from hosted production validation.
+- All 35 acceptance criteria are satisfied under the documented validation environment policy. SPEC-004 is closed without activating another specification.
 
 ---
 

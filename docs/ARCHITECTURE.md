@@ -2,13 +2,15 @@
 
 ## 1. Status
 
-**Technical state: SPEC-001, SPEC-002, AND SPEC-003 COMPLETED; SPEC-004 ACTIVE WITH LOCAL PHASES 1–4 IMPLEMENTED**
+**Technical state: SPEC-001 THROUGH SPEC-004 COMPLETED**
 
 The Next.js application and Supabase identity foundation are implemented, locally tested, and have passed independent security/RLS review. The Google OAuth application flow is hosted-validated against the deployed Vercel application and intended Supabase Cloud project. The SPEC-002 read-only curriculum library is committed at `23564067774ba9ec314fbdace3733f34d096e142`; the SPEC-003 contribution and private-attachment implementation is committed at `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20`. Both slices are independently verified, applied to the intended Supabase Cloud project, and hosted-validated on Vercel.
 
 D-030 defines the active SPEC-004 contract: governed curriculum mutation and publication are Admin-only, while non-Admin users are current-published readers.
 
-SPEC-003 remains valid implementation history, but its Contributor authoring authority is no longer the target authorization model. SPEC-004 Phase 1 reconciles Admin-only, role-wide Draft management and first publication; Phase 2 adds successor Draft creation and successor publication; Phase 3 adapts the existing authoring application into an Admin-only Spanish content-management surface; Phase 4 locally authorizes private attachment reads for authoritative current-published Teaching Note and Material revisions. Independent review, Cloud application, and hosted SPEC-004 validation remain open.
+SPEC-003 remains valid implementation history, but its Contributor authoring authority is no longer the target authorization model. SPEC-004 Phase 1 reconciles Admin-only, role-wide Draft management and first publication; Phase 2 adds successor Draft creation and successor publication; Phase 3 adapts the existing authoring application into an Admin-only Spanish content-management surface; Phase 4 authorizes private attachment reads for authoritative current-published Teaching Note and Material revisions. All four phases are independently reviewed, Cloud-applied, and closed under the validation split recorded below.
+
+Security- and data-destructive multi-user acceptance may use the repository's controlled local integration environment when production execution would require fictional authoritative curriculum, unsafe account manipulation, or an unsupported cleanup lifecycle. Such evidence must use real local Supabase Auth, PostgreSQL, RLS, Storage, Next.js, and browser boundaries rather than authorization mocks. Cloud closure remains independently responsible for project identity, migration history, resulting schema/RLS/grants/functions/Storage posture, private-bucket configuration, and deployed application version. For SPEC-004, production lacked two safe Admin accounts plus a reader and a disposable Published-data lifecycle, so multi-user acceptance ran locally while Cloud security and production deployment were verified separately.
 
 **Current implementation:** `docs/DECISIONS.md` (D-028) is implemented in application code as Google OAuth through Supabase Auth (primary), with Email OTP retained as fallback. §7 describes the authentication architecture and §18 records implementation detail.
 
@@ -422,7 +424,7 @@ The root `README.md` owns setup commands, provisioning mechanics, local port con
 - **Search and filters:** PostgreSQL full-text search and SQL filters operate under the same reader boundary.
 - **Rendering:** protected routes are dynamically rendered and protected responses remain private/no-store.
 - **Trusted import:** the operator import path inserts identities, revisions, and revision-scoped relationships before setting current pointers.
-- **Future publication write path:** SPEC-004 must explicitly implement and test its trusted Admin publication path rather than assuming ordinary reader RLS is sufficient.
+- **Publication write path:** SPEC-004 implements and tests its trusted Admin publication path rather than assuming ordinary reader RLS is sufficient.
 - **Validation:** SPEC-002 is independently verified and completed.
 
 Production currently contains the two approved axes and no governed module/reference rows from the trusted real-content importer.
@@ -442,7 +444,7 @@ SPEC-003 is completed historical implementation evidence.
 
 Under D-030, its Contributor authoring, owner-only Draft management, and submission path are no longer the active target authorization model.
 
-SPEC-004 is reconciling these verified primitives to:
+SPEC-004 reconciled these verified primitives to:
 
 - Admin-only governed-content mutation;
 - Admin-wide active Draft visibility/editing;
@@ -452,6 +454,6 @@ SPEC-004 is reconciling these verified primitives to:
 - published attachment reader access;
 - legacy non-Admin write denial.
 
-The locally implemented Phase 1 and Phase 2 database foundation provides those authorization, publication, dependency-locking, and successor-revision primitives. Phase 3 provides role-aware navigation, an Admin-wide Published/Draft management list, six-type creation/editing, Draft attachment management, direct publication, and successor-version application flows. Phase 4 adds a live-eligibility, `Ready`-state, exact-current-pointer predicate to additive attachment metadata and private Storage read policies, reuses the 60-second signed-download route, and presents attachments on published Teaching Note and Material detail surfaces without exposing object names. Draft/historical attachment isolation and existing Admin mutation behavior remain separate. Independent review and Cloud/hosted closure gates are not complete.
+The Phase 1 and Phase 2 database foundation provides those authorization, publication, dependency-locking, and successor-revision primitives. Phase 3 provides role-aware navigation, an Admin-wide Published/Draft management list, six-type creation/editing, Draft attachment management, direct publication, and successor-version application flows. Phase 4 adds a live-eligibility, `Ready`-state, exact-current-pointer predicate to additive attachment metadata and private Storage read policies, reuses the 60-second signed-download route, and presents attachments on published Teaching Note and Material detail surfaces without exposing object names. Draft/historical attachment isolation and existing Admin mutation behavior remain separate. Controlled local acceptance verified cross-Admin editing, publication, successor promotion, reader isolation, attachment currentness, and live revocation through real integrated boundaries; Cloud inspection independently verified the deployed schema and security posture.
 
 This reconciliation should preserve SPEC-003 provenance, event history, attachment architecture, and dormant historical states where safe.

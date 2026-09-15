@@ -15,9 +15,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
-**Technical state:** SPEC-001, SPEC-002, and SPEC-003 are completed; SPEC-004 is active, with Phases 1–4 locally implemented
+**Technical state:** SPEC-001 through SPEC-004 are completed
 
-**Delivery state:** SPEC-003 — Content Contribution is completed as historical implementation foundation at [`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md). SPEC-004 — Admin Content Management & Publication is active; Phases 1–4 are locally implemented, while independent review, Cloud application, hosted validation, and closure remain incomplete.
+**Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification.
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model remains authoritative.
 
@@ -55,9 +55,9 @@ resources/specs/
 
 The most recently completed specification is:
 
-[`resources/specs/completed/003-content-contribution.md`](resources/specs/completed/003-content-contribution.md)
+[`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md)
 
-The active implementation specification is [`resources/specs/active/004-admin-content-management-publication.md`](resources/specs/active/004-admin-content-management-publication.md). Do not implement later planned specifications before their dependencies are satisfied and they are promoted to `active/`.
+No implementation specification is currently active. Do not implement a planned specification before a separate preflight and explicit promotion to `active/`.
 
 ## Initial stack
 
@@ -242,7 +242,7 @@ In Vercel, import the repository using the **Next.js** preset, repository root, 
 
 Hosted acceptance has exercised, against the deployed origin (`https://dmas-base-curricular.vercel.app`): a real first-time Google sign-in, approved-domain/no-membership denial (redirect to `/access-denied` and `/api/access` 403), eligible Admin access with persisted user/organization/role context, the Email OTP fallback (including institutional SMTP delivery via Resend), live membership revocation without waiting for token refresh (and restoration), and hosted sign-out. A real hosted adversarial pre-account-takeover test was also performed and did not reproduce the previously hypothesized Google-linking vulnerability. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that never completes Google OAuth first, and operational rate-limit monitoring were not part of this validation pass and remain open follow-ups.
 
-SPEC-004 will require reviewed Cloud migration application and hosted validation before its Admin-only/Admin-wide Draft and published-attachment reader behavior become verified deployed implementation. The local reader flow authorizes only `Ready` attachments on authoritative current-published Teaching Note and Material revisions, keeps `governed-attachments` private, and excludes Draft and historical attachments. Cloud application and hosted validation remain pending.
+SPEC-004 is Cloud-applied and closed. Multi-user and disposable-content acceptance was completed against the real local Supabase/application/browser stack because production lacked two safe Admin accounts plus a reader and had no supported cleanup lifecycle for fictional Published curriculum. The intended Cloud project separately passed preservation inventory, migration, schema/RLS/grant/function/Storage verification, and private-bucket inspection; production deployment of the corresponding application commit and safe anonymous smoke behavior were also verified. This controlled local acceptance is not represented as hosted production validation.
 
 ## Git
 

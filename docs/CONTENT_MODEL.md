@@ -380,7 +380,7 @@ SPEC-002 resolves normalized revision tables, the initial many-to-many joins, re
 
 SPEC-003 resolves contribution provenance, pending persistence, lifecycle-event foundation, and private attachment persistence as described in §19.
 
-SPEC-004 owns the active Admin-management/publication write path, successor revision creation, Admin-wide Draft access, published attachment reader access, and non-Admin mutation shutdown. Its local Phase 2 persistence foundation enforces one active Draft per stable identity, copies current Published typed semantic fields and Module/Teaching Note revision-scoped relationships into a successor Draft, and intentionally copies no attachment membership. Its local Phase 3 application surface exposes these Draft, publication, and successor primitives to Admins. Local Phase 4 authorizes eligible readers to access only `Ready` attachments belonging to the authoritative current-published Teaching Note or Material revision; Draft and historical attachment membership remain isolated, and the bucket remains private. Independent review, Cloud application, and hosted validation remain pending.
+SPEC-004 owns the active Admin-management/publication write path, successor revision creation, Admin-wide Draft access, published attachment reader access, and non-Admin mutation shutdown. Its Phase 2 persistence foundation enforces one active Draft per stable identity, copies current Published typed semantic fields and Module/Teaching Note revision-scoped relationships into a successor Draft, and intentionally copies no attachment membership. Its Phase 3 application surface exposes these Draft, publication, and successor primitives to Admins. Phase 4 authorizes eligible readers to access only `Ready` attachments belonging to the authoritative current-published Teaching Note or Material revision; Draft and historical attachment membership remain isolated, and the bucket remains private. This implementation is independently reviewed, Cloud-applied, verified against resulting Cloud security objects, and validated through controlled real-stack local integration.
 
 These decisions must preserve the semantic contracts in this document.
 
@@ -422,7 +422,7 @@ Teaching Note Drafts may omit both `text` and `source_url` so attachment-only re
 
 This persistence model is independently verified, applied to the intended Supabase Cloud project, and hosted-validated.
 
-Under D-030, SPEC-003 remains historical implementation evidence, but its Contributor authoring/owner-only mutation authority is no longer the active target. SPEC-004 must reconcile it with Admin-only, Admin-wide Draft management without destructively removing provenance or history.
+Under D-030, SPEC-003 remains historical implementation evidence, but its Contributor authoring/owner-only mutation authority is no longer active. SPEC-004 reconciles it with Admin-only, Admin-wide Draft management without destructively removing provenance or history.
 
 ## 20. Source basis
 
