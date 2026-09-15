@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 async function context(params: Promise<{ type: string; revisionId: string; attachmentId: string }>) {
   const access = await getAccess();
-  if (access.status !== "eligible") return { error: Response.json({ error: access.status === "unauthenticated" ? "Inicia sesión para continuar." : access.status === "unavailable" ? "El servicio no está disponible." : "No tienes acceso a este archivo." }, { status: access.status === "unauthenticated" ? 401 : access.status === "unavailable" ? 503 : 403 }) };
+  if (access.status !== "eligible" || access.context.role !== "Admin") return { error: Response.json({ error: access.status === "unauthenticated" ? "Inicia sesión para continuar." : access.status === "unavailable" ? "El servicio no está disponible." : "No tienes acceso a este archivo." }, { status: access.status === "unauthenticated" ? 401 : access.status === "unavailable" ? 503 : 403 }) };
   const values = await params;
   if (!/^[0-9a-f-]{36}$/i.test(values.revisionId) || !/^[0-9a-f-]{36}$/i.test(values.attachmentId) || !["teaching_note", "material"].includes(values.type)) {
     return { error: Response.json({ error: "Archivo no encontrado." }, { status: 404 }) };

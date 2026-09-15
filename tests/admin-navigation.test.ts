@@ -1,0 +1,27 @@
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const { requireAccess } = vi.hoisted(() => ({ requireAccess: vi.fn() }));
+vi.mock("@/lib/auth/access", () => ({ requireAccess }));
+vi.mock("@/app/login/actions", () => ({ signOut: vi.fn() }));
+import ApplicationLayout from "@/app/app/layout";
+
+describe("role-aware application navigation", () => {
+  beforeEach(() => vi.resetAllMocks());
+
+  it("shows content management only to Admins", async () => {
+    requireAccess.mockResolvedValue({ organizationName: "Red", role: "Admin" });
+    const html = renderToStaticMarkup(await ApplicationLayout({ children: React.createElement("main") }));
+    expect(html).toContain("Administrar contenido");
+    expect(html).not.toContain("Mis contribuciones");
+  });
+
+  it("does not advertise authoring to non-Admin readers", async () => {
+    requireAccess.mockResolvedValue({ organizationName: "Red", role: "Contributor" });
+    const html = renderToStaticMarkup(await ApplicationLayout({ children: React.createElement("main") }));
+    expect(html).not.toContain("Administrar contenido");
+    expect(html).not.toContain("contribuciones");
+    expect(html).toContain("Biblioteca");
+  });
+});

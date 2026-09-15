@@ -178,12 +178,13 @@ test("references are first-class and Admin reader visibility matches Contributor
   await expect(page.getByText("Guía ficticia de participación", { exact: true })).toBeVisible();
   await expect(page.getByText("Centro Ficticio Regional", { exact: true })).toBeVisible();
   await page.getByRole("link", { name: "Explorar referencia" }).first().click();
-  await expect(page.getByText(/Material o estudio|Institución o centro de referencia/)).toBeVisible();
+  await expect(page.getByText(/Material o estudio|Institución o centro de referencia/).first()).toBeVisible();
 
   const ordinary = await userClient(page);
-  expect((await ordinary.from("module_revisions").select("title")).data).toEqual([
+  expect((await ordinary.from("module_revisions").select("title")).data).toEqual(expect.arrayContaining([
     expect.objectContaining({ title: "Política democrática de prueba" }),
-  ]);
+    expect.objectContaining({ title: "Borrador secreto E2E" }),
+  ]));
   expect((await ordinary.from("module_revisions").update({ title: "Manipulado" }).eq("id", curriculum.moduleRevision)).error).not.toBeNull();
 });
 

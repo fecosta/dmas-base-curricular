@@ -8,18 +8,18 @@ import type { Database } from "../../src/lib/supabase/database.types";
 const local = localSupabase();
 const operator = createClient<Database>(local.url, local.secret, { auth: { persistSession: false, autoRefreshToken: false } });
 const organizationId = randomUUID();
-const domain = `contributions-${randomUUID()}.test`;
+const domain = `admin-content-${randomUUID()}.test`;
 
 function assertSuccess(result: { error: { message: string } | null }) {
   if (result.error) throw new Error(result.error.message);
 }
 
-async function provision(eligible = true) {
-  const email = `${randomUUID()}@${eligible ? domain : "unapproved.test"}`;
+async function provision(role: "Contributor" | "Admin") {
+  const email = `${randomUUID()}@${domain}`;
   const result = await operator.auth.admin.createUser({ email, email_confirm: true });
   assertSuccess(result);
   const id = result.data.user!.id;
-  assertSuccess(await operator.from("memberships").insert({ user_id: id, organization_id: organizationId, is_active: true, role: "Contributor" }));
+  assertSuccess(await operator.from("memberships").insert({ user_id: id, organization_id: organizationId, is_active: true, role }));
   return { id, email };
 }
 
@@ -38,7 +38,7 @@ async function login(page: Page, email: string) {
   }, { timeout: 15_000 }).toBe(true);
   await page.getByLabel("Código de acceso").fill(code!);
   await page.getByRole("button", { name: "Ingresar", exact: true }).click();
-  await expect(page).toHaveURL(/\/(app|access-denied)$/);
+  await expect(page).toHaveURL(/\/app$/);
 }
 
 async function userClient(context: BrowserContext) {
@@ -48,154 +48,101 @@ async function userClient(context: BrowserContext) {
 }
 
 test.beforeAll(async () => {
-  assertSuccess(await operator.from("organizations").insert({ id: organizationId, name: "Red de contribuciones E2E", is_active: true }));
+  assertSuccess(await operator.from("organizations").insert({ id: organizationId, name: "Red de administración E2E", is_active: true }));
   assertSuccess(await operator.from("organization_domains").insert({ domain, organization_id: organizationId }));
 });
 
-test("owner creates, relates, uploads and submits while other users remain isolated", async ({ browser }) => {
+test("Admins publish new and successor versions while non-Admins remain readers", async ({ browser }) => {
   const marker = randomUUID().slice(0, 8);
-  const owner = await provision();
-  const other = await provision();
-  const ineligible = await provision(false);
-  const ownerContext = await browser.newContext();
-  const otherContext = await browser.newContext();
-  const ineligibleContext = await browser.newContext();
-  const ownerPage = await ownerContext.newPage();
-  const otherPage = await otherContext.newPage();
-  const ineligiblePage = await ineligibleContext.newPage();
+  const adminA = await provision("Admin");
+  const adminB = await provision("Admin");
+  const reader = await provision("Contributor");
+  const adminAContext = await browser.newContext();
+  const adminBContext = await browser.newContext();
+  const readerContext = await browser.newContext();
+  const adminAPage = await adminAContext.newPage();
+  const adminBPage = await adminBContext.newPage();
+  const readerPage = await readerContext.newPage();
 
-  await login(ownerPage, owner.email);
-  await ownerPage.goto("/app/contributions/new/module");
-  await ownerPage.getByLabel("Eje *").selectOption("a1000000-0000-4000-8000-000000000001");
-  await ownerPage.getByLabel("Título *").fill(`Módulo privado ${marker}`);
-  await ownerPage.getByLabel("Descripción *").fill("Descripción inicial del aporte.");
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  await expect(ownerPage).toHaveURL(/\/app\/contributions\/module\/[0-9a-f-]+$/);
-  const moduleUrl = ownerPage.url();
-  const moduleRevisionId = moduleUrl.split("/").pop()!;
-  await ownerPage.getByLabel("Título *").fill(`Módulo editado ${marker}`);
-  const saveResponse = ownerPage.waitForResponse((response) => response.request().method() === "POST" && response.url() === moduleUrl);
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  expect((await saveResponse).ok()).toBe(true);
-  await ownerPage.reload();
-  await expect(ownerPage.getByLabel("Título *")).toHaveValue(`Módulo editado ${marker}`);
+  await login(readerPage, reader.email);
+  await expect(readerPage.getByRole("link", { name: "Administrar contenido" })).toHaveCount(0);
+  await readerPage.goto("/app/contributions");
+  await expect(readerPage).toHaveURL(/\/access-denied$/);
+  const readerClient = await userClient(readerContext);
+  expect((await readerClient.rpc("create_contribution", { requested_type: "material", payload: { title: "Ataque", material_type: "Informe" } })).error).not.toBeNull();
+  expect((await readerClient.rpc("publish_content_draft", { requested_type: "material", requested_revision_id: randomUUID() })).error).not.toBeNull();
+  expect((await readerClient.rpc("create_successor_draft", { requested_type: "material", requested_content_id: randomUUID() })).error).not.toBeNull();
+  expect(await readerPage.evaluate(async () => (await fetch(`/api/contributions/material/${crypto.randomUUID()}/attachments/${crypto.randomUUID()}`, { method: "DELETE" })).status)).toBe(403);
 
-  await ownerPage.goto("/app/contributions/new/teaching_note");
-  await ownerPage.getByLabel("Módulo *").selectOption({ label: `Módulo editado ${marker} (borrador propio)` });
-  await ownerPage.getByLabel("Título *").fill(`Nota con archivo ${marker}`);
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  await expect(ownerPage).toHaveURL(/\/app\/contributions\/teaching_note\/[0-9a-f-]+$/);
-  const noteUrl = ownerPage.url();
-  const noteRevisionId = noteUrl.split("/").pop()!;
-  await ownerPage.getByLabel("Agregar archivo").setInputFiles({ name: `nota-${marker}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 private fixture") });
-  await ownerPage.getByRole("button", { name: "Cargar archivo" }).click();
-  await expect(ownerPage.getByRole("link", { name: `nota-${marker}.pdf` })).toBeVisible();
-  await ownerPage.getByLabel("Agregar archivo").setInputFiles({ name: `eliminar-${marker}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 disposable") });
-  await ownerPage.getByRole("button", { name: "Cargar archivo" }).click();
-  const disposable = ownerPage.getByRole("listitem").filter({ hasText: `eliminar-${marker}.pdf` });
+  await login(adminAPage, adminA.email);
+  await adminAPage.getByRole("link", { name: "Administrar contenido" }).click();
+  await expect(adminAPage.getByRole("heading", { name: "Administrar contenido" })).toBeVisible();
+  await adminAPage.getByRole("link", { name: "Crear contenido" }).click();
+  await adminAPage.getByRole("link", { name: "Material o estudio" }).click();
+  await adminAPage.getByLabel("Título *").fill(`Material vigente ${marker}`);
+  await adminAPage.getByLabel("Tipo de material *").fill("Informe");
+  await adminAPage.getByLabel("Descripción").fill("Descripción creada por la primera administradora.");
+  await adminAPage.getByRole("button", { name: "Guardar borrador" }).click();
+  await expect(adminAPage).toHaveURL(/\/app\/contributions\/material\/[0-9a-f-]+$/);
+  const draftV1Url = adminAPage.url();
+  const draftV1RevisionId = draftV1Url.split("/").pop()!;
+  await adminAPage.getByLabel("Agregar archivo").setInputFiles({ name: `material-${marker}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 managed fixture") });
+  await adminAPage.getByRole("button", { name: "Cargar archivo" }).click();
+  await expect(adminAPage.getByRole("link", { name: `material-${marker}.pdf` })).toBeVisible();
+
+  await login(adminBPage, adminB.email);
+  await adminBPage.goto(draftV1Url);
+  await expect(adminBPage.getByRole("heading", { name: "Editar borrador" })).toBeVisible();
+  await expect(adminBPage.getByRole("link", { name: `material-${marker}.pdf` })).toBeVisible();
+  await adminBPage.getByLabel("Agregar archivo").setInputFiles({ name: `descartar-${marker}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 disposable fixture") });
+  await adminBPage.getByRole("button", { name: "Cargar archivo" }).click();
+  const disposable = adminBPage.getByRole("listitem").filter({ hasText: `descartar-${marker}.pdf` });
   await disposable.getByRole("button", { name: "Eliminar" }).click();
   await expect(disposable).toHaveCount(0);
+  await adminBPage.getByLabel("Descripción").fill("Descripción editada por una segunda administradora.");
+  await adminBPage.getByRole("button", { name: "Guardar borrador" }).click();
+  await expect(adminBPage.getByLabel("Descripción")).toHaveValue("Descripción editada por una segunda administradora.");
+  await expect(adminBPage.getByRole("button", { name: /Enviar|revisión/i })).toHaveCount(0);
+  await adminBPage.getByRole("button", { name: "Publicar" }).click();
+  await expect(adminBPage.getByRole("status")).toContainText("Publicado correctamente");
+  await expect(adminBPage.getByRole("heading", { name: "Contenido publicado" })).toBeVisible();
 
-  const attachment = await operator.from("curriculum_attachments").select("id,object_name").eq("teaching_note_revision_id", noteRevisionId).single();
-  assertSuccess(attachment);
-  if (!attachment.data) throw new Error("Attachment fixture was not persisted");
-  const download = await ownerPage.evaluate(async (id) => {
-    const response = await fetch(`/api/attachments/${id}`);
-    return { status: response.status, disposition: response.headers.get("content-disposition"), size: (await response.arrayBuffer()).byteLength };
-  }, attachment.data.id);
-  expect(download).toMatchObject({ status: 200, size: 24 });
+  await readerPage.goto(`/app/library?q=${marker}`);
+  await expect(readerPage.getByText(`Material vigente ${marker}`, { exact: true })).toBeVisible();
 
-  await login(otherPage, other.email);
-  await otherPage.goto("/app/contributions");
-  await expect(otherPage.getByText(`Módulo editado ${marker}`, { exact: true })).toHaveCount(0);
-  await otherPage.goto(noteUrl);
-  await expect(otherPage.getByRole("heading", { name: "No encontramos esta contribución." })).toBeVisible();
-  const otherClient = await userClient(otherContext);
-  expect((await otherClient.from("module_revisions").select("id").eq("id", moduleRevisionId)).data).toEqual([]);
-  expect((await otherClient.storage.from("governed-attachments").download(attachment.data.object_name)).error).not.toBeNull();
-  expect(await otherPage.evaluate(async (id) => (await fetch(`/api/attachments/${id}`)).status, attachment.data.id)).toBe(404);
+  await adminAPage.goto(`/app/contributions/material/${draftV1RevisionId}`);
+  await adminAPage.getByRole("button", { name: "Crear nueva versión" }).click();
+  await expect.poll(() => adminAPage.url()).not.toBe(draftV1Url);
+  const draftV2Url = adminAPage.url();
+  await expect(adminAPage.getByRole("heading", { name: "Editar borrador" })).toBeVisible();
+  await expect(adminAPage.getByText(/biblioteca seguirá mostrando la versión anterior/i)).toBeVisible();
+  await expect(adminAPage.getByLabel("Título *")).toHaveValue(`Material vigente ${marker}`);
+  await expect(adminAPage.getByText("No hay archivos adjuntos.")).toBeVisible();
+  await adminAPage.getByLabel("Título *").fill(`Material actualizado ${marker}`);
+  await adminAPage.getByRole("button", { name: "Guardar borrador" }).click();
 
-  await login(ineligiblePage, ineligible.email);
-  await expect(ineligiblePage).toHaveURL(/\/access-denied$/);
-  const ineligibleClient = await userClient(ineligibleContext);
-  expect((await ineligibleClient.storage.from("governed-attachments").download(attachment.data.object_name)).error).not.toBeNull();
-  expect(await ineligiblePage.evaluate(async (id) => (await fetch(`/api/attachments/${id}`)).status, attachment.data.id)).toBe(403);
+  await readerPage.goto(`/app/library?q=${marker}`);
+  await expect(readerPage.getByText(`Material vigente ${marker}`, { exact: true })).toBeVisible();
+  await expect(readerPage.getByText(`Material actualizado ${marker}`, { exact: true })).toHaveCount(0);
 
-  await ownerPage.goto(noteUrl);
-  await ownerPage.getByRole("button", { name: "Enviar a revisión" }).click();
-  await expect(ownerPage.getByRole("heading", { name: "Enviado para revisión" })).toBeVisible();
-  await expect(ownerPage.getByRole("button", { name: "Guardar borrador" })).toHaveCount(0);
-  const ownerClient = await userClient(ownerContext);
-  expect((await ownerClient.rpc("update_contribution", { requested_type: "teaching_note", requested_revision_id: noteRevisionId, payload: { title: "Manipulado" } })).error).not.toBeNull();
-  await ownerClient.storage.from("governed-attachments").remove([attachment.data.object_name]);
-  expect((await ownerClient.storage.from("governed-attachments").download(attachment.data.object_name)).error).toBeNull();
+  await adminBPage.goto(draftV2Url);
+  await expect(adminBPage.getByLabel("Título *")).toHaveValue(`Material actualizado ${marker}`);
+  await adminBPage.getByRole("button", { name: "Publicar" }).click();
+  await expect(adminBPage.getByRole("status")).toContainText("Publicado correctamente");
 
-  await ownerPage.goto(moduleUrl);
-  await ownerPage.getByRole("button", { name: "Enviar a revisión" }).click();
-  await expect(ownerPage.getByRole("heading", { name: "Enviado para revisión" })).toBeVisible();
-  await ownerPage.goto(`/app/library?q=${marker}`);
-  await expect(ownerPage.getByText(`Módulo editado ${marker}`, { exact: true })).toHaveCount(0);
+  await readerPage.goto(`/app/library?q=${marker}`);
+  await expect(readerPage.getByText(`Material actualizado ${marker}`, { exact: true })).toBeVisible();
+  await expect(readerPage.getByText(`Material vigente ${marker}`, { exact: true })).toHaveCount(0);
 
-  assertSuccess(await operator.from("memberships").update({ is_active: false }).eq("user_id", owner.id));
-  expect((await ownerClient.from("teaching_note_revisions").select("id").eq("id", noteRevisionId)).data).toEqual([]);
-  expect((await ownerClient.storage.from("governed-attachments").download(attachment.data.object_name)).error).not.toBeNull();
-  expect(await ownerPage.evaluate(async (id) => (await fetch(`/api/attachments/${id}`)).status, attachment.data.id)).toBe(403);
-  assertSuccess(await operator.from("memberships").update({ is_active: true }).eq("user_id", owner.id));
+  assertSuccess(await operator.from("memberships").update({ role: "Contributor" }).eq("user_id", adminA.id));
+  const revokedClient = await userClient(adminAContext);
+  expect((await revokedClient.rpc("create_contribution", { requested_type: "material", payload: { title: "Revocado", material_type: "Informe" } })).error).not.toBeNull();
+  await adminAPage.goto("/app/contributions");
+  await expect(adminAPage).toHaveURL(/\/access-denied$/);
 
-  const orderMarker = randomUUID().slice(0, 8);
-  await ownerPage.goto("/app/contributions/new/module");
-  await ownerPage.getByLabel("Eje *").selectOption("a1000000-0000-4000-8000-000000000001");
-  await ownerPage.getByLabel("Título *").fill(`Módulo orden ${orderMarker}`);
-  await ownerPage.getByLabel("Descripción *").fill("Módulo para validar el orden de envío.");
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  await expect(ownerPage).toHaveURL(/\/app\/contributions\/module\/[0-9a-f-]+$/);
-  const orderModuleUrl = ownerPage.url();
-
-  await ownerPage.goto("/app/contributions/new/program_topic");
-  await ownerPage.getByLabel("Módulo *").selectOption({ label: `Módulo orden ${orderMarker} (borrador propio)` });
-  await ownerPage.getByLabel("Título *").fill(`Tema orden ${orderMarker}`);
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  await expect(ownerPage).toHaveURL(/\/app\/contributions\/program_topic\/[0-9a-f-]+$/);
-  const orderTopicUrl = ownerPage.url();
-
-  await ownerPage.goto("/app/contributions/new/teaching_note");
-  await ownerPage.getByLabel("Módulo *").selectOption({ label: `Módulo orden ${orderMarker} (borrador propio)` });
-  await ownerPage.getByLabel("Tema de programa").selectOption({ label: `Tema orden ${orderMarker} (borrador propio)` });
-  await ownerPage.getByLabel("Título *").fill(`Nota orden ${orderMarker}`);
-  await ownerPage.getByLabel(/Contenido/).fill("Fuente textual para validar el orden.");
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  await expect(ownerPage).toHaveURL(/\/app\/contributions\/teaching_note\/[0-9a-f-]+$/);
-  const orderNoteUrl = ownerPage.url();
-
-  await ownerPage.goto(orderModuleUrl);
-  await ownerPage.getByRole("button", { name: "Enviar a revisión" }).click();
-  await expect(ownerPage.getByRole("heading", { name: "Enviado para revisión" })).toBeVisible();
-
-  await ownerPage.goto(orderTopicUrl);
-  await expect(ownerPage.getByLabel("Módulo *").locator("option:checked")).toHaveText(`Módulo orden ${orderMarker} (enviado propio)`);
-  await ownerPage.getByLabel("Título *").fill(`Tema editable ${orderMarker}`);
-  const topicSave = ownerPage.waitForResponse((response) => response.request().method() === "POST" && response.url() === orderTopicUrl);
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  expect((await topicSave).ok()).toBe(true);
-  await ownerPage.getByRole("button", { name: "Enviar a revisión" }).click();
-  await expect(ownerPage.getByRole("heading", { name: "Enviado para revisión" })).toBeVisible();
-
-  await ownerPage.goto(orderNoteUrl);
-  await expect(ownerPage.getByLabel("Módulo *").locator("option:checked")).toHaveText(`Módulo orden ${orderMarker} (enviado propio)`);
-  await expect(ownerPage.getByLabel("Tema de programa").locator("option:checked")).toHaveText(`Tema editable ${orderMarker} (enviado propio)`);
-  await ownerPage.getByLabel(/Contenido/).fill("La nota sigue editable con dependencias enviadas.");
-  const noteSave = ownerPage.waitForResponse((response) => response.request().method() === "POST" && response.url() === orderNoteUrl);
-  await ownerPage.getByRole("button", { name: "Guardar borrador" }).click();
-  expect((await noteSave).ok()).toBe(true);
-  await ownerPage.getByRole("button", { name: "Enviar a revisión" }).click();
-  await expect(ownerPage.getByRole("heading", { name: "Enviado para revisión" })).toBeVisible();
-  await ownerPage.goto(`/app/library?q=${orderMarker}`);
-  await expect(ownerPage.getByText(`Módulo orden ${orderMarker}`, { exact: true })).toHaveCount(0);
-
-  await ownerContext.close();
-  await otherContext.close();
-  await ineligibleContext.close();
+  await adminAContext.close();
+  await adminBContext.close();
+  await readerContext.close();
 });
 
-// Authored fixture identities intentionally remain until the next local db:reset:
-// append-only lifecycle evidence correctly prevents destructive user cleanup.
+// Append-only lifecycle evidence intentionally remains until the next local db:reset.

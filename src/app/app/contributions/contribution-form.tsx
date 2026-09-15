@@ -18,7 +18,7 @@ function lines(detail: ContributionDetail | undefined, name: string) {
 
 function OptionList({ options }: { options: ContributionOption[] }) {
   return options.map((option) => <option key={option.id} value={option.id}>
-    {option.label}{option.state === "draft" ? " (borrador propio)" : option.state === "submitted" ? " (enviado propio)" : ""}
+    {option.label}{option.state === "draft" ? " (borrador)" : option.state === "published_with_draft" ? " (nueva versión en borrador)" : ""}
   </option>);
 }
 
@@ -68,7 +68,7 @@ export function ContributionForm({ type, options, detail, readOnly = false }: {
         <label><span className="filter-label">Módulo *</span><select name="module_id" required defaultValue={value(detail, "module_id")}><option value="">Selecciona un módulo</option><OptionList options={options.modules} /></select></label>
         <label><span className="filter-label">Tema de programa</span><select name="program_topic_id" defaultValue={value(detail, "program_topic_id")}><option value="">Nota general del módulo</option><OptionList options={options.programTopics} /></select></label>
         <label className="md:col-span-2"><span className="filter-label">Título *</span><input name="title" required maxLength={240} defaultValue={value(detail, "title")} /></label>
-        <label className="md:col-span-2"><span className="filter-label">Contenido</span><textarea name="text" defaultValue={value(detail, "text")} /><span className="mt-1 block text-xs text-slate-500">Para enviar, incluye contenido, un enlace HTTPS o al menos un archivo.</span></label>
+        <label className="md:col-span-2"><span className="filter-label">Contenido</span><textarea name="text" defaultValue={value(detail, "text")} /><span className="mt-1 block text-xs text-slate-500">Para publicar, incluye contenido, un enlace HTTPS o al menos un archivo.</span></label>
         <label><span className="filter-label">Enlace de fuente (HTTPS)</span><input name="source_url" type="url" defaultValue={value(detail, "source_url")} /></label>
         <Multiple name="material_ids" label="Materiales relacionados" options={options.materials} selected={relationships.material_ids} />
       </>}

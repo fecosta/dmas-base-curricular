@@ -21,7 +21,7 @@ const params = Promise.resolve({
 
 beforeEach(() => {
   vi.resetAllMocks();
-  getAccess.mockResolvedValue({ status: "eligible" });
+  getAccess.mockResolvedValue({ status: "eligible", context: { role: "Admin" } });
   remove.mockResolvedValue({ error: null });
 });
 
@@ -48,4 +48,12 @@ it("leaves post-object-delete finalization failure retryable in Deleting", async
   expect(remove).toHaveBeenCalledTimes(2);
   expect(rpc.mock.calls.filter(([name]) => name === "begin_attachment_deletion")).toHaveLength(1);
   expect(rpc.mock.calls.filter(([name]) => name === "finalize_attachment_deletion")).toHaveLength(2);
+});
+
+it("denies attachment mutation to an eligible non-Admin", async () => {
+  getAccess.mockResolvedValue({ status: "eligible", context: { role: "Contributor" } });
+  const response = await DELETE(new Request("http://localhost"), { params });
+  expect(response?.status).toBe(403);
+  expect(maybeSingle).not.toHaveBeenCalled();
+  expect(rpc).not.toHaveBeenCalled();
 });

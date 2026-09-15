@@ -380,7 +380,7 @@ SPEC-002 resolves normalized revision tables, the initial many-to-many joins, re
 
 SPEC-003 resolves contribution provenance, pending persistence, lifecycle-event foundation, and private attachment persistence as described in §19.
 
-SPEC-004 owns the active Admin-management/publication write path, successor revision creation, Admin-wide Draft access, published attachment reader access, and non-Admin mutation shutdown. Its local Phase 2 persistence foundation enforces one active Draft per stable identity, copies current Published typed semantic fields and Module/Teaching Note revision-scoped relationships into a successor Draft, and intentionally copies no attachment membership.
+SPEC-004 owns the active Admin-management/publication write path, successor revision creation, Admin-wide Draft access, published attachment reader access, and non-Admin mutation shutdown. Its local Phase 2 persistence foundation enforces one active Draft per stable identity, copies current Published typed semantic fields and Module/Teaching Note revision-scoped relationships into a successor Draft, and intentionally copies no attachment membership. Its local Phase 3 application surface now exposes these verified Draft, publication, and successor primitives to Admins; published attachment reader access remains open.
 
 These decisions must preserve the semantic contracts in this document.
 

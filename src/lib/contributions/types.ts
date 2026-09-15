@@ -1,7 +1,8 @@
 import type { Database } from "@/lib/supabase/database.types";
 
 export type ContributionType = Database["public"]["Enums"]["curriculum_content_type"];
-export type ContributionStatus = "Draft" | "Submitted";
+export type ContributionStatus = "Draft" | "Published";
+export type ManagementState = "draft" | "published" | "published_with_draft";
 
 export const contributionTypes: { type: ContributionType; label: string; description: string }[] = [
   { type: "module", label: "Módulo", description: "Una unidad principal del currículo." },
@@ -22,18 +23,20 @@ export function contributionTypeLabel(type: ContributionType) {
 
 export type ContributionSummary = {
   contentId: string;
-  revisionId: string;
   type: ContributionType;
   title: string;
-  status: ContributionStatus;
-  createdAt: string;
-  submittedAt: string | null;
+  state: ManagementState;
+  currentPublishedRevisionId: string | null;
+  currentPublishedRevisionNumber: number | null;
+  draftRevisionId: string | null;
+  draftRevisionNumber: number | null;
+  activityAt: string;
 };
 
 export type ContributionOption = {
   id: string;
   label: string;
-  state: "published" | "draft" | "submitted";
+  state: ManagementState;
   moduleId?: string;
 };
 
@@ -60,8 +63,11 @@ export type ContributionDetail = {
   revisionId: string;
   type: ContributionType;
   status: ContributionStatus;
+  revisionNumber: number;
   createdAt: string;
-  submittedAt: string | null;
+  publishedAt: string | null;
+  currentPublishedRevisionId: string | null;
+  successorDraftRevisionId: string | null;
   fields: Record<string, string | number | string[] | null>;
   relationships: Record<string, string[]>;
   attachments: Attachment[];

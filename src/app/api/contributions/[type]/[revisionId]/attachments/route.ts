@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ typ
   const access = await getAccess();
   if (access.status === "unauthenticated") return denied(401);
   if (access.status === "unavailable") return Response.json({ error: "El servicio no está disponible." }, { status: 503 });
-  if (access.status !== "eligible") return denied(403);
+  if (access.status !== "eligible" || access.context.role !== "Admin") return denied(403);
   const { type, revisionId } = await params;
   if (!isContributionType(type) || !["teaching_note", "material"].includes(type) || !/^[0-9a-f-]{36}$/i.test(revisionId)) return denied(404);
 

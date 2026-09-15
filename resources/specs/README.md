@@ -54,7 +54,7 @@ SPEC-006 Personal Itinerary
 
 `SPEC-006` does not depend on completion of the governance workflow and may be implemented after the core library is stable.
 
-SPEC-004 is the active implementation specification. Its completed implementation phases do not move it to `completed/` before independent verification and the required closure gates.
+SPEC-004 is the active implementation specification. Phases 1–3 are locally implemented; published attachment reader authorization and the independent, Cloud, and hosted closure gates remain open. Completed implementation phases do not move it to `completed/` before independent verification and the required closure gates.
 
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 

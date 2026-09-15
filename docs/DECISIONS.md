@@ -529,4 +529,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001, SPEC-002, and SPEC-003 are completed with implementation, independent verification, and required Cloud/hosted validation reconciled. SPEC-004 is active and its local publication and successor-revision database foundation is implemented; it remains incomplete pending later phases, independent verification, and required Cloud/hosted closure gates. SPEC-005 and SPEC-006 remain planned.
+SPEC-001, SPEC-002, and SPEC-003 are completed with implementation, independent verification, and required Cloud/hosted validation reconciled. SPEC-004 is active and its local publication/successor database foundation and Admin application surface are implemented; published attachment reader authorization, independent verification, and required Cloud/hosted closure gates remain incomplete. SPEC-005 and SPEC-006 remain planned.

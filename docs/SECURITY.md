@@ -965,6 +965,8 @@ Removing Admin authority must remove content-management authority on the next au
 
 No cached client role may extend Admin privileges.
 
+The local Phase 3 application now rechecks `requireAccess("Admin")` in management pages and Server Actions, requires live Admin context in Draft attachment mutation handlers, and continues to rely on the bounded database RPC/RLS boundary. Non-Admin navigation exposes no authoring entry point. Published attachment reader authorization remains incomplete and is not claimed by this application phase.
+
 ---
 
 ## 25. Deferred collaborative-governance security
