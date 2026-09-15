@@ -89,11 +89,25 @@ test("Admins publish new and successor versions while non-Admins remain readers"
   await adminAPage.getByLabel("Agregar archivo").setInputFiles({ name: `material-${marker}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 managed fixture") });
   await adminAPage.getByRole("button", { name: "Cargar archivo" }).click();
   await expect(adminAPage.getByRole("link", { name: `material-${marker}.pdf` })).toBeVisible();
+  const materialRevision = await operator.from("material_revisions").select("material_id").eq("id", draftV1RevisionId).single();
+  assertSuccess(materialRevision);
+  const materialId = materialRevision.data!.material_id;
+  const v1AttachmentResult = await operator.from("curriculum_attachments").select("id,object_name").eq("material_revision_id", draftV1RevisionId).single();
+  assertSuccess(v1AttachmentResult);
+  const v1Attachment = v1AttachmentResult.data!;
+  expect((await readerClient.storage.from("governed-attachments").download(v1Attachment.object_name)).error).not.toBeNull();
+  expect(await readerPage.evaluate(async (id) => (await fetch(`/api/attachments/${id}`)).status, v1Attachment.id)).toBe(404);
+  const unauthorizedUpload = await readerClient.storage.from("governed-attachments").upload(randomUUID(), Buffer.from("%PDF-1.4 denied"), { contentType: "application/pdf" });
+  expect(unauthorizedUpload.error).not.toBeNull();
+  await readerClient.storage.from("governed-attachments").remove([v1Attachment.object_name]);
+  expect((await operator.storage.from("governed-attachments").download(v1Attachment.object_name)).error).toBeNull();
 
   await login(adminBPage, adminB.email);
   await adminBPage.goto(draftV1Url);
   await expect(adminBPage.getByRole("heading", { name: "Editar borrador" })).toBeVisible();
   await expect(adminBPage.getByRole("link", { name: `material-${marker}.pdf` })).toBeVisible();
+  const adminBClient = await userClient(adminBContext);
+  expect((await adminBClient.storage.from("governed-attachments").download(v1Attachment.object_name)).error).toBeNull();
   await adminBPage.getByLabel("Agregar archivo").setInputFiles({ name: `descartar-${marker}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 disposable fixture") });
   await adminBPage.getByRole("button", { name: "Cargar archivo" }).click();
   const disposable = adminBPage.getByRole("listitem").filter({ hasText: `descartar-${marker}.pdf` });
@@ -109,6 +123,19 @@ test("Admins publish new and successor versions while non-Admins remain readers"
 
   await readerPage.goto(`/app/library?q=${marker}`);
   await expect(readerPage.getByText(`Material vigente ${marker}`, { exact: true })).toBeVisible();
+  expect((await readerClient.storage.from("governed-attachments").download(v1Attachment.object_name)).error).toBeNull();
+  await readerPage.goto(`/app/library/references/material/${materialId}`);
+  const v1Download = readerPage.getByRole("link", { name: `Descargar material-${marker}.pdf` });
+  await expect(v1Download).toBeVisible();
+  const downloadPromise = readerPage.waitForEvent("download");
+  await v1Download.click();
+  expect((await downloadPromise).suggestedFilename()).toBe(`material-${marker}.pdf`);
+
+  const anonymousClient = createClient<Database>(local.url, local.key, { auth: { persistSession: false, autoRefreshToken: false } });
+  expect((await anonymousClient.storage.from("governed-attachments").download(v1Attachment.object_name)).error).not.toBeNull();
+  const anonymousContext = await browser.newContext();
+  expect((await anonymousContext.request.get(`/api/attachments/${v1Attachment.id}`, { maxRedirects: 0 })).status()).toBe(401);
+  await anonymousContext.close();
 
   await adminAPage.goto(`/app/contributions/material/${draftV1RevisionId}`);
   await adminAPage.getByRole("button", { name: "Crear nueva versión" }).click();
@@ -120,10 +147,22 @@ test("Admins publish new and successor versions while non-Admins remain readers"
   await expect(adminAPage.getByText("No hay archivos adjuntos.")).toBeVisible();
   await adminAPage.getByLabel("Título *").fill(`Material actualizado ${marker}`);
   await adminAPage.getByRole("button", { name: "Guardar borrador" }).click();
+  const draftV2RevisionId = draftV2Url.split("/").pop()!;
+  await adminAPage.getByLabel("Agregar archivo").setInputFiles({ name: `material-v2-${marker}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 successor fixture") });
+  await adminAPage.getByRole("button", { name: "Cargar archivo" }).click();
+  await expect(adminAPage.getByRole("link", { name: `material-v2-${marker}.pdf` })).toBeVisible();
+  const v2AttachmentResult = await operator.from("curriculum_attachments").select("id,object_name").eq("material_revision_id", draftV2RevisionId).single();
+  assertSuccess(v2AttachmentResult);
+  const v2Attachment = v2AttachmentResult.data!;
 
   await readerPage.goto(`/app/library?q=${marker}`);
   await expect(readerPage.getByText(`Material vigente ${marker}`, { exact: true })).toBeVisible();
   await expect(readerPage.getByText(`Material actualizado ${marker}`, { exact: true })).toHaveCount(0);
+  expect((await readerClient.storage.from("governed-attachments").download(v1Attachment.object_name)).error).toBeNull();
+  expect((await readerClient.storage.from("governed-attachments").download(v2Attachment.object_name)).error).not.toBeNull();
+  await readerPage.goto(`/app/library/references/material/${materialId}`);
+  await expect(readerPage.getByRole("link", { name: `Descargar material-${marker}.pdf` })).toBeVisible();
+  await expect(readerPage.getByRole("link", { name: `Descargar material-v2-${marker}.pdf` })).toHaveCount(0);
 
   await adminBPage.goto(draftV2Url);
   await expect(adminBPage.getByLabel("Título *")).toHaveValue(`Material actualizado ${marker}`);
@@ -133,6 +172,17 @@ test("Admins publish new and successor versions while non-Admins remain readers"
   await readerPage.goto(`/app/library?q=${marker}`);
   await expect(readerPage.getByText(`Material actualizado ${marker}`, { exact: true })).toBeVisible();
   await expect(readerPage.getByText(`Material vigente ${marker}`, { exact: true })).toHaveCount(0);
+  expect((await readerClient.storage.from("governed-attachments").download(v2Attachment.object_name)).error).toBeNull();
+  expect((await readerClient.storage.from("governed-attachments").download(v1Attachment.object_name)).error).not.toBeNull();
+  await readerPage.goto(`/app/library/references/material/${materialId}`);
+  await expect(readerPage.getByRole("link", { name: `Descargar material-v2-${marker}.pdf` })).toBeVisible();
+  await expect(readerPage.getByRole("link", { name: `Descargar material-${marker}.pdf` })).toHaveCount(0);
+  expect((await operator.storage.from("governed-attachments").download(v1Attachment.object_name)).error).toBeNull();
+  expect((await operator.storage.from("governed-attachments").download(v2Attachment.object_name)).error).toBeNull();
+
+  assertSuccess(await operator.from("memberships").update({ is_active: false }).eq("user_id", reader.id));
+  expect(await readerPage.evaluate(async (id) => (await fetch(`/api/attachments/${id}`)).status, v2Attachment.id)).toBe(403);
+  expect((await readerClient.storage.from("governed-attachments").download(v2Attachment.object_name)).error).not.toBeNull();
 
   assertSuccess(await operator.from("memberships").update({ role: "Contributor" }).eq("user_id", adminA.id));
   const revokedClient = await userClient(adminAContext);

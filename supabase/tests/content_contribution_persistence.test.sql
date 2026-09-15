@@ -135,8 +135,12 @@ select lives_ok(format($sql$select public.cancel_attachment_deletion(%L)$sql$,
 select set_config('request.jwt.claims', '{"sub":"72000000-0000-4000-8000-000000000002","role":"authenticated"}', true);
 select is((select count(*) from public.module_revisions where id = (select (payload->>'revision_id')::uuid from contribution_results where key = 'module')), 0::bigint,
   'Contributor cannot read an Admin Draft revision');
-select is((select count(*) from public.curriculum_attachments), 0::bigint, 'Contributor cannot read Draft attachment metadata');
-select is((select count(*) from storage.objects where bucket_id = 'governed-attachments'), 0::bigint, 'Contributor cannot read Draft attachment objects');
+select is((select count(*) from public.curriculum_attachments
+  where id = (select (payload->>'id')::uuid from contribution_results where key = 'attachment')), 0::bigint,
+  'Contributor cannot read Draft attachment metadata');
+select is((select count(*) from storage.objects where bucket_id = 'governed-attachments'
+  and name = (select payload->>'object_name' from contribution_results where key = 'attachment')), 0::bigint,
+  'Contributor cannot read Draft attachment objects');
 select throws_ok(format($sql$insert into storage.objects(id, bucket_id, name, metadata)
   values(gen_random_uuid(), 'governed-attachments', %L, '{"size":321,"mimetype":"application/pdf"}')$sql$,
   (select payload->>'object_name' from contribution_results where key = 'attachment')), '42501', null, 'Contributor cannot upload governed attachment bytes');

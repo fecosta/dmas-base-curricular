@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getReference } from "@/lib/curriculum/queries";
+import { PublishedAttachments } from "@/app/app/library/published-attachments";
 
 export default async function ReferencePage({ params }: { params: Promise<{ type: string; id: string }> }) {
   const { type, id } = await params;
@@ -11,6 +12,7 @@ export default async function ReferencePage({ params }: { params: Promise<{ type
       <div><p className="eyebrow">{reference.entityType === "material" ? "Material o estudio" : "Institución o centro de referencia"}</p><h1 className="mt-3 text-4xl leading-tight text-[#173f3a] sm:text-6xl">{reference.title}</h1>
         {reference.description ? <p className="mt-7 max-w-2xl text-lg text-slate-700">{reference.description}</p> : <p className="mt-7 text-slate-600">Esta referencia no tiene descripción publicada.</p>}
         {externalUrl && <a href={externalUrl} target="_blank" rel="noreferrer" className="mt-8 inline-block rounded-full bg-[#173f3a] px-5 py-3 font-bold text-white no-underline">Abrir sitio externo</a>}
+        {reference.entityType === "material" && <PublishedAttachments attachments={reference.attachments ?? []} />}
       </div>
       <dl className="space-y-5 border-l border-slate-900/15 pl-6"><div><dt className="eyebrow">Tipo</dt><dd className="mt-1 font-bold">{reference.classification}</dd></div>
         {reference.countryOrScope && <div><dt className="eyebrow">País o alcance</dt><dd className="mt-1">{reference.countryOrScope}</dd></div>}

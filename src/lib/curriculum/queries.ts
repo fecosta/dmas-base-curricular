@@ -32,9 +32,12 @@ export type Instructor = {
   id: string; name: string; roleOrTitle: string | null; institution: string | null;
   profile: string | null; linkedinUrl: string | null; themes: string[]; country: string | null;
 };
+export type PublishedAttachment = {
+  id: string; originalFilename: string; mimeType: string; sizeBytes: number;
+};
 export type TeachingNote = {
   id: string; title: string; text: string | null; sourceUrl: string | null; programTopicId: string | null;
-  materials: { id: string; title: string }[];
+  materials: { id: string; title: string }[]; attachments: PublishedAttachment[];
 };
 export type Material = {
   id: string; title: string; materialType: string; description: string | null; sourceOrInstitution: string | null;
@@ -54,6 +57,7 @@ export type ReferenceDetail = {
   entityType: "material" | "institution"; id: string; title: string; description: string | null;
   classification: string; countryOrScope: string | null; themes: string[];
   sourceOrInstitution?: string | null; sourceUrl?: string | null; websiteUrl?: string | null;
+  attachments?: PublishedAttachment[];
 };
 
 export type LibraryFilters = {

@@ -1,7 +1,7 @@
 # Base Curricular — Content Model
 
 **Status:** Baseline content model  
-**Last reconciled:** 2026-09-14
+**Last reconciled:** 2026-09-15
 
 ## 1. Purpose
 
@@ -380,7 +380,7 @@ SPEC-002 resolves normalized revision tables, the initial many-to-many joins, re
 
 SPEC-003 resolves contribution provenance, pending persistence, lifecycle-event foundation, and private attachment persistence as described in §19.
 
-SPEC-004 owns the active Admin-management/publication write path, successor revision creation, Admin-wide Draft access, published attachment reader access, and non-Admin mutation shutdown. Its local Phase 2 persistence foundation enforces one active Draft per stable identity, copies current Published typed semantic fields and Module/Teaching Note revision-scoped relationships into a successor Draft, and intentionally copies no attachment membership. Its local Phase 3 application surface now exposes these verified Draft, publication, and successor primitives to Admins; published attachment reader access remains open.
+SPEC-004 owns the active Admin-management/publication write path, successor revision creation, Admin-wide Draft access, published attachment reader access, and non-Admin mutation shutdown. Its local Phase 2 persistence foundation enforces one active Draft per stable identity, copies current Published typed semantic fields and Module/Teaching Note revision-scoped relationships into a successor Draft, and intentionally copies no attachment membership. Its local Phase 3 application surface exposes these Draft, publication, and successor primitives to Admins. Local Phase 4 authorizes eligible readers to access only `Ready` attachments belonging to the authoritative current-published Teaching Note or Material revision; Draft and historical attachment membership remain isolated, and the bucket remains private. Independent review, Cloud application, and hosted validation remain pending.
 
 These decisions must preserve the semantic contracts in this document.
 

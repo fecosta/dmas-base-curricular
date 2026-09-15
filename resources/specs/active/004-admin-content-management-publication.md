@@ -31,6 +31,8 @@ The contribution/review lifecycle implemented or prepared by earlier specificati
 
 ## 2. Current State
 
+**Local implementation status (2026-09-15):** Phases 1–4 are implemented locally. Phase 4 keeps `governed-attachments` private and authorizes eligible readers only for `Ready` attachments on authoritative current-published Teaching Note and Material revisions. Draft and historical attachments remain isolated, and existing Admin Draft attachment management remains separate. Independent review, Cloud migration application, hosted validation, and SPEC closure remain pending; this specification remains ACTIVE.
+
 SPEC-002 provides:
 
 - stable governed content identities with typed revision tables;

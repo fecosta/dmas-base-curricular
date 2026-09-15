@@ -1,7 +1,7 @@
 # Base Curricular — Security
 
 **Status:** Product security baseline  
-**Last reconciled:** 2026-09-14
+**Last reconciled:** 2026-09-15
 
 ## 1. Purpose
 
@@ -965,7 +965,9 @@ Removing Admin authority must remove content-management authority on the next au
 
 No cached client role may extend Admin privileges.
 
-The local Phase 3 application now rechecks `requireAccess("Admin")` in management pages and Server Actions, requires live Admin context in Draft attachment mutation handlers, and continues to rely on the bounded database RPC/RLS boundary. Non-Admin navigation exposes no authoring entry point. Published attachment reader authorization remains incomplete and is not claimed by this application phase.
+The local Phase 3 application rechecks `requireAccess("Admin")` in management pages and Server Actions, requires live Admin context in Draft attachment mutation handlers, and continues to rely on the bounded database RPC/RLS boundary. Non-Admin navigation exposes no authoring entry point.
+
+Local Phase 4 adds a separate current-published read predicate for governed attachments. It derives live eligibility from `private.current_access()`, requires `Ready` metadata, and requires the owning Teaching Note or Material revision to equal the non-archived stable identity's authoritative `current_published_revision_id`. Additive metadata and Storage `SELECT` policies use that predicate; existing Admin Draft read and mutation policies remain unchanged. Reader detail payloads expose only display metadata and attachment IDs, and the existing route performs a fresh access/RLS check before issuing a 60-second forced-download signed redirect. The `governed-attachments` bucket remains private; Draft and historical object paths remain unavailable to ordinary readers. This behavior is locally implemented and tested but has not been applied to Cloud or hosted-validated.
 
 ---
 
