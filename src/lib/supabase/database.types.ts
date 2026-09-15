@@ -168,6 +168,30 @@ export type Database = {
         Args: { requested_content_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
         Returns: Json;
       };
+      archive_governed_content: {
+        Args: { requested_content_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: Json;
+      };
+      restore_governed_content: {
+        Args: { requested_content_id: string; requested_type: Database["public"]["Enums"]["curriculum_content_type"] };
+        Returns: Json;
+      };
+      list_curriculum_lifecycle_history: {
+        Args: {
+          action_filter?: Database["public"]["Enums"]["curriculum_lifecycle_action"];
+          before_event_id?: number;
+          content_id_filter?: string;
+          content_type_filter?: Database["public"]["Enums"]["curriculum_content_type"];
+          page_size?: number;
+        };
+        Returns: {
+          action: Database["public"]["Enums"]["curriculum_lifecycle_action"];
+          actor_organization_id: string; actor_user_id: string; content_id: string;
+          content_type: Database["public"]["Enums"]["curriculum_content_type"];
+          event_id: number; occurred_at: string; previous_status: RevisionStatus | null;
+          resulting_status: RevisionStatus | null; revision_id: string | null;
+        }[];
+      };
       reserve_attachment: {
         Args: {
           requested_filename: string; requested_mime_type: string; requested_revision_id: string;
@@ -184,7 +208,7 @@ export type Database = {
     Enums: {
       curriculum_content_type: "module" | "program_topic" | "instructor" | "teaching_note" | "material" | "institution";
       curriculum_attachment_state: "Reserved" | "Ready" | "Deleting";
-      curriculum_lifecycle_action: "content_created" | "revision_created" | "revision_edited" | "content_submitted" | "draft_deleted" | "content_published";
+      curriculum_lifecycle_action: "content_created" | "revision_created" | "revision_edited" | "content_submitted" | "draft_deleted" | "content_published" | "content_archived" | "content_restored";
       curriculum_revision_status: "Draft" | "Submitted" | "Under Review" | "Changes Requested" | "Resubmitted" | "Approved" | "Published";
       product_role: "Contributor" | "Admin";
     };

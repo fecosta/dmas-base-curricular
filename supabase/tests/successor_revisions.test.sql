@@ -214,15 +214,15 @@ select is((select count(*) from successor_results where payload->>'revision_numb
   'all six successors increment revision number to 2');
 select is((select count(*) from successor_results where payload->>'status' = 'Draft'), 6::bigint,
   'all six successors begin in Draft');
-select is((select count(*) from public.curriculum_lifecycle_events event
+select is((select count(*) from public.list_curriculum_lifecycle_history(action_filter => 'revision_created') event
   join successor_results result on (result.payload->>'revision_id')::uuid = event.revision_id
-  where event.action = 'revision_created' and event.resulting_status = 'Draft'
+  where event.resulting_status = 'Draft'
     and event.actor_user_id = '92000000-0000-4000-8000-000000000001'
     and event.actor_organization_id = '91000000-0000-4000-8000-000000000001'), 6::bigint,
   'successor creation records trusted revision lifecycle evidence for all six types');
-select is((select count(*) from public.curriculum_lifecycle_events event
+select is((select count(*) from public.list_curriculum_lifecycle_history(action_filter => 'content_created') event
   join successor_results result on (result.payload->>'revision_id')::uuid = event.revision_id
-  where event.action = 'content_created'), 0::bigint,
+  ), 0::bigint,
   'successor creation does not misreport an existing stable identity as newly created');
 select is((select count(*) from (
   select created_by, contributor_organization_id from public.module_revisions where revision_number = 2 and module_id = '93000000-0000-4000-8000-000000000001'

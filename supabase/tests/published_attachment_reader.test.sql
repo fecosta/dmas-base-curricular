@@ -137,19 +137,24 @@ select is((select count(*) from storage.objects where bucket_id = 'governed-atta
 select is(public.get_published_reference('material', 'a0500000-0000-4000-8000-000000000001')->'attachments'->0->>'id',
   'a0600000-0000-4000-8000-000000000003', 'Material reader payload follows the new current revision');
 
-reset role;
-update public.materials set archived_at = clock_timestamp()
-where id = 'a0500000-0000-4000-8000-000000000001';
-set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"a0200000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select lives_ok($$select public.archive_governed_content('material', 'a0500000-0000-4000-8000-000000000001')$$,
+  'Admin archives the Material through the authoritative operation');
 select set_config('request.jwt.claims', '{"sub":"a0200000-0000-4000-8000-000000000002","role":"authenticated"}', true);
 select is((select count(*) from public.curriculum_attachments where id = 'a0600000-0000-4000-8000-000000000003'), 0::bigint,
   'archiving the parent identity immediately removes current attachment metadata visibility');
 select is((select count(*) from storage.objects where bucket_id = 'governed-attachments' and name = 'a0600000-0000-4000-8000-000000000003'), 0::bigint,
   'archiving the parent identity immediately removes current object visibility');
 
+select set_config('request.jwt.claims', '{"sub":"a0200000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select lives_ok($$select public.restore_governed_content('material', 'a0500000-0000-4000-8000-000000000001')$$,
+  'Admin restores the same Published Material without creating a revision');
+select set_config('request.jwt.claims', '{"sub":"a0200000-0000-4000-8000-000000000002","role":"authenticated"}', true);
+select is((select count(*) from public.curriculum_attachments where id = 'a0600000-0000-4000-8000-000000000003'), 1::bigint,
+  'restore makes only the Ready attachment on the current Material revision readable');
+select is((select count(*) from public.curriculum_attachments where id = 'a0600000-0000-4000-8000-000000000002'), 0::bigint,
+  'restore leaves historical Material attachments denied');
 reset role;
-update public.materials set archived_at = null
-where id = 'a0500000-0000-4000-8000-000000000001';
 update public.memberships set is_active = false where user_id = 'a0200000-0000-4000-8000-000000000002';
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"a0200000-0000-4000-8000-000000000002","role":"authenticated"}', true);

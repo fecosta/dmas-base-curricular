@@ -49,9 +49,11 @@ select ok((select published_at is not null from public.module_revisions where id
   'publication sets trusted publication time');
 select is((select created_by from public.module_revisions where id = (select (payload->>'revision_id')::uuid from publication_results where key = 'module')),
   '82000000-0000-4000-8000-000000000001'::uuid, 'cross-Admin publication preserves original creator provenance');
-select is((select count(*) from public.curriculum_lifecycle_events
+select is((select count(*) from public.list_curriculum_lifecycle_history(
+    content_id_filter => (select (payload->>'content_id')::uuid from publication_results where key = 'module'),
+    action_filter => 'content_published')
   where revision_id = (select (payload->>'revision_id')::uuid from publication_results where key = 'module')
-    and action = 'content_published' and previous_status = 'Draft' and resulting_status = 'Published'
+    and previous_status = 'Draft' and resulting_status = 'Published'
     and actor_user_id = '82000000-0000-4000-8000-000000000002'
     and actor_organization_id = '81000000-0000-4000-8000-000000000001'), 1::bigint,
   'publication event records trusted actor, organization, target, and transition');
@@ -190,6 +192,12 @@ select is(extensions.dblink_exec(
   'dependency_publisher',
   $claims$set request.jwt.claims = '{"sub":"89100000-0000-4000-8000-000000000001","role":"authenticated"}'$claims$
 ), 'SET', 'publication session receives authenticated claims');
+select is(extensions.dblink_exec('dependency_mutator', 'set role authenticated'), 'SET',
+  'concurrent archive session uses the application role');
+select is(extensions.dblink_exec(
+  'dependency_mutator',
+  $claims$set request.jwt.claims = '{"sub":"89100000-0000-4000-8000-000000000001","role":"authenticated"}'$claims$
+), 'SET', 'concurrent archive session receives authenticated claims');
 
 create temporary table dependency_concurrency_sessions(name text primary key, pid integer);
 insert into dependency_concurrency_sessions
@@ -227,9 +235,8 @@ select ok(exists (
 
 select is(extensions.dblink_send_query(
   'dependency_mutator',
-  $$update public.instructors set archived_at = clock_timestamp()
-    where id = '89200000-0000-4000-8000-000000000001' returning id$$
-), 1, 'a concurrent dependency-state mutation starts');
+  $$select public.archive_governed_content('instructor', '89200000-0000-4000-8000-000000000001')$$
+), 1, 'concurrent archival of the publication dependency starts');
 
 do $$
 declare attempt integer;
@@ -246,10 +253,10 @@ select ok(
   (select pid from dependency_concurrency_sessions where name = 'publisher') = any (
     pg_blocking_pids((select pid from dependency_concurrency_sessions where name = 'mutator'))
   ),
-  'publication holds the authoritative dependency identity against concurrent state mutation'
+  'publication holds the authoritative dependency identity against concurrent archival'
 );
 select is(extensions.dblink_is_busy('dependency_publisher'), 1, 'publication remains open before commit');
-select is(extensions.dblink_is_busy('dependency_mutator'), 1, 'dependency mutation remains blocked before publication commit');
+select is(extensions.dblink_is_busy('dependency_mutator'), 1, 'dependency archival remains blocked before publication commit');
 
 rollback to savepoint dependency_concurrency_barrier;
 
@@ -259,10 +266,12 @@ select is(
   'publication commits successfully after the test barrier is released'
 );
 select is(
-  (select id from extensions.dblink_get_result('dependency_mutator') as remote(id uuid)),
-  '89200000-0000-4000-8000-000000000001'::uuid,
-  'dependency mutation proceeds only after publication releases its transaction lock'
+  (select count(*) from extensions.dblink_get_result('dependency_mutator', false) as remote(result jsonb)),
+  0::bigint,
+  'dependency archival cannot succeed after the dependent publication commits'
 );
+select ok(extensions.dblink_error_message('dependency_mutator') like '%active current-published dependents block archival%',
+  'serialized archival observes the newly current-published dependent');
 select is(
   (select pointer from extensions.dblink(
     'dependency_setup',
@@ -272,11 +281,20 @@ select is(
   'concurrent publication leaves the current pointer consistent'
 );
 select ok(
-  (select archived_at is not null from extensions.dblink(
+  (select archived_at is null from extensions.dblink(
     'dependency_setup',
     $$select archived_at from public.instructors where id = '89200000-0000-4000-8000-000000000001'$$
   ) as remote(archived_at timestamptz)),
-  'serialized dependency mutation is visible after publication commit'
+  'failed concurrent archival leaves the publication dependency active'
+);
+select is(
+  (select event_count from extensions.dblink(
+    'dependency_setup',
+    $$select count(*) from public.curriculum_lifecycle_events
+      where content_id = '89200000-0000-4000-8000-000000000001' and action = 'content_archived'$$
+  ) as remote(event_count bigint)),
+  0::bigint,
+  'failed concurrent archival appends no successful lifecycle event'
 );
 
 select is(extensions.dblink_exec('dependency_setup', $cleanup$

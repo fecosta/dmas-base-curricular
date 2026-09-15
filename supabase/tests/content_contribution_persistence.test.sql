@@ -144,7 +144,11 @@ select is((select count(*) from storage.objects where bucket_id = 'governed-atta
 select throws_ok(format($sql$insert into storage.objects(id, bucket_id, name, metadata)
   values(gen_random_uuid(), 'governed-attachments', %L, '{"size":321,"mimetype":"application/pdf"}')$sql$,
   (select payload->>'object_name' from contribution_results where key = 'attachment')), '42501', null, 'Contributor cannot upload governed attachment bytes');
-select is((select count(*) from public.curriculum_lifecycle_events), 0::bigint, 'Contributor cannot read Admin lifecycle events');
+select throws_ok($$select count(*) from public.curriculum_lifecycle_events$$,
+  '42501', 'permission denied for table curriculum_lifecycle_events',
+  'Contributor cannot read lifecycle events directly');
+select throws_ok($$select * from public.list_curriculum_lifecycle_history()$$,
+  '42501', 'eligible Admin access required', 'Contributor cannot use the Admin history boundary');
 
 reset role;
 update public.memberships set role = 'Contributor' where user_id = '72000000-0000-4000-8000-000000000003';
