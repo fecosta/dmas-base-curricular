@@ -541,4 +541,4 @@ Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001 through SPEC-004 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. No implementation specification is currently active. SPEC-005 and SPEC-006 remain planned.
+SPEC-001 through SPEC-004 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-005 is the active implementation specification after its completed product/technical preflight. No specifications remain planned.

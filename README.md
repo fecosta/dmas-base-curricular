@@ -15,7 +15,7 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
-**Technical state:** SPEC-001 through SPEC-004 are completed
+**Technical state:** SPEC-001 through SPEC-004 are completed; SPEC-005 is active
 
 **Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification.
 
@@ -57,7 +57,7 @@ The most recently completed specification is:
 
 [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md)
 
-No implementation specification is currently active. Do not implement a planned specification before a separate preflight and explicit promotion to `active/`.
+The active implementation specification is [`resources/specs/active/005-audit-history-archival.md`](resources/specs/active/005-audit-history-archival.md), promoted after its completed product/technical preflight.
 
 ## Initial stack
 

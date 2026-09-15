@@ -26,8 +26,9 @@ Do not move a spec to `completed/` merely because an implementation agent report
 2. `SPEC-002` — Core Curriculum Library — completed
 3. `SPEC-003` — Content Contribution — completed historical foundation
 4. `SPEC-004` — Admin Content Management & Publication — completed
-5. `SPEC-005` — Audit History & Archival — planned
-6. `SPEC-006` — Personal Itinerary — planned
+5. `SPEC-005` — Audit History & Archival — active
+
+No specifications currently remain planned.
 
 ## Dependency model
 
@@ -45,16 +46,9 @@ SPEC-004 Admin Content Management & Publication
           |
           v
 SPEC-005 Audit History & Archival
-
-SPEC-002 Core Curriculum Library
-          |
-          v
-SPEC-006 Personal Itinerary
 ```
 
-`SPEC-006` does not depend on completion of the governance workflow and may be implemented after the core library is stable.
-
-SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation. No implementation specification is currently active.
+SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation. SPEC-005 is the active implementation specification after its completed product/technical preflight.
 
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 
