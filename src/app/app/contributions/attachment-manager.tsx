@@ -3,6 +3,10 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Attachment, ContributionType } from "@/lib/contributions/types";
+import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
+import { Notice } from "@/components/ui/notice";
+import { EmptyNote } from "@/components/ui/empty-state";
 
 export function AttachmentManager({ type, revisionId, attachments, readOnly }: {
   type: Extract<ContributionType, "teaching_note" | "material">; revisionId: string; attachments: Attachment[]; readOnly: boolean;
@@ -49,20 +53,22 @@ export function AttachmentManager({ type, revisionId, attachments, readOnly }: {
     startTransition(() => router.refresh());
   }
 
-  return <section className="mt-10 rounded-2xl border border-slate-900/15 bg-white/55 p-6" aria-labelledby="attachments-title">
-    <h2 id="attachments-title" className="text-xl text-[#173f3a]">Archivos privados</h2>
-    <p className="mt-2 text-sm text-slate-600">PDF y documentos de oficina, hasta 3 MB por archivo.</p>
-    {attachments.length === 0 ? <p className="mt-5 text-sm text-slate-500">No hay archivos adjuntos.</p> : <ul className="mt-5 divide-y divide-slate-900/10">{attachments.map((attachment) => <li key={attachment.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-      {attachment.state === "Ready" ? <a href={`/api/attachments/${attachment.id}`} className="font-bold text-[#173f3a]">{attachment.original_filename}</a> : <span className="font-bold text-slate-700">{attachment.original_filename}</span>}
-      <span className="text-xs text-slate-500">{Math.ceil(attachment.size_bytes / 1024)} KB</span>
-      {!readOnly && attachment.state === "Ready" && <button type="button" disabled={pending} onClick={() => void remove(attachment)} className="bg-transparent px-2 py-1 text-sm text-red-800">Eliminar</button>}
-      {!readOnly && attachment.state === "Reserved" && <span className="flex flex-wrap gap-2"><button type="button" disabled={pending} onClick={() => void recover(attachment, "finalize")} className="px-2 py-1 text-sm">Completar carga</button><button type="button" disabled={pending} onClick={() => void recover(attachment, "cancel")} className="bg-transparent px-2 py-1 text-sm text-red-800">Cancelar reserva</button><button type="button" disabled={pending} onClick={() => void remove(attachment)} className="bg-transparent px-2 py-1 text-sm text-red-800">Descartar carga</button></span>}
-      {!readOnly && attachment.state === "Deleting" && <button type="button" disabled={pending} onClick={() => void remove(attachment)} className="px-2 py-1 text-sm">Completar eliminación</button>}
+  return <section className="mt-10 rounded-lg border border-hairline bg-surface p-6 shadow-card" aria-labelledby="attachments-title">
+    <h2 id="attachments-title" className="text-lg">Archivos privados</h2>
+    <p className="mt-2 text-sm text-ink-muted">PDF y documentos de oficina, hasta 3 MB por archivo.</p>
+    {/* <ul>/<li> is asserted: the E2E suite scopes attachment actions with getByRole("listitem"). */}
+    {attachments.length === 0 ? <EmptyNote className="mt-5">No hay archivos adjuntos.</EmptyNote> : <ul className="mt-5 divide-y divide-hairline">{attachments.map((attachment) => <li key={attachment.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+      {attachment.state === "Ready" ? <a href={`/api/attachments/${attachment.id}`} className="font-bold">{attachment.original_filename}</a> : <span className="font-bold text-ink-soft">{attachment.original_filename}</span>}
+      <span className="text-xs text-ink-muted">{Math.ceil(attachment.size_bytes / 1024)} KB</span>
+      {!readOnly && attachment.state === "Ready" && <Button type="button" variant="danger" size="sm" disabled={pending} onClick={() => void remove(attachment)}>Eliminar</Button>}
+      {!readOnly && attachment.state === "Reserved" && <span className="flex flex-wrap gap-2"><Button type="button" variant="secondary" size="sm" disabled={pending} onClick={() => void recover(attachment, "finalize")}>Completar carga</Button><Button type="button" variant="danger" size="sm" disabled={pending} onClick={() => void recover(attachment, "cancel")}>Cancelar reserva</Button><Button type="button" variant="danger" size="sm" disabled={pending} onClick={() => void remove(attachment)}>Descartar carga</Button></span>}
+      {!readOnly && attachment.state === "Deleting" && <Button type="button" variant="secondary" size="sm" disabled={pending} onClick={() => void remove(attachment)}>Completar eliminación</Button>}
     </li>)}</ul>}
     {!readOnly && <form className="mt-5 flex flex-wrap items-end gap-3" onSubmit={(event) => { event.preventDefault(); void upload(new FormData(event.currentTarget)); }}>
-      <label className="min-w-64 flex-1"><span className="filter-label">Agregar archivo</span><input ref={input} type="file" name="file" required /></label>
-      <button disabled={pending} type="submit">{pending ? "Procesando…" : "Cargar archivo"}</button>
+      {/* Native file input, reachable via getByLabel("Agregar archivo"). */}
+      <Field label="Agregar archivo" className="min-w-64 flex-1"><input ref={input} type="file" name="file" required /></Field>
+      <Button disabled={pending} type="submit">{pending ? "Procesando…" : "Cargar archivo"}</Button>
     </form>}
-    {error && <p role="alert" className="mt-4 text-sm font-semibold text-red-800">{error}</p>}
+    {error && <Notice tone="error" className="mt-4">{error}</Notice>}
   </section>;
 }

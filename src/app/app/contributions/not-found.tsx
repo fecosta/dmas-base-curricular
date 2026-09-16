@@ -1,10 +1,13 @@
-import Link from "next/link";
+import { Page } from "@/components/ui/page";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ButtonLink } from "@/components/ui/button";
 
 export default function ContributionNotFound() {
-  return <main id="contenido" className="mx-auto max-w-3xl px-5 py-16">
-    <p className="eyebrow">Contenido no disponible</p>
-    <h1 className="mt-2 text-4xl text-[#173f3a]">No encontramos este contenido.</h1>
-    <p className="mt-4 text-slate-700">Puede que no exista o que no tengas permiso para verla.</p>
-    <Link href="/app/contributions" prefetch={false} className="mt-8 inline-block font-bold text-[#173f3a]">Volver a administrar contenido</Link>
-  </main>;
+  return <Page width="content">
+    <EmptyState
+      title="No encontramos este contenido."
+      description="Puede que no exista o que no tengas permiso para verlo."
+      action={<ButtonLink href="/app/contributions">Volver a administrar contenido</ButtonLink>}
+    />
+  </Page>;
 }

@@ -1,20 +1,97 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens derived from the approved Explorador reference
+ * (resources/ux-ui/Base Curricular - Explorador (offline).html).
+ * Tailwind v4 generates utilities from these automatically:
+ * --color-* feeds bg, text and border utilities; --radius-* feeds rounded;
+ * --shadow-* feeds shadow; --font-* feeds font.
+ */
+@theme {
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Text */
+  --color-ink: #060606;
+  --color-ink-soft: #3f4c5e;
+  --color-ink-muted: #5c6b7e;
+  --color-label: #8a9aa8;
+
+  /* Surfaces */
+  --color-canvas: #eef1f8;
+  --color-surface: #ffffff;
+  --color-inset: #f6f8fc;
+  --color-hairline: #e3e9f2;
+  --color-hairline-strong: #c3ccd9;
+
+  /* Brand + semantic accents */
+  --color-primary: #0013c1;
+  --color-primary-strong: #000c7e;
+  --color-accent: #bd97f1;
+  --color-accent-ink: #5b3a9c;
+  --color-success: #41c478;
+  --color-success-ink: #2a814f;
+  --color-warning: #de9d15;
+  --color-warning-ink: #b68113;
+  --color-danger: #b4232a;
+
+  /* Dark bands: hero, footer, utility strip, aside panels */
+  --color-night: #060606;
+  --color-night-deep: #0b0b1a;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-card: 0 1px 2px rgba(6, 6, 6, 0.03);
+  --shadow-raised: 0 6px 16px rgba(0, 19, 193, 0.24);
+  --shadow-overlay: 0 30px 80px rgba(6, 6, 6, 0.35);
+}
+
 @layer base {
-  body { @apply bg-stone-50 text-slate-900 antialiased; font-family: Arial, Helvetica, sans-serif; }
-  h1 { @apply text-3xl font-bold tracking-tight; }
-  h2 { @apply text-xl font-semibold; }
+  body {
+    @apply bg-canvas text-ink antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1 { @apply text-3xl font-extrabold tracking-tight; }
+  h2 { @apply text-xl font-bold tracking-[-0.02em]; }
+  h3 { @apply font-bold tracking-[-0.01em]; }
   p { @apply leading-relaxed; }
-  a { @apply underline underline-offset-4; }
-  button { @apply cursor-pointer rounded-md bg-teal-800 px-4 py-3 font-semibold text-white disabled:cursor-wait disabled:opacity-60; }
-  input, select, textarea { @apply mt-2 block w-full rounded-md border border-slate-400 bg-white px-3 py-3; }
+
+  /*
+   * Links are unstyled-by-default in the reference (a{color:#0013c1;text-decoration:none}).
+   * Underline on hover/focus keeps them distinguishable without relying on colour alone
+   * once they are interacted with; prose links opt into a persistent underline.
+   */
+  a {
+    @apply text-primary underline-offset-4;
+    text-decoration: none;
+  }
+  a:hover, a:focus-visible { @apply text-accent-ink underline; }
+
+  /* Colour and shape are supplied by the Button primitive, not globally. */
+  button { @apply cursor-pointer disabled:cursor-wait disabled:opacity-60; }
+
+  input, select, textarea {
+    @apply mt-2 block w-full rounded-md border border-hairline-strong bg-inset px-4 py-3 text-ink;
+  }
+  input::placeholder, textarea::placeholder { @apply text-label; }
+  input:focus, select:focus, textarea:focus { @apply bg-surface; }
   textarea { @apply min-h-32; }
-  :focus-visible { @apply outline-2 outline-offset-4 outline-teal-700; }
+
+  :focus-visible { @apply outline-2 outline-offset-2 outline-primary; }
 }
 
 @layer components {
-  .eyebrow { @apply text-xs font-black uppercase tracking-[0.18em] text-[#9d3b29]; }
-  .filter-label { @apply text-xs font-bold uppercase tracking-wide text-slate-700; }
-  .library-card { @apply rounded-2xl border border-slate-900/15 bg-white/65 p-6 shadow-[0_12px_35px_rgba(23,63,58,0.06)]; }
-  .empty-state { @apply rounded-2xl border border-dashed border-slate-900/25 bg-white/40 p-8 text-slate-600; }
+  /* Small-caps label treatment used for eyebrows and field labels throughout the reference. */
+  .eyebrow {
+    @apply text-[11px] font-extrabold uppercase tracking-[0.16em] text-label;
+  }
+  .filter-label {
+    @apply text-[11px] font-extrabold uppercase tracking-[0.14em] text-label;
+  }
+  /* Dark bands (hero, footer, aside panels) invert link colour. */
+  .on-dark a { @apply text-white; }
+  .on-dark a:hover, .on-dark a:focus-visible { @apply text-accent; }
 }

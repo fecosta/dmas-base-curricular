@@ -1,10 +1,16 @@
 "use client";
 
-export default function ContributionsError({ reset }: { error: Error; reset: () => void }) {
-  return <main id="contenido" className="mx-auto max-w-3xl px-5 py-16">
-    <p className="eyebrow">Gestión no disponible</p>
-    <h1 className="mt-2 text-4xl text-[#173f3a]">No pudimos abrir la administración de contenido.</h1>
-    <p className="mt-4 text-slate-700">Inténtalo nuevamente. Si el problema continúa, vuelve más tarde.</p>
-    <button type="button" onClick={reset} className="mt-8">Reintentar</button>
-  </main>;
+import { Page } from "@/components/ui/page";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+
+export default function ContributionsError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  return <Page width="content">
+    <EmptyState
+      title="No pudimos abrir la administración de contenido."
+      description="Inténtalo nuevamente. Si el problema continúa, vuelve más tarde."
+      action={<Button onClick={reset}>Reintentar</Button>}
+    />
+    {error.digest && <p className="mt-4 text-center text-xs text-ink-muted">Referencia del error: {error.digest}</p>}
+  </Page>;
 }

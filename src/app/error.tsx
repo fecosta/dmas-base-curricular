@@ -1,9 +1,16 @@
 "use client";
 
-export default function ErrorPage({ reset }: { reset: () => void }) {
-  return <main id="contenido" className="mx-auto max-w-lg space-y-6 px-6 py-16">
-    <h1>No pudimos completar la solicitud</h1>
-    <p>Inténtalo de nuevo. Si el problema continúa, contacta con la administración.</p>
-    <button onClick={reset}>Reintentar</button>
-  </main>;
+import { Page } from "@/components/ui/page";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+
+export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  return <Page width="content">
+    <EmptyState
+      title="No pudimos completar la solicitud"
+      description="Inténtalo de nuevo. Si el problema continúa, contacta con la administración."
+      action={<Button onClick={reset}>Reintentar</Button>}
+    />
+    {error.digest && <p className="mt-4 text-center text-xs text-ink-muted">Referencia del error: {error.digest}</p>}
+  </Page>;
 }

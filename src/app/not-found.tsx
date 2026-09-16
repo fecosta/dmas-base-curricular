@@ -1,8 +1,13 @@
-import Link from "next/link";
+import { Page } from "@/components/ui/page";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ButtonLink } from "@/components/ui/button";
 
 export default function NotFound() {
-  return <main id="contenido" className="mx-auto max-w-lg space-y-6 px-6 py-16">
-    <h1>Página no encontrada</h1>
-    <Link href="/app">Volver al inicio</Link>
-  </main>;
+  return <Page width="content">
+    <EmptyState
+      title="Página no encontrada"
+      description="La dirección que abriste no existe o ha cambiado."
+      action={<ButtonLink href="/app">Volver al inicio</ButtonLink>}
+    />
+  </Page>;
 }

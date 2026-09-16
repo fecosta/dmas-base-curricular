@@ -1,3 +1,6 @@
+import { Page } from "@/components/ui/page";
+import { LoadingState } from "@/components/ui/loading-state";
+
 export default function Loading() {
-  return <main id="contenido" className="p-12"><p role="status">Cargando…</p></main>;
+  return <Page width="content"><LoadingState title="Cargando…" /></Page>;
 }

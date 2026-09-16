@@ -5,6 +5,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const { requireAccess } = vi.hoisted(() => ({ requireAccess: vi.fn() }));
 vi.mock("@/lib/auth/access", () => ({ requireAccess }));
 vi.mock("@/app/login/actions", () => ({ signOut: vi.fn() }));
+// The navigation is a client component that reads the current path to mark the
+// active item; there is no router in this environment.
+vi.mock("next/navigation", () => ({ usePathname: () => "/app/library" }));
 import ApplicationLayout from "@/app/app/layout";
 
 describe("role-aware application navigation", () => {
