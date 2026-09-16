@@ -197,6 +197,7 @@ export type Database = {
         Args: {
           before_archived_at?: string;
           before_content_id?: string;
+          before_content_type?: Database["public"]["Enums"]["curriculum_content_type"];
           content_type_filter?: Database["public"]["Enums"]["curriculum_content_type"];
           page_size?: number;
         };

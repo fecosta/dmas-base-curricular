@@ -628,7 +628,7 @@ select is(
   'archived listing preserves archival attribution');
 
 select bag_eq(
-  $$select content_type::text from public.list_archived_governed_content(50, null, null, 'instructor')$$,
+  $$select content_type::text from public.list_archived_governed_content(50, null, null, null, 'instructor')$$,
   $$values ('instructor')$$,
   'archived listing honours the content-type filter');
 
@@ -642,14 +642,17 @@ select throws_ok($$select * from public.list_archived_governed_content(101)$$,
 select throws_ok($$select * from public.list_archived_governed_content(null)$$,
   '22023', 'archived page size must be between 1 and 100', 'archived listing rejects a null page size');
 select throws_ok($$select * from public.list_archived_governed_content(50, now())$$,
-  '22023', 'archived cursor requires both keyset values', 'archived listing rejects a partial keyset cursor');
+  '22023', 'archived cursor requires all keyset values', 'archived listing rejects a partial keyset cursor');
+select throws_ok($$select * from public.list_archived_governed_content(50, now(), 'b3000000-0000-4000-8000-000000000003')$$,
+  '22023', 'archived cursor requires all keyset values', 'archived listing rejects a cursor missing the content type');
 
 -- Keyset pagination walks the whole archived set without repeating a row.
 select is((select count(distinct content_id) from (
     select content_id from public.list_archived_governed_content(1)
     union all
     select page.content_id from public.list_archived_governed_content(1) first
-    cross join lateral public.list_archived_governed_content(1, first.archived_at, first.content_id) page
+    cross join lateral public.list_archived_governed_content(
+      1, first.archived_at, first.content_id, first.content_type) page
   ) walked), 2::bigint,
   'archived keyset pagination reaches every archived identity exactly once');
 
@@ -683,12 +686,100 @@ select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-0000000
 select throws_ok($$select * from public.list_archived_governed_content()$$,
   '42501', 'eligible Admin access required', 'live role revocation removes archived-read authority');
 
+-- A uuid is unique per identity table, never across them, so a Material and an
+-- Institution may legitimately share one. When they also share archived_at, a
+-- cursor of (archived_at, content_id) alone is not a total order and a page
+-- boundary between the tied rows silently skips one. content_type completes the
+-- ordering.
+reset role;
+insert into public.materials(id) values ('bf000000-0000-4000-8000-00000000000a');
+insert into public.material_revisions(
+  id, material_id, revision_number, status, title, material_type,
+  created_by, contributor_organization_id, published_at
+) values (
+  'bf100000-0000-4000-8000-00000000000a', 'bf000000-0000-4000-8000-00000000000a', 1, 'Published',
+  'Material en colisión', 'Informe',
+  'b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-000000000001', now()
+);
+update public.materials set current_published_revision_id = 'bf100000-0000-4000-8000-00000000000a'
+where id = 'bf000000-0000-4000-8000-00000000000a';
+
+insert into public.institutions(id) values ('bf000000-0000-4000-8000-00000000000a');
+insert into public.institution_revisions(
+  id, institution_id, revision_number, status, name, institution_type,
+  created_by, contributor_organization_id, published_at
+) values (
+  'bf100000-0000-4000-8000-00000000000b', 'bf000000-0000-4000-8000-00000000000a', 1, 'Published',
+  'Institución en colisión', 'Universidad',
+  'b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-000000000001', now()
+);
+update public.institutions set current_published_revision_id = 'bf100000-0000-4000-8000-00000000000b'
+where id = 'bf000000-0000-4000-8000-00000000000a';
+
+update public.materials set archived_at = '2026-09-16T10:00:00Z', archived_by = 'b2000000-0000-4000-8000-000000000001'
+where id = 'bf000000-0000-4000-8000-00000000000a';
+update public.institutions set archived_at = '2026-09-16T10:00:00Z', archived_by = 'b2000000-0000-4000-8000-000000000001'
+where id = 'bf000000-0000-4000-8000-00000000000a';
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+
+select is((select count(*) from public.list_archived_governed_content(100)), 4::bigint,
+  'the colliding archived identities are both present in an unpaginated listing');
+
+-- Walk the whole set one row at a time through the cursor.
+create temporary table archived_walk(step integer, content_type public.curriculum_content_type, content_id uuid) on commit drop;
+do $walk$
+declare
+  cursor_archived_at timestamptz := null;
+  cursor_content_id uuid := null;
+  cursor_content_type public.curriculum_content_type := null;
+  entry record;
+  step integer := 0;
+begin
+  loop
+    select page.content_type, page.content_id, page.archived_at into entry
+    from public.list_archived_governed_content(1, cursor_archived_at, cursor_content_id, cursor_content_type) page;
+    exit when entry is null;
+    step := step + 1;
+    insert into archived_walk values (step, entry.content_type, entry.content_id);
+    cursor_archived_at := entry.archived_at;
+    cursor_content_id := entry.content_id;
+    cursor_content_type := entry.content_type;
+    exit when step > 20;
+  end loop;
+end;
+$walk$;
+
+select is((select count(*) from archived_walk), 4::bigint,
+  'single-row keyset pagination returns every archived identity across tied rows');
+select is((select count(distinct (content_type, content_id)) from archived_walk), 4::bigint,
+  'single-row keyset pagination never duplicates a tied row');
+select bag_eq(
+  $$select content_type::text, content_id::text from archived_walk$$,
+  $$select content_type::text, content_id::text from public.list_archived_governed_content(100)$$,
+  'the paginated walk and the unpaginated listing agree exactly');
+select is((select count(*) from archived_walk
+  where content_id = 'bf000000-0000-4000-8000-00000000000a'), 2::bigint,
+  'both identities sharing a uuid and archived_at survive pagination');
+
+select is((select count(*) from public.list_archived_governed_content(100, null, null, null, 'institution')
+  where content_id = 'bf000000-0000-4000-8000-00000000000a'), 1::bigint,
+  'the content-type filter still isolates one side of a uuid collision');
+
+select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000003","role":"authenticated"}', true);
+select throws_ok($$select * from public.list_archived_governed_content()$$,
+  '42501', 'eligible Admin access required', 'Contributors remain denied after the keyset correction');
+select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000004","role":"authenticated"}', true);
+select throws_ok($$select * from public.list_archived_governed_content()$$,
+  '42501', 'eligible Admin access required', 'revoked Admins remain denied after the keyset correction');
+
 reset role;
 select ok(has_function_privilege('authenticated',
-  'public.list_archived_governed_content(integer,timestamptz,uuid,public.curriculum_content_type)', 'EXECUTE'),
+  'public.list_archived_governed_content(integer,timestamptz,uuid,public.curriculum_content_type,public.curriculum_content_type)', 'EXECUTE'),
   'authenticated may invoke the live-Admin-gated archived listing');
 select ok(not has_function_privilege('anon',
-  'public.list_archived_governed_content(integer,timestamptz,uuid,public.curriculum_content_type)', 'EXECUTE'),
+  'public.list_archived_governed_content(integer,timestamptz,uuid,public.curriculum_content_type,public.curriculum_content_type)', 'EXECUTE'),
   'anonymous callers cannot list archived content');
 select is((select count(*) from pg_proc procedure join pg_namespace namespace on namespace.oid = procedure.pronamespace
   where namespace.nspname = 'public' and procedure.proname in (
