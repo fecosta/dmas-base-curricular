@@ -1,0 +1,4580 @@
+{
+  "version": 1,
+  "axes": [
+    {
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Strategy & Campaign",
+      "display_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Evidence-based Public Policy",
+      "display_order": 2,
+      "is_active": true
+    }
+  ],
+  "identities": {
+    "modules": [
+      {
+        "id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "current_published_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838"
+      },
+      {
+        "id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "current_published_revision_id": "959a770e-74a1-5552-b196-5df30b32eb03"
+      },
+      {
+        "id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "current_published_revision_id": "e1a10785-2ad9-51f4-aaad-590fccf939e2"
+      },
+      {
+        "id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "current_published_revision_id": "d5a8802a-526f-562f-bf43-4d89ce0268e2"
+      },
+      {
+        "id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "current_published_revision_id": "b2b69f35-772e-5f17-bbae-e6e08803be2c"
+      },
+      {
+        "id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "current_published_revision_id": "1d54ee1e-fe36-5e2d-b84f-f9ba11b55be1"
+      },
+      {
+        "id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "current_published_revision_id": "a37652ab-acac-5361-8db7-daeb05507097"
+      },
+      {
+        "id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "current_published_revision_id": "c07f6304-f393-560f-a697-baaee15aff52"
+      },
+      {
+        "id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "current_published_revision_id": "d612873f-425e-511f-8ca3-bf7c145ef299"
+      },
+      {
+        "id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "current_published_revision_id": "0fbdd3cc-a829-53c7-a25b-522d5532b703"
+      },
+      {
+        "id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "current_published_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92"
+      },
+      {
+        "id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "current_published_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce"
+      },
+      {
+        "id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "current_published_revision_id": "4ecbbddc-49e6-51d3-8ac4-c0aca9ebbff8"
+      },
+      {
+        "id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "current_published_revision_id": "60f44d02-351c-56da-bf8c-e8fb69058ec4"
+      },
+      {
+        "id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "current_published_revision_id": "13ed35a0-643a-506a-965c-679e760d84bf"
+      },
+      {
+        "id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "current_published_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad"
+      },
+      {
+        "id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "current_published_revision_id": "1b926715-5782-51ed-b497-359109a8b886"
+      }
+    ],
+    "program_topics": [
+      {
+        "id": "d8887483-5fbe-57da-ba31-4da9afed6f1a",
+        "current_published_revision_id": "a96b5c3c-e615-5a2c-94be-d95587e32ece"
+      },
+      {
+        "id": "7ed41369-c1f6-5c6a-a66c-f312c5800ab1",
+        "current_published_revision_id": "802e9b80-ed88-5c45-a175-77f9fa9f01de"
+      },
+      {
+        "id": "0db8248e-8fc3-5870-a77a-c566659c9bd4",
+        "current_published_revision_id": "08dfa34a-7985-5525-9630-393818f375c6"
+      },
+      {
+        "id": "58288e4f-fbcb-5c4b-91ec-c389969b160e",
+        "current_published_revision_id": "ef4acf63-ca3e-5e80-8bfb-d3bf1c850332"
+      },
+      {
+        "id": "ae70536b-5d0f-56f7-947f-15e38d173e41",
+        "current_published_revision_id": "620fb798-7816-5305-852d-fa474019b7bc"
+      },
+      {
+        "id": "c8353199-3038-5ebf-ae38-1f01d9e3e13d",
+        "current_published_revision_id": "8e73ebd3-ad2f-5bd8-99e3-40f7f0bae7b4"
+      },
+      {
+        "id": "693669b9-4566-5cb8-abdd-b974485f4845",
+        "current_published_revision_id": "f23b620d-5ddf-51e9-ae31-b3c4dd51aab4"
+      },
+      {
+        "id": "6b680011-7653-54cd-89dd-7897a456bcb1",
+        "current_published_revision_id": "cda5cff3-b8de-5411-a8f8-2d68316c7596"
+      },
+      {
+        "id": "483b68b1-cccd-5387-83e3-a92c659c86d1",
+        "current_published_revision_id": "0a82d266-bffc-5064-950f-9023fcfb7487"
+      },
+      {
+        "id": "0d8bc01a-356e-57ca-ae83-8ed6fd3e26e0",
+        "current_published_revision_id": "0ecc6fe0-3be6-561e-bac7-6f476e0fb78b"
+      },
+      {
+        "id": "0a41fa7c-c861-53f2-b6b9-a5cbb929dff7",
+        "current_published_revision_id": "c6907f42-e7ef-5a00-8cfe-9209a6dedb31"
+      },
+      {
+        "id": "314e70ee-a1c8-536d-a493-349698144817",
+        "current_published_revision_id": "a1055708-58b4-5c5c-a487-2bce935579a9"
+      },
+      {
+        "id": "16dd82b2-7954-533d-b716-36b85f7cd313",
+        "current_published_revision_id": "0ae3ac71-34a9-55b3-ae2f-4328f761508c"
+      },
+      {
+        "id": "6c7a6ede-5c9f-55f9-afb2-5309179d628d",
+        "current_published_revision_id": "074a3ad9-795c-5aa9-a21a-db3e40f5ff2b"
+      },
+      {
+        "id": "e2dbd8aa-d34d-5a9a-baca-91b22e77036c",
+        "current_published_revision_id": "0eeae113-492c-591f-a114-9450192b5e27"
+      },
+      {
+        "id": "fedc7ecf-01d4-54a4-a908-efcc66cfc126",
+        "current_published_revision_id": "4e3e42df-a124-5596-a6bc-bec9c50278c9"
+      },
+      {
+        "id": "b0477b74-eb41-5979-9133-b74ca88f3db5",
+        "current_published_revision_id": "cd877c35-7d4a-5611-9342-1a9fca9dda54"
+      },
+      {
+        "id": "24922ec7-4b9f-5013-8375-94a521674095",
+        "current_published_revision_id": "7f569881-8afd-58b0-8c54-c59f3de14d45"
+      },
+      {
+        "id": "0e8dcc36-1254-592c-b6f8-03c51d651de8",
+        "current_published_revision_id": "fe6417e0-046d-5171-9dc2-15a9b904f759"
+      },
+      {
+        "id": "dd24e86a-5b10-589d-a652-8dfd12caf172",
+        "current_published_revision_id": "8f30019b-fa60-5496-8d98-473b88ef4c14"
+      },
+      {
+        "id": "55aadadd-a5fd-5714-8890-60ced519bb26",
+        "current_published_revision_id": "d4be8a6d-87bb-5f71-badd-e205e1ae1eba"
+      },
+      {
+        "id": "06817420-74bc-5b6f-8278-6421299270d8",
+        "current_published_revision_id": "4e001cea-6d52-5685-be44-71d922d4a5a1"
+      },
+      {
+        "id": "048db097-3166-5f2d-8e35-0d2f9da04dd4",
+        "current_published_revision_id": "9b95eb46-ef97-5902-bd91-110b8aaa60f7"
+      },
+      {
+        "id": "d90afa07-84e9-51ad-9c5b-482b8e761563",
+        "current_published_revision_id": "0c76322e-7c93-5673-8a28-137e2d240b41"
+      },
+      {
+        "id": "2045406c-255d-53f8-903a-e8571275ecb6",
+        "current_published_revision_id": "37cfe8ea-df3e-5704-a44f-10d08b83c8d9"
+      },
+      {
+        "id": "46a4493a-a8a3-5c33-b8bc-6824ac9c5008",
+        "current_published_revision_id": "5fb6288d-bd8b-5e59-a8c8-4ed043e72d8d"
+      },
+      {
+        "id": "0dd0432f-600f-5bed-8d66-651d7153d1a3",
+        "current_published_revision_id": "03ca2246-fed0-5b02-9726-68fcd47cc769"
+      },
+      {
+        "id": "a9145d6b-3c03-56cb-8c8d-a950e09ec7d1",
+        "current_published_revision_id": "859d2d59-eeb3-540f-9502-f348389be6b7"
+      },
+      {
+        "id": "d07f0613-efd3-5666-97a5-838cf7fc7af1",
+        "current_published_revision_id": "1e93e30d-e6b9-5b70-9f86-cab500454381"
+      },
+      {
+        "id": "d3170d6d-1f6c-5d18-adca-8abc4a48e435",
+        "current_published_revision_id": "bf0ac7a9-09a5-5aa4-9643-73ef158fd086"
+      },
+      {
+        "id": "a3fb0bd5-10aa-5615-a323-9351baf108c4",
+        "current_published_revision_id": "fa84bb74-0a86-5542-ab3c-05911c3fb863"
+      },
+      {
+        "id": "b4b7d451-fc4e-53dd-adae-94eaae07b337",
+        "current_published_revision_id": "73e19682-709b-52a1-a937-d6b85bef50f7"
+      },
+      {
+        "id": "1cbf2592-8809-5144-8c82-bd575e4ff913",
+        "current_published_revision_id": "8e534eaf-2b9e-5874-8cc1-404a5806e876"
+      },
+      {
+        "id": "1222d9bb-3a30-5a41-9d55-5a14e995ba4c",
+        "current_published_revision_id": "b1bd2966-ddde-5f76-bbad-3dbed560c3da"
+      },
+      {
+        "id": "227301c2-051f-5d7e-b118-ae103fb522e9",
+        "current_published_revision_id": "1534502d-6cf4-5e1f-bd9d-45b7bd49667e"
+      },
+      {
+        "id": "618f05e8-f0c3-53e7-9eb7-772f4984cbb9",
+        "current_published_revision_id": "23fc1d69-ffcd-5e87-a774-dc45ca7522e6"
+      },
+      {
+        "id": "0470c779-5654-54f2-a02b-89fef44a49a1",
+        "current_published_revision_id": "28aeba65-472d-5d1b-921a-02d20cbcc8e4"
+      },
+      {
+        "id": "7f8e96f0-de54-5ccf-9a07-77a57d8dd438",
+        "current_published_revision_id": "66f03367-bb07-5f8d-834c-8e3b8962f61b"
+      },
+      {
+        "id": "e7349715-6998-5fe3-8537-41e9a5861662",
+        "current_published_revision_id": "7e582a73-216a-5e79-bb3d-69b03ecd9069"
+      },
+      {
+        "id": "b86aa9cb-c6b7-5516-8046-1dcd0bace631",
+        "current_published_revision_id": "edfdfa01-fc1f-5c3b-a561-68a14ca08b19"
+      },
+      {
+        "id": "5b56b76a-d29b-5222-9f17-a1c3f9a233bf",
+        "current_published_revision_id": "b4bfcef9-2e18-5651-a324-0cd1a88d170b"
+      },
+      {
+        "id": "6b6dfb96-bf0d-5c5a-ab91-0917223270a2",
+        "current_published_revision_id": "0459e38d-0737-51c7-8a77-e31f50385536"
+      },
+      {
+        "id": "97b0885e-b0de-5b77-99bc-a98f963b1136",
+        "current_published_revision_id": "eb61c157-0e4d-51fd-9e1c-dc368d91e80e"
+      },
+      {
+        "id": "8422b292-eb19-516a-940b-99d0f98b55f1",
+        "current_published_revision_id": "ee3120dd-b918-54ab-9541-2264be092c0c"
+      },
+      {
+        "id": "2fe8e73f-f5df-5324-aa66-c46c7dc25b14",
+        "current_published_revision_id": "fb299014-6a12-5f90-9364-d7b4386d16a5"
+      },
+      {
+        "id": "48a33876-834a-5cbd-8fb1-1ad30ac6d497",
+        "current_published_revision_id": "f2f50ab2-1803-5494-bfeb-9d1ffeda1821"
+      },
+      {
+        "id": "d1f26366-7772-59a2-9221-99e6ac715e5f",
+        "current_published_revision_id": "643c32e1-2913-5e15-b3b3-4edd05201cc2"
+      },
+      {
+        "id": "422c3213-0074-5b6c-8faa-12323b6b7e80",
+        "current_published_revision_id": "faa1ac02-2c58-5ce7-8c5f-ca34d4fd2a30"
+      },
+      {
+        "id": "43708336-559c-544f-a4bf-52899ddb2965",
+        "current_published_revision_id": "bdf6a19d-4111-56c5-b14e-4e3565cf27b6"
+      },
+      {
+        "id": "f6626638-512d-5b40-92cf-a0c717ae8b74",
+        "current_published_revision_id": "b952df03-08cb-56ff-9985-acfab75b455c"
+      },
+      {
+        "id": "9a2d8e86-e0a8-546c-b68f-bf61300045e4",
+        "current_published_revision_id": "6bdae978-dc57-575d-bdc2-946faf173a69"
+      },
+      {
+        "id": "3385f96f-f10d-5be0-8789-3f00ba8eab39",
+        "current_published_revision_id": "ac89aab2-6aac-5d10-8ecf-3562623ed2f6"
+      },
+      {
+        "id": "fe9b820e-cce3-57c1-84f8-20d59f4716c9",
+        "current_published_revision_id": "92aebb24-9fd5-54af-ba0f-c5648165c34d"
+      },
+      {
+        "id": "1990ff9c-dae7-5129-9c2d-38e5335adf99",
+        "current_published_revision_id": "1701d33f-5ef1-54e6-9698-950bb8f03f09"
+      },
+      {
+        "id": "94536d64-4703-5372-8e32-dc7ac2724911",
+        "current_published_revision_id": "1ff60251-c1fc-5228-86e0-e47e43744798"
+      },
+      {
+        "id": "17be827c-daed-5eb6-afcd-22856905769c",
+        "current_published_revision_id": "1cbe8933-d000-5785-b6e5-40dd7c85bb2b"
+      },
+      {
+        "id": "a9b4270d-c4bc-5c79-9caf-1993d3188211",
+        "current_published_revision_id": "4770940f-c11d-5704-b4ed-f7f6a760f2ae"
+      },
+      {
+        "id": "55ce9c3b-12f3-504c-9a06-8f2d3989bbdd",
+        "current_published_revision_id": "30c75e4a-1215-519b-8acb-1fa138213a6f"
+      },
+      {
+        "id": "5fada5b5-5123-5397-8ad3-f8d5a19d3857",
+        "current_published_revision_id": "c615b1af-fa95-5889-b526-e8222242f172"
+      },
+      {
+        "id": "72d86df4-1c2b-50a5-9e19-4565eb04913b",
+        "current_published_revision_id": "f332cd1b-1bbd-5282-91a7-476ad2b124fb"
+      },
+      {
+        "id": "108ecc87-4572-564e-8d31-f794c8f02882",
+        "current_published_revision_id": "2c583b1b-57bc-5d96-a1eb-795f642c0f67"
+      },
+      {
+        "id": "3db336ee-4e2f-5cb3-aa1b-b99d043479e5",
+        "current_published_revision_id": "42204b08-872c-57dd-9efd-d55743aff75b"
+      },
+      {
+        "id": "16a9ad6d-2db9-591d-bfbb-d4e1276405c6",
+        "current_published_revision_id": "06189574-faa0-5e7b-a6e7-badfed17ade1"
+      },
+      {
+        "id": "3a6f3803-47ee-5376-8c21-f8aff6390796",
+        "current_published_revision_id": "1c3b1da8-417a-5d2c-9523-f921ae9384ad"
+      },
+      {
+        "id": "28a5cf47-8f07-5369-9726-616b968632a0",
+        "current_published_revision_id": "6851d213-fb12-51ca-a6e2-d18999e3f95a"
+      },
+      {
+        "id": "8cdda55e-7117-5781-8ac9-0b4a858be289",
+        "current_published_revision_id": "357bf3ff-5115-5ceb-8070-e7beb210d368"
+      },
+      {
+        "id": "7b4efc62-fcf3-50fb-824f-9817b7860b5c",
+        "current_published_revision_id": "c6aefbba-4537-59e6-ba2b-5b538bbd803e"
+      },
+      {
+        "id": "cb0b4cb4-1807-5199-a56c-6ccd44dc1423",
+        "current_published_revision_id": "888d94eb-5280-56b5-9ffc-9862db15c499"
+      },
+      {
+        "id": "27739400-9528-5c85-950a-81fe90502e57",
+        "current_published_revision_id": "7719462c-fa5d-5874-b4db-3272d5853d2e"
+      },
+      {
+        "id": "8125fc3e-82cc-5917-af4c-29dc3138d1cd",
+        "current_published_revision_id": "39571fe1-0c30-5420-a693-ebff337bae4a"
+      },
+      {
+        "id": "afab439c-93ca-561f-a55a-8c4d1e08a684",
+        "current_published_revision_id": "2872a786-7442-5077-b087-c110670bd2fc"
+      },
+      {
+        "id": "362b324d-f2cd-52ca-820e-ee4b287f1820",
+        "current_published_revision_id": "89e89acb-b5c5-5f73-a702-90be4ec691ee"
+      },
+      {
+        "id": "46d6f3aa-2487-534f-975e-d1961d0c13e8",
+        "current_published_revision_id": "a093464f-c4fa-5618-80c0-4b3201f98aa6"
+      },
+      {
+        "id": "3c666a9b-cbfc-5512-8ed5-fd3dcd8f27e8",
+        "current_published_revision_id": "5819af51-eec8-5a27-b84e-b63fa3c2daa4"
+      },
+      {
+        "id": "5f0e5818-cd43-500f-9aec-089b3b7c28a4",
+        "current_published_revision_id": "e70c1729-9e27-5e45-b57f-a543c9a8b231"
+      },
+      {
+        "id": "cd759fee-8fb4-559a-b37f-4ab54d4aa38e",
+        "current_published_revision_id": "5322b460-1e2e-5dd6-b0da-115ed98bd1a8"
+      },
+      {
+        "id": "4d7a954d-7afe-59f8-b5dc-1decf56d1397",
+        "current_published_revision_id": "54fa969c-403f-5750-b2ad-89605ef17abe"
+      },
+      {
+        "id": "3fb389d0-5d87-5de0-bfb1-25fa3096f404",
+        "current_published_revision_id": "0661cadb-b44f-532f-a14f-4ac72303a1af"
+      },
+      {
+        "id": "f2de91a9-dab6-533b-a5fb-8768f67da084",
+        "current_published_revision_id": "e8042332-96f7-51d3-9021-95c5dc84e8ed"
+      },
+      {
+        "id": "1274bcd9-2374-5e12-ae8c-22a9525949f4",
+        "current_published_revision_id": "bbefdde4-529c-5461-8de6-7a66336397e7"
+      },
+      {
+        "id": "f5cc90e6-4879-5da2-b1c9-77711746f380",
+        "current_published_revision_id": "231e550d-bbb2-5fc4-8cdf-08e4b4493ea4"
+      },
+      {
+        "id": "a03d72e9-cae9-5baa-a3bd-3de41058f819",
+        "current_published_revision_id": "a13c1b4d-4eb5-5717-a835-402631bd0cf7"
+      },
+      {
+        "id": "fa962a91-02ad-5d40-9a22-2290511aea7b",
+        "current_published_revision_id": "a8433c46-eb26-568d-ada0-1415543a5307"
+      },
+      {
+        "id": "4106d848-8d17-56e2-a8c7-6d1e0b3e9b6d",
+        "current_published_revision_id": "a2296099-878e-59ac-b51c-7b1fe18e569a"
+      },
+      {
+        "id": "041345f8-851d-5b58-ad5b-c25a03722eb3",
+        "current_published_revision_id": "2b4abe12-cee8-544d-b557-4bd1255d553c"
+      },
+      {
+        "id": "b4c1f5ea-0152-5747-9d59-2b3fbce47fdf",
+        "current_published_revision_id": "d4cea2af-35dc-5c47-8dd6-6773999cd194"
+      },
+      {
+        "id": "db825cd0-3e88-5838-bb22-d0892d974690",
+        "current_published_revision_id": "e4b8c215-e5eb-5651-8bc7-6f5f57c034d4"
+      },
+      {
+        "id": "f7106ca9-bfb4-51ad-a368-6ca2f353d71b",
+        "current_published_revision_id": "4a4d24df-7cdb-572e-976a-bbbbd70e4767"
+      },
+      {
+        "id": "477397f2-b64d-58eb-a113-1eb8eddb2c69",
+        "current_published_revision_id": "05c6fe2a-43d1-593e-9111-e69c5fbcc11d"
+      },
+      {
+        "id": "e965e0bf-3412-5182-8f91-a669a54975fb",
+        "current_published_revision_id": "507c204b-69a2-5ae6-83b3-09925249c1dc"
+      }
+    ],
+    "instructors": [
+      {
+        "id": "7a29933a-3ca3-574c-81e4-835cf77ed5d6",
+        "current_published_revision_id": "ef1a859f-39ca-5687-8276-e571c2c67869"
+      },
+      {
+        "id": "a9b6c771-16b1-5a6e-b8a4-808b0280ffb3",
+        "current_published_revision_id": "a6df113b-63eb-58c3-a7e6-a80ade8e6887"
+      },
+      {
+        "id": "4399f004-da41-5126-b295-0d0904516c68",
+        "current_published_revision_id": "6f599ad4-37f8-5d69-9c19-50bf758558e1"
+      },
+      {
+        "id": "743b2a90-0eb1-551c-8825-29a9f6d97056",
+        "current_published_revision_id": "bebb5406-09a9-5e5a-b785-689c5b511624"
+      },
+      {
+        "id": "b1aeb7ac-43c0-5ead-a09a-1a2551f91411",
+        "current_published_revision_id": "4855a1a4-1518-57ba-b74a-24e0f4453802"
+      },
+      {
+        "id": "860c232a-da93-560a-8497-6d418dfe08a4",
+        "current_published_revision_id": "2692dbe8-660d-5860-b9c3-4835a4d6d57a"
+      }
+    ],
+    "teaching_notes": [
+      {
+        "id": "23f6339e-0275-5f6e-a6e8-48b6100d627c",
+        "current_published_revision_id": "b7f2194f-b5f2-54c0-8a46-e3fbb5162fe7"
+      },
+      {
+        "id": "21ed47ba-a91e-5ea6-b1e8-8846a403facf",
+        "current_published_revision_id": "f237e7c6-3934-5d92-801e-7127d53cd74b"
+      },
+      {
+        "id": "81a3b29d-c0f2-530f-9746-5de871059a79",
+        "current_published_revision_id": "bacd3a17-dde6-50ff-9e1b-818cffb280f6"
+      },
+      {
+        "id": "b3873fc3-14ce-5cc4-bdae-9c3f948cc64c",
+        "current_published_revision_id": "f5959213-faa7-5006-a5a9-f44bae9030b8"
+      },
+      {
+        "id": "949cbcd5-681e-576c-9011-03528f2c830a",
+        "current_published_revision_id": "2c9c661c-d8ac-5c08-a7a7-71b56acfec33"
+      },
+      {
+        "id": "559e10ec-ccd8-5056-82ac-12c30904521d",
+        "current_published_revision_id": "fef5e55e-9f04-58a4-a277-fd30feaf75d8"
+      },
+      {
+        "id": "cdc2cab1-f261-505b-bc82-44adbb09d87a",
+        "current_published_revision_id": "08190d08-fd9d-594c-a8ea-85c0eedd02f1"
+      },
+      {
+        "id": "20a9d10b-8380-5455-84aa-a88d76aeba8c",
+        "current_published_revision_id": "44cd197d-5010-55f8-88a3-d1df0665871d"
+      },
+      {
+        "id": "521e779a-53c1-52d6-bc9c-a2aa80cc6a35",
+        "current_published_revision_id": "596001e9-58e9-590a-822a-1293b3e6163d"
+      },
+      {
+        "id": "6b92ca5c-24eb-5753-aed8-f23fc7ce7773",
+        "current_published_revision_id": "4f01978e-3fcc-5881-bf74-d63a2ce9a86a"
+      },
+      {
+        "id": "58d42657-c7b8-5464-b79d-d4efe4d6a044",
+        "current_published_revision_id": "d5a745eb-3d84-56d0-b4cb-b253cb04b4d9"
+      },
+      {
+        "id": "4934d858-e03b-5cd1-a7fc-d4cf8986d726",
+        "current_published_revision_id": "76c1d313-7c84-5269-82b9-9ddd4df6405f"
+      },
+      {
+        "id": "3803edbf-bd91-54e9-9778-6b6ba73a26c2",
+        "current_published_revision_id": "a00c5d43-9ccb-5601-8fa7-d3e9ea861a8e"
+      },
+      {
+        "id": "7a4532b5-f17c-5c69-9256-863ba06729bf",
+        "current_published_revision_id": "dffa4ac8-d4da-5fe4-bdaf-801e6ffab34a"
+      },
+      {
+        "id": "4f3a6e70-a801-5001-bc71-a6c675aee5c6",
+        "current_published_revision_id": "2779ce65-ee44-5f12-9c94-982d4e69b685"
+      },
+      {
+        "id": "a6821459-33ef-52bc-a49c-1bd417622979",
+        "current_published_revision_id": "38e2b311-9b94-5e25-870b-9eb624fd3892"
+      },
+      {
+        "id": "c6370a0d-b3bb-5ae7-b175-03e35ddbf5f4",
+        "current_published_revision_id": "bb3e72e4-bb34-5119-813f-717f0c2436f0"
+      },
+      {
+        "id": "f5eace3f-98f6-52ee-a20a-50a04edcce73",
+        "current_published_revision_id": "d9c9ac87-f6d7-5920-a98d-f1083dbfd9ac"
+      },
+      {
+        "id": "8910edd3-908a-5569-aa38-f12483aaced0",
+        "current_published_revision_id": "afae6e50-7491-51ce-aea0-3feebf5ce336"
+      },
+      {
+        "id": "dc4e7fb9-2f83-5c53-b6d9-340cfd8ccb2e",
+        "current_published_revision_id": "c585a02c-b360-517d-b6c1-3b9584d05232"
+      },
+      {
+        "id": "ab452aba-7ae2-5846-9190-af4467dfb7e9",
+        "current_published_revision_id": "7669737f-24ad-5641-bcf8-aa8b8b10ad99"
+      },
+      {
+        "id": "0bc514e6-7c57-57dc-82ed-6b06ab046983",
+        "current_published_revision_id": "f3bc9eb6-a469-5658-8fcc-982b79d1dfa2"
+      },
+      {
+        "id": "36f01492-160b-5dbe-ba6b-cde35d552b5e",
+        "current_published_revision_id": "83d1f7b9-b243-5525-92cf-11dbe224b669"
+      },
+      {
+        "id": "3d6bfb4b-37c9-5ee6-a1ec-cfb61246d051",
+        "current_published_revision_id": "881d6f8e-0167-5513-8849-3f132740c5bf"
+      },
+      {
+        "id": "da14c88a-6b8d-5054-bd18-411947f061ab",
+        "current_published_revision_id": "3b18e7bf-6612-5b3e-9316-7288a2fb0b57"
+      },
+      {
+        "id": "2dca5f88-515a-51f1-b9e2-17acfa584e46",
+        "current_published_revision_id": "81eb6a83-073e-55c9-a323-af786388319b"
+      },
+      {
+        "id": "702c7a30-49cf-5b6f-8ef9-e6b84a7f2823",
+        "current_published_revision_id": "f581d3d3-a534-5139-a3e9-19dd1e4591d9"
+      },
+      {
+        "id": "03c9345c-03d8-53c1-ab33-b62f9fd11173",
+        "current_published_revision_id": "79000bda-910c-5f0d-bc71-0c23baf7a69d"
+      },
+      {
+        "id": "34c4401e-ee4a-59f3-b0c7-5f46db9474d1",
+        "current_published_revision_id": "c2f7f08f-dfd1-57ba-aebb-e121585f6dc8"
+      },
+      {
+        "id": "fad2a46f-8c38-5c82-ac53-ee9d70eb8cab",
+        "current_published_revision_id": "c467bbec-9931-5711-afd4-b88bfab28305"
+      },
+      {
+        "id": "7def0e72-acc9-55fa-8111-295f1cdfcace",
+        "current_published_revision_id": "c12c33a3-a082-526a-91b1-f18d510f76c4"
+      },
+      {
+        "id": "2a384e2d-74ff-5969-ab30-08f275230709",
+        "current_published_revision_id": "96173b63-e530-5e38-83e1-2db0292e41d3"
+      },
+      {
+        "id": "30ec1178-5894-5372-bdbf-0896c3e6cb79",
+        "current_published_revision_id": "a638303f-058e-5e64-81cb-5f132cbfeb17"
+      },
+      {
+        "id": "06fa29eb-905a-5742-bcfb-eab345f5ec44",
+        "current_published_revision_id": "9dbf579d-f903-5f66-bee2-269258ec3247"
+      },
+      {
+        "id": "0c35d249-25fc-5447-8f08-13c916239df6",
+        "current_published_revision_id": "02753bb8-f537-57a6-9a4e-b54d5769a4f9"
+      },
+      {
+        "id": "819279d8-925c-51f0-9965-a831067cd0d0",
+        "current_published_revision_id": "b459b589-97ff-5645-b01b-bab96b5b0950"
+      },
+      {
+        "id": "01cfcc17-1a3d-5830-a7bb-0b1407929fe0",
+        "current_published_revision_id": "0dda2cda-7a74-5fcf-ac72-0b7cba20022b"
+      },
+      {
+        "id": "232942c0-f92f-56ca-ace8-526341676249",
+        "current_published_revision_id": "71b8fe13-bfd2-56e4-af9e-c270892220e7"
+      },
+      {
+        "id": "e10d2c05-9eee-5039-b804-8a6737e5c5c2",
+        "current_published_revision_id": "668e3cca-05ad-5e4a-8371-8d25cafd960d"
+      },
+      {
+        "id": "bf3b94ed-fd51-595a-897b-b7567178e6ba",
+        "current_published_revision_id": "b487f45c-973a-5951-8b99-8023bc06b32b"
+      },
+      {
+        "id": "8a5d30bf-48ac-508b-8158-7fb25f19601b",
+        "current_published_revision_id": "9e91893b-f837-55c4-aa7b-cb5a563a1bd1"
+      },
+      {
+        "id": "41c08449-3003-59bb-a583-053de374bbe5",
+        "current_published_revision_id": "5ae2ac0b-866c-59e5-b2fe-d1274cfc9626"
+      },
+      {
+        "id": "75d04849-7b31-50e4-bfc6-0e6b13fe9037",
+        "current_published_revision_id": "1ee2864c-afec-5400-8e6c-e48a8526748f"
+      },
+      {
+        "id": "93c8d4bc-64a7-55b3-954d-3092a9dd5527",
+        "current_published_revision_id": "e24d86b5-fa7b-531d-ab2a-600de5e0c9c3"
+      },
+      {
+        "id": "3e4533b9-651e-5f4e-82e3-c26e6122b0f6",
+        "current_published_revision_id": "2dce751e-b334-5e17-863b-21ec50f76759"
+      },
+      {
+        "id": "524973fd-d0d5-59cf-8781-bd4ab5ab6a78",
+        "current_published_revision_id": "b148dfe3-db53-5999-88bf-30e4edc1c12e"
+      },
+      {
+        "id": "08aaba9c-dc90-556b-b864-e6ae6c4db2f2",
+        "current_published_revision_id": "d65d32a6-af1e-579d-a271-1d9b1572b7d1"
+      },
+      {
+        "id": "7ab370ba-444d-5b24-8094-92ba16296d98",
+        "current_published_revision_id": "9dc6276c-7492-576b-bbf5-e9c6ce6d775b"
+      },
+      {
+        "id": "1a6ae5ae-61d7-5f02-b3a9-1fd3b8b16cc7",
+        "current_published_revision_id": "42b3dedd-ba0a-5410-8d03-af08918853bf"
+      },
+      {
+        "id": "ccf2f38e-4bec-5d13-aa2c-0fe930579923",
+        "current_published_revision_id": "523f427e-7c57-5ec6-bbd4-2b62bdeb49f8"
+      },
+      {
+        "id": "d73b7c72-1f31-5101-86f5-910bd59b47a3",
+        "current_published_revision_id": "80e16f96-b470-53c8-8001-7dbdc029920c"
+      },
+      {
+        "id": "a690e52f-092b-59fb-9713-20b7e8b51c66",
+        "current_published_revision_id": "ba43bddb-7c9c-5f99-9fc7-333ac819f54e"
+      },
+      {
+        "id": "8f1abcda-3c9b-546b-95af-a6ed83bbde61",
+        "current_published_revision_id": "167150de-89ff-5678-b8ec-8843479c3b99"
+      },
+      {
+        "id": "1f075640-41a3-5357-aadb-cf811cb0423d",
+        "current_published_revision_id": "5db534cd-fe11-5c3c-9a95-6446b0d1c980"
+      },
+      {
+        "id": "c2091724-285a-50c0-b1d4-be7ab12a894b",
+        "current_published_revision_id": "1fd79833-6f6f-590e-964a-d12996aed077"
+      },
+      {
+        "id": "e71a1d4d-7cbb-5bc5-bc2c-f7c7d5d18a55",
+        "current_published_revision_id": "5da26c69-afb7-5461-8a6a-7961e3e4c877"
+      },
+      {
+        "id": "8ef4277d-5edd-52db-88d4-799f838c2a3c",
+        "current_published_revision_id": "d0c798ce-fc91-53ba-a79f-0481c93f5cb1"
+      },
+      {
+        "id": "f663c393-bf21-534c-bdcf-8db2af52f24b",
+        "current_published_revision_id": "aeaa23f0-d685-5481-a30e-a70d520d2d2c"
+      },
+      {
+        "id": "0879662d-3ea1-508e-9425-11ee47de53bd",
+        "current_published_revision_id": "4c836d51-e9d9-5d2a-80e9-82077b59e06f"
+      },
+      {
+        "id": "4d4ab7b2-cd12-5cba-9e00-c7a3f4430c36",
+        "current_published_revision_id": "f3f0d092-d25f-533f-a994-4e9789a3393d"
+      },
+      {
+        "id": "918bd225-3449-5102-b7b1-ae82a83cb7cb",
+        "current_published_revision_id": "71a5fc7f-c962-5f74-96f1-0f5d4e393636"
+      },
+      {
+        "id": "51280f39-5aa3-53c8-a3d9-abb400da3af5",
+        "current_published_revision_id": "0e2dde62-3082-5fe2-95f3-d418e41368e7"
+      },
+      {
+        "id": "8e7233f4-ffde-543c-8793-27694d7f94fe",
+        "current_published_revision_id": "89c74be5-39b0-547c-9142-a2ad458851bb"
+      },
+      {
+        "id": "20f4d2a2-7a01-58a3-a4e4-76f4392839f4",
+        "current_published_revision_id": "4dc1bd24-dc64-5483-b42d-c5d7c39aa716"
+      },
+      {
+        "id": "99e38e3b-9704-5a63-93b9-b7540f6b7cec",
+        "current_published_revision_id": "06342712-6daa-58cc-b2ea-ec8ad9fa9c13"
+      },
+      {
+        "id": "67a1cfd5-42d1-577a-bb05-e60cd7e98974",
+        "current_published_revision_id": "70b22efb-1c46-55ea-b4c8-9469783e4d75"
+      },
+      {
+        "id": "874aba5e-d117-5cdd-8c73-c63f9bb20cb2",
+        "current_published_revision_id": "1cecd723-0e9d-57f3-afcc-f9189a77a610"
+      },
+      {
+        "id": "d6fc561b-8a93-5946-b09b-a02626ef0a35",
+        "current_published_revision_id": "9ba03c93-f80f-5ebe-a5ce-9fc0251abc0f"
+      },
+      {
+        "id": "5d9aa387-9ebf-50f1-be2e-8bb316b1ad70",
+        "current_published_revision_id": "dab9330e-8595-5b2d-99a8-2cd3772ffac9"
+      },
+      {
+        "id": "842e5104-98bd-5719-8504-0c05766ef22c",
+        "current_published_revision_id": "e5829a0e-d55c-5a10-8dca-38bff585c7b8"
+      },
+      {
+        "id": "f940d816-e8b5-5182-87b0-f5c44bb7a0a9",
+        "current_published_revision_id": "03d26f83-49f4-532c-874d-de3ee0749d2a"
+      },
+      {
+        "id": "0480100d-7537-532a-987d-6cf516c19ec3",
+        "current_published_revision_id": "1e6c76cf-cca4-553f-bb0a-c156bbe6e57d"
+      },
+      {
+        "id": "d8ff5e32-3a7e-5348-a023-33f36fc9bc93",
+        "current_published_revision_id": "2999dcb4-00a4-54e5-af5d-d6e875cf5916"
+      },
+      {
+        "id": "02e5f264-d5c7-559d-abaa-a4651c18691c",
+        "current_published_revision_id": "be526b48-ef7a-57b5-88cb-a1ce4961da66"
+      },
+      {
+        "id": "14b62423-373a-54a4-bb22-a1e34fd7134c",
+        "current_published_revision_id": "02cb6796-3b8a-5bc6-b97a-ed135e3ea082"
+      },
+      {
+        "id": "a0bd478d-5e89-506f-9f96-686af9076b52",
+        "current_published_revision_id": "c0942209-5dbb-57fd-b11a-00ee1f2c53e4"
+      },
+      {
+        "id": "cf89c404-30f2-5d6d-a1a5-8ef14a7b8336",
+        "current_published_revision_id": "9044181f-ed22-553c-afb3-03a1c5dfcf47"
+      },
+      {
+        "id": "02c25125-b152-593a-8f38-3ea00c8ce1e4",
+        "current_published_revision_id": "96a8eb9e-c656-5517-9f5d-f362ac9e6a1c"
+      },
+      {
+        "id": "7adc7649-45f3-5c53-9ed7-4f29aadc5b4f",
+        "current_published_revision_id": "1cddb736-964d-560d-953c-ee6cdecf01c6"
+      },
+      {
+        "id": "d1049873-928d-5490-8dbd-c46e6397c363",
+        "current_published_revision_id": "493d927b-5c59-5bb0-a534-c24d439e32e2"
+      },
+      {
+        "id": "692d79d3-ee32-5528-b68b-4280a7a55efb",
+        "current_published_revision_id": "533f51ca-d159-5119-9c22-5fc26e039ad4"
+      },
+      {
+        "id": "a6ae9f79-1707-5f93-bd83-516609034f90",
+        "current_published_revision_id": "8c4f693e-a8e9-5dbc-a9f6-4c4d49aee44c"
+      },
+      {
+        "id": "4c6cb1f0-0dd8-56a0-8095-d805f99be482",
+        "current_published_revision_id": "3543480c-be5d-56a5-a473-9869e10f3e66"
+      },
+      {
+        "id": "6923de70-f1a7-58f6-9218-ad7623fa8a2b",
+        "current_published_revision_id": "2d839bb5-5861-51c9-87f9-d8df809e2e28"
+      },
+      {
+        "id": "5ae126f7-6d79-5613-81f9-f8af8d18270f",
+        "current_published_revision_id": "e8ba7cf1-5068-5fe8-9947-e34e949c837b"
+      },
+      {
+        "id": "24abf57e-2f39-5856-9266-da06db1f621e",
+        "current_published_revision_id": "b902b449-feb7-5b5d-b23b-0b08549f7e08"
+      },
+      {
+        "id": "a4dda69a-7636-532e-b058-dbf5d238e01d",
+        "current_published_revision_id": "0ba06857-3771-5edb-bafc-02bf27a67174"
+      },
+      {
+        "id": "d63676e1-9e35-5712-9eb5-f7eb9f5543bc",
+        "current_published_revision_id": "f30383de-e7c1-55a3-89ea-0f341ba9dbb1"
+      },
+      {
+        "id": "99510c57-1a08-5390-bc5e-b3df21c17f44",
+        "current_published_revision_id": "3bf09060-d503-54b5-9a16-2f0f20d1c45b"
+      },
+      {
+        "id": "51c69aae-c61d-51da-8d59-0f9ee1685e8c",
+        "current_published_revision_id": "ed8f9f23-756c-5eb0-910d-1fdd2f4fe345"
+      }
+    ],
+    "materials": [
+      {
+        "id": "70d67de0-4fb7-56e4-a525-fdb624007c87",
+        "current_published_revision_id": "1c1b3e0b-4257-561f-9885-eef6d329aad5"
+      },
+      {
+        "id": "99cd3c96-0ff6-5ca2-8f8f-c5b8fe65e523",
+        "current_published_revision_id": "3611c8e3-fb09-5e00-b1f0-79fe28bf6909"
+      },
+      {
+        "id": "91e5890f-9e9f-58ef-80cd-6aacd7d970a6",
+        "current_published_revision_id": "700dfe54-83e0-550a-b4fa-a6af1b037617"
+      },
+      {
+        "id": "51a0682c-30a2-5046-b581-f9cc0b5d1133",
+        "current_published_revision_id": "39c204e3-d808-5796-b047-123359069d95"
+      },
+      {
+        "id": "94eac18e-90d4-524b-8d03-5a96f8b1a214",
+        "current_published_revision_id": "b84d7b45-8e84-546c-ad2f-4168219c4eec"
+      },
+      {
+        "id": "e8a8118d-325f-546c-8e01-e1fd1e78caf3",
+        "current_published_revision_id": "86ad99de-91ea-591c-b152-dc616e61c658"
+      },
+      {
+        "id": "eb8bf251-e058-5329-a8a7-10d20780ee14",
+        "current_published_revision_id": "a1e7deaa-c5e5-51c1-a654-d54e012a273b"
+      },
+      {
+        "id": "61a92854-8532-5b57-a457-99942d335797",
+        "current_published_revision_id": "bd065a41-8096-52c8-b8c7-d5e30dd2e1fa"
+      },
+      {
+        "id": "4b4f6c99-b1f9-587d-9974-f99f5711d482",
+        "current_published_revision_id": "ddb64607-cd4d-587c-9162-d1ac396db55c"
+      },
+      {
+        "id": "db034b54-09ad-537f-91f1-b5b6fb206b48",
+        "current_published_revision_id": "c278209f-dd9a-53f2-a161-7ef58a2fbcbf"
+      },
+      {
+        "id": "47a0d107-93fe-56b7-a42f-0aa53aff081d",
+        "current_published_revision_id": "307f55d6-d350-50ee-b35a-4e6f0d9beaa5"
+      },
+      {
+        "id": "cd7e75c1-5660-5f25-8c19-d3cd6a21854a",
+        "current_published_revision_id": "b3ce698b-2d86-50ed-875d-cfe6627393c2"
+      },
+      {
+        "id": "fa360f98-9c07-56cf-8bb4-cc676ec89656",
+        "current_published_revision_id": "3bfaa844-bf55-505d-954c-a8d2d7379ce4"
+      },
+      {
+        "id": "3e5d989d-18bb-5a55-898f-1c7becc8dd67",
+        "current_published_revision_id": "23ef222d-36f1-5ea2-b8ae-bb2637e1cff7"
+      },
+      {
+        "id": "e024ab5b-1a5a-5dff-a010-26cd1c477b7d",
+        "current_published_revision_id": "608f2ebc-c49a-5a11-929e-3a825a7ee399"
+      },
+      {
+        "id": "f4f13277-703d-5a71-b925-1a7daac4f529",
+        "current_published_revision_id": "45f70801-734a-5aaa-941c-fe7ac0afa93f"
+      },
+      {
+        "id": "0c007047-8cef-5c8a-9864-4d3f8fef22eb",
+        "current_published_revision_id": "b7638432-4244-5203-ad32-71c31a88a951"
+      },
+      {
+        "id": "29a3a260-6eaa-5fa7-bbfe-b1ad4bd1be3f",
+        "current_published_revision_id": "7620099c-24e1-5378-ae4d-73cb352b05f0"
+      },
+      {
+        "id": "3951aed0-4d8a-52ac-bda7-444d2409c8d5",
+        "current_published_revision_id": "bab2592d-6f2c-5ab8-8c21-9b9f80ead62c"
+      },
+      {
+        "id": "bedeeec9-c0b2-543b-aef1-607f714f4475",
+        "current_published_revision_id": "c25d5467-fe28-5002-94dd-7aab4292b854"
+      },
+      {
+        "id": "9a24f4ed-1b99-5d6d-a7ec-63c74d1198b8",
+        "current_published_revision_id": "947bc7da-22ad-56f7-9c31-fc1daee5bd63"
+      },
+      {
+        "id": "ec1b0d41-724b-5bfe-ab42-0d7684d4a37b",
+        "current_published_revision_id": "be293427-2886-5dd0-b567-c6d37f5d8a95"
+      },
+      {
+        "id": "d247f1ce-3270-5cbf-8fbf-b03bbf281369",
+        "current_published_revision_id": "fbfd1d41-6574-5966-878b-e45c643f26a1"
+      },
+      {
+        "id": "9cc0f938-0ea5-5745-9d1d-97d2537597ac",
+        "current_published_revision_id": "b0eaf231-48e2-5f44-ac13-82eb05e7384f"
+      },
+      {
+        "id": "64b9be8f-4f09-51fb-bc01-d860b10ce208",
+        "current_published_revision_id": "41d47abd-3f62-5d80-bf66-672401a5ef07"
+      },
+      {
+        "id": "78618a07-4ebe-5372-8b8c-0d6195a89017",
+        "current_published_revision_id": "2dbc4989-2f88-593e-8f1d-7d120e3e6d5d"
+      },
+      {
+        "id": "45a1202c-b4b3-53a5-94f3-5395aa836251",
+        "current_published_revision_id": "12be110b-4a0d-5aa9-bf4e-de1b289b2dae"
+      },
+      {
+        "id": "e5d4d489-d07d-51e6-ac75-470d96793274",
+        "current_published_revision_id": "55e14742-b53e-5dfb-9a5a-724607bc6bf6"
+      },
+      {
+        "id": "d6567ba4-735d-55f6-a11e-0397780b5dc6",
+        "current_published_revision_id": "f0df41b2-d49d-5a57-8fe8-2cdb4ac59252"
+      },
+      {
+        "id": "a1aab45e-f3bf-5966-b251-674e6a9f5b13",
+        "current_published_revision_id": "6838a7b2-f7de-5128-8f32-4ddaf72bce3d"
+      },
+      {
+        "id": "886d1a9a-4761-51be-88db-ecd5d8bba979",
+        "current_published_revision_id": "70297c8f-fad0-5efe-a4f7-790690cf74a9"
+      },
+      {
+        "id": "108885c9-7a5d-57fd-a213-f699a15225da",
+        "current_published_revision_id": "a20e3978-6ac2-5b17-85cb-f15788ec78f0"
+      },
+      {
+        "id": "dda04997-6cd2-5d93-a56a-c887b94e340a",
+        "current_published_revision_id": "7641593e-f918-53d1-b60d-29dce187a709"
+      },
+      {
+        "id": "7bd09b28-9834-529a-99d1-5047eb8e7722",
+        "current_published_revision_id": "6940dcdb-cc89-5bde-8cac-89c49d493cbd"
+      },
+      {
+        "id": "143ae4a5-0815-5a26-80e4-d5c89b92c051",
+        "current_published_revision_id": "7600077e-d272-5540-a7e9-88475cdb4966"
+      },
+      {
+        "id": "7348c6a0-1d42-594b-9019-6f6e7a313de6",
+        "current_published_revision_id": "b2a07b1e-513e-5219-8dd7-52d48a9a6b3b"
+      },
+      {
+        "id": "01682f55-2c01-5a9c-8a1c-3e807304b0c9",
+        "current_published_revision_id": "28238ee4-2562-5fe1-8b05-f85a0572c14d"
+      }
+    ],
+    "institutions": [
+      {
+        "id": "dab5098d-4363-5845-be9d-5d6e946383d3",
+        "current_published_revision_id": "697570fc-6ebc-51ad-bb06-ed00e6a4a10b"
+      },
+      {
+        "id": "0702e184-a862-5dca-b986-95b193a7f1ac",
+        "current_published_revision_id": "33c5296a-b25b-5222-8ec1-7c865cd5b069"
+      },
+      {
+        "id": "ea3a428d-8348-5691-9ed7-f4de4f603718",
+        "current_published_revision_id": "060ab94e-f003-5c96-be01-64754dcff1cc"
+      },
+      {
+        "id": "d7fb3861-28bd-549c-80f7-c014e64b1eaa",
+        "current_published_revision_id": "5837690f-64d4-5bbf-a4a2-af48e47255f6"
+      },
+      {
+        "id": "028e12af-85a3-5024-a304-673955086054",
+        "current_published_revision_id": "a38f9b40-74dc-5333-b6ac-3d8238470e50"
+      },
+      {
+        "id": "898681ee-c038-5956-919d-706b66741e1d",
+        "current_published_revision_id": "7e54975f-7485-505e-92ce-8c3df08072e1"
+      },
+      {
+        "id": "e799a7ee-0f34-52ef-9051-b794bd692b65",
+        "current_published_revision_id": "6778a57a-d697-5312-b1ef-1335b945c529"
+      },
+      {
+        "id": "0694d4fb-8354-5f5c-ba37-c53212895814",
+        "current_published_revision_id": "6d090f2a-848d-5c8a-ac9b-b946c2a834a2"
+      },
+      {
+        "id": "511c3323-2c7c-5312-ab13-d39c14590dcc",
+        "current_published_revision_id": "3050f68f-d1d4-5b15-8797-c0587b4a1619"
+      },
+      {
+        "id": "cc03aa7c-2f7c-5aa3-acfd-f6b0b1a077d0",
+        "current_published_revision_id": "20e690ab-9a59-51ce-a504-b7646e91f6ec"
+      },
+      {
+        "id": "245102b5-cfd2-5973-b153-297d9615f922",
+        "current_published_revision_id": "835d05f2-acda-5cf5-8208-0a68c6158d84"
+      },
+      {
+        "id": "4f089f74-0432-5c07-87ad-0c0d5a1ac43a",
+        "current_published_revision_id": "fc26534a-df26-58f0-9c29-cf7559e0e333"
+      },
+      {
+        "id": "62d00aa2-2d9b-57cc-a540-a2b6c06bd9dd",
+        "current_published_revision_id": "e73a6405-3f48-549c-ac27-3c79a5cdd8a6"
+      },
+      {
+        "id": "665b5363-821e-5686-a903-8bd37e335e11",
+        "current_published_revision_id": "49ad86a9-b758-5442-aa5d-f240c56129ba"
+      },
+      {
+        "id": "57a4cd86-2590-5444-832c-e514e9821204",
+        "current_published_revision_id": "7afffe09-e4ba-5bef-8322-1b2c77d1db79"
+      },
+      {
+        "id": "23acae3b-ff3d-5c04-9354-f21df1891b7a",
+        "current_published_revision_id": "e9269f1c-bf61-5a3c-8835-6f0357459757"
+      },
+      {
+        "id": "1adff228-3e21-50c5-8922-91890bd03790",
+        "current_published_revision_id": "b09bf0db-b200-57cb-a5d8-92bff6912b08"
+      },
+      {
+        "id": "aa290c37-ca7b-573c-997d-170b9dff589f",
+        "current_published_revision_id": "2dd83cd2-4d0c-5b65-9ef0-d27f35942a90"
+      },
+      {
+        "id": "4e56281c-1683-58c9-a3cd-e938864c3438",
+        "current_published_revision_id": "eacb1c31-ae22-5681-b2e1-90faad1b8210"
+      },
+      {
+        "id": "a35ec879-bf23-5cee-ac75-3395fa8b1fc4",
+        "current_published_revision_id": "e4a9ddff-bc03-5433-a89f-fd6af6383ad8"
+      },
+      {
+        "id": "4d72d7b4-7bd1-5818-a4cc-d92762a40271",
+        "current_published_revision_id": "58e25062-acc3-579c-9fdb-ebfee9c7d2f5"
+      },
+      {
+        "id": "ab320270-ec09-5f3d-af55-e8c0a5825129",
+        "current_published_revision_id": "b82499d0-5c87-529e-9793-68565ec8614d"
+      },
+      {
+        "id": "55a9f9da-235c-5c60-ba32-0d20912941d7",
+        "current_published_revision_id": "57b72f17-2da8-55a4-9809-0dfadea0e5ee"
+      },
+      {
+        "id": "ace8995a-9c80-5243-b562-4ffed88164e0",
+        "current_published_revision_id": "b18689b4-f69e-5a40-8009-2b4050c2071f"
+      },
+      {
+        "id": "06ce836d-3373-5e5c-9599-b6ab063112b3",
+        "current_published_revision_id": "723169dd-d5f4-55a2-8a1b-ba80289302ed"
+      },
+      {
+        "id": "5e15de14-0b16-5006-bf99-4b8ad2017cde",
+        "current_published_revision_id": "028250ba-877f-5066-b3c5-c7d79ad21a67"
+      },
+      {
+        "id": "6d71c61b-f4fc-567f-8cc3-364d80d18d8e",
+        "current_published_revision_id": "60d34739-51f9-548d-a20d-88149ea0fe48"
+      }
+    ]
+  },
+  "revisions": {
+    "module_revisions": [
+      {
+        "id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Planificación y plan de campaña",
+        "theme": "Estrategia electoral",
+        "description": "Cómo traducir un objetivo político en un plan: lectura del escenario, público objetivo, camino a la victoria, cronograma, presupuesto y métricas.",
+        "learning_outcomes": [
+          "Producir un plan de campaña completo, con metas de voto y presupuesto",
+          "Defender el plan ante un panel crítico",
+          "Instalar un tablero semanal de indicadores"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "12h"
+      },
+      {
+        "id": "959a770e-74a1-5552-b196-5df30b32eb03",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Mensaje, encuadre y narrativa",
+        "theme": "Comunicación política",
+        "description": "Mensaje central, disciplina de mensaje, framing, storytelling y adecuación a públicos. De la promesa de campaña a la narrativa de gobierno.",
+        "learning_outcomes": [
+          "Redactar una casa de mensaje completa",
+          "Producir tres versiones del mensaje central por público",
+          "Evaluar el encuadre del adversario y formular contraencuadre"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "8h"
+      },
+      {
+        "id": "e1a10785-2ad9-51f4-aaad-590fccf939e2",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Encuestas de opinión y datos electorales",
+        "theme": "Datos e investigación",
+        "description": "Tipos de encuesta, muestreo, lectura de cruces, microtargeting, modelos de electorado y uso ético de datos.",
+        "learning_outcomes": [
+          "Interpretar críticamente un reporte de encuesta",
+          "Especificar un tracking adecuado al presupuesto",
+          "Definir segmentos operables a partir de datos"
+        ],
+        "level": "Avanzado",
+        "delivery_format": "En línea",
+        "suggested_duration": "10h"
+      },
+      {
+        "id": "d5a8802a-526f-562f-bf43-4d89ce0268e2",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Financiamiento y recaudación de campaña",
+        "theme": "Financiamiento",
+        "description": "Planificación financiera, metas de recaudación, fuentes lícitas, rendición de cuentas, cumplimiento electoral y transparencia.",
+        "learning_outcomes": [
+          "Construir un plan de recaudación con metas mensuales",
+          "Diseñar el flujo de control y rendición de cuentas"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "Presencial",
+        "suggested_duration": "8h"
+      },
+      {
+        "id": "b2b69f35-772e-5f17-bbae-e6e08803be2c",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Organización de base y GOTV",
+        "theme": "Movilización",
+        "description": "Estructuras de voluntariado, territorio, puerta a puerta, canvassing, movilización del voto y métricas de contacto.",
+        "learning_outcomes": [
+          "Diseñar un plan territorial con metas de contacto",
+          "Montar la operación de GOTV del último tramo"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "10h"
+      },
+      {
+        "id": "1d54ee1e-fe36-5e2d-b84f-f9ba11b55be1",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Estrategia digital y redes sociales",
+        "theme": "Comunicación digital",
+        "description": "Ecosistema digital, contenido orgánico y pago, métricas, comunidad, anti-desinformación y seguridad digital de la campaña.",
+        "learning_outcomes": [
+          "Producir un plan digital con calendario y pauta",
+          "Instalar protocolos de seguridad digital del equipo"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "En línea",
+        "suggested_duration": "8h"
+      },
+      {
+        "id": "a37652ab-acac-5361-8db7-daeb05507097",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Crisis, contrapunto y respuesta rápida",
+        "theme": "Gestión de crisis",
+        "description": "Sala de respuesta rápida, monitoreo, contrapunto a ataques, gestión de errores y comunicación bajo presión.",
+        "learning_outcomes": [
+          "Montar un protocolo de crisis con niveles de escalada",
+          "Ejecutar un simulacro de crisis con vocería"
+        ],
+        "level": "Avanzado",
+        "delivery_format": "Presencial",
+        "suggested_duration": "6h"
+      },
+      {
+        "id": "c07f6304-f393-560f-a697-baaee15aff52",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Gestión de equipo y liderazgo de campaña",
+        "theme": "Liderazgo",
+        "description": "Estructura de campaña, roles, delegación, gestión de personas, cultura de equipo y mentoría. Transición de campaña a gobierno.",
+        "learning_outcomes": [
+          "Diseñar el organigrama de una campaña con perfiles",
+          "Conducir una rutina de gestión semanal",
+          "Planificar la transición al gobierno"
+        ],
+        "level": "Avanzado",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "10h"
+      },
+      {
+        "id": "d612873f-425e-511f-8ca3-bf7c145ef299",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Ética, transparencia e integridad pública",
+        "theme": "Integridad",
+        "description": "Principios éticos en la contienda, integridad en el financiamiento, transparencia y prevención de la corrupción.",
+        "learning_outcomes": [
+          "Redactar un código de conducta para la campaña",
+          "Identificar riesgos de integridad y sus mitigaciones"
+        ],
+        "level": "Transversal",
+        "delivery_format": "En línea",
+        "suggested_duration": "6h"
+      },
+      {
+        "id": "0fbdd3cc-a829-53c7-a25b-522d5532b703",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000001",
+        "title": "Fortalecimiento y gobernanza partidaria",
+        "theme": "Sistema partidario",
+        "description": "Democracia interna, selección de candidaturas, inclusión, gestión organizacional y rendición de cuentas de los partidos.",
+        "learning_outcomes": [
+          "Diagnosticar la gobernanza del propio partido",
+          "Proponer una reforma interna viable y su secuencia"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "8h"
+      },
+      {
+        "id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000002",
+        "title": "Políticas públicas basadas en evidencia",
+        "theme": "Método (transversal)",
+        "description": "Evaluación de impacto, ensayos aleatorizados, inferencia causal y costo-efectividad. Base metodológica de todo el eje.",
+        "learning_outcomes": [
+          "Formular una pregunta evaluable y su teoría de cambio",
+          "Leer críticamente una evaluación de impacto",
+          "Comparar intervenciones por costo-efectividad"
+        ],
+        "level": "Transversal",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "12h"
+      },
+      {
+        "id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000002",
+        "title": "Política climática y transición justa",
+        "theme": "Medio ambiente y clima",
+        "description": "Mitigación y adaptación, NDC, tarificación del carbono, soluciones basadas en la naturaleza y financiamiento climático.",
+        "learning_outcomes": [
+          "Leer y criticar una NDC",
+          "Diseñar una medida climática con costo y actores",
+          "Identificar fuentes de financiamiento climático"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "10h"
+      },
+      {
+        "id": "4ecbbddc-49e6-51d3-8ac4-c0aca9ebbff8",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000002",
+        "title": "Política educativa con evidencia",
+        "theme": "Educación",
+        "description": "Aprendizaje, calidad docente, tecnología educativa, evaluación e intervenciones de bajo costo y alto impacto.",
+        "learning_outcomes": [
+          "Priorizar intervenciones educativas por evidencia y costo",
+          "Diseñar un piloto evaluable en la red pública"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "En línea",
+        "suggested_duration": "10h"
+      },
+      {
+        "id": "60f44d02-351c-56da-bf8c-e8fb69058ec4",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000002",
+        "title": "Mercado laboral y protección social",
+        "theme": "Trabajo",
+        "description": "Empleo, calificación, informalidad, intermediación laboral, transferencias de ingreso y protección social.",
+        "learning_outcomes": [
+          "Diagnosticar el mercado laboral local con datos",
+          "Diseñar un programa de empleo o transferencia evaluable"
+        ],
+        "level": "Intermedio",
+        "delivery_format": "En línea",
+        "suggested_duration": "8h"
+      },
+      {
+        "id": "13ed35a0-643a-506a-965c-679e760d84bf",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000002",
+        "title": "Productividad y crecimiento inclusivo",
+        "theme": "Productividad",
+        "description": "Determinantes de la productividad, firmas, difusión tecnológica, capital humano e instituciones.",
+        "learning_outcomes": [
+          "Diagnosticar cuellos de botella de productividad",
+          "Formular una agenda de crecimiento inclusivo"
+        ],
+        "level": "Avanzado",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "8h"
+      },
+      {
+        "id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000002",
+        "title": "Desarrollo e instituciones",
+        "theme": "Desarrollo económico",
+        "description": "Instituciones y desarrollo, economía política de las reformas, desigualdad y Estado capaz.",
+        "learning_outcomes": [
+          "Analizar la viabilidad política de una reforma",
+          "Mapear coaliciones de apoyo y veto"
+        ],
+        "level": "Avanzado",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "8h"
+      },
+      {
+        "id": "1b926715-5782-51ed-b497-359109a8b886",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "axis_id": "a1000000-0000-4000-8000-000000000002",
+        "title": "Innovación y política industrial orientada por misiones",
+        "theme": "Innovación",
+        "description": "Estado emprendedor, política industrial con condicionalidades, misiones, valor público y direccionamiento de la inversión.",
+        "learning_outcomes": [
+          "Formular una misión con metas y cartera de proyectos",
+          "Diseñar condicionalidades para el apoyo público",
+          "Definir la gobernanza de la misión"
+        ],
+        "level": "Avanzado",
+        "delivery_format": "Híbrido",
+        "suggested_duration": "10h"
+      }
+    ],
+    "program_topic_revisions": [
+      {
+        "id": "a96b5c3c-e615-5a2c-94be-d95587e32ece",
+        "program_topic_id": "d8887483-5fbe-57da-ba31-4da9afed6f1a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "title": "Lectura del escenario: contexto, adversarios, oportunidad política",
+        "position": 1
+      },
+      {
+        "id": "802e9b80-ed88-5c45-a175-77f9fa9f01de",
+        "program_topic_id": "7ed41369-c1f6-5c6a-a66c-f312c5800ab1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "title": "Camino a la victoria: aritmética electoral y definición de metas de voto",
+        "position": 2
+      },
+      {
+        "id": "08dfa34a-7985-5525-9630-393818f375c6",
+        "program_topic_id": "0db8248e-8fc3-5870-a77a-c566659c9bd4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "title": "Segmentación de públicos y priorización territorial",
+        "position": 3
+      },
+      {
+        "id": "ef4acf63-ca3e-5e80-8bfb-d3bf1c850332",
+        "program_topic_id": "58288e4f-fbcb-5c4b-91ec-c389969b160e",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "title": "Cronograma maestro, hitos y asignación de recursos",
+        "position": 4
+      },
+      {
+        "id": "620fb798-7816-5305-852d-fa474019b7bc",
+        "program_topic_id": "ae70536b-5d0f-56f7-947f-15e38d173e41",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "title": "Presupuesto de campaña y estructura de gasto",
+        "position": 5
+      },
+      {
+        "id": "8e73ebd3-ad2f-5bd8-99e3-40f7f0bae7b4",
+        "program_topic_id": "c8353199-3038-5ebf-ae38-1f01d9e3e13d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "title": "Tablero de métricas y rutinas de seguimiento",
+        "position": 6
+      },
+      {
+        "id": "f23b620d-5ddf-51e9-ae31-b3c4dd51aab4",
+        "program_topic_id": "693669b9-4566-5cb8-abdd-b974485f4845",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "title": "Mensaje central: construcción, prueba y disciplina",
+        "position": 1
+      },
+      {
+        "id": "cda5cff3-b8de-5411-a8f8-2d68316c7596",
+        "program_topic_id": "6b680011-7653-54cd-89dd-7897a456bcb1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "title": "Encuadre (framing) y batalla por la definición del debate",
+        "position": 2
+      },
+      {
+        "id": "0a82d266-bffc-5064-950f-9023fcfb7487",
+        "program_topic_id": "483b68b1-cccd-5387-83e3-a92c659c86d1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "title": "Narrativa: arco, personajes y prueba emocional",
+        "position": 3
+      },
+      {
+        "id": "0ecc6fe0-3be6-561e-bac7-6f476e0fb78b",
+        "program_topic_id": "0d8bc01a-356e-57ca-ae83-8ed6fd3e26e0",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "title": "Adecuación del mensaje por público y por canal",
+        "position": 4
+      },
+      {
+        "id": "c6907f42-e7ef-5a00-8cfe-9209a6dedb31",
+        "program_topic_id": "0a41fa7c-c861-53f2-b6b9-a5cbb929dff7",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "title": "De la promesa de campaña a la narrativa de gobierno",
+        "position": 5
+      },
+      {
+        "id": "a1055708-58b4-5c5c-a487-2bce935579a9",
+        "program_topic_id": "314e70ee-a1c8-536d-a493-349698144817",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "title": "Tipos de encuesta y diseño de instrumento",
+        "position": 1
+      },
+      {
+        "id": "0ae3ac71-34a9-55b3-ae2f-4328f761508c",
+        "program_topic_id": "16dd82b2-7954-533d-b716-36b85f7cd313",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "title": "Muestreo, margen de error y lectura de cruces",
+        "position": 2
+      },
+      {
+        "id": "074a3ad9-795c-5aa9-a21a-db3e40f5ff2b",
+        "program_topic_id": "6c7a6ede-5c9f-55f9-afb2-5309179d628d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "title": "Tracking, paneles y grupos focales",
+        "position": 3
+      },
+      {
+        "id": "0eeae113-492c-591f-a114-9450192b5e27",
+        "program_topic_id": "e2dbd8aa-d34d-5a9a-baca-91b22e77036c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "title": "Microtargeting y modelos de electorado",
+        "position": 4
+      },
+      {
+        "id": "4e3e42df-a124-5596-a6bc-bec9c50278c9",
+        "program_topic_id": "fedc7ecf-01d4-54a4-a908-efcc66cfc126",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "title": "Uso ético de datos y protección de la información",
+        "position": 5
+      },
+      {
+        "id": "cd877c35-7d4a-5611-9342-1a9fca9dda54",
+        "program_topic_id": "b0477b74-eb41-5979-9133-b74ca88f3db5",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "title": "Planificación financiera y metas de recaudación",
+        "position": 1
+      },
+      {
+        "id": "7f569881-8afd-58b0-8c54-c59f3de14d45",
+        "program_topic_id": "24922ec7-4b9f-5013-8375-94a521674095",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "title": "Fuentes lícitas y arquitectura de financiamiento",
+        "position": 2
+      },
+      {
+        "id": "fe6417e0-046d-5171-9dc2-15a9b904f759",
+        "program_topic_id": "0e8dcc36-1254-592c-b6f8-03c51d651de8",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "title": "Pedido directo, eventos y recaudación digital",
+        "position": 3
+      },
+      {
+        "id": "8f30019b-fa60-5496-8d98-473b88ef4c14",
+        "program_topic_id": "dd24e86a-5b10-589d-a652-8dfd12caf172",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "title": "Rendición de cuentas y cumplimiento electoral",
+        "position": 4
+      },
+      {
+        "id": "d4be8a6d-87bb-5f71-badd-e205e1ae1eba",
+        "program_topic_id": "55aadadd-a5fd-5714-8890-60ced519bb26",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "title": "Transparencia y riesgo reputacional",
+        "position": 5
+      },
+      {
+        "id": "4e001cea-6d52-5685-be44-71d922d4a5a1",
+        "program_topic_id": "06817420-74bc-5b6f-8278-6421299270d8",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "title": "Estructura de voluntariado y liderazgos territoriales",
+        "position": 1
+      },
+      {
+        "id": "9b95eb46-ef97-5902-bd91-110b8aaa60f7",
+        "program_topic_id": "048db097-3166-5f2d-8e35-0d2f9da04dd4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "title": "Organización de base: reclutamiento, formación, retención",
+        "position": 2
+      },
+      {
+        "id": "0c76322e-7c93-5673-8a28-137e2d240b41",
+        "program_topic_id": "d90afa07-84e9-51ad-9c5b-482b8e761563",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "title": "Puerta a puerta y canvassing: guiones y calidad de contacto",
+        "position": 3
+      },
+      {
+        "id": "37cfe8ea-df3e-5704-a44f-10d08b83c8d9",
+        "program_topic_id": "2045406c-255d-53f8-903a-e8571275ecb6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "title": "Plan de GOTV y últimas 72 horas",
+        "position": 4
+      },
+      {
+        "id": "5fb6288d-bd8b-5e59-a8c8-4ed043e72d8d",
+        "program_topic_id": "46a4493a-a8a3-5c33-b8bc-6824ac9c5008",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "title": "Métricas de contacto y productividad territorial",
+        "position": 5
+      },
+      {
+        "id": "03ca2246-fed0-5b02-9726-68fcd47cc769",
+        "program_topic_id": "0dd0432f-600f-5bed-8d66-651d7153d1a3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "title": "Ecosistema digital y arquitectura de plataformas",
+        "position": 1
+      },
+      {
+        "id": "859d2d59-eeb3-540f-9502-f348389be6b7",
+        "program_topic_id": "a9145d6b-3c03-56cb-8c8d-a950e09ec7d1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "title": "Contenido orgánico: formatos, ritmo y comunidad",
+        "position": 2
+      },
+      {
+        "id": "1e93e30d-e6b9-5b70-9f86-cab500454381",
+        "program_topic_id": "d07f0613-efd3-5666-97a5-838cf7fc7af1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "title": "Pauta digital: segmentación, presupuesto, creativos",
+        "position": 3
+      },
+      {
+        "id": "bf0ac7a9-09a5-5aa4-9643-73ef158fd086",
+        "program_topic_id": "d3170d6d-1f6c-5d18-adca-8abc4a48e435",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "title": "Métricas digitales y atribución",
+        "position": 4
+      },
+      {
+        "id": "fa84bb74-0a86-5542-ab3c-05911c3fb863",
+        "program_topic_id": "a3fb0bd5-10aa-5615-a323-9351baf108c4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "title": "Desinformación: detección y respuesta",
+        "position": 5
+      },
+      {
+        "id": "73e19682-709b-52a1-a937-d6b85bef50f7",
+        "program_topic_id": "b4b7d451-fc4e-53dd-adae-94eaae07b337",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "title": "Seguridad digital del equipo de campaña",
+        "position": 6
+      },
+      {
+        "id": "8e534eaf-2b9e-5874-8cc1-404a5806e876",
+        "program_topic_id": "1cbf2592-8809-5144-8c82-bd575e4ff913",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "title": "Sala de respuesta rápida: roles y rutinas",
+        "position": 1
+      },
+      {
+        "id": "b1bd2966-ddde-5f76-bbad-3dbed560c3da",
+        "program_topic_id": "1222d9bb-3a30-5a41-9d55-5a14e995ba4c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "title": "Monitoreo de medios y escucha digital",
+        "position": 2
+      },
+      {
+        "id": "1534502d-6cf4-5e1f-bd9d-45b7bd49667e",
+        "program_topic_id": "227301c2-051f-5d7e-b118-ae103fb522e9",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "title": "Contrapunto a ataques y corrección de registro",
+        "position": 3
+      },
+      {
+        "id": "23fc1d69-ffcd-5e87-a774-dc45ca7522e6",
+        "program_topic_id": "618f05e8-f0c3-53e7-9eb7-772f4984cbb9",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "title": "Gestión de errores propios y de crisis internas",
+        "position": 4
+      },
+      {
+        "id": "28aeba65-472d-5d1b-921a-02d20cbcc8e4",
+        "program_topic_id": "0470c779-5654-54f2-a02b-89fef44a49a1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "title": "Comunicación bajo presión y vocería",
+        "position": 5
+      },
+      {
+        "id": "66f03367-bb07-5f8d-834c-8e3b8962f61b",
+        "program_topic_id": "7f8e96f0-de54-5ccf-9a07-77a57d8dd438",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "title": "Estructura de campaña y diseño de roles",
+        "position": 1
+      },
+      {
+        "id": "7e582a73-216a-5e79-bb3d-69b03ecd9069",
+        "program_topic_id": "e7349715-6998-5fe3-8537-41e9a5861662",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "title": "Delegación, decisión y ritmo de gestión",
+        "position": 2
+      },
+      {
+        "id": "edfdfa01-fc1f-5c3b-a561-68a14ca08b19",
+        "program_topic_id": "b86aa9cb-c6b7-5516-8046-1dcd0bace631",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "title": "Gestión de personas, conflicto y cultura de equipo",
+        "position": 3
+      },
+      {
+        "id": "b4bfcef9-2e18-5651-a324-0cd1a88d170b",
+        "program_topic_id": "5b56b76a-d29b-5222-9f17-a1c3f9a233bf",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "title": "Mentoría y desarrollo de liderazgos",
+        "position": 4
+      },
+      {
+        "id": "0459e38d-0737-51c7-8a77-e31f50385536",
+        "program_topic_id": "6b6dfb96-bf0d-5c5a-ab91-0917223270a2",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "title": "Transición de campaña a gobierno",
+        "position": 5
+      },
+      {
+        "id": "eb61c157-0e4d-51fd-9e1c-dc368d91e80e",
+        "program_topic_id": "97b0885e-b0de-5b77-99bc-a98f963b1136",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "title": "Principios éticos en la contienda electoral",
+        "position": 1
+      },
+      {
+        "id": "ee3120dd-b918-54ab-9541-2264be092c0c",
+        "program_topic_id": "8422b292-eb19-516a-940b-99d0f98b55f1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "title": "Integridad en el financiamiento y conflictos de interés",
+        "position": 2
+      },
+      {
+        "id": "fb299014-6a12-5f90-9364-d7b4386d16a5",
+        "program_topic_id": "2fe8e73f-f5df-5324-aa66-c46c7dc25b14",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "title": "Transparencia activa y acceso a la información",
+        "position": 3
+      },
+      {
+        "id": "f2f50ab2-1803-5494-bfeb-9d1ffeda1821",
+        "program_topic_id": "48a33876-834a-5cbd-8fb1-1ad30ac6d497",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "title": "Prevención de la corrupción y control interno",
+        "position": 4
+      },
+      {
+        "id": "643c32e1-2913-5e15-b3b3-4edd05201cc2",
+        "program_topic_id": "d1f26366-7772-59a2-9221-99e6ac715e5f",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "title": "Códigos de conducta y su aplicación real",
+        "position": 5
+      },
+      {
+        "id": "faa1ac02-2c58-5ce7-8c5f-ca34d4fd2a30",
+        "program_topic_id": "422c3213-0074-5b6c-8faa-12323b6b7e80",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "title": "Democracia interna y reglas partidarias",
+        "position": 1
+      },
+      {
+        "id": "bdf6a19d-4111-56c5-b14e-4e3565cf27b6",
+        "program_topic_id": "43708336-559c-544f-a4bf-52899ddb2965",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "title": "Selección de candidaturas y primarias",
+        "position": 2
+      },
+      {
+        "id": "b952df03-08cb-56ff-9985-acfab75b455c",
+        "program_topic_id": "f6626638-512d-5b40-92cf-a0c717ae8b74",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "title": "Inclusión: género, juventud, diversidad territorial",
+        "position": 3
+      },
+      {
+        "id": "6bdae978-dc57-575d-bdc2-946faf173a69",
+        "program_topic_id": "9a2d8e86-e0a8-546c-b68f-bf61300045e4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "title": "Gestión organizacional y profesionalización",
+        "position": 4
+      },
+      {
+        "id": "ac89aab2-6aac-5d10-8ecf-3562623ed2f6",
+        "program_topic_id": "3385f96f-f10d-5be0-8789-3f00ba8eab39",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "title": "Rendición de cuentas y relación con la militancia",
+        "position": 5
+      },
+      {
+        "id": "92aebb24-9fd5-54af-ba0f-c5648165c34d",
+        "program_topic_id": "fe9b820e-cce3-57c1-84f8-20d59f4716c9",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "title": "Pregunta de política y teoría de cambio",
+        "position": 1
+      },
+      {
+        "id": "1701d33f-5ef1-54e6-9698-950bb8f03f09",
+        "program_topic_id": "1990ff9c-dae7-5129-9c2d-38e5335adf99",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "title": "Inferencia causal: contrafactual y sesgo de selección",
+        "position": 2
+      },
+      {
+        "id": "1ff60251-c1fc-5228-86e0-e47e43744798",
+        "program_topic_id": "94536d64-4703-5372-8e32-dc7ac2724911",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "title": "Ensayos controlados aleatorizados: diseño y límites",
+        "position": 3
+      },
+      {
+        "id": "1cbe8933-d000-5785-b6e5-40dd7c85bb2b",
+        "program_topic_id": "17be827c-daed-5eb6-afcd-22856905769c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "title": "Métodos cuasiexperimentales",
+        "position": 4
+      },
+      {
+        "id": "4770940f-c11d-5704-b4ed-f7f6a760f2ae",
+        "program_topic_id": "a9b4270d-c4bc-5c79-9caf-1993d3188211",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "title": "Costo-efectividad y decisión de escala",
+        "position": 5
+      },
+      {
+        "id": "30c75e4a-1215-519b-8acb-1fa138213a6f",
+        "program_topic_id": "55ce9c3b-12f3-504c-9a06-8f2d3989bbdd",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "title": "De la evidencia a la política: uso institucional",
+        "position": 6
+      },
+      {
+        "id": "c615b1af-fa95-5889-b526-e8222242f172",
+        "program_topic_id": "5fada5b5-5123-5397-8ad3-f8d5a19d3857",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "title": "Ciencia climática aplicada a la decisión pública",
+        "position": 1
+      },
+      {
+        "id": "f332cd1b-1bbd-5282-91a7-476ad2b124fb",
+        "program_topic_id": "72d86df4-1c2b-50a5-9e19-4565eb04913b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "title": "Mitigación: sectores, metas y NDC",
+        "position": 2
+      },
+      {
+        "id": "2c583b1b-57bc-5d96-a1eb-795f642c0f67",
+        "program_topic_id": "108ecc87-4572-564e-8d31-f794c8f02882",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "title": "Adaptación y gestión de riesgo",
+        "position": 3
+      },
+      {
+        "id": "42204b08-872c-57dd-9efd-d55743aff75b",
+        "program_topic_id": "3db336ee-4e2f-5cb3-aa1b-b99d043479e5",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "title": "Tarificación del carbono e instrumentos económicos",
+        "position": 4
+      },
+      {
+        "id": "06189574-faa0-5e7b-a6e7-badfed17ade1",
+        "program_topic_id": "16a9ad6d-2db9-591d-bfbb-d4e1276405c6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "title": "Soluciones basadas en la naturaleza",
+        "position": 5
+      },
+      {
+        "id": "1c3b1da8-417a-5d2c-9523-f921ae9384ad",
+        "program_topic_id": "3a6f3803-47ee-5376-8c21-f8aff6390796",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "title": "Financiamiento climático y transición justa",
+        "position": 6
+      },
+      {
+        "id": "6851d213-fb12-51ca-a6e2-d18999e3f95a",
+        "program_topic_id": "28a5cf47-8f07-5369-9726-616b968632a0",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "title": "Aprendizaje: qué mide y qué no mide la evaluación",
+        "position": 1
+      },
+      {
+        "id": "357bf3ff-5115-5ceb-8070-e7beb210d368",
+        "program_topic_id": "8cdda55e-7117-5781-8ac9-0b4a858be289",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "title": "Calidad docente: selección, formación, incentivos",
+        "position": 2
+      },
+      {
+        "id": "c6aefbba-4537-59e6-ba2b-5b538bbd803e",
+        "program_topic_id": "7b4efc62-fcf3-50fb-824f-9817b7860b5c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "title": "Tecnología educativa: qué funciona y en qué condiciones",
+        "position": 3
+      },
+      {
+        "id": "888d94eb-5280-56b5-9ffc-9862db15c499",
+        "program_topic_id": "cb0b4cb4-1807-5199-a56c-6ccd44dc1423",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "title": "Intervenciones de bajo costo y alto impacto",
+        "position": 4
+      },
+      {
+        "id": "7719462c-fa5d-5874-b4db-3272d5853d2e",
+        "program_topic_id": "27739400-9528-5c85-950a-81fe90502e57",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "title": "Sistemas de evaluación y uso de datos escolares",
+        "position": 5
+      },
+      {
+        "id": "39571fe1-0c30-5420-a693-ebff337bae4a",
+        "program_topic_id": "8125fc3e-82cc-5917-af4c-29dc3138d1cd",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "title": "Estructura del mercado laboral e informalidad",
+        "position": 1
+      },
+      {
+        "id": "2872a786-7442-5077-b087-c110670bd2fc",
+        "program_topic_id": "afab439c-93ca-561f-a55a-8c4d1e08a684",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "title": "Calificación profesional y su retorno",
+        "position": 2
+      },
+      {
+        "id": "89e89acb-b5c5-5f73-a702-90be4ec691ee",
+        "program_topic_id": "362b324d-f2cd-52ca-820e-ee4b287f1820",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "title": "Intermediación laboral y servicios de empleo",
+        "position": 3
+      },
+      {
+        "id": "a093464f-c4fa-5618-80c0-4b3201f98aa6",
+        "program_topic_id": "46d6f3aa-2487-534f-975e-d1961d0c13e8",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "title": "Transferencias de ingreso y su diseño",
+        "position": 4
+      },
+      {
+        "id": "5819af51-eec8-5a27-b84e-b63fa3c2daa4",
+        "program_topic_id": "3c666a9b-cbfc-5512-8ed5-fd3dcd8f27e8",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "title": "Protección social contributiva y no contributiva",
+        "position": 5
+      },
+      {
+        "id": "e70c1729-9e27-5e45-b57f-a543c9a8b231",
+        "program_topic_id": "5f0e5818-cd43-500f-9aec-089b3b7c28a4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "title": "Determinantes de la productividad y su medición",
+        "position": 1
+      },
+      {
+        "id": "5322b460-1e2e-5dd6-b0da-115ed98bd1a8",
+        "program_topic_id": "cd759fee-8fb4-559a-b37f-4ab54d4aa38e",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "title": "Heterogeneidad de firmas y difusión tecnológica",
+        "position": 2
+      },
+      {
+        "id": "54fa969c-403f-5750-b2ad-89605ef17abe",
+        "program_topic_id": "4d7a954d-7afe-59f8-b5dc-1decf56d1397",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "title": "Capital humano y calificación de la fuerza laboral",
+        "position": 3
+      },
+      {
+        "id": "0661cadb-b44f-532f-a14f-4ac72303a1af",
+        "program_topic_id": "3fb389d0-5d87-5de0-bfb1-25fa3096f404",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "title": "Instituciones, competencia y regulación",
+        "position": 4
+      },
+      {
+        "id": "e8042332-96f7-51d3-9021-95c5dc84e8ed",
+        "program_topic_id": "f2de91a9-dab6-533b-a5fb-8768f67da084",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "title": "Buenos empleos como objetivo de política",
+        "position": 5
+      },
+      {
+        "id": "bbefdde4-529c-5461-8de6-7a66336397e7",
+        "program_topic_id": "1274bcd9-2374-5e12-ae8c-22a9525949f4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "title": "Instituciones y desarrollo de largo plazo",
+        "position": 1
+      },
+      {
+        "id": "231e550d-bbb2-5fc4-8cdf-08e4b4493ea4",
+        "program_topic_id": "f5cc90e6-4879-5da2-b1c9-77711746f380",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "title": "Economía política de las reformas y coaliciones",
+        "position": 2
+      },
+      {
+        "id": "a13c1b4d-4eb5-5717-a835-402631bd0cf7",
+        "program_topic_id": "a03d72e9-cae9-5baa-a3bd-3de41058f819",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "title": "Desigualdad, poder y captura del Estado",
+        "position": 3
+      },
+      {
+        "id": "a8433c46-eb26-568d-ada0-1415543a5307",
+        "program_topic_id": "fa962a91-02ad-5d40-9a22-2290511aea7b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "title": "Capacidad estatal y burocracia",
+        "position": 4
+      },
+      {
+        "id": "a2296099-878e-59ac-b51c-7b1fe18e569a",
+        "program_topic_id": "4106d848-8d17-56e2-a8c7-6d1e0b3e9b6d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "title": "Trayectorias comparadas de desarrollo",
+        "position": 5
+      },
+      {
+        "id": "2b4abe12-cee8-544d-b557-4bd1255d553c",
+        "program_topic_id": "041345f8-851d-5b58-ad5b-c25a03722eb3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "title": "Estado emprendedor y creación de mercados",
+        "position": 1
+      },
+      {
+        "id": "d4cea2af-35dc-5c47-8dd6-6773999cd194",
+        "program_topic_id": "b4c1f5ea-0152-5747-9d59-2b3fbce47fdf",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "title": "Política industrial moderna con condicionalidades",
+        "position": 2
+      },
+      {
+        "id": "e4b8c215-e5eb-5651-8bc7-6f5f57c034d4",
+        "program_topic_id": "db825cd0-3e88-5838-bb22-d0892d974690",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "title": "Misiones: definición, gobernanza y cartera",
+        "position": 3
+      },
+      {
+        "id": "4a4d24df-7cdb-572e-976a-bbbbd70e4767",
+        "program_topic_id": "f7106ca9-bfb4-51ad-a368-6ca2f353d71b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "title": "Valor público y compras públicas orientadas",
+        "position": 4
+      },
+      {
+        "id": "05c6fe2a-43d1-593e-9111-e69c5fbcc11d",
+        "program_topic_id": "477397f2-b64d-58eb-a113-1eb8eddb2c69",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "title": "Direccionamiento de la inversión y banca de desarrollo",
+        "position": 5
+      },
+      {
+        "id": "507c204b-69a2-5ae6-83b3-09925249c1dc",
+        "program_topic_id": "e965e0bf-3412-5182-8f91-a669a54975fb",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "title": "Evaluación de política orientada por misiones",
+        "position": 6
+      }
+    ],
+    "instructor_revisions": [
+      {
+        "id": "ef1a859f-39ca-5687-8276-e571c2c67869",
+        "instructor_id": "7a29933a-3ca3-574c-81e4-835cf77ed5d6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Abhijit Banerjee",
+        "role_or_title": "Economista · J-PAL / MIT",
+        "institution": "J-PAL / MIT",
+        "profile": "Cofundador de J-PAL. Trabajo central en métodos experimentales para el diseño de programas sociales.",
+        "thematic_axis_or_themes": [
+          "Método (transversal)"
+        ]
+      },
+      {
+        "id": "a6df113b-63eb-58c3-a7e6-a80ade8e6887",
+        "instructor_id": "a9b6c771-16b1-5a6e-b8a4-808b0280ffb3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Dani Rodrik",
+        "role_or_title": "Economista · Harvard Kennedy School",
+        "institution": "Harvard Kennedy School",
+        "profile": "Trabajo sobre política industrial, buenos empleos y economía política de las reformas. Impulsa el proyecto Reimagining the Economy.",
+        "thematic_axis_or_themes": [
+          "Innovación",
+          "Productividad"
+        ]
+      },
+      {
+        "id": "6f599ad4-37f8-5d69-9c19-50bf758558e1",
+        "instructor_id": "4399f004-da41-5126-b295-0d0904516c68",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Daron Acemoglu",
+        "role_or_title": "Economista · MIT",
+        "institution": "MIT",
+        "profile": "Investigación sobre instituciones, poder y desarrollo económico de largo plazo.",
+        "thematic_axis_or_themes": [
+          "Desarrollo económico"
+        ]
+      },
+      {
+        "id": "bebb5406-09a9-5e5a-b785-689c5b511624",
+        "instructor_id": "743b2a90-0eb1-551c-8825-29a9f6d97056",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Esther Duflo",
+        "role_or_title": "Economista · J-PAL / MIT",
+        "institution": "J-PAL / MIT",
+        "profile": "Cofundadora de J-PAL. Referencia en evaluación de impacto y ensayos aleatorizados aplicados a política pública.",
+        "thematic_axis_or_themes": [
+          "Método (transversal)"
+        ]
+      },
+      {
+        "id": "4855a1a4-1518-57ba-b74a-24e0f4453802",
+        "instructor_id": "b1aeb7ac-43c0-5ead-a09a-1a2551f91411",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Mariana Mazzucato",
+        "role_or_title": "Economista · UCL IIPP",
+        "institution": "UCL IIPP",
+        "profile": "Fundadora del Institute for Innovation and Public Purpose. Trabajo sobre Estado emprendedor, misiones y valor público.",
+        "thematic_axis_or_themes": [
+          "Innovación"
+        ]
+      },
+      {
+        "id": "2692dbe8-660d-5860-b9c3-4835a4d6d57a",
+        "instructor_id": "860c232a-da93-560a-8497-6d418dfe08a4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Quentin Fulks",
+        "role_or_title": "Gestión de campaña nacional",
+        "institution": null,
+        "profile": "Referencia registrada en la base curricular para los módulos de planificación y de liderazgo de campaña. Experiencia en dirección de campañas nacionales en Estados Unidos.",
+        "thematic_axis_or_themes": [
+          "Estrategia electoral",
+          "Liderazgo"
+        ]
+      }
+    ],
+    "teaching_note_revisions": [
+      {
+        "id": "b7f2194f-b5f2-54c0-8a46-e3fbb5162fe7",
+        "teaching_note_id": "23f6339e-0275-5f6e-a6e8-48b6100d627c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "program_topic_id": "d8887483-5fbe-57da-ba31-4da9afed6f1a",
+        "title": "Lectura del escenario: contexto, adversarios, oportunidad política",
+        "text": "• Mapa de actores: aliados, adversarios, indecisos e instituciones con poder de veto\n• Análisis del ciclo anterior: resultados por unidad territorial y transferencia de votos\n• Ejercicio: diagnóstico de una página con la oportunidad política central"
+      },
+      {
+        "id": "f237e7c6-3934-5d92-801e-7127d53cd74b",
+        "teaching_note_id": "21ed47ba-a91e-5ea6-b1e8-8846a403facf",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "program_topic_id": "7ed41369-c1f6-5c6a-a66c-f312c5800ab1",
+        "title": "Camino a la victoria: aritmética electoral y definición de metas de voto",
+        "text": "• Aritmética electoral: universo del electorado, participación esperada y umbral de victoria\n• Construcción de escenarios: piso, meta y techo de votación\n• Entregable: meta de votos desagregada por territorio"
+      },
+      {
+        "id": "bacd3a17-dde6-50ff-9e1b-818cffb280f6",
+        "teaching_note_id": "81a3b29d-c0f2-530f-9746-5de871059a79",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "program_topic_id": "0db8248e-8fc3-5870-a77a-c566659c9bd4",
+        "title": "Segmentación de públicos y priorización territorial",
+        "text": "• Criterios de segmentación: geografía, demografía, comportamiento y actitud\n• Priorización: dónde persuadir, dónde movilizar, dónde no invertir\n• Ejercicio: tres segmentos con su mensaje y canal"
+      },
+      {
+        "id": "f5959213-faa7-5006-a5a9-f44bae9030b8",
+        "teaching_note_id": "b3873fc3-14ce-5cc4-bdae-9c3f948cc64c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "program_topic_id": "58288e4f-fbcb-5c4b-91ec-c389969b160e",
+        "title": "Cronograma maestro, hitos y asignación de recursos",
+        "text": "• Fases de campaña e hitos no negociables (registro, debates, veda, día D)\n• Retroplanificación desde la elección hacia el presente\n• Entregable: cronograma con responsables por hito"
+      },
+      {
+        "id": "2c9c661c-d8ac-5c08-a7a7-71b56acfec33",
+        "teaching_note_id": "949cbcd5-681e-576c-9011-03528f2c830a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "program_topic_id": "ae70536b-5d0f-56f7-947f-15e38d173e41",
+        "title": "Presupuesto de campaña y estructura de gasto",
+        "text": "• Estructura de gasto: personal, medios, territorio, investigación, operación\n• Escenarios presupuestarios y decisiones de recorte\n• Entregable: presupuesto con supuestos explícitos"
+      },
+      {
+        "id": "fef5e55e-9f04-58a4-a277-fd30feaf75d8",
+        "teaching_note_id": "559e10ec-ccd8-5056-82ac-12c30904521d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "c572331b-bb82-54cb-b3a9-352eb07e948d",
+        "program_topic_id": "c8353199-3038-5ebf-ae38-1f01d9e3e13d",
+        "title": "Tablero de métricas y rutinas de seguimiento",
+        "text": "• Selección de indicadores por fase y su fuente de datos\n• Rutina de revisión semanal y disparadores de corrección de rumbo\n• Entregable: tablero en una hoja"
+      },
+      {
+        "id": "08190d08-fd9d-594c-a8ea-85c0eedd02f1",
+        "teaching_note_id": "cdc2cab1-f261-505b-bc82-44adbb09d87a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "program_topic_id": "693669b9-4566-5cb8-abdd-b974485f4845",
+        "title": "Mensaje central: construcción, prueba y disciplina",
+        "text": "• Componentes del mensaje: problema, causa, propuesta, actor y beneficio\n• Prueba de mensaje: claridad, credibilidad, diferenciación\n• Disciplina: cómo sostener el mensaje bajo presión mediática"
+      },
+      {
+        "id": "44cd197d-5010-55f8-88a3-d1df0665871d",
+        "teaching_note_id": "20a9d10b-8380-5455-84aa-a88d76aeba8c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "program_topic_id": "6b680011-7653-54cd-89dd-7897a456bcb1",
+        "title": "Encuadre (framing) y batalla por la definición del debate",
+        "text": "• Encuadre como definición del conflicto: quién gana y quién pierde\n• Reencuadre y contraencuadre frente al adversario\n• Ejercicio: reescribir un ataque desde el propio marco"
+      },
+      {
+        "id": "596001e9-58e9-590a-822a-1293b3e6163d",
+        "teaching_note_id": "521e779a-53c1-52d6-bc9c-a2aa80cc6a35",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "program_topic_id": "483b68b1-cccd-5387-83e3-a92c659c86d1",
+        "title": "Narrativa: arco, personajes y prueba emocional",
+        "text": "• Arco narrativo: origen, obstáculo, decisión y horizonte\n• Personajes: candidatura, adversario, protagonista ciudadano\n• Prueba emocional: qué siente quien escucha"
+      },
+      {
+        "id": "4f01978e-3fcc-5881-bf74-d63a2ce9a86a",
+        "teaching_note_id": "6b92ca5c-24eb-5753-aed8-f23fc7ce7773",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "program_topic_id": "0d8bc01a-356e-57ca-ae83-8ed6fd3e26e0",
+        "title": "Adecuación del mensaje por público y por canal",
+        "text": "• Adaptación por público sin perder el mensaje central\n• Ajuste por canal: acto público, entrevista, video corto, puerta a puerta\n• Entregable: matriz mensaje × público × canal"
+      },
+      {
+        "id": "d5a745eb-3d84-56d0-b4cb-b253cb04b4d9",
+        "teaching_note_id": "58d42657-c7b8-5464-b79d-d4efe4d6a044",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "895e297d-d3e0-5c3a-bd6c-6698674f0e79",
+        "program_topic_id": "0a41fa7c-c861-53f2-b6b9-a5cbb929dff7",
+        "title": "De la promesa de campaña a la narrativa de gobierno",
+        "text": "• Continuidad entre lo prometido y lo gobernado\n• Narrativa de los primeros 100 días\n• Riesgo: promesas que no sobreviven al presupuesto"
+      },
+      {
+        "id": "76c1d313-7c84-5269-82b9-9ddd4df6405f",
+        "teaching_note_id": "4934d858-e03b-5cd1-a7fc-d4cf8986d726",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "program_topic_id": "314e70ee-a1c8-536d-a493-349698144817",
+        "title": "Tipos de encuesta y diseño de instrumento",
+        "text": "• Encuestas cuantitativas, cualitativas, tracking y exit poll: para qué sirve cada una\n• Diseño de cuestionario: orden, sesgo de formulación, escalas\n• Ejercicio: detectar preguntas capciosas"
+      },
+      {
+        "id": "a00c5d43-9ccb-5601-8fa7-d3e9ea861a8e",
+        "teaching_note_id": "3803edbf-bd91-54e9-9778-6b6ba73a26c2",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "program_topic_id": "16dd82b2-7954-533d-b716-36b85f7cd313",
+        "title": "Muestreo, margen de error y lectura de cruces",
+        "text": "• Muestreo probabilístico y no probabilístico; ponderación\n• Margen de error, intervalos y lectura de diferencias no significativas\n• Cruces: cómo leer subgrupos sin sobreinterpretar"
+      },
+      {
+        "id": "dffa4ac8-d4da-5fe4-bdaf-801e6ffab34a",
+        "teaching_note_id": "7a4532b5-f17c-5c69-9256-863ba06729bf",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "program_topic_id": "6c7a6ede-5c9f-55f9-afb2-5309179d628d",
+        "title": "Tracking, paneles y grupos focales",
+        "text": "• Tracking continuo frente a mediciones puntuales\n• Grupos focales: qué aportan y qué no\n• Combinación de fuentes cuantitativas y cualitativas"
+      },
+      {
+        "id": "2779ce65-ee44-5f12-9c94-982d4e69b685",
+        "teaching_note_id": "4f3a6e70-a801-5001-bc71-a6c675aee5c6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "program_topic_id": "e2dbd8aa-d34d-5a9a-baca-91b22e77036c",
+        "title": "Microtargeting y modelos de electorado",
+        "text": "• Construcción de scores de persuasión y de propensión a votar\n• Segmentos operables frente a segmentos estadísticos\n• Límites del microtargeting"
+      },
+      {
+        "id": "38e2b311-9b94-5e25-870b-9eb624fd3892",
+        "teaching_note_id": "a6821459-33ef-52bc-a49c-1bd417622979",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "dc092995-7d37-526e-a618-8e4b650ae084",
+        "program_topic_id": "fedc7ecf-01d4-54a4-a908-efcc66cfc126",
+        "title": "Uso ético de datos y protección de la información",
+        "text": "• Protección de datos personales y consentimiento\n• Transparencia metodológica en la publicación de encuestas\n• Uso responsable frente a manipulación"
+      },
+      {
+        "id": "bb3e72e4-bb34-5119-813f-717f0c2436f0",
+        "teaching_note_id": "c6370a0d-b3bb-5ae7-b175-03e35ddbf5f4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "program_topic_id": "b0477b74-eb41-5979-9133-b74ca88f3db5",
+        "title": "Planificación financiera y metas de recaudación",
+        "text": "• Proyección de necesidades por fase y flujo de caja\n• Metas mensuales de recaudación y punto de equilibrio\n• Entregable: plan financiero con hitos"
+      },
+      {
+        "id": "d9c9ac87-f6d7-5920-a98d-f1083dbfd9ac",
+        "teaching_note_id": "f5eace3f-98f6-52ee-a20a-50a04edcce73",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "program_topic_id": "24922ec7-4b9f-5013-8375-94a521674095",
+        "title": "Fuentes lícitas y arquitectura de financiamiento",
+        "text": "• Fuentes permitidas según el marco legal; límites y prohibiciones\n• Diversificación: base amplia frente a dependencia de pocos aportantes\n• Riesgo de captura y cómo mitigarlo"
+      },
+      {
+        "id": "afae6e50-7491-51ce-aea0-3feebf5ce336",
+        "teaching_note_id": "8910edd3-908a-5569-aa38-f12483aaced0",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "program_topic_id": "0e8dcc36-1254-592c-b6f8-03c51d651de8",
+        "title": "Pedido directo, eventos y recaudación digital",
+        "text": "• Pedido directo: guion, escalera de aportes y seguimiento\n• Eventos: costo, margen y valor relacional\n• Recaudación digital: campañas, recurrencia y retención"
+      },
+      {
+        "id": "c585a02c-b360-517d-b6c1-3b9584d05232",
+        "teaching_note_id": "dc4e7fb9-2f83-5c53-b6d9-340cfd8ccb2e",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "program_topic_id": "dd24e86a-5b10-589d-a652-8dfd12caf172",
+        "title": "Rendición de cuentas y cumplimiento electoral",
+        "text": "• Registro contable, comprobantes y auditoría interna\n• Plazos e informes ante la autoridad electoral\n• Ejercicio: checklist de cumplimiento"
+      },
+      {
+        "id": "7669737f-24ad-5641-bcf8-aa8b8b10ad99",
+        "teaching_note_id": "ab452aba-7ae2-5846-9190-af4467dfb7e9",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "e6ef9a2f-3b12-5475-a930-4b604694cdf1",
+        "program_topic_id": "55aadadd-a5fd-5714-8890-60ced519bb26",
+        "title": "Transparencia y riesgo reputacional",
+        "text": "• Transparencia activa como activo político\n• Manejo de aportes controvertidos\n• Protocolo ante una denuncia de financiamiento"
+      },
+      {
+        "id": "f3bc9eb6-a469-5658-8fcc-982b79d1dfa2",
+        "teaching_note_id": "0bc514e6-7c57-57dc-82ed-6b06ab046983",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "program_topic_id": "06817420-74bc-5b6f-8278-6421299270d8",
+        "title": "Estructura de voluntariado y liderazgos territoriales",
+        "text": "• Escalas territoriales y su articulación (nacional, local, barrio)\n• Perfil y selección de liderazgos territoriales\n• Delegación real de decisiones al territorio"
+      },
+      {
+        "id": "83d1f7b9-b243-5525-92cf-11dbe224b669",
+        "teaching_note_id": "36f01492-160b-5dbe-ba6b-cde35d552b5e",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "program_topic_id": "048db097-3166-5f2d-8e35-0d2f9da04dd4",
+        "title": "Organización de base: reclutamiento, formación, retención",
+        "text": "• Reclutamiento: canales, conversión y primer contacto\n• Formación breve y acompañamiento\n• Retención: reconocimiento, propósito y rutina"
+      },
+      {
+        "id": "881d6f8e-0167-5513-8849-3f132740c5bf",
+        "teaching_note_id": "3d6bfb4b-37c9-5ee6-a1ec-cfb61246d051",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "program_topic_id": "d90afa07-84e9-51ad-9c5b-482b8e761563",
+        "title": "Puerta a puerta y canvassing: guiones y calidad de contacto",
+        "text": "• Guion de contacto y calidad de la conversación\n• Registro del contacto y uso del dato\n• Práctica en campo con retroalimentación"
+      },
+      {
+        "id": "3b18e7bf-6612-5b3e-9316-7288a2fb0b57",
+        "teaching_note_id": "da14c88a-6b8d-5054-bd18-411947f061ab",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "program_topic_id": "2045406c-255d-53f8-903a-e8571275ecb6",
+        "title": "Plan de GOTV y últimas 72 horas",
+        "text": "• Plan de las últimas 72 horas: recursos, logística y contingencias\n• Identificación y seguimiento del voto propio\n• Operación del día de la elección"
+      },
+      {
+        "id": "81eb6a83-073e-55c9-a323-af786388319b",
+        "teaching_note_id": "2dca5f88-515a-51f1-b9e2-17acfa584e46",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "1dc4faa8-46db-5573-9a19-97fd5bffc474",
+        "program_topic_id": "46a4493a-a8a3-5c33-b8bc-6824ac9c5008",
+        "title": "Métricas de contacto y productividad territorial",
+        "text": "• Métricas de contacto: intentos, contactos efectivos, conversión\n• Productividad por equipo y por territorio\n• Uso de los datos para reasignar recursos"
+      },
+      {
+        "id": "f581d3d3-a534-5139-a3e9-19dd1e4591d9",
+        "teaching_note_id": "702c7a30-49cf-5b6f-8ef9-e6b84a7f2823",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "program_topic_id": "0dd0432f-600f-5bed-8d66-651d7153d1a3",
+        "title": "Ecosistema digital y arquitectura de plataformas",
+        "text": "• Mapa de plataformas y comportamiento de audiencias por país\n• Propiedad de canales frente a dependencia de algoritmos\n• Arquitectura: sitio, listas, mensajería, redes"
+      },
+      {
+        "id": "79000bda-910c-5f0d-bc71-0c23baf7a69d",
+        "teaching_note_id": "03c9345c-03d8-53c1-ab33-b62f9fd11173",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "program_topic_id": "a9145d6b-3c03-56cb-8c8d-a950e09ec7d1",
+        "title": "Contenido orgánico: formatos, ritmo y comunidad",
+        "text": "• Formatos y ritmo de publicación por plataforma\n• Producción ágil con equipo pequeño\n• Comunidad: moderación, respuesta y voceros digitales"
+      },
+      {
+        "id": "c2f7f08f-dfd1-57ba-aebb-e121585f6dc8",
+        "teaching_note_id": "34c4401e-ee4a-59f3-b0c7-5f46db9474d1",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "program_topic_id": "d07f0613-efd3-5666-97a5-838cf7fc7af1",
+        "title": "Pauta digital: segmentación, presupuesto, creativos",
+        "text": "• Segmentación y presupuesto de pauta\n• Producción y prueba de creativos\n• Lectura de resultados y reasignación"
+      },
+      {
+        "id": "c467bbec-9931-5711-afd4-b88bfab28305",
+        "teaching_note_id": "fad2a46f-8c38-5c82-ac53-ee9d70eb8cab",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "program_topic_id": "d3170d6d-1f6c-5d18-adca-8abc4a48e435",
+        "title": "Métricas digitales y atribución",
+        "text": "• Métricas de alcance, interacción y conversión; qué ignorar\n• Atribución y sus límites\n• Tablero digital semanal"
+      },
+      {
+        "id": "c12c33a3-a082-526a-91b1-f18d510f76c4",
+        "teaching_note_id": "7def0e72-acc9-55fa-8111-295f1cdfcace",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "program_topic_id": "a3fb0bd5-10aa-5615-a323-9351baf108c4",
+        "title": "Desinformación: detección y respuesta",
+        "text": "• Detección de campañas coordinadas y narrativas falsas\n• Decisión de responder o no responder\n• Prebunking y corrección"
+      },
+      {
+        "id": "96173b63-e530-5e38-83e1-2db0292e41d3",
+        "teaching_note_id": "2a384e2d-74ff-5969-ab30-08f275230709",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "d14e7e90-a560-5594-8a3f-c2293142e597",
+        "program_topic_id": "b4b7d451-fc4e-53dd-adae-94eaae07b337",
+        "title": "Seguridad digital del equipo de campaña",
+        "text": "• Higiene digital del equipo: contraseñas, doble factor, dispositivos\n• Protocolo ante filtración o suplantación\n• Seguridad de datos de simpatizantes"
+      },
+      {
+        "id": "a638303f-058e-5e64-81cb-5f132cbfeb17",
+        "teaching_note_id": "30ec1178-5894-5372-bdbf-0896c3e6cb79",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "program_topic_id": "1cbf2592-8809-5144-8c82-bd575e4ff913",
+        "title": "Sala de respuesta rápida: roles y rutinas",
+        "text": "• Composición de la sala, roles y turnos\n• Umbrales de escalada y quién decide\n• Rutina diaria en período crítico"
+      },
+      {
+        "id": "9dbf579d-f903-5f66-bee2-269258ec3247",
+        "teaching_note_id": "06fa29eb-905a-5742-bcfb-eab345f5ec44",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "program_topic_id": "1222d9bb-3a30-5a41-9d55-5a14e995ba4c",
+        "title": "Monitoreo de medios y escucha digital",
+        "text": "• Monitoreo de medios tradicionales y escucha digital\n• Detección temprana de señales\n• Reporte breve y accionable"
+      },
+      {
+        "id": "02753bb8-f537-57a6-9a4e-b54d5769a4f9",
+        "teaching_note_id": "0c35d249-25fc-5447-8f08-13c916239df6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "program_topic_id": "227301c2-051f-5d7e-b118-ae103fb522e9",
+        "title": "Contrapunto a ataques y corrección de registro",
+        "text": "• Tipología de ataques y respuesta proporcional\n• Corrección de registro y uso de terceros validadores\n• Cuándo el silencio es la mejor respuesta"
+      },
+      {
+        "id": "b459b589-97ff-5645-b01b-bab96b5b0950",
+        "teaching_note_id": "819279d8-925c-51f0-9965-a831067cd0d0",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "program_topic_id": "618f05e8-f0c3-53e7-9eb7-772f4984cbb9",
+        "title": "Gestión de errores propios y de crisis internas",
+        "text": "• Errores propios: reconocer, corregir, reencuadrar\n• Crisis internas y filtraciones\n• Costo de la negación tardía"
+      },
+      {
+        "id": "0dda2cda-7a74-5fcf-ac72-0b7cba20022b",
+        "teaching_note_id": "01cfcc17-1a3d-5830-a7bb-0b1407929fe0",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "2170e7df-d0e8-556b-a650-4a28ad746bcf",
+        "program_topic_id": "0470c779-5654-54f2-a02b-89fef44a49a1",
+        "title": "Comunicación bajo presión y vocería",
+        "text": "• Preparación de vocería y mensajes puente\n• Manejo del lenguaje corporal y del tono\n• Simulación de entrevista hostil"
+      },
+      {
+        "id": "71b8fe13-bfd2-56e4-af9e-c270892220e7",
+        "teaching_note_id": "232942c0-f92f-56ca-ace8-526341676249",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "program_topic_id": "7f8e96f0-de54-5ccf-9a07-77a57d8dd438",
+        "title": "Estructura de campaña y diseño de roles",
+        "text": "• Organigrama por tamaño de campaña\n• Definición de roles y perfiles críticos\n• Coordinación entre áreas y prevención de silos"
+      },
+      {
+        "id": "668e3cca-05ad-5e4a-8371-8d25cafd960d",
+        "teaching_note_id": "e10d2c05-9eee-5039-b804-8a6737e5c5c2",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "program_topic_id": "e7349715-6998-5fe3-8537-41e9a5861662",
+        "title": "Delegación, decisión y ritmo de gestión",
+        "text": "• Qué decide quién y con qué información\n• Delegación efectiva y control por excepción\n• Ritmo: reunión semanal, diaria y de cierre"
+      },
+      {
+        "id": "b487f45c-973a-5951-8b99-8023bc06b32b",
+        "teaching_note_id": "bf3b94ed-fd51-595a-897b-b7567178e6ba",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "program_topic_id": "b86aa9cb-c6b7-5516-8046-1dcd0bace631",
+        "title": "Gestión de personas, conflicto y cultura de equipo",
+        "text": "• Reclutamiento y evaluación del equipo\n• Manejo de conflictos y de la sobrecarga\n• Cultura: normas explícitas y ejemplo del liderazgo"
+      },
+      {
+        "id": "9e91893b-f837-55c4-aa7b-cb5a563a1bd1",
+        "teaching_note_id": "8a5d30bf-48ac-508b-8158-7fb25f19601b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "program_topic_id": "5b56b76a-d29b-5222-9f17-a1c3f9a233bf",
+        "title": "Mentoría y desarrollo de liderazgos",
+        "text": "• Mentoría de cuadros jóvenes\n• Plan de desarrollo individual\n• Retención del talento después de la elección"
+      },
+      {
+        "id": "5ae2ac0b-866c-59e5-b2fe-d1274cfc9626",
+        "teaching_note_id": "41c08449-3003-59bb-a583-053de374bbe5",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "a4792ca8-f34a-5c31-a24e-5a2a76ba9cdb",
+        "program_topic_id": "6b6dfb96-bf0d-5c5a-ab91-0917223270a2",
+        "title": "Transición de campaña a gobierno",
+        "text": "• Equipo de transición y priorización de los primeros 100 días\n• Diferencias entre lógica de campaña y de gestión\n• Riesgos típicos de la transición"
+      },
+      {
+        "id": "1ee2864c-afec-5400-8e6c-e48a8526748f",
+        "teaching_note_id": "75d04849-7b31-50e4-bfc6-0e6b13fe9037",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "program_topic_id": "97b0885e-b0de-5b77-99bc-a98f963b1136",
+        "title": "Principios éticos en la contienda electoral",
+        "text": "• Principios: veracidad, respeto al adversario, límites de la propaganda\n• Dilemas frecuentes en campaña\n• Discusión de casos"
+      },
+      {
+        "id": "e24d86b5-fa7b-531d-ab2a-600de5e0c9c3",
+        "teaching_note_id": "93c8d4bc-64a7-55b3-954d-3092a9dd5527",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "program_topic_id": "8422b292-eb19-516a-940b-99d0f98b55f1",
+        "title": "Integridad en el financiamiento y conflictos de interés",
+        "text": "• Origen de los recursos y condicionamientos implícitos\n• Registro y declaración de conflictos de interés\n• Reglas internas más estrictas que la ley"
+      },
+      {
+        "id": "2dce751e-b334-5e17-863b-21ec50f76759",
+        "teaching_note_id": "3e4533b9-651e-5f4e-82e3-c26e6122b0f6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "program_topic_id": "2fe8e73f-f5df-5324-aa66-c46c7dc25b14",
+        "title": "Transparencia activa y acceso a la información",
+        "text": "• Transparencia activa: qué publicar y cuándo\n• Acceso a la información como práctica de campaña\n• Rendición de cuentas ante la militancia"
+      },
+      {
+        "id": "b148dfe3-db53-5999-88bf-30e4edc1c12e",
+        "teaching_note_id": "524973fd-d0d5-59cf-8781-bd4ab5ab6a78",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "program_topic_id": "48a33876-834a-5cbd-8fb1-1ad30ac6d497",
+        "title": "Prevención de la corrupción y control interno",
+        "text": "• Riesgos de corrupción en contratación y proveedores\n• Controles internos mínimos\n• Canal de denuncia y protección al denunciante"
+      },
+      {
+        "id": "d65d32a6-af1e-579d-a271-1d9b1572b7d1",
+        "teaching_note_id": "08aaba9c-dc90-556b-b864-e6ae6c4db2f2",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "318db9ac-1806-5e41-b179-aacc8fd61a01",
+        "program_topic_id": "d1f26366-7772-59a2-9221-99e6ac715e5f",
+        "title": "Códigos de conducta y su aplicación real",
+        "text": "• Redacción del código: alcance, sanciones y aplicación\n• Compromiso público y verificación\n• Qué hacer cuando el código se incumple"
+      },
+      {
+        "id": "9dc6276c-7492-576b-bbf5-e9c6ce6d775b",
+        "teaching_note_id": "7ab370ba-444d-5b24-8094-92ba16296d98",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "program_topic_id": "422c3213-0074-5b6c-8faa-12323b6b7e80",
+        "title": "Democracia interna y reglas partidarias",
+        "text": "• Estatuto, órganos y reglas de decisión\n• Democracia interna real frente a formal\n• Diagnóstico de la propia organización"
+      },
+      {
+        "id": "42b3dedd-ba0a-5410-8d03-af08918853bf",
+        "teaching_note_id": "1a6ae5ae-61d7-5f02-b3a9-1fd3b8b16cc7",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "program_topic_id": "43708336-559c-544f-a4bf-52899ddb2965",
+        "title": "Selección de candidaturas y primarias",
+        "text": "• Métodos de selección: primarias, listas, designación\n• Efectos de cada método sobre la coalición interna\n• Reglas de paridad y su cumplimiento"
+      },
+      {
+        "id": "523f427e-7c57-5ec6-bbd4-2b62bdeb49f8",
+        "teaching_note_id": "ccf2f38e-4bec-5d13-aa2c-0fe930579923",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "program_topic_id": "f6626638-512d-5b40-92cf-a0c717ae8b74",
+        "title": "Inclusión: género, juventud, diversidad territorial",
+        "text": "• Inclusión de género, juventud y diversidad territorial\n• Barreras concretas de acceso y cómo removerlas\n• Metas y seguimiento"
+      },
+      {
+        "id": "80e16f96-b470-53c8-8001-7dbdc029920c",
+        "teaching_note_id": "d73b7c72-1f31-5101-86f5-910bd59b47a3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "program_topic_id": "9a2d8e86-e0a8-546c-b68f-bf61300045e4",
+        "title": "Gestión organizacional y profesionalización",
+        "text": "• Profesionalización: estructura permanente, finanzas, formación\n• Gestión de la membresía y de los datos\n• Relación entre aparato y liderazgos electos"
+      },
+      {
+        "id": "ba43bddb-7c9c-5f99-9fc7-333ac819f54e",
+        "teaching_note_id": "a690e52f-092b-59fb-9713-20b7e8b51c66",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "5ed2a4f0-7446-5476-90d8-0ebfe2d5a6d1",
+        "program_topic_id": "3385f96f-f10d-5be0-8789-3f00ba8eab39",
+        "title": "Rendición de cuentas y relación con la militancia",
+        "text": "• Rendición de cuentas interna y comunicación con la base\n• Manejo de disidencias\n• Secuencia realista de una reforma interna"
+      },
+      {
+        "id": "167150de-89ff-5678-b8ec-8843479c3b99",
+        "teaching_note_id": "8f1abcda-3c9b-546b-95af-a6ed83bbde61",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "program_topic_id": "fe9b820e-cce3-57c1-84f8-20d59f4716c9",
+        "title": "Pregunta de política y teoría de cambio",
+        "text": "• De problema público a pregunta evaluable\n• Teoría de cambio: insumos, actividades, resultados, impacto\n• Supuestos que deben cumplirse"
+      },
+      {
+        "id": "5db534cd-fe11-5c3c-9a95-6446b0d1c980",
+        "teaching_note_id": "1f075640-41a3-5357-aadb-cf811cb0423d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "program_topic_id": "1990ff9c-dae7-5129-9c2d-38e5335adf99",
+        "title": "Inferencia causal: contrafactual y sesgo de selección",
+        "text": "• El contrafactual como corazón de la evaluación\n• Sesgo de selección y confusión de variables\n• Por qué la comparación ingenua engaña"
+      },
+      {
+        "id": "1fd79833-6f6f-590e-964a-d12996aed077",
+        "teaching_note_id": "c2091724-285a-50c0-b1d4-be7ab12a894b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "program_topic_id": "94536d64-4703-5372-8e32-dc7ac2724911",
+        "title": "Ensayos controlados aleatorizados: diseño y límites",
+        "text": "• Aleatorización: cuándo es posible y cuándo no\n• Diseño, poder estadístico y tamaño de muestra\n• Ética, consentimiento y equidad del diseño"
+      },
+      {
+        "id": "5da26c69-afb7-5461-8a6a-7961e3e4c877",
+        "teaching_note_id": "e71a1d4d-7cbb-5bc5-bc2c-f7c7d5d18a55",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "program_topic_id": "17be827c-daed-5eb6-afcd-22856905769c",
+        "title": "Métodos cuasiexperimentales",
+        "text": "• Diferencias en diferencias, variables instrumentales, regresión discontinua\n• Supuestos de identificación de cada método\n• Lectura crítica de resultados"
+      },
+      {
+        "id": "d0c798ce-fc91-53ba-a79f-0481c93f5cb1",
+        "teaching_note_id": "8ef4277d-5edd-52db-88d4-799f838c2a3c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "program_topic_id": "a9b4270d-c4bc-5c79-9caf-1993d3188211",
+        "title": "Costo-efectividad y decisión de escala",
+        "text": "• Cálculo de costo por resultado\n• Comparación entre alternativas de política\n• Condiciones para escalar una intervención"
+      },
+      {
+        "id": "aeaa23f0-d685-5481-a30e-a70d520d2d2c",
+        "teaching_note_id": "f663c393-bf21-534c-bdcf-8db2af52f24b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "45fd8c52-35f0-52de-8ea3-6f03e6bd305a",
+        "program_topic_id": "55ce9c3b-12f3-504c-9a06-8f2d3989bbdd",
+        "title": "De la evidencia a la política: uso institucional",
+        "text": "• Institucionalización del uso de evidencia en el Estado\n• Unidades de evaluación y su gobernanza\n• Barreras políticas al uso de evidencia"
+      },
+      {
+        "id": "4c836d51-e9d9-5d2a-80e9-82077b59e06f",
+        "teaching_note_id": "0879662d-3ea1-508e-9425-11ee47de53bd",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "program_topic_id": "5fada5b5-5123-5397-8ad3-f8d5a19d3857",
+        "title": "Ciencia climática aplicada a la decisión pública",
+        "text": "• Nociones esenciales de ciencia climática para decidir\n• Inventarios de emisiones y líneas de base\n• Traducción de escenarios a decisiones concretas"
+      },
+      {
+        "id": "f3f0d092-d25f-533f-a994-4e9789a3393d",
+        "teaching_note_id": "4d4ab7b2-cd12-5cba-9e00-c7a3f4430c36",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "program_topic_id": "72d86df4-1c2b-50a5-9e19-4565eb04913b",
+        "title": "Mitigación: sectores, metas y NDC",
+        "text": "• Sectores prioritarios: energía, transporte, uso del suelo, residuos\n• Estructura de una NDC y su nivel de ambición\n• Seguimiento y revisión de metas"
+      },
+      {
+        "id": "71a5fc7f-c962-5f74-96f1-0f5d4e393636",
+        "teaching_note_id": "918bd225-3449-5102-b7b1-ae82a83cb7cb",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "program_topic_id": "108ecc87-4572-564e-8d31-f794c8f02882",
+        "title": "Adaptación y gestión de riesgo",
+        "text": "• Evaluación de riesgo y vulnerabilidad territorial\n• Medidas de adaptación y su costo\n• Gestión de desastres y planificación urbana"
+      },
+      {
+        "id": "0e2dde62-3082-5fe2-95f3-d418e41368e7",
+        "teaching_note_id": "51280f39-5aa3-53c8-a3d9-abb400da3af5",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "program_topic_id": "3db336ee-4e2f-5cb3-aa1b-b99d043479e5",
+        "title": "Tarificación del carbono e instrumentos económicos",
+        "text": "• Impuestos al carbono y mercados de emisiones\n• Subsidios perversos y su reforma\n• Efectos distributivos y compensación"
+      },
+      {
+        "id": "89c74be5-39b0-547c-9142-a2ad458851bb",
+        "teaching_note_id": "8e7233f4-ffde-543c-8793-27694d7f94fe",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "program_topic_id": "16a9ad6d-2db9-591d-bfbb-d4e1276405c6",
+        "title": "Soluciones basadas en la naturaleza",
+        "text": "• Restauración, bosques y agricultura baja en carbono\n• Servicios ecosistémicos y su valoración\n• Salvaguardas sociales"
+      },
+      {
+        "id": "4dc1bd24-dc64-5483-b42d-c5d7c39aa716",
+        "teaching_note_id": "20f4d2a2-7a01-58a3-a4e4-76f4392839f4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "df321a76-5e9b-5545-b6a9-799222b9e391",
+        "program_topic_id": "3a6f3803-47ee-5376-8c21-f8aff6390796",
+        "title": "Financiamiento climático y transición justa",
+        "text": "• Fuentes: fondos multilaterales, banca de desarrollo, sector privado\n• Estructuración de proyectos financiables\n• Transición justa: empleo, territorio y diálogo social"
+      },
+      {
+        "id": "06342712-6daa-58cc-b2ea-ec8ad9fa9c13",
+        "teaching_note_id": "99e38e3b-9704-5a63-93b9-b7540f6b7cec",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "program_topic_id": "28a5cf47-8f07-5369-9726-616b968632a0",
+        "title": "Aprendizaje: qué mide y qué no mide la evaluación",
+        "text": "• Qué mide una prueba estandarizada y qué queda fuera\n• Brechas de aprendizaje y su medición\n• Uso de datos sin castigar a las escuelas"
+      },
+      {
+        "id": "70b22efb-1c46-55ea-b4c8-9469783e4d75",
+        "teaching_note_id": "67a1cfd5-42d1-577a-bb05-e60cd7e98974",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "program_topic_id": "8cdda55e-7117-5781-8ac9-0b4a858be289",
+        "title": "Calidad docente: selección, formación, incentivos",
+        "text": "• Selección, formación inicial y acompañamiento docente\n• Incentivos y carrera profesional\n• Evidencia sobre lo que mejora la práctica en el aula"
+      },
+      {
+        "id": "1cecd723-0e9d-57f3-afcc-f9189a77a610",
+        "teaching_note_id": "874aba5e-d117-5cdd-8c73-c63f9bb20cb2",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "program_topic_id": "7b4efc62-fcf3-50fb-824f-9817b7860b5c",
+        "title": "Tecnología educativa: qué funciona y en qué condiciones",
+        "text": "• Condiciones para que la tecnología funcione\n• Casos de aprendizaje adaptativo\n• Riesgo de invertir en dispositivos sin pedagogía"
+      },
+      {
+        "id": "9ba03c93-f80f-5ebe-a5ce-9fc0251abc0f",
+        "teaching_note_id": "d6fc561b-8a93-5946-b09b-a02626ef0a35",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "program_topic_id": "cb0b4cb4-1807-5199-a56c-6ccd44dc1423",
+        "title": "Intervenciones de bajo costo y alto impacto",
+        "text": "• Intervenciones con evidencia sólida y bajo costo\n• Adaptación al contexto y fidelidad de implementación\n• Priorización con presupuesto restringido"
+      },
+      {
+        "id": "dab9330e-8595-5b2d-99a8-2cd3772ffac9",
+        "teaching_note_id": "5d9aa387-9ebf-50f1-be2e-8bb316b1ad70",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "4b3d9bcc-5483-5c70-823d-97c95070b4a4",
+        "program_topic_id": "27739400-9528-5c85-950a-81fe90502e57",
+        "title": "Sistemas de evaluación y uso de datos escolares",
+        "text": "• Sistemas de información escolar\n• Uso de datos por directores y supervisores\n• Diseño de un piloto evaluable en la red pública"
+      },
+      {
+        "id": "e5829a0e-d55c-5a10-8dca-38bff585c7b8",
+        "teaching_note_id": "842e5104-98bd-5719-8504-0c05766ef22c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "program_topic_id": "8125fc3e-82cc-5917-af4c-29dc3138d1cd",
+        "title": "Estructura del mercado laboral e informalidad",
+        "text": "• Estructura del empleo y magnitud de la informalidad\n• Transiciones laborales y trayectorias\n• Diagnóstico con datos disponibles"
+      },
+      {
+        "id": "03d26f83-49f4-532c-874d-de3ee0749d2a",
+        "teaching_note_id": "f940d816-e8b5-5182-87b0-f5c44bb7a0a9",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "program_topic_id": "afab439c-93ca-561f-a55a-8c4d1e08a684",
+        "title": "Calificación profesional y su retorno",
+        "text": "• Retornos de la formación profesional según diseño\n• Vinculación con la demanda de las empresas\n• Programas para jóvenes: qué funciona"
+      },
+      {
+        "id": "1e6c76cf-cca4-553f-bb0a-c156bbe6e57d",
+        "teaching_note_id": "0480100d-7537-532a-987d-6cf516c19ec3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "program_topic_id": "362b324d-f2cd-52ca-820e-ee4b287f1820",
+        "title": "Intermediación laboral y servicios de empleo",
+        "text": "• Servicios de empleo y su capacidad real\n• Perfilamiento de usuarios y derivación\n• Intermediación digital"
+      },
+      {
+        "id": "2999dcb4-00a4-54e5-af5d-d6e875cf5916",
+        "teaching_note_id": "d8ff5e32-3a7e-5348-a023-33f36fc9bc93",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "program_topic_id": "46d6f3aa-2487-534f-975e-d1961d0c13e8",
+        "title": "Transferencias de ingreso y su diseño",
+        "text": "• Transferencias condicionadas y no condicionadas\n• Focalización, cobertura y errores de exclusión\n• Efectos sobre trabajo e ingresos"
+      },
+      {
+        "id": "be526b48-ef7a-57b5-88cb-a1ce4961da66",
+        "teaching_note_id": "02e5f264-d5c7-559d-abaa-a4651c18691c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "3e562ed4-7598-51c6-8a38-43481ea15b3b",
+        "program_topic_id": "3c666a9b-cbfc-5512-8ed5-fd3dcd8f27e8",
+        "title": "Protección social contributiva y no contributiva",
+        "text": "• Articulación entre pilares contributivo y no contributivo\n• Sostenibilidad fiscal\n• Protección de trabajadores informales"
+      },
+      {
+        "id": "02cb6796-3b8a-5bc6-b97a-ed135e3ea082",
+        "teaching_note_id": "14b62423-373a-54a4-bb22-a1e34fd7134c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "program_topic_id": "5f0e5818-cd43-500f-9aec-089b3b7c28a4",
+        "title": "Determinantes de la productividad y su medición",
+        "text": "• Productividad total de factores y su medición\n• Fuentes del crecimiento\n• Datos disponibles para el diagnóstico nacional"
+      },
+      {
+        "id": "c0942209-5dbb-57fd-b11a-00ee1f2c53e4",
+        "teaching_note_id": "a0bd478d-5e89-506f-9f96-686af9076b52",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "program_topic_id": "cd759fee-8fb4-559a-b37f-4ab54d4aa38e",
+        "title": "Heterogeneidad de firmas y difusión tecnológica",
+        "text": "• Dispersión de productividad entre firmas del mismo sector\n• Barreras al crecimiento de las pequeñas empresas\n• Difusión tecnológica y extensionismo"
+      },
+      {
+        "id": "9044181f-ed22-553c-afb3-03a1c5dfcf47",
+        "teaching_note_id": "cf89c404-30f2-5d6d-a1a5-8ef14a7b8336",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "program_topic_id": "4d7a954d-7afe-59f8-b5dc-1decf56d1397",
+        "title": "Capital humano y calificación de la fuerza laboral",
+        "text": "• Calificación de la fuerza laboral y desajuste de competencias\n• Formación en la empresa\n• Vínculo entre educación técnica y productividad"
+      },
+      {
+        "id": "96a8eb9e-c656-5517-9f5d-f362ac9e6a1c",
+        "teaching_note_id": "02c25125-b152-593a-8f38-3ea00c8ce1e4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "program_topic_id": "3fb389d0-5d87-5de0-bfb1-25fa3096f404",
+        "title": "Instituciones, competencia y regulación",
+        "text": "• Competencia, regulación de entrada y captura regulatoria\n• Calidad institucional y su efecto en la inversión\n• Estado capaz como condición"
+      },
+      {
+        "id": "1cddb736-964d-560d-953c-ee6cdecf01c6",
+        "teaching_note_id": "7adc7649-45f3-5c53-9ed7-4f29aadc5b4f",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "68282a9e-7ce3-572d-a57d-f8ed1e1b9bcd",
+        "program_topic_id": "f2de91a9-dab6-533b-a5fb-8768f67da084",
+        "title": "Buenos empleos como objetivo de política",
+        "text": "• Buenos empleos como objetivo explícito de política\n• Instrumentos que crean empleo de calidad\n• Secuencia de una agenda de crecimiento inclusivo"
+      },
+      {
+        "id": "493d927b-5c59-5bb0-a534-c24d439e32e2",
+        "teaching_note_id": "d1049873-928d-5490-8dbd-c46e6397c363",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "program_topic_id": "1274bcd9-2374-5e12-ae8c-22a9525949f4",
+        "title": "Instituciones y desarrollo de largo plazo",
+        "text": "• Instituciones inclusivas y extractivas\n• Trayectorias históricas y persistencia\n• Evidencia comparada de largo plazo"
+      },
+      {
+        "id": "533f51ca-d159-5119-9c22-5fc26e039ad4",
+        "teaching_note_id": "692d79d3-ee32-5528-b68b-4280a7a55efb",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "program_topic_id": "f5cc90e6-4879-5da2-b1c9-77711746f380",
+        "title": "Economía política de las reformas y coaliciones",
+        "text": "• Actores, coaliciones y ventanas de oportunidad\n• Secuencia y compensación de perdedores\n• Análisis de viabilidad de una reforma"
+      },
+      {
+        "id": "8c4f693e-a8e9-5dbc-a9f6-4c4d49aee44c",
+        "teaching_note_id": "a6ae9f79-1707-5f93-bd83-516609034f90",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "program_topic_id": "a03d72e9-cae9-5baa-a3bd-3de41058f819",
+        "title": "Desigualdad, poder y captura del Estado",
+        "text": "• Desigualdad y su efecto sobre la política\n• Captura del Estado por intereses concentrados\n• Instrumentos redistributivos y su economía política"
+      },
+      {
+        "id": "3543480c-be5d-56a5-a473-9869e10f3e66",
+        "teaching_note_id": "4c6cb1f0-0dd8-56a0-8095-d805f99be482",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "program_topic_id": "fa962a91-02ad-5d40-9a22-2290511aea7b",
+        "title": "Capacidad estatal y burocracia",
+        "text": "• Burocracia meritocrática y capacidad de implementación\n• Reforma del servicio civil\n• Medición de capacidad estatal"
+      },
+      {
+        "id": "2d839bb5-5861-51c9-87f9-d8df809e2e28",
+        "teaching_note_id": "6923de70-f1a7-58f6-9218-ad7623fa8a2b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "361ca844-b596-51e9-aafb-a32e3ac3ef4a",
+        "program_topic_id": "4106d848-8d17-56e2-a8c7-6d1e0b3e9b6d",
+        "title": "Trayectorias comparadas de desarrollo",
+        "text": "• Casos comparados de desarrollo acelerado y de estancamiento\n• Lecciones transferibles y límites de la comparación\n• Aplicación al propio país"
+      },
+      {
+        "id": "e8ba7cf1-5068-5fe8-9947-e34e949c837b",
+        "teaching_note_id": "5ae126f7-6d79-5613-81f9-f8af8d18270f",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "program_topic_id": "041345f8-851d-5b58-ad5b-c25a03722eb3",
+        "title": "Estado emprendedor y creación de mercados",
+        "text": "• Rol del Estado en la creación de mercados, no solo en su corrección\n• Inversión pública de riesgo y retorno social\n• Casos históricos de tecnologías impulsadas por el Estado"
+      },
+      {
+        "id": "b902b449-feb7-5b5d-b23b-0b08549f7e08",
+        "teaching_note_id": "24abf57e-2f39-5856-9266-da06db1f621e",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "program_topic_id": "b4c1f5ea-0152-5747-9d59-2b3fbce47fdf",
+        "title": "Política industrial moderna con condicionalidades",
+        "text": "• Diferencias con la política industrial tradicional\n• Condicionalidades: qué exigir a cambio del apoyo público\n• Prevención de la captura y criterios de salida"
+      },
+      {
+        "id": "0ba06857-3771-5edb-bafc-02bf27a67174",
+        "teaching_note_id": "a4dda69a-7636-532e-b058-dbf5d238e01d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "program_topic_id": "db825cd0-3e88-5838-bb22-d0892d974690",
+        "title": "Misiones: definición, gobernanza y cartera",
+        "text": "• Definición de una misión: concreta, ambiciosa y medible\n• Cartera de proyectos y coordinación entre sectores\n• Gobernanza y liderazgo de la misión"
+      },
+      {
+        "id": "f30383de-e7c1-55a3-89ea-0f341ba9dbb1",
+        "teaching_note_id": "d63676e1-9e35-5712-9eb5-f7eb9f5543bc",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "program_topic_id": "f7106ca9-bfb4-51ad-a368-6ca2f353d71b",
+        "title": "Valor público y compras públicas orientadas",
+        "text": "• Compras públicas como instrumento de innovación\n• Valor público y cómo evaluarlo\n• Contratos orientados a resultados"
+      },
+      {
+        "id": "3bf09060-d503-54b5-9a16-2f0f20d1c45b",
+        "teaching_note_id": "99510c57-1a08-5390-bc5e-b3df21c17f44",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "program_topic_id": "477397f2-b64d-58eb-a113-1eb8eddb2c69",
+        "title": "Direccionamiento de la inversión y banca de desarrollo",
+        "text": "• Instrumentos de financiamiento y banca de desarrollo\n• Reparto de riesgo y de recompensa\n• Alineamiento del capital privado"
+      },
+      {
+        "id": "ed8f9f23-756c-5eb0-910d-1fdd2f4fe345",
+        "teaching_note_id": "51c69aae-c61d-51da-8d59-0f9ee1685e8c",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "module_id": "fb52035a-4164-566a-9a40-7b4f143f4ed4",
+        "program_topic_id": "e965e0bf-3412-5182-8f91-a669a54975fb",
+        "title": "Evaluación de política orientada por misiones",
+        "text": "• Evaluación de políticas de largo plazo con incertidumbre\n• Indicadores de proceso y de dirección\n• Aprendizaje adaptativo y corrección de rumbo"
+      }
+    ],
+    "material_revisions": [
+      {
+        "id": "1c1b3e0b-4257-561f-9885-eef6d329aad5",
+        "material_id": "70d67de0-4fb7-56e4-a525-fdb624007c87",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Agenda de buenos empleos",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "Rodrik y coautores",
+        "theme": "Productividad"
+      },
+      {
+        "id": "3611c8e3-fb09-5e00-b1f0-79fe28bf6909",
+        "material_id": "99cd3c96-0ff6-5ca2-8f8f-c5b8fe65e523",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Alianzas gobierno-evidencia (ej.: MineduLab, Perú)",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "IPA",
+        "theme": "Método (transversal)"
+      },
+      {
+        "id": "700dfe54-83e0-550a-b4fa-a6af1b037617",
+        "material_id": "91e5890f-9e9f-58ef-80cd-6aacd7d970a6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Bases de datos sobre financiamiento político",
+        "material_type": "Base de datos",
+        "source_or_institution": "International IDEA",
+        "theme": "Financiamiento"
+      },
+      {
+        "id": "39c204e3-d808-5796-b047-123359069d95",
+        "material_id": "51a0682c-30a2-5046-b581-f9cc0b5d1133",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Casos de crisis en campañas recientes",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "Análisis comparado",
+        "theme": "Gestión de crisis"
+      },
+      {
+        "id": "b84d7b45-8e84-546c-ad2f-4168219c4eec",
+        "material_id": "94eac18e-90d4-524b-8d03-5a96f8b1a214",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Curso Evaluating Social Programs",
+        "material_type": "Curso / programa",
+        "source_or_institution": "J-PAL",
+        "theme": "Método (transversal)"
+      },
+      {
+        "id": "86ad99de-91ea-591c-b152-dc616e61c658",
+        "material_id": "e8a8118d-325f-546c-8e01-e1fd1e78caf3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Datos y plataformas climáticas abiertas",
+        "material_type": "Base de datos",
+        "source_or_institution": "WRI",
+        "theme": "Medio ambiente y clima"
+      },
+      {
+        "id": "a1e7deaa-c5e5-51c1-a654-d54e012a273b",
+        "material_id": "eb8bf251-e058-5329-a8a7-10d20780ee14",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Documentos de trabajo sobre misiones y valor público",
+        "material_type": "Artículo / publicación",
+        "source_or_institution": "UCL IIPP",
+        "theme": "Innovación"
+      },
+      {
+        "id": "bd065a41-8096-52c8-b8c7-d5e30dd2e1fa",
+        "material_id": "61a92854-8532-5b57-a457-99942d335797",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Especialización en dirección de campañas digitales",
+        "material_type": "Curso / programa",
+        "source_or_institution": "ALEPH",
+        "theme": "Comunicación digital"
+      },
+      {
+        "id": "ddb64607-cd4d-587c-9162-d1ac396db55c",
+        "material_id": "4b4f6c99-b1f9-587d-9974-f99f5711d482",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Estudios de caso de reformas en LATAM",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "CIDE / UTDT",
+        "theme": "Desarrollo económico"
+      },
+      {
+        "id": "c278209f-dd9a-53f2-a161-7ef58a2fbcbf",
+        "material_id": "db034b54-09ad-537f-91f1-b5b6fb206b48",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Estudios sobre democracia interna",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "International IDEA",
+        "theme": "Sistema partidario"
+      },
+      {
+        "id": "307f55d6-d350-50ee-b35a-4e6f0d9beaa5",
+        "material_id": "47a0d107-93fe-56b7-a42f-0aa53aff081d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Estudios sobre informalidad en LATAM",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "CIPPEC",
+        "theme": "Trabajo"
+      },
+      {
+        "id": "b3ce698b-2d86-50ed-875d-cfe6627393c2",
+        "material_id": "cd7e75c1-5660-5f25-8c19-d3cd6a21854a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Estándares de transparencia en encuestas",
+        "material_type": "Manual / guía",
+        "source_or_institution": "Asociaciones profesionales de opinión pública",
+        "theme": "Datos e investigación"
+      },
+      {
+        "id": "3bfaa844-bf55-505d-954c-a8d2d7379ce4",
+        "material_id": "fa360f98-9c07-56cf-8bb4-cc676ec89656",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Estándares de transparencia política",
+        "material_type": "Manual / guía",
+        "source_or_institution": "Organizaciones multilaterales",
+        "theme": "Integridad"
+      },
+      {
+        "id": "23ef222d-36f1-5ea2-b8ae-bb2637e1cff7",
+        "material_id": "3e5d989d-18bb-5a55-898f-1c7becc8dd67",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Evidencia experimental sobre movilización del voto",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "Literatura de campo en ciencia política",
+        "theme": "Movilización"
+      },
+      {
+        "id": "608f2ebc-c49a-5a11-929e-3a825a7ee399",
+        "material_id": "e024ab5b-1a5a-5dff-a010-26cd1c477b7d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Evidencia sobre programas de empleo juvenil",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "J-PAL / OIT",
+        "theme": "Trabajo"
+      },
+      {
+        "id": "45f70801-734a-5aaa-941c-fe7ac0afa93f",
+        "material_id": "f4f13277-703d-5a71-b925-1a7daac4f529",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Experiencia MineduLab",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "IPA / Perú",
+        "theme": "Educación"
+      },
+      {
+        "id": "b7638432-4244-5203-ad32-71c31a88a951",
+        "material_id": "0c007047-8cef-5c8a-9864-4d3f8fef22eb",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Guías de organización de base",
+        "material_type": "Manual / guía",
+        "source_or_institution": "NDI",
+        "theme": "Movilización"
+      },
+      {
+        "id": "7620099c-24e1-5378-ae4d-73cb352b05f0",
+        "material_id": "29a3a260-6eaa-5fa7-bbfe-b1ad4bd1be3f",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Guías de planificación electoral",
+        "material_type": "Manual / guía",
+        "source_or_institution": "International IDEA",
+        "theme": "Estrategia electoral"
+      },
+      {
+        "id": "bab2592d-6f2c-5ab8-8c21-9b9f80ead62c",
+        "material_id": "3951aed0-4d8a-52ac-bda7-444d2409c8d5",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Investigación sobre transición justa",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "IIED / Brown CDL",
+        "theme": "Medio ambiente y clima"
+      },
+      {
+        "id": "c25d5467-fe28-5002-94dd-7aab4292b854",
+        "material_id": "bedeeec9-c0b2-543b-aef1-607f714f4475",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Literatura sobre framing y opinión pública",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "Ciencia política comparada",
+        "theme": "Comunicación política"
+      },
+      {
+        "id": "947bc7da-22ad-56f7-9c31-fc1daee5bd63",
+        "material_id": "9a24f4ed-1b99-5d6d-a7ec-63c74d1198b8",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Literatura sobre instituciones y desarrollo",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "Economía política comparada",
+        "theme": "Desarrollo económico"
+      },
+      {
+        "id": "be293427-2886-5dd0-b567-c6d37f5d8a95",
+        "material_id": "ec1b0d41-724b-5bfe-ab42-0d7684d4a37b",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Literatura sobre transiciones de gobierno",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "Administración pública comparada",
+        "theme": "Liderazgo"
+      },
+      {
+        "id": "fbfd1d41-6574-5966-878b-e45c643f26a1",
+        "material_id": "d247f1ce-3270-5cbf-8fbf-b03bbf281369",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Manuales de gestión de campaña del NDI",
+        "material_type": "Manual / guía",
+        "source_or_institution": "National Democratic Institute",
+        "theme": "Estrategia electoral"
+      },
+      {
+        "id": "b0eaf231-48e2-5f44-ac13-82eb05e7384f",
+        "material_id": "9cc0f938-0ea5-5745-9d1d-97d2537597ac",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Marco de política industrial con condicionalidades",
+        "material_type": "Manual / guía",
+        "source_or_institution": "UCL IIPP",
+        "theme": "Innovación"
+      },
+      {
+        "id": "41d47abd-3f62-5d80-bf66-672401a5ef07",
+        "material_id": "64b9be8f-4f09-51fb-bc01-d860b10ce208",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Marcos de integridad electoral",
+        "material_type": "Manual / guía",
+        "source_or_institution": "International IDEA",
+        "theme": "Integridad"
+      },
+      {
+        "id": "2dbc4989-2f88-593e-8f1d-7d120e3e6d5d",
+        "material_id": "78618a07-4ebe-5372-8b8c-0d6195a89017",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Materiales de fundraising",
+        "material_type": "Manual / guía",
+        "source_or_institution": "Leadership Institute",
+        "theme": "Financiamiento"
+      },
+      {
+        "id": "12be110b-4a0d-5aa9-bf4e-de1b289b2dae",
+        "material_id": "45a1202c-b4b3-53a5-94f3-5395aa836251",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Materiales de political management",
+        "material_type": "Manual / guía",
+        "source_or_institution": "GW — Graduate School of Political Management",
+        "theme": "Comunicación política"
+      },
+      {
+        "id": "55e14742-b53e-5dfb-9a5a-724607bc6bf6",
+        "material_id": "e5d4d489-d07d-51e6-ac75-470d96793274",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Materiales de rapid response",
+        "material_type": "Manual / guía",
+        "source_or_institution": "GSPM",
+        "theme": "Gestión de crisis"
+      },
+      {
+        "id": "f0df41b2-d49d-5a57-8fe8-2cdb4ac59252",
+        "material_id": "d6567ba4-735d-55f6-a11e-0397780b5dc6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Materiales del Campaign Management Institute",
+        "material_type": "Manual / guía",
+        "source_or_institution": "American University",
+        "theme": "Estrategia electoral"
+      },
+      {
+        "id": "6838a7b2-f7de-5128-8f32-4ddaf72bce3d",
+        "material_id": "a1aab45e-f3bf-5966-b251-674e6a9f5b13",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Materiales sobre integridad de la información",
+        "material_type": "Manual / guía",
+        "source_or_institution": "International IDEA",
+        "theme": "Comunicación digital"
+      },
+      {
+        "id": "70297c8f-fad0-5efe-a4f7-790690cf74a9",
+        "material_id": "886d1a9a-4761-51be-88db-ecd5d8bba979",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Microcredencial en teoría y práctica de campaña",
+        "material_type": "Curso / programa",
+        "source_or_institution": "Rockefeller College",
+        "theme": "Datos e investigación"
+      },
+      {
+        "id": "a20e3978-6ac2-5b17-85cb-f15788ec78f0",
+        "material_id": "108885c9-7a5d-57fd-a213-f699a15225da",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Programa Campaign Leadership College (9 días, plan evaluado por panel)",
+        "material_type": "Curso / programa",
+        "source_or_institution": "Leadership Institute",
+        "theme": "Liderazgo"
+      },
+      {
+        "id": "7641593e-f918-53d1-b60d-29dce187a709",
+        "material_id": "dda04997-6cd2-5d93-a56a-c887b94e340a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Programas de fortalecimiento partidario",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "IRI / NDI",
+        "theme": "Sistema partidario"
+      },
+      {
+        "id": "6940dcdb-cc89-5bde-8cac-89c49d493cbd",
+        "material_id": "7bd09b28-9834-529a-99d1-5047eb8e7722",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Repositorio de evaluaciones por sector",
+        "material_type": "Base de datos",
+        "source_or_institution": "J-PAL",
+        "theme": "Método (transversal)"
+      },
+      {
+        "id": "7600077e-d272-5540-a7e9-88475cdb4966",
+        "material_id": "143ae4a5-0815-5a26-80e4-d5c89b92c051",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "SDG Knowledge Hub",
+        "material_type": "Base de datos",
+        "source_or_institution": "IISD",
+        "theme": "Medio ambiente y clima"
+      },
+      {
+        "id": "b2a07b1e-513e-5219-8dd7-52d48a9a6b3b",
+        "material_id": "7348c6a0-1d42-594b-9019-6f6e7a313de6",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Síntesis de evidencia en educación",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "J-PAL",
+        "theme": "Educación"
+      },
+      {
+        "id": "28238ee4-2562-5fe1-8b05-f85a0572c14d",
+        "material_id": "01682f55-2c01-5a9c-8a1c-3e807304b0c9",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "title": "Trabajos del proyecto Reimagining the Economy",
+        "material_type": "Estudio / investigación",
+        "source_or_institution": "HKS",
+        "theme": "Productividad"
+      }
+    ],
+    "institution_revisions": [
+      {
+        "id": "697570fc-6ebc-51ad-bb06-ed00e6a4a10b",
+        "institution_id": "dab5098d-4363-5845-be9d-5d6e946383d3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "ALEPH — Escuela de Política / Campañas",
+        "institution_type": "Escuela partidaria",
+        "themes": [
+          "Comunicación digital",
+          "Comunicación política"
+        ],
+        "country_or_scope": "España"
+      },
+      {
+        "id": "33c5296a-b25b-5222-8ec1-7c865cd5b069",
+        "institution_id": "0702e184-a862-5dca-b986-95b193a7f1ac",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "American University — Campaign Management Institute",
+        "institution_type": "Universidad",
+        "themes": [
+          "Estrategia electoral",
+          "Liderazgo"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "060ab94e-f003-5c96-be01-64754dcff1cc",
+        "institution_id": "ea3a428d-8348-5691-9ed7-f4de4f603718",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Brown University — Climate and Development Lab",
+        "institution_type": "Universidad",
+        "themes": [
+          "Medio ambiente y clima"
+        ]
+      },
+      {
+        "id": "5837690f-64d4-5bbf-a4a2-af48e47255f6",
+        "institution_id": "d7fb3861-28bd-549c-80f7-c014e64b1eaa",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "CIDE",
+        "institution_type": "Universidad",
+        "themes": [
+          "Desarrollo económico"
+        ]
+      },
+      {
+        "id": "a38f9b40-74dc-5333-b6ac-3d8238470e50",
+        "institution_id": "028e12af-85a3-5024-a304-673955086054",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "CIPPEC",
+        "institution_type": "ONG / Think tank",
+        "themes": [
+          "Método (transversal)",
+          "Trabajo"
+        ]
+      },
+      {
+        "id": "7e54975f-7485-505e-92ce-8c3df08072e1",
+        "institution_id": "898681ee-c038-5956-919d-706b66741e1d",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "FGV EAESP",
+        "institution_type": "Universidad",
+        "themes": [
+          "Productividad"
+        ]
+      },
+      {
+        "id": "6778a57a-d697-5312-b1ef-1335b945c529",
+        "institution_id": "e799a7ee-0f34-52ef-9051-b794bd692b65",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "George Washington University — GSPM",
+        "institution_type": "Universidad",
+        "themes": [
+          "Comunicación política",
+          "Gestión de crisis",
+          "Liderazgo"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "6d090f2a-848d-5c8a-ac9b-b946c2a834a2",
+        "institution_id": "0694d4fb-8354-5f5c-ba37-c53212895814",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Harvard Kennedy School",
+        "institution_type": "Universidad",
+        "themes": [
+          "Desarrollo económico",
+          "Innovación",
+          "Productividad"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "3050f68f-d1d4-5b15-8797-c0587b4a1619",
+        "institution_id": "511c3323-2c7c-5312-ab13-d39c14590dcc",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "ICP — Instituto de Capacitación Política",
+        "institution_type": "Escuela partidaria",
+        "themes": [
+          "Sistema partidario"
+        ]
+      },
+      {
+        "id": "20e690ab-9a59-51ce-a504-b7646e91f6ec",
+        "institution_id": "cc03aa7c-2f7c-5aa3-acfd-f6b0b1a077d0",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "IIED",
+        "institution_type": "ONG / Think tank",
+        "themes": [
+          "Medio ambiente y clima"
+        ]
+      },
+      {
+        "id": "835d05f2-acda-5cf5-8208-0a68c6158d84",
+        "institution_id": "245102b5-cfd2-5973-b153-297d9615f922",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "IISD",
+        "institution_type": "ONG / Think tank",
+        "themes": [
+          "Medio ambiente y clima"
+        ]
+      },
+      {
+        "id": "fc26534a-df26-58f0-9c29-cf7559e0e333",
+        "institution_id": "4f089f74-0432-5c07-87ad-0c0d5a1ac43a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Innovations for Poverty Action (IPA)",
+        "institution_type": "ONG / Think tank",
+        "themes": [
+          "Educación",
+          "Método (transversal)"
+        ]
+      },
+      {
+        "id": "e73a6405-3f48-549c-ac27-3c79a5cdd8a6",
+        "institution_id": "62d00aa2-2d9b-57cc-a540-a2b6c06bd9dd",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "International IDEA",
+        "institution_type": "Multilateral",
+        "themes": [
+          "Comunicación digital",
+          "Financiamiento",
+          "Integridad",
+          "Sistema partidario"
+        ],
+        "country_or_scope": "Suecia"
+      },
+      {
+        "id": "49ad86a9-b758-5442-aa5d-f240c56129ba",
+        "institution_id": "665b5363-821e-5686-a903-8bd37e335e11",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "International Republican Institute (IRI)",
+        "institution_type": "ONG / Think tank",
+        "themes": [
+          "Integridad",
+          "Sistema partidario"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "7afffe09-e4ba-5bef-8322-1b2c77d1db79",
+        "institution_id": "57a4cd86-2590-5444-832c-e514e9821204",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "J-PAL",
+        "institution_type": "Universidad",
+        "themes": [
+          "Datos e investigación",
+          "Educación",
+          "Movilización",
+          "Trabajo"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "e9269f1c-bf61-5a3c-8835-6f0357459757",
+        "institution_id": "23acae3b-ff3d-5c04-9354-f21df1891b7a",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "J-PAL (MIT) — oficina LAC en la PUC-Chile",
+        "institution_type": "Universidad",
+        "themes": [
+          "Método (transversal)"
+        ],
+        "country_or_scope": "Chile"
+      },
+      {
+        "id": "b09bf0db-b200-57cb-a5d8-92bff6912b08",
+        "institution_id": "1adff228-3e21-50c5-8922-91890bd03790",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Leadership Institute",
+        "institution_type": "Escuela partidaria",
+        "themes": [
+          "Estrategia electoral",
+          "Financiamiento",
+          "Gestión de crisis",
+          "Liderazgo",
+          "Movilización"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "2dd83cd2-4d0c-5b65-9ef0-d27f35942a90",
+        "institution_id": "aa290c37-ca7b-573c-997d-170b9dff589f",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "MIT — Department of Economics",
+        "institution_type": "Universidad",
+        "themes": [
+          "Desarrollo económico",
+          "Productividad"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "eacb1c31-ae22-5681-b2e1-90faad1b8210",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "National Democratic Institute",
+        "institution_type": "ONG / Think tank",
+        "themes": [
+          "Comunicación digital",
+          "Comunicación política",
+          "Datos e investigación",
+          "Financiamiento",
+          "Gestión de crisis",
+          "Integridad",
+          "Movilización",
+          "Sistema partidario"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "e4a9ddff-bc03-5433-a89f-fd6af6383ad8",
+        "institution_id": "a35ec879-bf23-5cee-ac75-3395fa8b1fc4",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "OIT",
+        "institution_type": "Multilateral",
+        "themes": [
+          "Trabajo"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "58e25062-acc3-579c-9fdb-ebfee9c7d2f5",
+        "institution_id": "4d72d7b4-7bd1-5818-a4cc-d92762a40271",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Tecnológico de Monterrey — EGTP",
+        "institution_type": "Universidad",
+        "themes": [
+          "Innovación"
+        ]
+      },
+      {
+        "id": "b82499d0-5c87-529e-9793-68565ec8614d",
+        "institution_id": "ab320270-ec09-5f3d-af55-e8c0a5825129",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "UCL — Institute for Innovation and Public Purpose",
+        "institution_type": "Universidad",
+        "themes": [
+          "Innovación"
+        ],
+        "country_or_scope": "Reino Unido"
+      },
+      {
+        "id": "57b72f17-2da8-55a4-9809-0dfadea0e5ee",
+        "institution_id": "55a9f9da-235c-5c60-ba32-0d20912941d7",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Universidad Torcuato Di Tella",
+        "institution_type": "Universidad",
+        "themes": [
+          "Desarrollo económico"
+        ]
+      },
+      {
+        "id": "b18689b4-f69e-5a40-8009-2b4050c2071f",
+        "institution_id": "ace8995a-9c80-5243-b562-4ffed88164e0",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "Universidad de los Andes — Escuela de Gobierno",
+        "institution_type": "Universidad",
+        "themes": [
+          "Educación"
+        ]
+      },
+      {
+        "id": "723169dd-d5f4-55a2-8a1b-ba80289302ed",
+        "institution_id": "06ce836d-3373-5e5c-9599-b6ab063112b3",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "University at Albany — Rockefeller College",
+        "institution_type": "Universidad",
+        "themes": [
+          "Datos e investigación"
+        ],
+        "country_or_scope": "EE. UU."
+      },
+      {
+        "id": "028250ba-877f-5066-b3c5-c7d79ad21a67",
+        "institution_id": "5e15de14-0b16-5006-bf99-4b8ad2017cde",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "University of Richmond — Political Campaign Management",
+        "institution_type": "Universidad",
+        "themes": [
+          "Estrategia electoral"
+        ]
+      },
+      {
+        "id": "60d34739-51f9-548d-a20d-88149ea0fe48",
+        "institution_id": "6d71c61b-f4fc-567f-8cc3-364d80d18d8e",
+        "revision_number": 1,
+        "status": "Published",
+        "published_at": "2026-09-16T00:00:00.000Z",
+        "name": "World Resources Institute (WRI)",
+        "institution_type": "ONG / Think tank",
+        "themes": [
+          "Medio ambiente y clima"
+        ],
+        "country_or_scope": "Brasil / México / Colombia"
+      }
+    ]
+  },
+  "relationships": {
+    "module_instructors": [
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "instructor_id": "7a29933a-3ca3-574c-81e4-835cf77ed5d6"
+      },
+      {
+        "module_revision_id": "13ed35a0-643a-506a-965c-679e760d84bf",
+        "instructor_id": "a9b6c771-16b1-5a6e-b8a4-808b0280ffb3"
+      },
+      {
+        "module_revision_id": "1b926715-5782-51ed-b497-359109a8b886",
+        "instructor_id": "a9b6c771-16b1-5a6e-b8a4-808b0280ffb3"
+      },
+      {
+        "module_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "instructor_id": "4399f004-da41-5126-b295-0d0904516c68"
+      },
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "instructor_id": "743b2a90-0eb1-551c-8825-29a9f6d97056"
+      },
+      {
+        "module_revision_id": "1b926715-5782-51ed-b497-359109a8b886",
+        "instructor_id": "b1aeb7ac-43c0-5ead-a09a-1a2551f91411"
+      },
+      {
+        "module_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "instructor_id": "860c232a-da93-560a-8497-6d418dfe08a4"
+      },
+      {
+        "module_revision_id": "c07f6304-f393-560f-a697-baaee15aff52",
+        "instructor_id": "860c232a-da93-560a-8497-6d418dfe08a4"
+      }
+    ],
+    "module_materials": [
+      {
+        "module_revision_id": "13ed35a0-643a-506a-965c-679e760d84bf",
+        "material_id": "70d67de0-4fb7-56e4-a525-fdb624007c87"
+      },
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "material_id": "99cd3c96-0ff6-5ca2-8f8f-c5b8fe65e523"
+      },
+      {
+        "module_revision_id": "d5a8802a-526f-562f-bf43-4d89ce0268e2",
+        "material_id": "91e5890f-9e9f-58ef-80cd-6aacd7d970a6"
+      },
+      {
+        "module_revision_id": "a37652ab-acac-5361-8db7-daeb05507097",
+        "material_id": "51a0682c-30a2-5046-b581-f9cc0b5d1133"
+      },
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "material_id": "94eac18e-90d4-524b-8d03-5a96f8b1a214"
+      },
+      {
+        "module_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "material_id": "e8a8118d-325f-546c-8e01-e1fd1e78caf3"
+      },
+      {
+        "module_revision_id": "1b926715-5782-51ed-b497-359109a8b886",
+        "material_id": "eb8bf251-e058-5329-a8a7-10d20780ee14"
+      },
+      {
+        "module_revision_id": "1d54ee1e-fe36-5e2d-b84f-f9ba11b55be1",
+        "material_id": "61a92854-8532-5b57-a457-99942d335797"
+      },
+      {
+        "module_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "material_id": "4b4f6c99-b1f9-587d-9974-f99f5711d482"
+      },
+      {
+        "module_revision_id": "0fbdd3cc-a829-53c7-a25b-522d5532b703",
+        "material_id": "db034b54-09ad-537f-91f1-b5b6fb206b48"
+      },
+      {
+        "module_revision_id": "60f44d02-351c-56da-bf8c-e8fb69058ec4",
+        "material_id": "47a0d107-93fe-56b7-a42f-0aa53aff081d"
+      },
+      {
+        "module_revision_id": "e1a10785-2ad9-51f4-aaad-590fccf939e2",
+        "material_id": "cd7e75c1-5660-5f25-8c19-d3cd6a21854a"
+      },
+      {
+        "module_revision_id": "d612873f-425e-511f-8ca3-bf7c145ef299",
+        "material_id": "fa360f98-9c07-56cf-8bb4-cc676ec89656"
+      },
+      {
+        "module_revision_id": "b2b69f35-772e-5f17-bbae-e6e08803be2c",
+        "material_id": "3e5d989d-18bb-5a55-898f-1c7becc8dd67"
+      },
+      {
+        "module_revision_id": "60f44d02-351c-56da-bf8c-e8fb69058ec4",
+        "material_id": "e024ab5b-1a5a-5dff-a010-26cd1c477b7d"
+      },
+      {
+        "module_revision_id": "4ecbbddc-49e6-51d3-8ac4-c0aca9ebbff8",
+        "material_id": "f4f13277-703d-5a71-b925-1a7daac4f529"
+      },
+      {
+        "module_revision_id": "b2b69f35-772e-5f17-bbae-e6e08803be2c",
+        "material_id": "0c007047-8cef-5c8a-9864-4d3f8fef22eb"
+      },
+      {
+        "module_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "material_id": "29a3a260-6eaa-5fa7-bbfe-b1ad4bd1be3f"
+      },
+      {
+        "module_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "material_id": "3951aed0-4d8a-52ac-bda7-444d2409c8d5"
+      },
+      {
+        "module_revision_id": "959a770e-74a1-5552-b196-5df30b32eb03",
+        "material_id": "bedeeec9-c0b2-543b-aef1-607f714f4475"
+      },
+      {
+        "module_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "material_id": "9a24f4ed-1b99-5d6d-a7ec-63c74d1198b8"
+      },
+      {
+        "module_revision_id": "c07f6304-f393-560f-a697-baaee15aff52",
+        "material_id": "ec1b0d41-724b-5bfe-ab42-0d7684d4a37b"
+      },
+      {
+        "module_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "material_id": "d247f1ce-3270-5cbf-8fbf-b03bbf281369"
+      },
+      {
+        "module_revision_id": "1b926715-5782-51ed-b497-359109a8b886",
+        "material_id": "9cc0f938-0ea5-5745-9d1d-97d2537597ac"
+      },
+      {
+        "module_revision_id": "d612873f-425e-511f-8ca3-bf7c145ef299",
+        "material_id": "64b9be8f-4f09-51fb-bc01-d860b10ce208"
+      },
+      {
+        "module_revision_id": "d5a8802a-526f-562f-bf43-4d89ce0268e2",
+        "material_id": "78618a07-4ebe-5372-8b8c-0d6195a89017"
+      },
+      {
+        "module_revision_id": "959a770e-74a1-5552-b196-5df30b32eb03",
+        "material_id": "45a1202c-b4b3-53a5-94f3-5395aa836251"
+      },
+      {
+        "module_revision_id": "a37652ab-acac-5361-8db7-daeb05507097",
+        "material_id": "e5d4d489-d07d-51e6-ac75-470d96793274"
+      },
+      {
+        "module_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "material_id": "d6567ba4-735d-55f6-a11e-0397780b5dc6"
+      },
+      {
+        "module_revision_id": "1d54ee1e-fe36-5e2d-b84f-f9ba11b55be1",
+        "material_id": "a1aab45e-f3bf-5966-b251-674e6a9f5b13"
+      },
+      {
+        "module_revision_id": "e1a10785-2ad9-51f4-aaad-590fccf939e2",
+        "material_id": "886d1a9a-4761-51be-88db-ecd5d8bba979"
+      },
+      {
+        "module_revision_id": "c07f6304-f393-560f-a697-baaee15aff52",
+        "material_id": "108885c9-7a5d-57fd-a213-f699a15225da"
+      },
+      {
+        "module_revision_id": "0fbdd3cc-a829-53c7-a25b-522d5532b703",
+        "material_id": "dda04997-6cd2-5d93-a56a-c887b94e340a"
+      },
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "material_id": "7bd09b28-9834-529a-99d1-5047eb8e7722"
+      },
+      {
+        "module_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "material_id": "143ae4a5-0815-5a26-80e4-d5c89b92c051"
+      },
+      {
+        "module_revision_id": "4ecbbddc-49e6-51d3-8ac4-c0aca9ebbff8",
+        "material_id": "7348c6a0-1d42-594b-9019-6f6e7a313de6"
+      },
+      {
+        "module_revision_id": "13ed35a0-643a-506a-965c-679e760d84bf",
+        "material_id": "01682f55-2c01-5a9c-8a1c-3e807304b0c9"
+      }
+    ],
+    "module_institutions": [
+      {
+        "module_revision_id": "959a770e-74a1-5552-b196-5df30b32eb03",
+        "institution_id": "dab5098d-4363-5845-be9d-5d6e946383d3"
+      },
+      {
+        "module_revision_id": "1d54ee1e-fe36-5e2d-b84f-f9ba11b55be1",
+        "institution_id": "dab5098d-4363-5845-be9d-5d6e946383d3"
+      },
+      {
+        "module_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "institution_id": "0702e184-a862-5dca-b986-95b193a7f1ac"
+      },
+      {
+        "module_revision_id": "c07f6304-f393-560f-a697-baaee15aff52",
+        "institution_id": "0702e184-a862-5dca-b986-95b193a7f1ac"
+      },
+      {
+        "module_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "institution_id": "ea3a428d-8348-5691-9ed7-f4de4f603718"
+      },
+      {
+        "module_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "institution_id": "d7fb3861-28bd-549c-80f7-c014e64b1eaa"
+      },
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "institution_id": "028e12af-85a3-5024-a304-673955086054"
+      },
+      {
+        "module_revision_id": "60f44d02-351c-56da-bf8c-e8fb69058ec4",
+        "institution_id": "028e12af-85a3-5024-a304-673955086054"
+      },
+      {
+        "module_revision_id": "13ed35a0-643a-506a-965c-679e760d84bf",
+        "institution_id": "898681ee-c038-5956-919d-706b66741e1d"
+      },
+      {
+        "module_revision_id": "959a770e-74a1-5552-b196-5df30b32eb03",
+        "institution_id": "e799a7ee-0f34-52ef-9051-b794bd692b65"
+      },
+      {
+        "module_revision_id": "a37652ab-acac-5361-8db7-daeb05507097",
+        "institution_id": "e799a7ee-0f34-52ef-9051-b794bd692b65"
+      },
+      {
+        "module_revision_id": "c07f6304-f393-560f-a697-baaee15aff52",
+        "institution_id": "e799a7ee-0f34-52ef-9051-b794bd692b65"
+      },
+      {
+        "module_revision_id": "13ed35a0-643a-506a-965c-679e760d84bf",
+        "institution_id": "0694d4fb-8354-5f5c-ba37-c53212895814"
+      },
+      {
+        "module_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "institution_id": "0694d4fb-8354-5f5c-ba37-c53212895814"
+      },
+      {
+        "module_revision_id": "1b926715-5782-51ed-b497-359109a8b886",
+        "institution_id": "0694d4fb-8354-5f5c-ba37-c53212895814"
+      },
+      {
+        "module_revision_id": "0fbdd3cc-a829-53c7-a25b-522d5532b703",
+        "institution_id": "511c3323-2c7c-5312-ab13-d39c14590dcc"
+      },
+      {
+        "module_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "institution_id": "cc03aa7c-2f7c-5aa3-acfd-f6b0b1a077d0"
+      },
+      {
+        "module_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "institution_id": "245102b5-cfd2-5973-b153-297d9615f922"
+      },
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "institution_id": "4f089f74-0432-5c07-87ad-0c0d5a1ac43a"
+      },
+      {
+        "module_revision_id": "4ecbbddc-49e6-51d3-8ac4-c0aca9ebbff8",
+        "institution_id": "4f089f74-0432-5c07-87ad-0c0d5a1ac43a"
+      },
+      {
+        "module_revision_id": "d5a8802a-526f-562f-bf43-4d89ce0268e2",
+        "institution_id": "62d00aa2-2d9b-57cc-a540-a2b6c06bd9dd"
+      },
+      {
+        "module_revision_id": "1d54ee1e-fe36-5e2d-b84f-f9ba11b55be1",
+        "institution_id": "62d00aa2-2d9b-57cc-a540-a2b6c06bd9dd"
+      },
+      {
+        "module_revision_id": "d612873f-425e-511f-8ca3-bf7c145ef299",
+        "institution_id": "62d00aa2-2d9b-57cc-a540-a2b6c06bd9dd"
+      },
+      {
+        "module_revision_id": "0fbdd3cc-a829-53c7-a25b-522d5532b703",
+        "institution_id": "62d00aa2-2d9b-57cc-a540-a2b6c06bd9dd"
+      },
+      {
+        "module_revision_id": "d612873f-425e-511f-8ca3-bf7c145ef299",
+        "institution_id": "665b5363-821e-5686-a903-8bd37e335e11"
+      },
+      {
+        "module_revision_id": "0fbdd3cc-a829-53c7-a25b-522d5532b703",
+        "institution_id": "665b5363-821e-5686-a903-8bd37e335e11"
+      },
+      {
+        "module_revision_id": "19fcc0b0-c274-55b6-a217-de38d686ea92",
+        "institution_id": "23acae3b-ff3d-5c04-9354-f21df1891b7a"
+      },
+      {
+        "module_revision_id": "e1a10785-2ad9-51f4-aaad-590fccf939e2",
+        "institution_id": "57a4cd86-2590-5444-832c-e514e9821204"
+      },
+      {
+        "module_revision_id": "b2b69f35-772e-5f17-bbae-e6e08803be2c",
+        "institution_id": "57a4cd86-2590-5444-832c-e514e9821204"
+      },
+      {
+        "module_revision_id": "4ecbbddc-49e6-51d3-8ac4-c0aca9ebbff8",
+        "institution_id": "57a4cd86-2590-5444-832c-e514e9821204"
+      },
+      {
+        "module_revision_id": "60f44d02-351c-56da-bf8c-e8fb69058ec4",
+        "institution_id": "57a4cd86-2590-5444-832c-e514e9821204"
+      },
+      {
+        "module_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "institution_id": "1adff228-3e21-50c5-8922-91890bd03790"
+      },
+      {
+        "module_revision_id": "d5a8802a-526f-562f-bf43-4d89ce0268e2",
+        "institution_id": "1adff228-3e21-50c5-8922-91890bd03790"
+      },
+      {
+        "module_revision_id": "b2b69f35-772e-5f17-bbae-e6e08803be2c",
+        "institution_id": "1adff228-3e21-50c5-8922-91890bd03790"
+      },
+      {
+        "module_revision_id": "a37652ab-acac-5361-8db7-daeb05507097",
+        "institution_id": "1adff228-3e21-50c5-8922-91890bd03790"
+      },
+      {
+        "module_revision_id": "c07f6304-f393-560f-a697-baaee15aff52",
+        "institution_id": "1adff228-3e21-50c5-8922-91890bd03790"
+      },
+      {
+        "module_revision_id": "13ed35a0-643a-506a-965c-679e760d84bf",
+        "institution_id": "aa290c37-ca7b-573c-997d-170b9dff589f"
+      },
+      {
+        "module_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "institution_id": "aa290c37-ca7b-573c-997d-170b9dff589f"
+      },
+      {
+        "module_revision_id": "959a770e-74a1-5552-b196-5df30b32eb03",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "e1a10785-2ad9-51f4-aaad-590fccf939e2",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "d5a8802a-526f-562f-bf43-4d89ce0268e2",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "b2b69f35-772e-5f17-bbae-e6e08803be2c",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "1d54ee1e-fe36-5e2d-b84f-f9ba11b55be1",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "a37652ab-acac-5361-8db7-daeb05507097",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "d612873f-425e-511f-8ca3-bf7c145ef299",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "0fbdd3cc-a829-53c7-a25b-522d5532b703",
+        "institution_id": "4e56281c-1683-58c9-a3cd-e938864c3438"
+      },
+      {
+        "module_revision_id": "60f44d02-351c-56da-bf8c-e8fb69058ec4",
+        "institution_id": "a35ec879-bf23-5cee-ac75-3395fa8b1fc4"
+      },
+      {
+        "module_revision_id": "1b926715-5782-51ed-b497-359109a8b886",
+        "institution_id": "4d72d7b4-7bd1-5818-a4cc-d92762a40271"
+      },
+      {
+        "module_revision_id": "1b926715-5782-51ed-b497-359109a8b886",
+        "institution_id": "ab320270-ec09-5f3d-af55-e8c0a5825129"
+      },
+      {
+        "module_revision_id": "dae8d22b-9b45-5d91-bd12-af20cce161ad",
+        "institution_id": "55a9f9da-235c-5c60-ba32-0d20912941d7"
+      },
+      {
+        "module_revision_id": "4ecbbddc-49e6-51d3-8ac4-c0aca9ebbff8",
+        "institution_id": "ace8995a-9c80-5243-b562-4ffed88164e0"
+      },
+      {
+        "module_revision_id": "e1a10785-2ad9-51f4-aaad-590fccf939e2",
+        "institution_id": "06ce836d-3373-5e5c-9599-b6ab063112b3"
+      },
+      {
+        "module_revision_id": "d62da16b-c1bc-5c91-a521-3faf827f0838",
+        "institution_id": "5e15de14-0b16-5006-bf99-4b8ad2017cde"
+      },
+      {
+        "module_revision_id": "758a3b73-9846-53fe-aa81-46a794881cce",
+        "institution_id": "6d71c61b-f4fc-567f-8cc3-364d80d18d8e"
+      }
+    ],
+    "teaching_note_materials": []
+  }
+}
