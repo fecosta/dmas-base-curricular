@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { AttachmentManager } from "../../attachment-manager";
 import { ContributionForm } from "../../contribution-form";
 import { PublishAction, SuccessorAction } from "../../management-actions";
+import { ArchiveAction } from "../../governance-actions";
 import { getContribution, getContributionOptions } from "@/lib/contributions/queries";
 import { contributionTypeLabel, isContributionType } from "@/lib/contributions/types";
 import { StatusBadge } from "../../status-badge";
 import { Page } from "@/components/ui/page";
 import { Notice } from "@/components/ui/notice";
+import { SectionHeader } from "@/components/ui/section-header";
 
 export default async function ContributionDetailPage({
   params,
@@ -50,5 +52,25 @@ export default async function ContributionDetailPage({
     {(type === "teaching_note" || type === "material") && <AttachmentManager type={type} revisionId={revisionId} attachments={detail.attachments} readOnly={published} />}
     {!published && <PublishAction type={type} revisionId={revisionId} />}
     {published && !detail.successorDraftRevisionId && <SuccessorAction type={type} contentId={detail.contentId} />}
+
+    {/*
+      Governance is kept apart from the editing controls: archiving retires the whole
+      stable identity, it is not another way to edit this revision. Eligibility shown
+      here is advisory — archive_governed_content re-checks Draft state, dependencies
+      and live Admin authority inside its own transaction.
+    */}
+    {published && <section aria-labelledby="governance-title" className="mt-10 border-t border-hairline pt-6">
+      <SectionHeader title="Gobernanza" id="governance-title" className="mb-4" />
+      <div className="flex flex-wrap items-center gap-4">
+        <Link href={`/app/contributions/history?type=${type}&content=${detail.contentId}`} prefetch={false} className="font-bold">
+          Ver historial
+        </Link>
+        {!detail.successorDraftRevisionId && <ArchiveAction type={type} contentId={detail.contentId} />}
+      </div>
+      {detail.successorDraftRevisionId && <p className="mt-4 text-ink-soft">
+        Este contenido no se puede archivar mientras exista una nueva versión en borrador. Publica o
+        elimina ese borrador antes de archivarlo.
+      </p>}
+    </section>}
   </Page>;
 }

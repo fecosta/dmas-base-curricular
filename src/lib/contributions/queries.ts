@@ -4,12 +4,16 @@ import { notFound } from "next/navigation";
 import { requireAccess } from "@/lib/auth/access";
 import { createClient } from "@/lib/supabase/server";
 import type {
+  ArchivedContentSummary,
+  ArchivedCursor,
   Attachment,
   ContributionDetail,
   ContributionOption,
   ContributionOptions,
   ContributionSummary,
   ContributionType,
+  LifecycleAction,
+  LifecycleEvent,
   ManagementState,
 } from "./types";
 
@@ -250,4 +254,151 @@ export async function getContributionOptions(): Promise<ContributionOptions> {
     materials: options((results[4].data ?? []).map((row) => ({ id: row.material_id, label: row.title, status: row.status }))),
     institutions: options((results[5].data ?? []).map((row) => ({ id: row.institution_id, label: row.name, status: row.status }))),
   };
+}
+
+export const ARCHIVED_PAGE_SIZE = 20;
+export const HISTORY_PAGE_SIZE = 25;
+
+export type ArchivedContentPage = { entries: ArchivedContentSummary[]; nextCursor: ArchivedCursor | null };
+
+/**
+ * Archived governed content, read through the dedicated Admin-only RPC.
+ *
+ * Every direct table policy requires `archived_at is null`, so the active
+ * management queries cannot see this content by construction — that is the reader
+ * boundary working, not a gap to route around. The RPC is the only authorized path.
+ *
+ * One extra row is requested so the caller can tell "exactly a full page" from
+ * "there is more" without a second round trip; the probe row is dropped before
+ * mapping, and the cursor is taken from the last row actually returned.
+ */
+export async function listArchivedContent(options: {
+  type?: ContributionType;
+  cursor?: ArchivedCursor | null;
+  pageSize?: number;
+} = {}): Promise<ArchivedContentPage> {
+  await requireAccess("Admin");
+  const supabase = await createClient();
+  // The RPC bounds page_size to 1..100 and rejects anything else; 99 keeps room for the probe row.
+  const pageSize = Math.min(Math.max(options.pageSize ?? ARCHIVED_PAGE_SIZE, 1), 99);
+  const cursor = options.cursor ?? null;
+  const { data, error } = await supabase.rpc("list_archived_governed_content", {
+    page_size: pageSize + 1,
+    content_type_filter: options.type,
+    // All three keyset components or none: a partial cursor is rejected by the RPC.
+    before_archived_at: cursor?.archivedAt,
+    before_content_id: cursor?.contentId,
+    before_content_type: cursor?.contentType,
+  });
+  if (error) throw new Error("Archived content read unavailable");
+
+  const rows = data ?? [];
+  const entries: ArchivedContentSummary[] = rows.slice(0, pageSize).map((row) => ({
+    type: row.content_type,
+    contentId: row.content_id,
+    currentPublishedRevisionId: row.current_published_revision_id,
+    // Title and revision metadata are nullable by design: an archived identity whose
+    // authoritative revision cannot be resolved must still reach the restore surface.
+    currentPublishedRevisionNumber: row.revision_number,
+    title: row.title,
+    archivedAt: row.archived_at,
+    archivedBy: row.archived_by,
+  }));
+  const last = entries.at(-1);
+  const nextCursor = rows.length > pageSize && last
+    ? { archivedAt: last.archivedAt, contentId: last.contentId, contentType: last.type }
+    : null;
+  return { entries, nextCursor };
+}
+
+export type LifecycleHistoryPage = { events: LifecycleEvent[]; nextCursor: number | null };
+
+/**
+ * Governance history, read through the bounded Admin-only RPC.
+ * `curriculum_lifecycle_events` has no `select` grant for `authenticated`, so this
+ * is the only path — there is no direct table read to fall back to.
+ */
+export async function listLifecycleHistory(options: {
+  type?: ContributionType;
+  contentId?: string;
+  action?: LifecycleAction;
+  beforeEventId?: number | null;
+  pageSize?: number;
+} = {}): Promise<LifecycleHistoryPage> {
+  await requireAccess("Admin");
+  if (options.contentId && !uuidPattern.test(options.contentId)) return { events: [], nextCursor: null };
+  const supabase = await createClient();
+  const pageSize = Math.min(Math.max(options.pageSize ?? HISTORY_PAGE_SIZE, 1), 99);
+  const { data, error } = await supabase.rpc("list_curriculum_lifecycle_history", {
+    page_size: pageSize + 1,
+    before_event_id: options.beforeEventId ?? undefined,
+    content_type_filter: options.type,
+    content_id_filter: options.contentId,
+    action_filter: options.action,
+  });
+  if (error) throw new Error("Governance history read unavailable");
+
+  const rows = data ?? [];
+  const events: LifecycleEvent[] = rows.slice(0, pageSize).map((row) => ({
+    eventId: row.event_id,
+    type: row.content_type,
+    contentId: row.content_id,
+    revisionId: row.revision_id,
+    actorUserId: row.actor_user_id,
+    actorOrganizationId: row.actor_organization_id,
+    actorOrganizationName: row.actor_organization_name,
+    action: row.action,
+    previousStatus: row.previous_status,
+    resultingStatus: row.resulting_status,
+    occurredAt: row.occurred_at,
+  }));
+  const last = events.at(-1);
+  return { events, nextCursor: rows.length > pageSize && last ? last.eventId : null };
+}
+
+export function contentReferenceKey(type: ContributionType, contentId: string) {
+  return `${type}:${contentId}`;
+}
+
+/**
+ * Resolves readable titles for a small set of governed identities.
+ *
+ * Used for archive dependency blockers, which are by definition *active
+ * current-published* identities — exactly what the existing Admin management
+ * policies already allow this session to read. No boundary is widened and no
+ * reader query is introduced; callers fall back to type + id when a title is
+ * missing.
+ */
+export async function resolveContentTitles(
+  references: { type: ContributionType; contentId: string }[],
+): Promise<Map<string, string>> {
+  const resolved = new Map<string, string>();
+  if (references.length === 0) return resolved;
+  await requireAccess("Admin");
+  const supabase = await createClient();
+
+  const byType = new Map<ContributionType, string[]>();
+  for (const reference of references) {
+    if (!uuidPattern.test(reference.contentId)) continue;
+    if (!byType.has(reference.type)) byType.set(reference.type, []);
+    const ids = byType.get(reference.type)!;
+    if (!ids.includes(reference.contentId)) ids.push(reference.contentId);
+  }
+
+  await Promise.all([...byType].map(async ([type, ids]) => {
+    const table = managedTables.find((candidate) => candidate.type === type)!;
+    const identities = await supabase.from(table.identity).select("id,current_published_revision_id").in("id", ids);
+    if (identities.error || !identities.data) return;
+    const revisionIds = identities.data.map((row) => row.current_published_revision_id).filter((id): id is string => Boolean(id));
+    if (revisionIds.length === 0) return;
+    const revisions = await supabase.from(table.revision).select(`id,${table.titleColumn}`).in("id", revisionIds);
+    if (revisions.error || !revisions.data) return;
+    const titles = new Map((revisions.data as unknown as Record<string, unknown>[]).map((row) => [String(row.id), String(row[table.titleColumn])]));
+    for (const identity of identities.data) {
+      const title = identity.current_published_revision_id ? titles.get(identity.current_published_revision_id) : undefined;
+      if (title) resolved.set(contentReferenceKey(type, identity.id), title);
+    }
+  }));
+
+  return resolved;
 }

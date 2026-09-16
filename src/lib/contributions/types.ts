@@ -2,7 +2,16 @@ import type { Database } from "@/lib/supabase/database.types";
 
 export type ContributionType = Database["public"]["Enums"]["curriculum_content_type"];
 export type ContributionStatus = "Draft" | "Published";
+
+/** Derived from revision rows. Archival is deliberately absent: it is not a revision state. */
 export type ManagementState = "draft" | "published" | "published_with_draft";
+
+/**
+ * What the Admin management surface can display. `archived` is identity-level
+ * governance state (SPEC-005 §4.1), so it lives on this presentation type rather
+ * than in `ManagementState` or in `curriculum_revision_status`.
+ */
+export type ManagementViewState = ManagementState | "archived";
 
 export const contributionTypes: { type: ContributionType; label: string; description: string }[] = [
   { type: "module", label: "Módulo", description: "Una unidad principal del currículo." },
@@ -32,6 +41,53 @@ export type ContributionSummary = {
   draftRevisionNumber: number | null;
   activityAt: string;
 };
+
+export type LifecycleAction = Database["public"]["Enums"]["curriculum_lifecycle_action"];
+
+/** One archived stable identity, resolved through its authoritative Published revision. */
+export type ArchivedContentSummary = {
+  type: ContributionType;
+  contentId: string;
+  currentPublishedRevisionId: string | null;
+  currentPublishedRevisionNumber: number | null;
+  title: string | null;
+  archivedAt: string;
+  archivedBy: string | null;
+};
+
+/**
+ * The three-part descending keyset from `list_archived_governed_content`.
+ * All three components travel together — the RPC rejects a partial cursor, and
+ * dropping `contentType` would reintroduce the tie that made pagination skip rows.
+ */
+export type ArchivedCursor = {
+  archivedAt: string;
+  contentId: string;
+  contentType: ContributionType;
+};
+
+export type LifecycleEvent = {
+  eventId: number;
+  type: ContributionType;
+  contentId: string;
+  revisionId: string | null;
+  actorUserId: string;
+  actorOrganizationId: string;
+  actorOrganizationName: string | null;
+  action: LifecycleAction;
+  previousStatus: string | null;
+  resultingStatus: string | null;
+  occurredAt: string;
+};
+
+/**
+ * Archival never rewrites the Published revision, so an archived identity whose
+ * revision metadata cannot be resolved is an anomaly worth surfacing rather than
+ * hiding: it still has to be restorable.
+ */
+export function archivedContentTitle(entry: ArchivedContentSummary) {
+  return entry.title ?? "Sin título disponible";
+}
 
 export type ContributionOption = {
   id: string;

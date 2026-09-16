@@ -3,13 +3,25 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAccess } from "@/lib/auth/access";
-import { publicationErrorMessage } from "@/lib/contributions/errors";
-import { findActiveDraftRevision } from "@/lib/contributions/queries";
+import {
+  archiveErrorMessage,
+  dependencyBlockers,
+  publicationErrorMessage,
+  restoreErrorMessage,
+} from "@/lib/contributions/errors";
+import { contentReferenceKey, findActiveDraftRevision, resolveContentTitles } from "@/lib/contributions/queries";
 import { contributionPayload, ContributionValidationError } from "@/lib/contributions/validation";
-import { isContributionType } from "@/lib/contributions/types";
+import { isContributionType, type ContributionType } from "@/lib/contributions/types";
 import { createClient } from "@/lib/supabase/server";
 
 export type ContributionActionState = { error?: string };
+
+/** A dependency blocker, resolved to a readable title where one is available. */
+export type ResolvedBlocker = { type: ContributionType; contentId: string; title: string | null };
+
+export type GovernanceActionState = { error?: string; blockers?: ResolvedBlocker[] };
+
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function request(form: FormData) {
   const type = String(form.get("content_type") ?? "");
@@ -96,4 +108,68 @@ export async function createSuccessorDraft(_state: ContributionActionState, form
   if (!revisionId) return { error: "No pudimos abrir la nueva versión." };
   revalidatePath("/app/contributions");
   redirect(`/app/contributions/${parsed.type}/${revisionId}`);
+}
+
+/**
+ * Archive a published governed identity.
+ *
+ * The RPC is the authority: it re-resolves live Admin access, locks the identity,
+ * and re-checks Draft and dependency eligibility inside the transaction. The checks
+ * here only keep a malformed request from reaching it, and a stale UI that still
+ * offers Archive is rejected by the database rather than by this function.
+ */
+export async function archiveContent(_state: GovernanceActionState, form: FormData): Promise<GovernanceActionState> {
+  await requireAccess("Admin");
+  let parsed;
+  try {
+    parsed = request(form);
+    if (!uuidPattern.test(parsed.contentId)) throw new ContributionValidationError("No encontramos el contenido que deseas archivar.");
+  } catch (error) {
+    return { error: error instanceof ContributionValidationError ? error.message : "No encontramos el contenido que deseas archivar." };
+  }
+  const supabase = await createClient();
+  const result = await supabase.rpc("archive_governed_content", {
+    requested_type: parsed.type,
+    requested_content_id: parsed.contentId,
+  });
+  if (result.error) {
+    const blockers = dependencyBlockers(result.error);
+    return { error: archiveErrorMessage(result.error), blockers: blockers.length > 0 ? await resolveBlockers(blockers) : undefined };
+  }
+  revalidatePath("/app/contributions");
+  revalidatePath("/app/library");
+  // The archived identity is hidden from every active management policy, so its
+  // published detail route would now 404: land on the surface that can restore it.
+  redirect("/app/contributions?state=archived");
+}
+
+/** Restore an archived governed identity. Dependency revalidation happens inside the RPC. */
+export async function restoreContent(_state: GovernanceActionState, form: FormData): Promise<GovernanceActionState> {
+  await requireAccess("Admin");
+  let parsed;
+  try {
+    parsed = request(form);
+    if (!uuidPattern.test(parsed.contentId)) throw new ContributionValidationError("No encontramos el contenido que deseas restaurar.");
+  } catch (error) {
+    return { error: error instanceof ContributionValidationError ? error.message : "No encontramos el contenido que deseas restaurar." };
+  }
+  const supabase = await createClient();
+  const result = await supabase.rpc("restore_governed_content", {
+    requested_type: parsed.type,
+    requested_content_id: parsed.contentId,
+  });
+  if (result.error) return { error: restoreErrorMessage(result.error) };
+  revalidatePath("/app/contributions");
+  revalidatePath("/app/library");
+  if (!result.data || typeof result.data !== "object" || Array.isArray(result.data)) redirect("/app/contributions");
+  const revisionId = String(result.data.revision_id ?? "");
+  redirect(revisionId ? `/app/contributions/${parsed.type}/${revisionId}` : "/app/contributions");
+}
+
+async function resolveBlockers(blockers: { type: ContributionType; contentId: string }[]): Promise<ResolvedBlocker[]> {
+  // Blockers are active current-published identities, which the Admin management
+  // policies already expose; an unresolved one falls back to type + id rather than
+  // widening any read boundary.
+  const titles = await resolveContentTitles(blockers);
+  return blockers.map((blocker) => ({ ...blocker, title: titles.get(contentReferenceKey(blocker.type, blocker.contentId)) ?? null }));
 }

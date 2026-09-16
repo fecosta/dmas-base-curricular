@@ -14,12 +14,14 @@ const tones: Record<NoticeTone, string> = {
  * contract the E2E suite asserts, so errors announce as alerts and successes as
  * statuses unless the caller overrides.
  */
-export function Notice({ tone = "info", role, className, children }: {
+export function Notice({ tone = "info", role, as: As = "p", className, children }: {
   tone?: NoticeTone;
   role?: React.AriaRole;
+  /** "div" is for notices that carry block content, such as a list of blockers. */
+  as?: "p" | "div";
   className?: string;
   children: React.ReactNode;
 }) {
   const resolvedRole = role ?? (tone === "error" ? "alert" : tone === "success" ? "status" : undefined);
-  return <p role={resolvedRole} className={cn("rounded-md border px-4 py-3 font-semibold", tones[tone], className)}>{children}</p>;
+  return <As role={resolvedRole} className={cn("rounded-md border px-4 py-3 font-semibold", tones[tone], className)}>{children}</As>;
 }
