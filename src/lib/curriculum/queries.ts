@@ -112,6 +112,37 @@ export async function getPublishedModules(filters: Pick<LibraryFilters, "query" 
   return data as ModuleSummary[];
 }
 
+export type ProgramOutline = { moduleId: string; topics: { id: string; title: string }[] };
+
+/**
+ * Program Topic titles for the given modules, used by the library's Programa view
+ * so a reader can see curriculum structure without opening every module.
+ *
+ * Reads `program_topic_revisions` directly: the table grants select to
+ * `authenticated` and its RLS policy already restricts rows to the current
+ * published revision of a visible topic, so this resolves exactly the same
+ * reader boundary as the module RPCs without adding one.
+ */
+export async function getProgramOutlines(moduleIds: string[]): Promise<ProgramOutline[]> {
+  const ids = [...new Set(moduleIds)].filter((id) => uuidPattern.test(id));
+  if (ids.length === 0) return [];
+  await requireAccess();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("program_topic_revisions")
+    .select("program_topic_id,module_id,title,position")
+    .eq("status", "Published")
+    .in("module_id", ids)
+    .order("position", { ascending: true, nullsFirst: false })
+    .order("title");
+  if (error) throw new Error("Curriculum read unavailable");
+  const byModule = new Map<string, ProgramOutline>(ids.map((id) => [id, { moduleId: id, topics: [] }]));
+  for (const row of data ?? []) {
+    byModule.get(row.module_id)?.topics.push({ id: row.program_topic_id, title: row.title });
+  }
+  return [...byModule.values()];
+}
+
 export async function getModule(id: string) {
   if (!uuidPattern.test(id)) notFound();
   await requireAccess();

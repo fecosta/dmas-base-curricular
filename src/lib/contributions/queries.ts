@@ -51,26 +51,57 @@ export function mapManagementSummaries(
   });
 }
 
-export async function listManagedContent(): Promise<ContributionSummary[]> {
+export type ManagementFilters = {
+  query?: string;
+  type?: ContributionType;
+  state?: ManagementState;
+};
+
+type ManagedTable = {
+  type: ContributionType;
+  identity: "modules" | "program_topics" | "instructors" | "teaching_notes" | "materials" | "institutions";
+  revision: "module_revisions" | "program_topic_revisions" | "instructor_revisions" | "teaching_note_revisions" | "material_revisions" | "institution_revisions";
+  foreignKey: string;
+  titleColumn: "title" | "name";
+};
+
+const managedTables: ManagedTable[] = [
+  { type: "module", identity: "modules", revision: "module_revisions", foreignKey: "module_id", titleColumn: "title" },
+  { type: "program_topic", identity: "program_topics", revision: "program_topic_revisions", foreignKey: "program_topic_id", titleColumn: "title" },
+  { type: "instructor", identity: "instructors", revision: "instructor_revisions", foreignKey: "instructor_id", titleColumn: "name" },
+  { type: "teaching_note", identity: "teaching_notes", revision: "teaching_note_revisions", foreignKey: "teaching_note_id", titleColumn: "title" },
+  { type: "material", identity: "materials", revision: "material_revisions", foreignKey: "material_id", titleColumn: "title" },
+  { type: "institution", identity: "institutions", revision: "institution_revisions", foreignKey: "institution_id", titleColumn: "name" },
+];
+
+/**
+ * Admin management listing.
+ *
+ * A content-type filter narrows which tables are queried at all, which is a real
+ * server-side reduction. The text and state filters are applied after the fold —
+ * still on the server, nothing extra is shipped to the browser — because both are
+ * properties of the *derived* management summary. Filtering revision rows by title
+ * in SQL would drop an identity's published revision whenever only its draft title
+ * matched, silently reporting "draft" for content that is actually published with
+ * an active successor.
+ */
+export async function listManagedContent(filters: ManagementFilters = {}): Promise<ContributionSummary[]> {
   await requireAccess("Admin");
   const supabase = await createClient();
-  const results = await Promise.all([
-    supabase.from("modules").select("id,current_published_revision_id"),
-    supabase.from("module_revisions").select("id,module_id,status,title,revision_number,created_at,published_at").in("status", managedStatuses),
-    supabase.from("program_topics").select("id,current_published_revision_id"),
-    supabase.from("program_topic_revisions").select("id,program_topic_id,status,title,revision_number,created_at,published_at").in("status", managedStatuses),
-    supabase.from("instructors").select("id,current_published_revision_id"),
-    supabase.from("instructor_revisions").select("id,instructor_id,status,name,revision_number,created_at,published_at").in("status", managedStatuses),
-    supabase.from("teaching_notes").select("id,current_published_revision_id"),
-    supabase.from("teaching_note_revisions").select("id,teaching_note_id,status,title,revision_number,created_at,published_at").in("status", managedStatuses),
-    supabase.from("materials").select("id,current_published_revision_id"),
-    supabase.from("material_revisions").select("id,material_id,status,title,revision_number,created_at,published_at").in("status", managedStatuses),
-    supabase.from("institutions").select("id,current_published_revision_id"),
-    supabase.from("institution_revisions").select("id,institution_id,status,name,revision_number,created_at,published_at").in("status", managedStatuses),
-  ]);
-  if (results.some((result) => result.error)) throw new Error("Admin content read unavailable");
+  const tables = filters.type ? managedTables.filter((table) => table.type === filters.type) : managedTables;
 
-  const revisions = (rows: Record<string, unknown>[], contentKey: string, titleKey: "title" | "name"): SummaryRevision[] => rows.map((row) => ({
+  const loaded = await Promise.all(tables.map(async (table) => {
+    const [identities, revisions] = await Promise.all([
+      supabase.from(table.identity).select("id,current_published_revision_id"),
+      supabase.from(table.revision)
+        .select(`id,${table.foreignKey},status,${table.titleColumn},revision_number,created_at,published_at`)
+        .in("status", managedStatuses),
+    ]);
+    if (identities.error || revisions.error) throw new Error("Admin content read unavailable");
+    return { table, identities: identities.data ?? [], revisions: (revisions.data ?? []) as unknown as Record<string, unknown>[] };
+  }));
+
+  const toRevisions = (rows: Record<string, unknown>[], contentKey: string, titleKey: "title" | "name"): SummaryRevision[] => rows.map((row) => ({
     id: String(row.id),
     contentId: String(row[contentKey]),
     title: String(row[titleKey]),
@@ -79,15 +110,15 @@ export async function listManagedContent(): Promise<ContributionSummary[]> {
     createdAt: String(row.created_at),
     publishedAt: row.published_at ? String(row.published_at) : null,
   }));
-  const summaries = [
-    ...mapManagementSummaries("module", results[0].data ?? [], revisions(results[1].data ?? [], "module_id", "title")),
-    ...mapManagementSummaries("program_topic", results[2].data ?? [], revisions(results[3].data ?? [], "program_topic_id", "title")),
-    ...mapManagementSummaries("instructor", results[4].data ?? [], revisions(results[5].data ?? [], "instructor_id", "name")),
-    ...mapManagementSummaries("teaching_note", results[6].data ?? [], revisions(results[7].data ?? [], "teaching_note_id", "title")),
-    ...mapManagementSummaries("material", results[8].data ?? [], revisions(results[9].data ?? [], "material_id", "title")),
-    ...mapManagementSummaries("institution", results[10].data ?? [], revisions(results[11].data ?? [], "institution_id", "name")),
-  ];
-  return summaries.sort((a, b) => b.activityAt.localeCompare(a.activityAt));
+
+  const summaries = loaded.flatMap(({ table, identities, revisions }) =>
+    mapManagementSummaries(table.type, identities as IdentityRow[], toRevisions(revisions, table.foreignKey, table.titleColumn)));
+
+  const needle = filters.query?.trim().toLowerCase();
+  return summaries
+    .filter((summary) => (filters.state ? summary.state === filters.state : true))
+    .filter((summary) => (needle ? summary.title.toLowerCase().includes(needle) : true))
+    .sort((a, b) => b.activityAt.localeCompare(a.activityAt));
 }
 
 export async function getContribution(type: ContributionType, revisionId: string): Promise<ContributionDetail> {

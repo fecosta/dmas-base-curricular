@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getLibrary, type SearchResult } from "@/lib/curriculum/queries";
+import { getLibrary, getProgramOutlines, type SearchResult } from "@/lib/curriculum/queries";
 import { libraryHref, paramValue, type LibraryQuery } from "@/lib/curriculum/library-href";
 import { axisToneResolver } from "@/lib/ui/axis-tone";
 import { Page, Container } from "@/components/ui/page";
@@ -10,6 +10,11 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { SegmentedLinks } from "@/components/ui/segmented";
 import { SectionHeader, resultCount } from "@/components/ui/section-header";
 import { EmptyState } from "@/components/ui/empty-state";
+
+// References stay discoverable but must not bury the curriculum. In the
+// unfiltered view each reference family shows a bounded preview with an explicit
+// link to its complete filtered set, so nothing becomes unreachable.
+const PREVIEW = 6;
 
 function detailHref(item: SearchResult) {
   return item.entity_type === "module"
@@ -30,8 +35,53 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
     country: paramValue(query, "country"), theme: paramValue(query, "theme"),
   });
   const modules = library.results.filter((item) => item.entity_type === "module");
-  const references = library.results.filter((item) => item.entity_type !== "module");
+  const materials = library.results.filter((item) => item.entity_type === "material");
+  const institutions = library.results.filter((item) => item.entity_type === "institution");
   const toneFor = axisToneResolver(library.axes);
+  const showingEverything = !allowedEntity;
+
+  // Curriculum structure is only loaded for the Programa view, and only for the
+  // modules actually on screen.
+  const outlines = view === "programa" && modules.length > 0
+    ? new Map((await getProgramOutlines(modules.map((item) => item.id))).map((o) => [o.moduleId, o.topics]))
+    : new Map();
+
+  const referenceSection = (
+    title: string,
+    id: string,
+    items: SearchResult[],
+    kind: "material" | "institution",
+    label: string,
+  ) => {
+    const limited = showingEverything ? items.slice(0, PREVIEW) : items;
+    return <section aria-labelledby={id} className="mt-12 border-t border-hairline pt-8">
+      <SectionHeader title={title} id={id} meta={resultCount(items.length)} />
+      {items.length === 0
+        ? <EmptyState
+            align="start"
+            title={`Sin ${label} que coincidan`}
+            description="Ningún registro publicado coincide con estos filtros."
+          />
+        : <>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {limited.map((item) => <Card key={`${item.entity_type}-${item.id}`} as="article" accent={kind === "material" ? "warning" : "accent"} className="flex flex-col p-5">
+                <p className="eyebrow">{item.classification}</p>
+                <h3 className="mt-2 text-base leading-snug">{item.title}</h3>
+                {item.country_or_scope && <p className="mt-2 text-sm text-ink-muted">{item.country_or_scope}</p>}
+                {item.description && <p className="mt-3 line-clamp-2 text-sm text-ink-soft">{item.description}</p>}
+                <div className="mt-4">
+                  <ButtonLink href={detailHref(item)} size="sm" variant="secondary">Explorar referencia</ButtonLink>
+                </div>
+              </Card>)}
+            </div>
+            {limited.length < items.length && <p className="mt-5">
+              <Link href={libraryHref(query, { entity: kind })} prefetch={false} className="text-sm font-bold">
+                Ver {label} ({items.length})
+              </Link>
+            </p>}
+          </>}
+    </section>;
+  };
 
   return <Page width="bleed">
     <HeroBand
@@ -45,8 +95,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
       <form method="get" className="lg:sticky lg:top-6 lg:self-start">
         <input type="hidden" name="view" value={view} />
         <input type="hidden" name="axis" value={axis} />
-        {/* Open by default; collapsible so the filter panel does not push results
-            below the fold on small screens. One DOM node, no mobile duplicate. */}
+        <input type="hidden" name="entity" value={entity} />
         <details open className="group rounded-lg border border-hairline bg-surface shadow-card">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-bold text-ink">
             <span className="flex items-center gap-2">
@@ -58,15 +107,6 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
           <div className="grid gap-4 border-t border-hairline px-5 pb-5 pt-4">
             <Field label="Buscar">
               <input name="q" defaultValue={paramValue(query, "q")} placeholder="Módulos, materiales, instituciones…" />
-            </Field>
-            <Field label="Tipo">
-              <select name="entity" defaultValue={entity}>
-                <option value="">Todo</option>
-                <option value="module">Módulos</option>
-                <option value="reference">Referencias</option>
-                <option value="material">Materiales y estudios</option>
-                <option value="institution">Instituciones</option>
-              </select>
             </Field>
             <Field label="País o alcance">
               <select name="country" defaultValue={paramValue(query, "country")}>
@@ -89,28 +129,40 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
       </form>
 
       <div className="min-w-0">
-        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 rounded-lg border border-hairline bg-surface px-5 py-4 shadow-card">
+        <div className="grid gap-4 rounded-lg border border-hairline bg-surface px-5 py-4 shadow-card">
+          <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
+            <SegmentedLinks
+              label="Eje"
+              options={[
+                { label: "Todos", href: libraryHref(query, { axis: "" }), active: !axis },
+                ...library.axes.map((option) => ({
+                  label: option.name,
+                  href: libraryHref(query, { axis: option.id }),
+                  active: axis === option.id,
+                })),
+              ]}
+            />
+            <SegmentedLinks
+              label="Vista"
+              options={[
+                { label: "Grilla", href: libraryHref(query, { view: "grilla" }), active: view === "grilla" },
+                { label: "Programa", href: libraryHref(query, { view: "programa" }), active: view === "programa" },
+              ]}
+            />
+          </div>
           <SegmentedLinks
-            label="Eje"
+            label="Tipo"
+            className="border-t border-hairline pt-4"
             options={[
-              { label: "Todos", href: libraryHref(query, { axis: "" }), active: !axis },
-              ...library.axes.map((option) => ({
-                label: option.name,
-                href: libraryHref(query, { axis: option.id }),
-                active: axis === option.id,
-              })),
-            ]}
-          />
-          <SegmentedLinks
-            label="Vista"
-            options={[
-              { label: "Grilla", href: libraryHref(query, { view: "grilla" }), active: view === "grilla" },
-              { label: "Programa", href: libraryHref(query, { view: "programa" }), active: view === "programa" },
+              { label: "Todo", href: libraryHref(query, { entity: "" }), active: !entity },
+              { label: "Módulos", href: libraryHref(query, { entity: "module" }), active: entity === "module" },
+              { label: "Materiales", href: libraryHref(query, { entity: "material" }), active: entity === "material" },
+              { label: "Instituciones", href: libraryHref(query, { entity: "institution" }), active: entity === "institution" },
             ]}
           />
         </div>
 
-        <section aria-labelledby="modules-title" className="mt-10">
+        {entity !== "material" && entity !== "institution" && entity !== "reference" && <section aria-labelledby="modules-title" className="mt-10">
           <SectionHeader title="Módulos" id="modules-title" meta={resultCount(modules.length)} />
           {modules.length === 0
             ? <EmptyState
@@ -130,42 +182,36 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                     </div>
                   </Card>)}
                 </div>
-              : <Card className="divide-y divide-hairline">
-                  {modules.map((item, index) => <article key={item.id} className="grid gap-4 p-5 sm:grid-cols-[3rem_1fr_auto] sm:items-center">
-                    <span className="font-mono text-sm text-label">{String(index + 1).padStart(2, "0")}</span>
-                    <div className="min-w-0">
-                      <p className="eyebrow">{item.classification}</p>
-                      <h3 className="mt-1 text-lg">{item.title}</h3>
-                      <p className="mt-2 max-w-3xl text-ink-soft">{item.description}</p>
-                    </div>
-                    <ButtonLink href={detailHref(item)} size="sm" className="justify-self-start sm:justify-self-end">Ver programa</ButtonLink>
-                  </article>)}
-                </Card>}
-        </section>
+              /* Programa mode exposes each module's curriculum structure so the
+                 reader can understand the content without opening every module.
+                 It is an alternative view of the same library, not a sequence. */
+              : <div className="space-y-5">
+                  {modules.map((item) => {
+                    const topics = outlines.get(item.id) ?? [];
+                    return <Card key={item.id} as="article" accent={toneFor(item.classification)} className="p-6">
+                      <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="eyebrow">{item.classification}</p>
+                          <h3 className="mt-2 text-xl leading-snug">{item.title}</h3>
+                          {item.theme && <p className="mt-2 text-sm font-bold text-accent-ink">{item.theme}</p>}
+                        </div>
+                        <ButtonLink href={detailHref(item)} size="sm" className="shrink-0">Ver programa</ButtonLink>
+                      </div>
+                      {topics.length > 0
+                        ? <ol className="mt-5 grid gap-x-8 gap-y-2 border-t border-hairline pt-4 sm:grid-cols-2">
+                            {topics.map((topic: { id: string; title: string }, index: number) => <li key={topic.id} className="flex gap-3 text-sm text-ink-soft">
+                              <span aria-hidden="true" className="font-mono text-xs text-label">{String(index + 1).padStart(2, "0")}</span>
+                              <span className="min-w-0">{topic.title}</span>
+                            </li>)}
+                          </ol>
+                        : <p className="mt-5 border-t border-hairline pt-4 text-sm text-ink-muted">Este módulo aún no tiene temas de Programa publicados.</p>}
+                    </Card>;
+                  })}
+                </div>}
+        </section>}
 
-        <section aria-labelledby="references-title" className="mt-14 border-t border-hairline pt-10">
-          <SectionHeader
-            title="Referencias"
-            id="references-title"
-            meta={resultCount(references.length)}
-          />
-          {references.length === 0
-            ? <EmptyState
-                title="No hay referencias que coincidan"
-                description="No hay referencias publicadas que coincidan con estos filtros. Las referencias no se filtran por eje."
-              />
-            : <div className="grid gap-4 md:grid-cols-2">
-                {references.map((item) => <Card key={`${item.entity_type}-${item.id}`} as="article" accent={item.entity_type === "material" ? "warning" : "accent"} className="flex flex-col p-5">
-                  <p className="eyebrow">{item.entity_type === "material" ? "Material o estudio" : "Institución"} · {item.classification}</p>
-                  <h3 className="mt-2 text-lg">{item.title}</h3>
-                  {item.country_or_scope && <p className="mt-2 text-sm text-ink-muted">{item.country_or_scope}</p>}
-                  <p className="mt-3 text-ink-soft">{item.description}</p>
-                  <div className="mt-5">
-                    <ButtonLink href={detailHref(item)} size="sm" variant="secondary">Explorar referencia</ButtonLink>
-                  </div>
-                </Card>)}
-              </div>}
-        </section>
+        {entity !== "module" && entity !== "institution" && referenceSection("Materiales y estudios", "materials-title", materials, "material", "materiales")}
+        {entity !== "module" && entity !== "material" && referenceSection("Instituciones", "institutions-title", institutions, "institution", "instituciones")}
       </div>
     </Container>
   </Page>;

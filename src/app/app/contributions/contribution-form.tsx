@@ -6,6 +6,7 @@ import type { ContributionDetail, ContributionOption, ContributionOptions, Contr
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
+import { RelationshipPicker } from "./relationship-picker";
 
 const initialState: ContributionActionState = {};
 
@@ -25,10 +26,17 @@ function OptionList({ options }: { options: ContributionOption[] }) {
   </option>);
 }
 
-function Multiple({ name, label, options, selected = [] }: { name: string; label: string; options: ContributionOption[]; selected?: string[] }) {
-  return <Field label={label} hint="Puedes seleccionar más de una opción.">
-    <select name={name} multiple defaultValue={selected} className="min-h-32"><OptionList options={options} /></select>
-  </Field>;
+function Multiple({ name, label, search, options, selected = [] }: {
+  name: string; label: string; search: string; options: ContributionOption[]; selected?: string[];
+}) {
+  return <RelationshipPicker
+    name={name}
+    legend={label}
+    searchLabel={search}
+    options={options}
+    selected={selected}
+    hint="Puedes seleccionar más de una opción."
+  />;
 }
 
 export function ContributionForm({ type, options, detail, readOnly = false }: {
@@ -56,9 +64,9 @@ export function ContributionForm({ type, options, detail, readOnly = false }: {
         <Field label="Resultados de aprendizaje" className="md:col-span-2" hint="Escribe un resultado por línea.">
           <textarea name="learning_outcomes" defaultValue={lines(detail, "learning_outcomes")} />
         </Field>
-        <Multiple name="instructor_ids" label="Docentes o especialistas" options={options.instructors} selected={relationships.instructor_ids} />
-        <Multiple name="material_ids" label="Materiales o estudios" options={options.materials} selected={relationships.material_ids} />
-        <Multiple name="institution_ids" label="Instituciones" options={options.institutions} selected={relationships.institution_ids} />
+        <Multiple name="instructor_ids" label="Docentes o especialistas" search="Buscar docentes" options={options.instructors} selected={relationships.instructor_ids} />
+        <Multiple name="material_ids" label="Materiales o estudios" search="Buscar materiales" options={options.materials} selected={relationships.material_ids} />
+        <Multiple name="institution_ids" label="Instituciones" search="Buscar instituciones" options={options.institutions} selected={relationships.institution_ids} />
       </>}
       {type === "program_topic" && <>
         <Field label="Módulo *">
@@ -97,7 +105,7 @@ export function ContributionForm({ type, options, detail, readOnly = false }: {
           <textarea name="text" defaultValue={value(detail, "text")} />
         </Field>
         <Field label="Enlace de fuente (HTTPS)"><input name="source_url" type="url" defaultValue={value(detail, "source_url")} /></Field>
-        <Multiple name="material_ids" label="Materiales relacionados" options={options.materials} selected={relationships.material_ids} />
+        <Multiple name="material_ids" label="Materiales relacionados" search="Buscar materiales" options={options.materials} selected={relationships.material_ids} />
       </>}
       {type === "material" && <>
         <Field label="Título *"><input name="title" required maxLength={240} defaultValue={value(detail, "title")} /></Field>
