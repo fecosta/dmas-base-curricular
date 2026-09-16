@@ -76,3 +76,4 @@ pids/
 
 # Local security/test scripts
 resources/scripts/
+.vercel
