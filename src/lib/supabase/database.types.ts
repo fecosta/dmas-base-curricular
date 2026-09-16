@@ -186,10 +186,25 @@ export type Database = {
         };
         Returns: {
           action: Database["public"]["Enums"]["curriculum_lifecycle_action"];
-          actor_organization_id: string; actor_user_id: string; content_id: string;
+          actor_organization_id: string; actor_organization_name: string | null;
+          actor_user_id: string; content_id: string;
           content_type: Database["public"]["Enums"]["curriculum_content_type"];
           event_id: number; occurred_at: string; previous_status: RevisionStatus | null;
           resulting_status: RevisionStatus | null; revision_id: string | null;
+        }[];
+      };
+      list_archived_governed_content: {
+        Args: {
+          before_archived_at?: string;
+          before_content_id?: string;
+          content_type_filter?: Database["public"]["Enums"]["curriculum_content_type"];
+          page_size?: number;
+        };
+        Returns: {
+          archived_at: string; archived_by: string | null; content_id: string;
+          content_type: Database["public"]["Enums"]["curriculum_content_type"];
+          current_published_revision_id: string | null; revision_number: number | null;
+          title: string | null;
         }[];
       };
       reserve_attachment: {

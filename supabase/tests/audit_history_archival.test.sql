@@ -557,14 +557,147 @@ select ok((select relrowsecurity from pg_class where oid = 'public.curriculum_li
   'lifecycle-event RLS remains enabled');
 select is((select count(*) from pg_proc procedure join pg_namespace namespace on namespace.oid = procedure.pronamespace
   where namespace.nspname = 'public' and procedure.proname in (
-    'archive_governed_content', 'restore_governed_content', 'list_curriculum_lifecycle_history'
-  ) and procedure.prosecdef and array_to_string(procedure.proconfig, ',') like 'search_path=%'), 3::bigint,
-  'archive, restore, and history are hardened bounded security-definer operations');
+    'archive_governed_content', 'restore_governed_content', 'list_curriculum_lifecycle_history',
+    'list_archived_governed_content'
+  ) and procedure.prosecdef and array_to_string(procedure.proconfig, ',') like 'search_path=%'), 4::bigint,
+  'archive, restore, history, and archived listing are hardened bounded security-definer operations');
 select is((select count(*) from pg_proc procedure join pg_namespace namespace on namespace.oid = procedure.pronamespace
   where namespace.nspname = 'public' and procedure.proname in (
-    'archive_governed_content', 'restore_governed_content', 'list_curriculum_lifecycle_history'
-  ) and pg_get_userbyid(procedure.proowner) = 'postgres'), 3::bigint,
-  'archive, restore, and history remain owned by the trusted migration role');
+    'archive_governed_content', 'restore_governed_content', 'list_curriculum_lifecycle_history',
+    'list_archived_governed_content'
+  ) and pg_get_userbyid(procedure.proowner) = 'postgres'), 4::bigint,
+  'archive, restore, history, and archived listing remain owned by the trusted migration role');
+
+-- SPEC-005 Phase 2A: Admin-only archived read boundary and history attribution.
+-- Reuses this file's fixtures. At this point instructor ...0002 and module ...0003
+-- are archived; every other identity is active.
+reset role;
+-- A Draft on an archived identity proves the listing resolves only the
+-- authoritative current-published revision.
+insert into public.module_revisions(
+  id, module_id, revision_number, status, axis_id, title, description,
+  created_by, contributor_organization_id
+) values (
+  'b3100000-0000-4000-8000-000000000093', 'b3000000-0000-4000-8000-000000000003', 2, 'Draft',
+  'a1000000-0000-4000-8000-000000000001', 'Borrador que no debe filtrarse', 'Borrador sobre identidad archivada.',
+  'b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-000000000001'
+);
+
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+
+select bag_eq(
+  $$select content_type::text, content_id::text from public.list_archived_governed_content()$$,
+  $$values ('instructor', 'b5000000-0000-4000-8000-000000000002'),
+           ('module', 'b3000000-0000-4000-8000-000000000003')$$,
+  'eligible Admin lists exactly the archived governed identities');
+
+select is((select count(*) from public.list_archived_governed_content()
+  where content_id = 'b3000000-0000-4000-8000-000000000001'), 0::bigint,
+  'active non-archived identities are absent from the archived listing');
+
+select is((select count(*) from public.list_archived_governed_content()
+  where archived_at is null), 0::bigint,
+  'every archived listing row carries identity-level archival state');
+
+select is(
+  (select current_published_revision_id::text from public.list_archived_governed_content()
+    where content_id = 'b3000000-0000-4000-8000-000000000003'),
+  'b3100000-0000-4000-8000-000000000003',
+  'archived listing resolves the authoritative current-published revision');
+
+select is(
+  (select title from public.list_archived_governed_content()
+    where content_id = 'b3000000-0000-4000-8000-000000000003'),
+  'Módulo histórico',
+  'archived listing reports the current-published title, never a Draft title');
+
+select is((select count(*) from public.list_archived_governed_content()
+  where title = 'Borrador que no debe filtrarse'), 0::bigint,
+  'Draft revisions on an archived identity are not leaked by the archived listing');
+
+select is(
+  (select revision_number from public.list_archived_governed_content()
+    where content_id = 'b3000000-0000-4000-8000-000000000003'), 1,
+  'archived listing reports the current-published revision number');
+
+select is(
+  (select archived_by::text from public.list_archived_governed_content()
+    where content_id = 'b3000000-0000-4000-8000-000000000003'),
+  'b2000000-0000-4000-8000-000000000001',
+  'archived listing preserves archival attribution');
+
+select bag_eq(
+  $$select content_type::text from public.list_archived_governed_content(50, null, null, 'instructor')$$,
+  $$values ('instructor')$$,
+  'archived listing honours the content-type filter');
+
+select is((select count(*) from public.list_archived_governed_content(1)), 1::bigint,
+  'archived listing honours a bounded page size');
+
+select throws_ok($$select * from public.list_archived_governed_content(0)$$,
+  '22023', 'archived page size must be between 1 and 100', 'archived listing rejects a page size below the bound');
+select throws_ok($$select * from public.list_archived_governed_content(101)$$,
+  '22023', 'archived page size must be between 1 and 100', 'archived listing rejects a page size above the bound');
+select throws_ok($$select * from public.list_archived_governed_content(null)$$,
+  '22023', 'archived page size must be between 1 and 100', 'archived listing rejects a null page size');
+select throws_ok($$select * from public.list_archived_governed_content(50, now())$$,
+  '22023', 'archived cursor requires both keyset values', 'archived listing rejects a partial keyset cursor');
+
+-- Keyset pagination walks the whole archived set without repeating a row.
+select is((select count(distinct content_id) from (
+    select content_id from public.list_archived_governed_content(1)
+    union all
+    select page.content_id from public.list_archived_governed_content(1) first
+    cross join lateral public.list_archived_governed_content(1, first.archived_at, first.content_id) page
+  ) walked), 2::bigint,
+  'archived keyset pagination reaches every archived identity exactly once');
+
+-- The archived identity is reachable only through the bounded Admin boundary.
+select is((select count(*) from public.modules where id = 'b3000000-0000-4000-8000-000000000003'), 0::bigint,
+  'an archived identity stays invisible to direct Admin table reads');
+
+select is(
+  (select actor_organization_id::text from public.list_curriculum_lifecycle_history(1)),
+  'b1000000-0000-4000-8000-000000000001',
+  'lifecycle history reports the actor organization id');
+select is(
+  (select actor_organization_name from public.list_curriculum_lifecycle_history(1)),
+  'Red de archivo',
+  'lifecycle history resolves the actor organization name through the Admin boundary');
+
+select is((select count(*) from public.list_curriculum_lifecycle_history(100)
+  where action in ('content_archived', 'content_restored')
+    and (previous_status is not null or resulting_status is not null)), 0::bigint,
+  'archive and restore remain identity-level events without invented revision transitions');
+
+-- Ordinary readers keep no path to archived content or to governance history.
+select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000003","role":"authenticated"}', true);
+select throws_ok($$select * from public.list_archived_governed_content()$$,
+  '42501', 'eligible Admin access required', 'Contributors cannot use the archived read boundary');
+select is((select count(*) from public.modules where id = 'b3000000-0000-4000-8000-000000000003'), 0::bigint,
+  'archived content remains invisible to ordinary readers');
+
+-- Live role revocation removes archived-read authority immediately.
+select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000004","role":"authenticated"}', true);
+select throws_ok($$select * from public.list_archived_governed_content()$$,
+  '42501', 'eligible Admin access required', 'live role revocation removes archived-read authority');
+
+reset role;
+select ok(has_function_privilege('authenticated',
+  'public.list_archived_governed_content(integer,timestamptz,uuid,public.curriculum_content_type)', 'EXECUTE'),
+  'authenticated may invoke the live-Admin-gated archived listing');
+select ok(not has_function_privilege('anon',
+  'public.list_archived_governed_content(integer,timestamptz,uuid,public.curriculum_content_type)', 'EXECUTE'),
+  'anonymous callers cannot list archived content');
+select is((select count(*) from pg_proc procedure join pg_namespace namespace on namespace.oid = procedure.pronamespace
+  where namespace.nspname = 'public' and procedure.proname in (
+    'list_archived_governed_content', 'list_curriculum_lifecycle_history'
+  ) and procedure.provolatile = 's'), 2::bigint,
+  'the archived and history read boundaries remain non-mutating');
+select ok(not has_table_privilege('authenticated', 'public.organizations', 'INSERT,UPDATE,DELETE'),
+  'organization attribution adds no organization mutation privilege');
+
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 select throws_ok($$select * from public.list_curriculum_lifecycle_history(101)$$,
