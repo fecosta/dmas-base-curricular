@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ApplicationLayout({ children }: { children: React.ReactNode }) {
   const access = await requireAccess();
-  const roleLabel = access.role === "Admin" ? "Administrador" : "Colaborador";
+  const roleLabel = access.role === "Admin" ? "Administrador" : "Miembro";
 
   // Filtered here, not in the client component: an Admin-only destination must
   // never be serialised into a reader's markup.
@@ -63,7 +63,7 @@ export default async function ApplicationLayout({ children }: { children: React.
       <Container width="wide" className="py-12">
         <span className="text-xl font-black tracking-[-0.03em] text-accent">DEMOCRACIA+</span>
         <p className="mt-4 max-w-md text-sm text-white/70">
-          Base curricular del programa de formación política de la red. Módulos, programas, docentes e
+          Biblioteca curricular compartida de la red Democracia+. Módulos, programas, docentes e
           instituciones de referencia en un solo lugar.
         </p>
       </Container>

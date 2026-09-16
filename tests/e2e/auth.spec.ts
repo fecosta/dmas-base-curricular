@@ -211,7 +211,7 @@ test("eligible Contributor logs in, cannot escalate or switch organizations, and
   const user = await provision("Contributor");
   await login(page, user.email);
   await expect(page).toHaveURL(/\/app$/);
-  await expect(page.getByText("Colaborador", { exact: true })).toBeVisible();
+  await expect(page.getByText("Miembro", { exact: true })).toBeVisible();
   if (process.env.E2E_PRODUCTION) {
     const authCookies = (await page.context().cookies()).filter(cookie => cookie.name.includes("auth-token"));
     expect(authCookies.length).toBeGreaterThan(0);
@@ -231,7 +231,7 @@ test("eligible Contributor logs in, cannot escalate or switch organizations, and
   expect(JSON.parse(response.body)).toMatchObject({ userId: user.id, role: "Contributor", organizationId });
   expect((await appRequest(page, "/api/access?role=Admin", "POST")).status).toBe(405);
   await page.reload();
-  await expect(page.getByText("Colaborador", { exact: true })).toBeVisible();
+  await expect(page.getByText("Miembro", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Cerrar sesión" }).click();
   await expect(page).toHaveURL(/\/login$/);
   expect((await appRequest(page, "/api/access")).status).toBe(401);

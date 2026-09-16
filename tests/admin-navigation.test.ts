@@ -27,4 +27,23 @@ describe("role-aware application navigation", () => {
     expect(html).not.toContain("contribuciones");
     expect(html).toContain("Biblioteca");
   });
+
+  it("labels the persisted Contributor role without implying authoring authority", async () => {
+    requireAccess.mockResolvedValue({ organizationName: "Red", role: "Contributor" });
+    const html = renderToStaticMarkup(await ApplicationLayout({ children: React.createElement("main") }));
+    expect(html).toContain("Miembro");
+    expect(html).not.toContain("Colaborador");
+  });
+
+  it("labels Admins as Administrador", async () => {
+    requireAccess.mockResolvedValue({ organizationName: "Red", role: "Admin" });
+    const html = renderToStaticMarkup(await ApplicationLayout({ children: React.createElement("main") }));
+    expect(html).toContain("Administrador");
+  });
+
+  it("describes the product as the shared network library", async () => {
+    requireAccess.mockResolvedValue({ organizationName: "Red", role: "Contributor" });
+    const html = renderToStaticMarkup(await ApplicationLayout({ children: React.createElement("main") }));
+    expect(html).toContain("Biblioteca curricular compartida de la red Democracia+.");
+  });
 });

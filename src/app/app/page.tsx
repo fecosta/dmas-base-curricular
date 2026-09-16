@@ -40,7 +40,7 @@ export default async function ApplicationPage() {
           </div>
           <div>
             <dt className="filter-label">Rol</dt>
-            <dd className="mt-1">{access.role === "Admin" ? "Administrador" : "Colaborador"}</dd>
+            <dd className="mt-1">{access.role === "Admin" ? "Administrador" : "Miembro"}</dd>
           </div>
         </dl>
       </Card>
