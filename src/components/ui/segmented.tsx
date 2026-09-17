@@ -15,14 +15,14 @@ export function SegmentedLinks({ label, options, className }: {
 }) {
   return <div className={cn("flex flex-wrap items-center gap-3", className)}>
     <span className="filter-label shrink-0">{label}</span>
-    <div role="group" aria-label={label} className="flex flex-wrap items-center gap-1 rounded-full bg-inset p-1">
+    <div role="group" aria-label={label} className="flex flex-wrap items-center gap-1 rounded-full border border-hairline bg-inset p-1">
       {options.map((option) => <Link
         key={option.href + option.label}
         href={option.href}
         prefetch={false}
         aria-current={option.active ? "page" : undefined}
         className={cn(
-          "rounded-full px-4 py-2 text-sm font-bold no-underline transition-colors hover:no-underline",
+          "rounded-full px-4 py-2 text-control font-bold no-underline transition-colors hover:no-underline",
           option.active
             ? "bg-primary text-white shadow-raised hover:text-white"
             : "text-ink-soft hover:bg-surface hover:text-ink",

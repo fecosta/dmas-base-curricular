@@ -19,8 +19,21 @@ export const toneDot: Record<Tone, string> = {
   warning: "bg-warning",
 };
 
-export function Card({ accent, className, children, as: As = "div", ...props }: {
+/**
+ * "panel" is the reference's lifted treatment for standalone panels such as the
+ * filter sidebar; "card" stays the default for cards sitting in a grid.
+ */
+export type CardElevation = "card" | "panel" | "none";
+
+const elevations: Record<CardElevation, string> = {
+  card: "shadow-card",
+  panel: "shadow-panel",
+  none: "",
+};
+
+export function Card({ accent, elevation = "card", className, children, as: As = "div", ...props }: {
   accent?: Tone;
+  elevation?: CardElevation;
   className?: string;
   as?: "div" | "article" | "section" | "li";
   children: React.ReactNode;
@@ -28,7 +41,8 @@ export function Card({ accent, className, children, as: As = "div", ...props }: 
   return <As
     {...props}
     className={cn(
-      "rounded-lg border border-hairline bg-surface shadow-card",
+      "rounded-lg border border-hairline bg-surface",
+      elevations[elevation],
       accent && `border-t-[3px] ${toneBorder[accent]}`,
       className,
     )}
