@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isActiveNavPath } from "@/lib/ui/nav";
@@ -9,61 +8,48 @@ import { cn } from "@/components/ui/cn";
 export type NavItem = { label: string; href: string };
 
 /**
- * Primary navigation with active state and a mobile disclosure.
+ * Primary destinations, as the reference's pill row.
  *
- * The link list is rendered exactly once and reflows with CSS between the
- * horizontal desktop bar and the mobile panel. Rendering separate mobile and
- * desktop copies would duplicate accessible names and break the E2E selectors
- * that click these links.
+ * `items` is filtered on the server by live role, so an Admin-only destination
+ * never reaches a reader's markup. This component must not decide who sees what:
+ * it renders exactly the destinations it is handed.
  *
- * `items` is filtered on the server, so an Admin-only destination never reaches
- * a reader's markup.
+ * Presentation only — AppHeader decides where this row appears and when the
+ * compact menu takes over.
  */
-export function PrimaryNav({ items }: { items: NavItem[] }) {
+export function PrimaryNav({ items, orientation = "row", onNavigate, className }: {
+  items: NavItem[];
+  /** "column" is the compact menu sheet's stacked treatment. */
+  orientation?: "row" | "column";
+  /** Lets the compact menu sheet dismiss itself once a destination is chosen. */
+  onNavigate?: () => void;
+  className?: string;
+}) {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const column = orientation === "column";
 
-  return <div className="relative flex items-center">
-    <button
-      type="button"
-      onClick={() => setOpen((value) => !value)}
-      aria-expanded={open}
-      aria-controls="navegacion-principal"
-      className="rounded-md border border-hairline-strong px-3 py-2 text-ink md:hidden"
-    >
-      <span className="sr-only">Menú</span>
-      <span aria-hidden="true" className="block space-y-1">
-        <span className="block h-0.5 w-5 bg-ink" />
-        <span className="block h-0.5 w-5 bg-ink" />
-        <span className="block h-0.5 w-5 bg-ink" />
-      </span>
-    </button>
-
-    <ul
-      id="navegacion-principal"
-      className={cn(
-        // Anchored to the right so the panel cannot overflow the viewport on
-        // narrow screens, then reset to an inline row from md upwards.
-        "absolute right-0 top-full z-20 mt-2 w-max min-w-56 max-w-[calc(100vw-2.5rem)] gap-1 rounded-lg border border-hairline bg-surface p-2 shadow-overlay",
-        "md:static md:z-auto md:mt-0 md:flex md:w-auto md:min-w-0 md:max-w-none md:items-center md:border-0 md:bg-transparent md:p-0 md:shadow-none",
-        open ? "block" : "hidden",
-      )}
-    >
-      {items.map((item) => {
-        const active = isActiveNavPath(pathname, item.href);
-        return <li key={item.href}>
-          <Link
-            href={item.href}
-            prefetch={false}
-            aria-current={active ? "page" : undefined}
-            onClick={() => setOpen(false)}
-            className={cn(
-              "block rounded-full px-4 py-2 text-sm font-bold no-underline transition-colors hover:no-underline",
-              active ? "bg-primary/12 text-primary" : "text-ink-soft hover:bg-inset hover:text-ink",
-            )}
-          >{item.label}</Link>
-        </li>;
-      })}
-    </ul>
-  </div>;
+  return <ul className={cn(column ? "flex flex-col gap-1" : "flex items-center gap-1", className)}>
+    {items.map((item) => {
+      const active = isActiveNavPath(pathname, item.href);
+      return <li key={item.href}>
+        <Link
+          href={item.href}
+          prefetch={false}
+          aria-current={active ? "page" : undefined}
+          onClick={onNavigate}
+          className={cn(
+            "block rounded-full font-semibold no-underline transition-colors hover:no-underline",
+            column
+              ? "px-3 py-3 text-body"
+              : "px-4 py-2 text-control",
+            active
+              ? column ? "bg-white/12 text-white" : "bg-primary/10 text-primary"
+              : column
+                ? "text-white/70 hover:bg-white/8 hover:text-white"
+                : "text-ink-muted hover:bg-inset hover:text-ink",
+          )}
+        >{item.label}</Link>
+      </li>;
+    })}
+  </ul>;
 }

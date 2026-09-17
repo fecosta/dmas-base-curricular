@@ -153,8 +153,12 @@ test("eligible Contributor explores one published dataset through Grilla and Pro
   await expect(page.getByText("Política democrática de prueba", { exact: true })).toHaveCount(1);
   await expect(page.getByText("Borrador secreto E2E", { exact: true })).toHaveCount(0);
 
-  await page.getByLabel("Buscar").fill("politica");
-  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  // The primary Library search moved into the shell header; the contract it
+  // protects is unchanged — the query is applied through the canonical URL.
+  const search = page.getByLabel("Buscar en la biblioteca");
+  await search.fill("politica");
+  await search.press("Enter");
+  await expect(page).toHaveURL(/q=politica/);
   await expect(page.getByText("Política democrática de prueba", { exact: true })).toHaveCount(1);
   await page.getByRole("link", { name: "Programa", exact: true }).click();
   await expect(page).toHaveURL(/view=programa/);

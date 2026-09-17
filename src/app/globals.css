@@ -85,17 +85,22 @@
   --shadow-raised: 0 6px 16px rgba(0, 19, 193, 0.24);
   --shadow-overlay: 0 30px 80px rgba(6, 6, 6, 0.35);
   --shadow-drawer: 24px 0 60px rgba(6, 6, 6, 0.32);
+  --shadow-drawer-end: -24px 0 60px rgba(6, 6, 6, 0.4);
 
   /*
-   * The reference collapses its filter sidebar into a left drawer and takes the
-   * detail overlay full-screen below 900px, which is not a Tailwind default.
+   * The reference switches composition at two widths of its own, neither of
+   * which is a Tailwind default: it compacts navigation into a menu sheet below
+   * 1180px, and it collapses the filter sidebar into a left drawer and takes the
+   * detail overlay full-screen below 900px.
    */
+  --breakpoint-compact: 73.75rem; /* 1180px */
   --breakpoint-explorer: 56.25rem; /* 900px */
 
   /* Overlay motion. Durations match the reference's .16s/.2s interaction feel. */
   --animate-scrim-in: scrim-in 160ms ease-out;
   --animate-panel-in: panel-in 200ms ease-out;
   --animate-drawer-in: drawer-in 200ms ease-out;
+  --animate-drawer-end-in: drawer-end-in 200ms ease-out;
 
   @keyframes scrim-in {
     from { opacity: 0; }
@@ -107,6 +112,10 @@
   }
   @keyframes drawer-in {
     from { transform: translateX(-100%); }
+    to { transform: none; }
+  }
+  @keyframes drawer-end-in {
+    from { transform: translateX(100%); }
     to { transform: none; }
   }
 }

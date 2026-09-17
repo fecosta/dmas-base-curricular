@@ -92,7 +92,11 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
 
     <Container width="wide" className="grid gap-8 py-10 lg:grid-cols-[18rem_1fr] lg:py-14">
       {/* Filters stay a plain GET form: the URL is the filter contract. */}
-      <form method="get" className="lg:sticky lg:top-6 lg:self-start">
+      <form method="get" className="lg:sticky lg:top-20 lg:self-start">
+        {/* Search itself now lives in the shell header, where the reference puts
+            it. `q` is still carried here so applying a country or theme keeps the
+            reader's search instead of clearing it. */}
+        <input type="hidden" name="q" value={paramValue(query, "q")} />
         <input type="hidden" name="view" value={view} />
         <input type="hidden" name="axis" value={axis} />
         <input type="hidden" name="entity" value={entity} />
@@ -105,9 +109,6 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
             <span aria-hidden="true" className="text-xs text-label transition-transform group-open:rotate-180">▼</span>
           </summary>
           <div className="grid gap-4 border-t border-hairline px-5 pb-5 pt-4">
-            <Field label="Buscar">
-              <input name="q" defaultValue={paramValue(query, "q")} placeholder="Módulos, materiales, instituciones…" />
-            </Field>
             <Field label="País o alcance">
               <select name="country" defaultValue={paramValue(query, "country")}>
                 <option value="">Todos</option>
