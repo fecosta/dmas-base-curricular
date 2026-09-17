@@ -1,8 +1,9 @@
 # SPEC-005 — Audit History & Archival
 
-**Status:** ACTIVE
-**Methodology state:** IMPLEMENTATION READY  
+**Status:** COMPLETED — IMPLEMENTED, INDEPENDENTLY VERIFIED, CLOUD-APPLIED/SECURITY-VERIFIED, AND LOCAL-REAL-STACK-VALIDATED
+**Methodology state:** CLOSED
 **Depends on:** SPEC-004
+**Closure verified:** 2026-09-17
 
 ## 1. Purpose / Objective
 
@@ -839,3 +840,67 @@ The following decisions are resolved by this specification:
 - ordinary reader attachment authorization follows active current-published identity eligibility.
 
 Operational retention duration for audit/login logs remains a separate security/operations decision and does not block the bounded archive/history behavior defined here.
+
+---
+
+## 21. Completion Evidence
+
+### Implementation sequence
+
+- `fc7b2ef` — Phase 1: `archive_governed_content`, `restore_governed_content`, `list_curriculum_lifecycle_history`, identity locking, active-Draft guard, current-published dependent guard, restore-time dependency revalidation, `content_archived`/`content_restored` evidence (`20260915000200`).
+- `b6e852a` — Phase 2A: Admin-only `list_archived_governed_content` read boundary and `actor_organization_name` history attribution, added without relaxing any reader or Admin RLS policy (`20260916000100`).
+- `aa90339` — deterministic archived pagination correction (`20260916000200`). Independent review established that `(archived_at, content_id)` is not a total order, because the six identity tables each declare an independent client-supplied `id uuid primary key`, so two identities of different types may share a UUID; a page boundary between tied rows could permanently strand an archived identity. `content_type` was added as a third ordering/cursor component and the obsolete four-argument overload was dropped.
+- `d5506da` — Phase 2B+C: typed archived/history query layer, Archive/Restore server actions with structured dependency-blocker mapping, Admin Archived management, confirmation step, Restore, and global plus identity-scoped governance History.
+
+Each phase was independently reviewed before the next began; the `aa90339` correction is itself the outcome of that review process.
+
+### Validation environment policy
+
+Closure uses a deliberate evidence split, recorded durably in `docs/DECISIONS.md` (G-005).
+
+**Production Supabase Cloud** — authoritative for migration, schema and security posture:
+
+- project `qcxcgwpfgclyebkxawyh` confirmed as the linked application target;
+- all ten migrations report `local == remote`, with Phase 1 and both Phase 2A migrations applied;
+- `list_archived_governed_content` exists only in its final five-argument form (`page_size`, `before_archived_at`, `before_content_id`, `before_content_type`, `content_type_filter`); the obsolete four-argument overload is absent;
+- all four SPEC-005 RPCs are `SECURITY DEFINER` with `search_path = ''`, owned by `postgres`, `REVOKE ALL … FROM PUBLIC`, and granted `EXECUTE` only to `authenticated`; neither `anon` nor `service_role` holds execution; the two listing operations are `STABLE` and the two mutations `VOLATILE`;
+- the RLS policy set is byte-identical before and after migration (60 policies), with archived identities still excluded by `archived_at is null` predicates;
+- `curriculum_lifecycle_events` has no table grant to `authenticated` or `anon`;
+- `private.can_read_current_published_attachment` still requires a non-archived current-published identity, so the Storage authorization posture is unchanged;
+- live `anon` calls to all four RPCs and to the lifecycle-event and curriculum tables are denied with `42501`;
+- production deployment of `d5506da` was verified, and anonymous requests to the Admin routes render the not-found boundary and redirect to `/login`, exposing no identifiers or governance labels.
+
+**Local real stack** — authoritative for functional behavior. Real local Supabase Auth, PostgreSQL, RLS, Storage, Next.js and Chromium, with fixture actors resolved through the full `auth identity -> approved domain -> active membership -> active organization -> persisted role` chain:
+
+- Archive happy path through the Admin UI, including the confirmation step, redirect to Archived management, populated `archived_at`/`archived_by`, preserved `current_published_revision_id`, unchanged `Published` status and unchanged revision count;
+- Restore happy path returning the same published revision with no new revision created;
+- cross-Admin authority in both directions, with lifecycle events attributed to the Admin who actually acted;
+- non-Admin denial of `/app/contributions`, Archived management, `/app/contributions/history` and creation routes, plus `42501` on all four RPCs and on direct lifecycle-event reads;
+- live Admin role revocation removing archive, restore, history and archived-list authority without re-login or token expiry;
+- active-Draft archival blocking, with Archive withheld from the UI, an explanation shown, and the RPC still rejecting a stale direct attempt;
+- dependency-blocked archival returning structured blockers rendered as readable titles, with no cascade and no archive event;
+- restore refused while a required dependency is no longer current-published, leaving the identity archived with no restoration event, then succeeding once the dependency is restored;
+- reader isolation after archive across library browse, search, the Programa view, the reference detail route and the reader RPC boundary;
+- attachment isolation across archive and restore: reader API and direct Storage access denied while archived, object bytes and metadata preserved, access returning after restore with no object copy, move or re-upload;
+- historical-revision isolation before, during and after archive/restore;
+- global and identity-scoped History with newest-first ordering, identity-versus-revision event semantics, organization attribution, no actor email, no fabricated `Published -> Archived` transition, and `before_event_id` pagination;
+- archived management pagination across 23 archived identities carrying all three cursor components, with no entry skipped or duplicated and the type filter preserved.
+
+Functional mutation of production was deliberately **not** performed. Production holds real organizations and real Admin identities, and `curriculum_lifecycle_events` is append-oriented governance evidence with no delete path and an `ON DELETE RESTRICT` actor reference. Archiving production content for test evidence would write permanent lifecycle events attributed to real people and permanently pin the acting identity, degrading the trustworthy attribution this specification exists to guarantee. Local real-stack validation is therefore not represented as hosted production functional validation.
+
+### Automated and regression evidence
+
+- pgTAP: 470 assertions across 7 files, `Result: PASS`. Covers history integrity, Admin-wide authority, non-Admin denial, the active-Draft guard, every dependency-blocking branch, restore-time revalidation of each outgoing dependency contract, attachment authorization, live role revocation, the cross-table UUID collision pagination regression, and concurrency through real `dblink` sessions serializing archive against successor-draft creation.
+- Vitest: 162 tests across 24 files.
+- Playwright: 19 journeys on a clean database in both development and production-build modes, the latter pinned to local Supabase.
+- `npm run lint`, `npm run typecheck`, `npm run build`, `npm run db:lint` and `git diff --check` all pass.
+
+### Acceptance criteria
+
+All 38 acceptance criteria in §16 are satisfied. Criterion 38 is satisfied by production Cloud security verification of the deployed schema combined with local real-stack functional behavior over that identical schema, under the validation environment policy above rather than by mutating production.
+
+### Non-blocking follow-ups
+
+Recorded, deliberately out of SPEC-005 scope: archived-content text search; archived-listing indexing should archived volume grow materially; SQL-level pagination for the active management listing at larger scale; standalone Instructor reader discovery; intermittent OTP-login flakiness in the E2E login helper; and `auth.spec.ts`'s single-dataset assumption, which conflicts with an imported demo curriculum.
+
+SPEC-005 is closed without activating another specification.

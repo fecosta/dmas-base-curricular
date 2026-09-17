@@ -8,9 +8,32 @@ The Next.js application and Supabase identity foundation are implemented, locall
 
 D-030 defines the active SPEC-004 contract: governed curriculum mutation and publication are Admin-only, while non-Admin users are current-published readers.
 
-SPEC-003 remains valid implementation history, but its Contributor authoring authority is no longer the target authorization model. SPEC-004 Phase 1 reconciles Admin-only, role-wide Draft management and first publication; Phase 2 adds successor Draft creation and successor publication; Phase 3 adapts the existing authoring application into an Admin-only Spanish content-management surface; Phase 4 authorizes private attachment reads for authoritative current-published Teaching Note and Material revisions. All four phases are independently reviewed, Cloud-applied, and closed under the validation split recorded below.
+SPEC-003 remains valid implementation history, but its Contributor authoring authority is no longer the target authorization model. SPEC-004 Phase 1 reconciles Admin-only, role-wide Draft management and first publication; Phase 2 adds successor Draft creation and successor publication; Phase 3 adapts the existing authoring application into an Admin-only Spanish content-management surface; Phase 4 authorizes private attachment reads for authoritative current-published Teaching Note and Material revisions. All four phases are independently reviewed, Cloud-applied, and closed under the validation split recorded below. SPEC-005 completes the lifecycle with Admin-only archival, restoration and governance history over the same identity/revision model.
 
 Security- and data-destructive multi-user acceptance may use the repository's controlled local integration environment when production execution would require fictional authoritative curriculum, unsafe account manipulation, or an unsupported cleanup lifecycle. Such evidence must use real local Supabase Auth, PostgreSQL, RLS, Storage, Next.js, and browser boundaries rather than authorization mocks. Cloud closure remains independently responsible for project identity, migration history, resulting schema/RLS/grants/functions/Storage posture, private-bucket configuration, and deployed application version. For SPEC-004, production lacked two safe Admin accounts plus a reader and a disposable Published-data lifecycle, so multi-user acceptance ran locally while Cloud security and production deployment were verified separately.
+
+SPEC-005 closed under the same split, for a reason specific to governance evidence:
+
+```text
+Production Cloud  -> migration ledger, RPC signatures, function ownership,
+                     SECURITY DEFINER, search_path, grants/revokes, RLS,
+                     lifecycle-event table protection, Storage authorization
+                     posture, deployed application commit
+
+Local real stack  -> functional Archive / Restore / History / reader isolation /
+                     attachment isolation / dependency guards / active-Draft guard /
+                     cross-Admin authority / non-Admin denial / live role revocation /
+                     archived keyset pagination
+```
+
+Functional mutation of production was deliberately avoided. Production holds real
+organizations and real Admin identities, and `curriculum_lifecycle_events` is
+append-oriented governance evidence with no delete path and an
+`ON DELETE RESTRICT` actor reference. Archiving production content to produce test
+evidence would therefore write permanent lifecycle events attributed to real people
+and permanently pin the acting identity. That is an operational validation
+decision; it changes no archival semantics, authorization boundary or product
+contract.
 
 **Current implementation:** `docs/DECISIONS.md` (D-028) is implemented in application code as Google OAuth through Supabase Auth (primary), with Email OTP retained as fallback. §7 describes the authentication architecture and §18 records implementation detail.
 
@@ -93,7 +116,7 @@ Responsibilities include:
 - Admin Draft creation and editing;
 - successor revision creation;
 - publication actions;
-- archival/restoration actions where implemented;
+- archival/restoration actions;
 - server-side authorization checks;
 - integration with Supabase.
 
@@ -201,7 +224,7 @@ May:
 - manage Draft relationships and attachments;
 - create successor Draft revisions;
 - publish valid Drafts;
-- archive and restore content where implemented;
+- archive and restore content;
 - access required governance/history information.
 
 `created_by` is provenance, not an exclusive Admin ownership boundary.
@@ -317,7 +340,7 @@ Use for critical end-to-end journeys such as:
 - Published v1 remaining visible while Draft v2 exists;
 - publication of v2;
 - live role revocation;
-- archival/restoration when implemented.
+- archival/restoration.
 
 ## 14. Deployment
 

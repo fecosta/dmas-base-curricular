@@ -12,7 +12,9 @@ The platform supports discovery, contribution, review, publication, revision, ar
 
 The product baseline, governance model, security requirements, and initial technical stack are confirmed.
 
-The bounded implementation specifications are under `resources/specs/`. SPEC-001 through SPEC-004 are completed. SPEC-004 passed independent phase review, controlled local multi-user acceptance against real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. Its destructive acceptance journeys were intentionally not run against production.
+The bounded implementation specifications are under `resources/specs/`. SPEC-001 through SPEC-005 are completed; none remain active or planned. SPEC-004 passed independent phase review, controlled local multi-user acceptance against real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. Its destructive acceptance journeys were intentionally not run against production.
+
+SPEC-005 adds Admin-only identity-level archival/restoration and the bounded lifecycle-history boundary, closed under the same evidence split: production Cloud is authoritative for migration/schema/security posture, while functional Archive/Restore/History acceptance ran on the complete local real stack. See `docs/DECISIONS.md` (G-005).
 
 The SPEC-001 application/authentication foundation is implemented, locally tested, deployed to Vercel, and hosted-validated against the intended Supabase Cloud project (real Google OAuth round trip, eligible/ineligible access, live membership revocation, sign-out, and Email OTP delivery through custom SMTP). The static prototype remains UX evidence for later library functionality; repository-local contracts remain authoritative.
 

@@ -535,10 +535,37 @@ Multi-user and disposable-content acceptance ran against the real local Supabase
 
 ---
 
+### G-005 — SPEC-005 Audit History & Archival
+
+**State:** COMPLETED — IMPLEMENTATION, INDEPENDENT VERIFICATION, CLOUD MIGRATION/SECURITY VERIFICATION, AND LOCAL REAL-STACK FUNCTIONAL ACCEPTANCE VERIFIED
+
+SPEC-005 is completed at `resources/specs/completed/005-audit-history-archival.md`. It delivers Admin-only, identity-level archival and restoration with a bounded lifecycle-history boundary: `Archived` is not a revision status, the current `Published` revision and `current_published_revision_id` survive archival, an active Draft or an active current-published dependent blocks archival, archival never cascades, and restore revalidates the published-dependency contract before clearing archival state.
+
+The implementation sequence is:
+
+- `fc7b2ef` — Phase 1 archive/restore RPCs, dependency and active-Draft guards, lifecycle-history boundary (`20260915000200`);
+- `b6e852a` — Phase 2A Admin-only archived-content read boundary and history organization attribution (`20260916000100`);
+- `aa90339` — deterministic three-part archived keyset correction (`20260916000200`), after independent review found the two-part cursor was not a total order across identity tables that may share a UUID;
+- `d5506da` — Phase 2B+C application query layer, Archive/Restore server actions and Admin Archived/History UX.
+
+Each phase passed independent review before the next began.
+
+**Validation evidence split accepted for closure.**
+
+Production Supabase Cloud project `qcxcgwpfgclyebkxawyh` is authoritative for migration, schema and security posture. All ten migrations report `local == remote`; the archived-list RPC exists only in its final five-argument form with no obsolete four-argument overload; the four SPEC-005 RPCs are `SECURITY DEFINER` with `search_path = ''`, owned by `postgres`, revoked from `PUBLIC` and granted `EXECUTE` only to `authenticated`, with `anon` and `service_role` holding none; the RLS policy set is byte-identical before and after migration; `curriculum_lifecycle_events` remains ungranted to application roles; and the governed-attachment reader gate still requires a non-archived current-published identity.
+
+Functional acceptance of Archive, Restore, History, reader isolation, attachment isolation, dependency guards, the active-Draft guard, cross-Admin authority, non-Admin denial, live role revocation and archived keyset pagination was performed on the complete local real stack — real Supabase Auth, PostgreSQL, RLS, Storage, Next.js and Chromium — not against production.
+
+Functional mutation of production was deliberately avoided. Production contains real organizations and real Admin identities, and `curriculum_lifecycle_events` is append-oriented governance evidence with no delete path and an `ON DELETE RESTRICT` actor reference. Archiving production content to generate test evidence would therefore write permanent lifecycle events attributed to real people and permanently pin the acting identity, degrading the trustworthy actor attribution that SPEC-005 exists to provide. Fabricating governance history to prove governance history is self-defeating.
+
+This is an operational validation-governance decision. It changes no archival semantics, authorization boundary, reader contract or product behavior, and it is not a precedent for skipping Cloud security verification, which remained mandatory and passed.
+
+---
+
 ## Product Coherence OS state
 
 Current overall state:
 
 **DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
 
-SPEC-001 through SPEC-004 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-005 is the active implementation specification after its completed product/technical preflight. No specifications remain planned.
+SPEC-001 through SPEC-005 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-005 closed as **COHERENCE VERIFIED**: intent, specification, implementation, security posture, functional validation and durable knowledge are reconciled under the evidence split recorded in G-005. No specification is active and none remain planned.

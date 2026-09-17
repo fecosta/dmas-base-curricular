@@ -319,7 +319,7 @@ Archived content:
 - remains preserved for governance and audit history;
 - may be restored by an Admin.
 
-Archival/restoration implementation is owned by SPEC-005.
+Archival and restoration are implemented: an Admin may archive published content, which removes it from reader surfaces while preserving its published revision, history and attachments, and may restore it while its published dependencies remain valid. See `docs/GOVERNANCE.md` for the contract.
 
 ## 12. Product boundaries
 

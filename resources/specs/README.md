@@ -26,9 +26,9 @@ Do not move a spec to `completed/` merely because an implementation agent report
 2. `SPEC-002` — Core Curriculum Library — completed
 3. `SPEC-003` — Content Contribution — completed historical foundation
 4. `SPEC-004` — Admin Content Management & Publication — completed
-5. `SPEC-005` — Audit History & Archival — active
+5. `SPEC-005` — Audit History & Archival — completed
 
-No specifications currently remain planned.
+No specification is currently active, and none remain planned.
 
 ## Dependency model
 
@@ -48,7 +48,9 @@ SPEC-004 Admin Content Management & Publication
 SPEC-005 Audit History & Archival
 ```
 
-SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation. SPEC-005 is the active implementation specification after its completed product/technical preflight.
+SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation.
+
+SPEC-005 is completed at [`completed/005-audit-history-archival.md`](completed/005-audit-history-archival.md) after independent phase review of Phase 1, Phase 2A, the deterministic archived-pagination correction, and Phase 2B+C. It closed under the same validation split: production Cloud verified migration, RPC signatures, function hardening, grants, RLS, lifecycle-event protection and the governed-attachment reader gate, while functional Archive/Restore/History acceptance ran on the complete local real stack. Functional mutation of production was deliberately avoided because production holds real actors and lifecycle events are permanent append-oriented governance evidence; see `docs/DECISIONS.md` (G-005). Local real-stack validation is not represented as hosted production validation.
 
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 

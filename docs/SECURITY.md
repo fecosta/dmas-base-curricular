@@ -170,7 +170,7 @@ An eligible Admin may:
 - create later Draft revisions from published content;
 - publish valid Drafts;
 - access governance/history information required for administration;
-- archive and restore published content where separately implemented.
+- archive and restore published content.
 
 `created_by` and creation-time organization are provenance, not exclusive authorization boundaries between Admins.
 
@@ -368,7 +368,7 @@ Active identity-sensitive events include, where applicable:
 - revision creation;
 - Draft edits;
 - publication;
-- archival/restoration when implemented.
+- archival/restoration.
 
 Historical events already created under SPEC-003 remain valid, including submission-related events.
 
@@ -975,7 +975,60 @@ Controlled multi-user acceptance used real local Supabase Auth, PostgreSQL, RLS,
 
 ---
 
-## 25. Deferred collaborative-governance security
+## 25. SPEC-005 verified archival and governance-history security boundary
+
+Archival is identity-level state. Every ordinary reader policy and every active
+Admin Draft/Published management policy requires `archived_at is null`, so an
+archived identity is invisible to all direct table reads available to
+`authenticated`. Archived content is therefore not hidden by the application; it
+is unreachable at the data boundary.
+
+Because those policies leave no path to list archived content for restoration,
+SPEC-005 adds one bounded Admin-only operation rather than relaxing them:
+
+- `public.list_archived_governed_content(page_size, before_archived_at, before_content_id, before_content_type, content_type_filter)`.
+
+Governance history is exposed only through:
+
+- `public.list_curriculum_lifecycle_history(page_size, before_event_id, content_type_filter, content_id_filter, action_filter)`.
+
+`curriculum_lifecycle_events` has no `SELECT` grant for `authenticated` or `anon`,
+so lifecycle evidence cannot be read as an ordinary application table and remains
+append-oriented. The history boundary resolves an actor's organization name inside
+the bounded operation so no organization or membership RLS has to be relaxed; it
+exposes no actor email, auth metadata or profile information.
+
+Both listing operations and both mutations — `archive_governed_content` and
+`restore_governed_content` — are `SECURITY DEFINER` with `search_path = ''`, owned
+by `postgres`, revoked from `PUBLIC`, and granted `EXECUTE` only to
+`authenticated`. Neither `anon` nor `service_role` holds execution. Each resolves
+live Admin authority through `private.require_admin_content_access()` inside the
+transaction, so UI state, historical `created_by`, publication actor and
+`archived_by` never confer authority, and role revocation takes effect on the next
+authoritative request.
+
+Archived pagination uses a strictly total three-part descending keyset
+(`archived_at`, `content_id`, `content_type`). The six identity tables each declare
+an independent client-supplied `id uuid primary key`, so two identities of
+different types may share a UUID; without `content_type` a page boundary between
+tied rows could skip an archived identity and make it permanently unreachable for
+restoration.
+
+Governed attachment bytes are never moved, copied or deleted by archival. Reader
+access is withdrawn because `private.can_read_current_published_attachment`
+requires the owning Teaching Note or Material identity to be non-archived, and
+returns after a valid restore.
+
+This posture is verified on Cloud project `qcxcgwpfgclyebkxawyh` after migration:
+final five-argument archived-list signature with no obsolete overload, function
+ownership/`SECURITY DEFINER`/`search_path`/volatility, grants and revokes,
+unchanged RLS policy set, unexposed lifecycle-event table, and live `anon` denial
+of all four RPCs. Functional acceptance was performed on the complete local real
+stack, not against production; see `docs/ARCHITECTURE.md` for that evidence split.
+
+---
+
+## 26. Deferred collaborative-governance security
 
 The previously planned workflow:
 
@@ -1010,7 +1063,7 @@ Reactivating collaborative governance requires an explicit product decision/spec
 
 ---
 
-## 26. Source basis
+## 27. Source basis
 
 This security baseline was derived from:
 

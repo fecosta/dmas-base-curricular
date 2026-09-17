@@ -72,7 +72,7 @@ An Admin may:
 - publish valid Drafts;
 - create later Draft revisions from published content;
 - publish later revisions;
-- archive/restore published content where separately implemented;
+- archive and restore published content;
 - access lifecycle/history information required for administration.
 
 Admin Draft authority is based on the current live Admin role, not creator ownership.
@@ -302,7 +302,37 @@ When an Admin archives published content:
 
 Permanent deletion of published governed content is not normal product behavior.
 
-Detailed archival implementation remains owned by SPEC-005.
+### Implemented archival contract
+
+Archival is **identity-level governance state**, not a revision status. `Archived`
+is deliberately absent from `curriculum_revision_status`.
+
+Archiving published content:
+
+- sets archival metadata on the stable identity;
+- leaves the current published revision `Published`;
+- preserves `current_published_revision_id`;
+- creates no new semantic revision;
+- appends a `content_archived` lifecycle event.
+
+Archival is refused when:
+
+- the identity has an active Draft revision;
+- another active current-published representation still depends on it.
+
+A dependency-blocked archive never cascades to the dependent content. Restore
+revalidates the archived identity's current-published dependency graph using the
+same contract publication applies, and fails without clearing archival state when
+those dependencies are no longer valid.
+
+Archive and restore are Admin-only and role-wide: any currently eligible Admin may
+archive or restore regardless of who created, published or archived the content.
+Authority comes from the live persisted role, so revocation removes it on the next
+authoritative request.
+
+Because archive and restore act on the identity rather than on a revision, their
+lifecycle events record no revision-status transition. Governance history must not
+present them as `Published -> Archived`.
 
 ---
 

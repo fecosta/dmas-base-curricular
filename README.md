@@ -15,7 +15,7 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
-**Technical state:** SPEC-001 through SPEC-004 are completed; SPEC-005 is active
+**Technical state:** SPEC-001 through SPEC-005 are completed
 
 **Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification.
 
@@ -24,6 +24,8 @@ It is a library, not a Learning Management System (LMS).
 SPEC-001 introduces the Next.js application, Supabase authentication and identity schema, server authorization, RLS, and test foundation. That foundation passed local validation (real Supabase Auth, database policies, and Chromium journeys against the production build) and independent security/RLS review. The Google OAuth initiation, fixed callback, server-side PKCE exchange, and shared post-authentication access boundary are implemented and were first locally tested at the application/provider-independent layers. The SPEC-001 identity migration has also been applied to the intended Supabase Cloud project, with Cloud RLS/grants/ownership/security-definer posture inspected there. The application is deployed to Vercel at `https://dmas-base-curricular.vercel.app`, and hosted validation has since confirmed: a real Google OAuth round trip (first-time identity creation and eligible Admin access), ineligible-identity denial (redirect to `/access-denied` and `/api/access` 403), live membership revocation taking effect without waiting for token refresh, hosted sign-out, and Email OTP delivery through custom SMTP (Resend, verified domain `auth.democraciamas.com`) converging on the same eligibility model as Google OAuth. A real hosted adversarial test also confirmed that Supabase transitions a pre-created unconfirmed email/password identity to Google on first legitimate Google sign-in, so the previously hypothesized pre-account-takeover mechanism was not reproduced. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that authenticates without ever completing Google OAuth first, and operational rate-limit monitoring remain open follow-ups; see the completed spec for detail.
 
 SPEC-002 provides the current-published curriculum reader and stable identity/revision persistence.
+
+SPEC-005 completes the governance lifecycle with Admin-only, identity-level archival and restoration plus a bounded lifecycle-history boundary. `Archived` is not a revision status: archiving preserves the `Published` revision and its current pointer, blocks on an active Draft or an active current-published dependent, never cascades, and revalidates dependencies on restore. Its two migrations are applied to the intended Supabase Cloud project, where the final RPC signatures, `SECURITY DEFINER`/`search_path`/ownership, grants, unchanged RLS, lifecycle-event protection and the non-archived governed-attachment reader gate were verified. Functional Archive/Restore/History acceptance ran on the complete local real stack — real Supabase Auth, PostgreSQL, RLS, Storage, Next.js and Chromium — and is deliberately not represented as hosted production validation. Production functional mutation was avoided because production holds real organizations and Admin identities and `curriculum_lifecycle_events` is append-oriented governance evidence; manufacturing test archive/restore actions under real actors would write permanent, misleading audit history. See `docs/DECISIONS.md` (G-005).
 
 SPEC-003 provides verified contribution, provenance, pending-revision, lifecycle-event, and private-attachment foundations. D-030 supersedes Contributor authoring as active product behavior but does not erase SPEC-003 implementation history.
 
@@ -55,9 +57,9 @@ resources/specs/
 
 The most recently completed specification is:
 
-[`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md)
+[`resources/specs/completed/005-audit-history-archival.md`](resources/specs/completed/005-audit-history-archival.md)
 
-The active implementation specification is [`resources/specs/active/005-audit-history-archival.md`](resources/specs/active/005-audit-history-archival.md), promoted after its completed product/technical preflight.
+No specification is currently active. The most recently completed specification is [`resources/specs/completed/005-audit-history-archival.md`](resources/specs/completed/005-audit-history-archival.md).
 
 ## Initial stack
 
