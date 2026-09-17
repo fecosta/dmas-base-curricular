@@ -59,7 +59,7 @@ The most recently completed specification is:
 
 [`resources/specs/completed/005-audit-history-archival.md`](resources/specs/completed/005-audit-history-archival.md)
 
-No specification is currently active. The most recently completed specification is [`resources/specs/completed/005-audit-history-archival.md`](resources/specs/completed/005-audit-history-archival.md).
+The active specification is [`resources/specs/active/006-explorer-ux-ui-fidelity.md`](resources/specs/active/006-explorer-ux-ui-fidelity.md) — Explorer UX/UI Fidelity & Interaction Layer. It raises interface fidelity over the surfaces SPEC-001 through SPEC-005 delivered, without changing product, authorization, governance, data or security contracts.
 
 ## Initial stack
 

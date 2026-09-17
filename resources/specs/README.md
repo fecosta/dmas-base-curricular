@@ -27,8 +27,9 @@ Do not move a spec to `completed/` merely because an implementation agent report
 3. `SPEC-003` — Content Contribution — completed historical foundation
 4. `SPEC-004` — Admin Content Management & Publication — completed
 5. `SPEC-005` — Audit History & Archival — completed
+6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — active
 
-No specification is currently active, and none remain planned.
+`SPEC-006` is the current authorized delivery slice, at [`active/006-explorer-ux-ui-fidelity.md`](active/006-explorer-ux-ui-fidelity.md). None remain planned.
 
 ## Dependency model
 
@@ -46,6 +47,9 @@ SPEC-004 Admin Content Management & Publication
           |
           v
 SPEC-005 Audit History & Archival
+          |
+          v
+SPEC-006 Explorer UX/UI Fidelity & Interaction Layer
 ```
 
 SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation.
@@ -53,6 +57,8 @@ SPEC-004 is completed after independent phase review, controlled local multi-use
 SPEC-005 is completed at [`completed/005-audit-history-archival.md`](completed/005-audit-history-archival.md) after independent phase review of Phase 1, Phase 2A, the deterministic archived-pagination correction, and Phase 2B+C. It closed under the same validation split: production Cloud verified migration, RPC signatures, function hardening, grants, RLS, lifecycle-event protection and the governed-attachment reader gate, while functional Archive/Restore/History acceptance ran on the complete local real stack. Functional mutation of production was deliberately avoided because production holds real actors and lifecycle events are permanent append-oriented governance evidence; see `docs/DECISIONS.md` (G-005). Local real-stack validation is not represented as hosted production validation.
 
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
+
+SPEC-006 depends on SPEC-001 through SPEC-005 because it raises the interface fidelity of surfaces those slices delivered. It is a UX/UI slice: it must not alter product scope, authorization, governance lifecycle, publication, archival, audit, data semantics or security. Personal Itinerary remains an approved product capability delivered separately, and is outside SPEC-006's implementation scope.
 
 ## Authoritative product sources
 

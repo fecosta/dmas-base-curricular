@@ -18,6 +18,18 @@ The file is a self-unpacking bundled export: the page content, styles, and fonts
 
 Note a naming difference worth resolving separately: the evidence lists in `docs/PRODUCT.md`, `docs/CONTENT_MODEL.md`, and `docs/SECURITY.md` cite the latest static prototype as `Base Curricular - Explorador (offline)(3).html`. The artifact tracked here is named `Base Curricular - Explorador (offline).html` and is the export that was approved as the baseline for the commit above. Whether the two filenames denote the same export has not been verified in this repository.
 
+## SPEC-006 reference
+
+`SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer uses this same artifact, `Base Curricular - Explorador (offline).html`, as its UX/UI fidelity reference.
+
+It is authoritative for visual and interaction direction only. Product, governance, security, authorization, data and lifecycle contracts remain controlled by the authoritative documentation under `docs/`, on the terms in Authority below.
+
+**No new export was added for SPEC-006.** The specification anticipates a newer stakeholder-approved prototype superseding the previous baseline for the surfaces it covers. At activation the repository held exactly one Explorer prototype — the file named above — so there is no second artifact for that clause to apply to, and nothing has been superseded, replaced or retired. Recording it this way rather than asserting a supersession keeps the distinction between what was approved and what was implemented intact.
+
+This matches the specification's own account of current state: SPEC-006 §2.5 records that the application already incorporates part of the Explorer direction through design tokens, Inter typography, colour, borders, surfaces, radii and shadows, and that the remaining gap is interaction fidelity, information hierarchy, density, responsive behaviour and composition rather than basic theming. That is the gap the commit above left, working from this artifact.
+
+If a newer approved export is added later, record its relationship under Supersession before implementation continues with it, and keep this one.
+
 ## Authority
 
 UX/UI reference artifacts are authoritative for:

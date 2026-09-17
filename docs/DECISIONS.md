@@ -469,9 +469,11 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ## Current delivery state
 
-No specification is currently active or planned.
+`SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is the active delivery slice, at `resources/specs/active/006-explorer-ux-ui-fidelity.md`. No specification remains planned.
 
-Any new implementation work requires a new bounded specification or an explicit activation decision under the repository methodology.
+SPEC-006 raises the interface fidelity of the surfaces SPEC-001 through SPEC-005 delivered. It is bounded to UX/UI: it does not alter product scope, authorization, governance lifecycle, publication authority, archival, audit history, data semantics or security, and it introduces no database change. Where its UX reference conflicts with an implemented contract, the contract wins.
+
+Activating it is governance bookkeeping under the repository methodology, not a new product decision.
 
 ---
 
@@ -569,4 +571,4 @@ Current overall state:
 
 SPEC-001 through SPEC-005 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-005 closed as **COHERENCE VERIFIED**: intent, specification, implementation, security posture, functional validation and durable knowledge are reconciled under the evidence split recorded in G-005.
 
-No specification is currently active or planned. Any new implementation work requires a new bounded specification or an explicit activation decision under the repository methodology.
+SPEC-006 is now the active delivery slice. It is an interface-fidelity slice over already-verified product behaviour, so it does not reopen the contracts reconciled above.
