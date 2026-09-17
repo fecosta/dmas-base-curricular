@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-09-15
+**Last reconciled:** 2026-09-17
 
 ## Decision register
 
@@ -161,6 +161,7 @@ The module-card completeness percentage shown in earlier/static prototype behavi
 Implementation should not treat it as a product requirement.
 
 ---
+
 ### D-016 — Published content is visible across the authenticated network
 
 **State:** DECISION
@@ -466,17 +467,15 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ---
 
-## Decision gates still open
+## Current delivery state
 
-There are no known product-baseline or stack-selection blockers preventing preparation of the first implementation specification.
+No specification is currently active or planned.
 
-Implementation-specific details that do not change an established product contract may be resolved in the implementation specification or by the implementation agent.
-
-If a technical constraint requires changing product behavior, data semantics, governance, security boundaries, or authority, work must return to a product decision.
+Any new implementation work requires a new bounded specification or an explicit activation decision under the repository methodology.
 
 ---
 
-## Next delivery gate
+## Delivery history
 
 ### G-001 — SPEC-001 Application Foundation & Authentication
 
@@ -566,6 +565,8 @@ This is an operational validation-governance decision. It changes no archival se
 
 Current overall state:
 
-**DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED**
+**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-005 COMPLETED**
 
-SPEC-001 through SPEC-005 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-005 closed as **COHERENCE VERIFIED**: intent, specification, implementation, security posture, functional validation and durable knowledge are reconciled under the evidence split recorded in G-005. No specification is active and none remain planned.
+SPEC-001 through SPEC-005 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-005 closed as **COHERENCE VERIFIED**: intent, specification, implementation, security posture, functional validation and durable knowledge are reconciled under the evidence split recorded in G-005.
+
+No specification is currently active or planned. Any new implementation work requires a new bounded specification or an explicit activation decision under the repository methodology.
