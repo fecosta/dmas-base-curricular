@@ -24,11 +24,9 @@ Note a naming difference worth resolving separately: the evidence lists in `docs
 
 It is authoritative for visual and interaction direction only. Product, governance, security, authorization, data and lifecycle contracts remain controlled by the authoritative documentation under `docs/`, on the terms in Authority below.
 
-**No new export was added for SPEC-006.** The specification anticipates a newer stakeholder-approved prototype superseding the previous baseline for the surfaces it covers. At activation the repository held exactly one Explorer prototype — the file named above — so there is no second artifact for that clause to apply to, and nothing has been superseded, replaced or retired. Recording it this way rather than asserting a supersession keeps the distinction between what was approved and what was implemented intact.
+**No newer or superseding prototype is expected.** SPEC-006 §25 states that this artifact is the authoritative UX/UI reference for the specification, that it remains the same stakeholder-approved Explorer baseline the repository already tracked, and that SPEC-006 extends production fidelity to that baseline rather than depending on a new export. Nothing here has been superseded, replaced or retired.
 
-This matches the specification's own account of current state: SPEC-006 §2.5 records that the application already incorporates part of the Explorer direction through design tokens, Inter typography, colour, borders, surfaces, radii and shadows, and that the remaining gap is interaction fidelity, information hierarchy, density, responsive behaviour and composition rather than basic theming. That is the gap the commit above left, working from this artifact.
-
-If a newer approved export is added later, record its relationship under Supersession before implementation continues with it, and keep this one.
+This matches the specification's own account of current state: SPEC-006 §2.5 records that the application already incorporates part of the Explorer direction through design tokens, Inter typography, colour, borders, surfaces, radii and shadows, and that the remaining gap is interaction fidelity, information hierarchy, density, responsive behaviour and composition rather than basic theming. That is the gap SPEC-006 closes, working from this artifact.
 
 ## Authority
 

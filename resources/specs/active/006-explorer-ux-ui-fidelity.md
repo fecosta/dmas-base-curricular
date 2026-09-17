@@ -1303,7 +1303,7 @@ Before implementation begins:
 
 ### `resources/ux-ui/`
 
-Store the latest stakeholder-approved prototype.
+resources/ux-ui/Base Curricular - Explorador (offline).html is the authoritative UX/UI reference for SPEC-006. It remains the same stakeholder-approved Explorer baseline already tracked by the repository. SPEC-006 extends production fidelity to that baseline; it does not depend on a newer or superseding prototype artifact.
 
 ### `resources/ux-ui/README.md`
 
