@@ -6,6 +6,9 @@ const { route } = vi.hoisted(() => ({ route: { pathname: "/app/library", search:
 vi.mock("next/navigation", () => ({
   usePathname: () => route.pathname,
   useSearchParams: () => new URLSearchParams(route.search),
+  // The shell search navigates to a suggestion's canonical route when one is
+  // chosen by keyboard; static rendering never reaches it.
+  useRouter: () => ({ push: () => {} }),
 }));
 import { ShellSearch } from "@/components/shell-search";
 
@@ -89,5 +92,45 @@ describe("ShellSearch", () => {
     const html = render("/app/library", "?role=Admin&country=Per%C3%BA");
     expect(html).not.toContain('name="role"');
     expect(html).toContain('name="country"');
+  });
+});
+
+/*
+ * Phase 3 added the suggestion popover. The field keeps every Phase 2 contract
+ * above; what follows is the combobox shell that fetching suggestions requires.
+ */
+describe("ShellSearch suggestions", () => {
+  beforeEach(() => { route.pathname = "/app/library"; route.search = ""; });
+
+  it("exposes the field as a combobox over its suggestion list", () => {
+    const html = render("/app/library");
+    expect(html).toContain('role="combobox"');
+    expect(html).toContain('aria-autocomplete="list"');
+    // Still a search input on a search form, not a generic text box.
+    expect(html).toContain('type="search"');
+    expect(html).toContain('role="search"');
+  });
+
+  it("points the combobox at the popover it controls", () => {
+    const html = render("/app/library");
+    const controls = /aria-controls="([^"]+)"/.exec(html)?.[1];
+    expect(controls).toBeTruthy();
+  });
+
+  it("starts collapsed, with no suggestion list rendered and nothing active", () => {
+    const html = render("/app/library", "?q=democracia");
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain('role="listbox"');
+    expect(html).not.toContain("aria-activedescendant");
+  });
+
+  it("keeps the / shortcut the shell search has always advertised", () => {
+    expect(render("/app/library")).toContain('aria-keyshortcuts="/"');
+  });
+
+  it("turns the browser's own autocomplete off, leaving one suggestion source", () => {
+    // HTML attribute names are case-insensitive; React serialises this one in
+    // the casing it was given.
+    expect(render("/app/library")).toMatch(/autocomplete="off"/i);
   });
 });

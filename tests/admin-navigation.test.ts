@@ -13,6 +13,9 @@ vi.mock("@/app/login/actions", () => ({ signOut: vi.fn() }));
 vi.mock("next/navigation", () => ({
   usePathname: () => route.pathname,
   useSearchParams: () => new URLSearchParams(route.search),
+  // The shell search navigates to a suggestion's canonical route when one is
+  // chosen by keyboard; static rendering never reaches it.
+  useRouter: () => ({ push: () => {} }),
 }));
 import ApplicationLayout from "@/app/app/layout";
 

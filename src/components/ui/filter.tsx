@@ -47,6 +47,9 @@ export function FilterChip({ label, href, selected, count, className }: {
  * <details> rather than component state: the Library filter panel already uses
  * it, it collapses without JavaScript, and it keeps this primitive renderable
  * from a Server Component.
+ *
+ * The chips are named as a group so assistive technology announces which
+ * dimension a value belongs to; the summary alone only labels the disclosure.
  */
 export function FilterGroup({ label, tone = "primary", selectedCount = 0, defaultOpen = true, className, children }: {
   label: string;
@@ -63,6 +66,6 @@ export function FilterGroup({ label, tone = "primary", selectedCount = 0, defaul
       {selectedCount > 0 && <span className="rounded-full bg-ink-soft px-1.5 py-0.5 text-meta font-bold tracking-normal text-white">{selectedCount}</span>}
       <span aria-hidden="true" className="shrink-0 text-label transition-transform group-open:rotate-45">＋</span>
     </summary>
-    <div className="flex flex-wrap gap-1.5 px-4 pb-4">{children}</div>
+    <div role="group" aria-label={label} className="flex flex-wrap gap-1.5 px-4 pb-4">{children}</div>
   </details>;
 }

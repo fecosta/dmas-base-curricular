@@ -82,7 +82,14 @@ test("wide shell presents brand, destinations, search and session in one band", 
   await expect(page.getByRole("link", { name: "Base Curricular Democracia+" })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Navegación principal" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Biblioteca", exact: true })).toBeVisible();
-  await expect(page.getByRole("searchbox", { name: "Buscar en la biblioteca" })).toBeVisible();
+  /*
+   * Phase 3 gave the shell search its suggestion popover, so it now carries the
+   * ARIA 1.2 combobox role rather than the bare searchbox role it exposed in
+   * Phase 2. It is still the same one named search input on the same GET form.
+   */
+  const shellSearch = page.getByRole("combobox", { name: "Buscar en la biblioteca" });
+  await expect(shellSearch).toBeVisible();
+  await expect(shellSearch).toHaveAttribute("type", "search");
   await expect(page.getByRole("button", { name: "Cerrar sesión" })).toBeVisible();
   // Organisation and role stay reachable after the utility strip was folded in.
   await expect(page.getByText(`${organizationName} · Administrador`)).toBeVisible();
@@ -174,7 +181,7 @@ test("the compact sheet is reachable and dismissable by keyboard alone", async (
 test("the shell search is scoped to the surfaces it acts on", async ({ page }) => {
   await signIn(page, "Admin");
   await page.setViewportSize({ width: WIDE, height: 900 });
-  const search = page.getByRole("searchbox", { name: "Buscar en la biblioteca" });
+  const search = page.getByRole("combobox", { name: "Buscar en la biblioteca" });
 
   await page.goto("/app");
   await expect(search).toBeVisible();
@@ -196,7 +203,7 @@ test("searching from the shell narrows the Library without discarding applied fi
   await page.setViewportSize({ width: WIDE, height: 900 });
   await page.goto("/app/library?view=programa&entity=module");
 
-  const search = page.getByRole("searchbox", { name: "Buscar en la biblioteca" });
+  const search = page.getByRole("combobox", { name: "Buscar en la biblioteca" });
   await search.fill("democracia");
   await search.press("Enter");
 

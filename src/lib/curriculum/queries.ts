@@ -3,6 +3,7 @@ import "server-only";
 import { notFound } from "next/navigation";
 import { requireAccess } from "@/lib/auth/access";
 import { createClient } from "@/lib/supabase/server";
+import type { SuggestionRow } from "./suggestions";
 
 export type ModuleSummary = {
   id: string;
@@ -98,6 +99,33 @@ export async function getLibrary(filters: LibraryFilters) {
     countries: [...new Set(all.map((item) => item.country_or_scope).filter((value): value is string => !!value))].sort(),
     themes: [...new Set(all.flatMap((item) => item.theme?.split(",").map((value) => value.trim()) ?? []).filter(Boolean))].sort(),
   };
+}
+
+/**
+ * Reader-visible rows behind the Library search suggestions.
+ *
+ * Runs the same `search_curriculum` RPC the Library itself runs, with only the
+ * query applied. That function is security-invoker and its RLS restricts it to
+ * current published, non-archived content, so a suggestion can never surface
+ * anything the reader could not already find by submitting the same search.
+ * No new RPC, no new search semantics, and no columns beyond the ones the
+ * results list already shows.
+ */
+export async function getSearchSuggestions(query: string): Promise<SuggestionRow[]> {
+  const search = clean(query);
+  if (!search) return [];
+  await requireAccess();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("search_curriculum", { search_query: search });
+  if (error) throw new Error("Curriculum read unavailable");
+  return (data as SearchResult[]).map((row) => ({
+    entity_type: row.entity_type,
+    id: row.id,
+    title: row.title,
+    classification: row.classification,
+    country_or_scope: row.country_or_scope,
+    theme: row.theme,
+  }));
 }
 
 export async function getPublishedModules(filters: Pick<LibraryFilters, "query" | "axis" | "theme"> = {}) {

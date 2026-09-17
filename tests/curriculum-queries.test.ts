@@ -7,7 +7,7 @@ const { requireAccess, rpc, from, notFound } = vi.hoisted(() => ({
 vi.mock("@/lib/auth/access", () => ({ requireAccess }));
 vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ rpc, from }) }));
 vi.mock("next/navigation", () => ({ notFound }));
-import { getLibrary, getModule, getReference } from "@/lib/curriculum/queries";
+import { getLibrary, getModule, getReference, getSearchSuggestions } from "@/lib/curriculum/queries";
 
 describe("curriculum server queries", () => {
   beforeEach(() => {
@@ -57,5 +57,44 @@ describe("curriculum server queries", () => {
   it("rejects manipulated reference types", async () => {
     await expect(getReference("instructor", "36000000-0000-4000-8000-000000000001")).rejects.toThrow("not-found");
     expect(requireAccess).not.toHaveBeenCalled();
+  });
+
+  /*
+   * Search suggestions run the reader's own published search. They must not
+   * become a second, looser read path around the boundary the Library uses.
+   */
+  it("authorizes each suggestion read and runs the published reader search", async () => {
+    rpc.mockResolvedValue({ data: [], error: null });
+    await getSearchSuggestions("  política  ");
+    expect(requireAccess).toHaveBeenCalledExactlyOnceWith();
+    expect(rpc).toHaveBeenCalledExactlyOnceWith("search_curriculum", { search_query: "política" });
+  });
+
+  it("applies no filter that could widen what a suggestion search returns", async () => {
+    rpc.mockResolvedValue({ data: [], error: null });
+    await getSearchSuggestions("política");
+    expect(Object.keys(rpc.mock.calls[0][1] as object)).toEqual(["search_query"]);
+  });
+
+  it("returns only the columns a suggestion renders, dropping the rest of the row", async () => {
+    rpc.mockResolvedValue({ data: [{
+      entity_type: "module", id: "m1", title: "Módulo", description: "Texto largo que no viaja",
+      classification: "Eje", country_or_scope: null, theme: "Democracia", rank: 0.5,
+    }], error: null });
+
+    const rows = await getSearchSuggestions("módulo");
+
+    expect(Object.keys(rows[0]).sort()).toEqual(["classification", "country_or_scope", "entity_type", "id", "theme", "title"]);
+  });
+
+  it("does not search at all for an empty query", async () => {
+    expect(await getSearchSuggestions("   ")).toEqual([]);
+    expect(requireAccess).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when the suggestion search fails", async () => {
+    rpc.mockResolvedValue({ data: null, error: { message: "denied" } });
+    await expect(getSearchSuggestions("política")).rejects.toThrow("Curriculum read unavailable");
   });
 });
