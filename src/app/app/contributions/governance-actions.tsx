@@ -33,9 +33,14 @@ function BlockedNotice({ message, blockers }: { message: string; blockers: Resol
 /**
  * Archive, behind a deliberate in-page confirmation step.
  *
- * Deliberately not a modal: the repository has no dialog primitive, and a disclosure
- * keeps the explanation in the document flow where it is reachable by keyboard and
- * readable by assistive technology without new abstractions.
+ * Phase 1 added a Dialog primitive, and Phase 5 re-examined this control against
+ * it. The disclosure stays. A modal would take the consequences off screen until
+ * the Admin has already committed to the action, and it would put the dependency
+ * blocker — the outcome that actually needs reading — inside a surface that is
+ * dismissed by Escape, a backdrop click and its own close button. The disclosure
+ * keeps the explanation and the result in the document flow, inside the
+ * governance region, where both stay reachable by keyboard and readable by
+ * assistive technology without competing with the page behind an overlay.
  */
 export function ArchiveAction({ type, contentId }: { type: ContributionType; contentId: string }) {
   const [state, formAction, pending] = useActionState(archiveContent, initialState);
@@ -46,23 +51,25 @@ export function ArchiveAction({ type, contentId }: { type: ContributionType; con
     <Button
       type="button"
       variant="secondary"
+      size="sm"
+      className="w-full"
       aria-expanded={confirming}
       aria-controls={panelId}
       onClick={() => setConfirming((open) => !open)}
     >Archivar</Button>
 
-    {confirming && <div id={panelId} className="mt-4 rounded-md border border-hairline bg-inset p-5">
+    {confirming && <div id={panelId} className="mt-4 rounded-lg border border-warning/35 bg-warning/8 p-4">
       <p className="font-bold text-ink">¿Archivar este contenido?</p>
-      <p className="mt-2 text-ink-soft">
+      <p className="mt-2 text-body text-ink-soft">
         Dejará de aparecer en la biblioteca, la búsqueda y las referencias para las personas lectoras.
         No se elimina: la versión publicada y su historial se conservan, y podrás restaurarlo más adelante
         si sus dependencias siguen vigentes.
       </p>
-      <form action={formAction} className="mt-5 flex flex-wrap items-center gap-3">
+      <form action={formAction} className="mt-4 flex flex-wrap items-center gap-2">
         <input type="hidden" name="content_type" value={type} />
         <input type="hidden" name="content_id" value={contentId} />
-        <Button type="submit" disabled={pending}>{pending ? "Archivando…" : "Confirmar archivado"}</Button>
-        <Button type="button" variant="ghost" onClick={() => setConfirming(false)}>Cancelar</Button>
+        <Button type="submit" size="sm" disabled={pending}>{pending ? "Archivando…" : "Confirmar archivado"}</Button>
+        <Button type="button" size="sm" variant="ghost" onClick={() => setConfirming(false)}>Cancelar</Button>
       </form>
     </div>}
 

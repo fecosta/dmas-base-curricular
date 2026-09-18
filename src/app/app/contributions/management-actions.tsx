@@ -8,7 +8,14 @@ import { Notice } from "@/components/ui/notice";
 
 const initialState: ContributionActionState = {};
 
-/** Shared shell for the two single-button lifecycle actions. */
+/**
+ * Shared shell for the two single-button lifecycle actions.
+ *
+ * The panel that frames them — its title and the sentence explaining what the
+ * transition does — belongs to the page, so the lifecycle stays legible as
+ * something separate from saving the Draft and from archiving the identity.
+ * The action itself is unchanged: one hidden-field form, one server action.
+ */
 function ManagementAction({ action, fields, label, pendingLabel }: {
   action: typeof publishDraft;
   fields: Record<string, string>;
@@ -16,10 +23,10 @@ function ManagementAction({ action, fields, label, pendingLabel }: {
   pendingLabel: string;
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
-  return <div className="mt-8 border-t border-hairline pt-6">
+  return <div>
     <form action={formAction}>
       {Object.entries(fields).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
-      <Button type="submit" disabled={pending}>{pending ? pendingLabel : label}</Button>
+      <Button type="submit" size="sm" disabled={pending} className="w-full">{pending ? pendingLabel : label}</Button>
     </form>
     {state.error && <Notice tone="error" className="mt-4">{state.error}</Notice>}
   </div>;

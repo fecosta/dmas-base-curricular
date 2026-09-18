@@ -182,6 +182,15 @@
   input:focus-visible, select:focus-visible, textarea:focus-visible {
     @apply border-primary ring-4 ring-primary/10;
   }
+  /*
+   * A disabled fieldset is how a Published revision is made read-only, so
+   * disabled controls have to read as deliberate rather than as a form that
+   * failed to load. They keep full text contrast and lose only the affordances
+   * that would invite editing: the stronger border and the pointer cursor.
+   */
+  input:disabled, select:disabled, textarea:disabled {
+    @apply cursor-default border-hairline text-ink-soft opacity-100;
+  }
   textarea { @apply min-h-32; }
 
   :focus-visible { @apply outline-2 outline-offset-2 outline-primary; }

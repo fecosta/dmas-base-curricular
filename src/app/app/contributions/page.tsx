@@ -7,6 +7,7 @@ import {
   isContributionType,
   type ArchivedContentSummary,
   type ContributionType,
+  type ManagementState,
   type ManagementViewState,
 } from "@/lib/contributions/types";
 import { contributionFamilies, contributionTypePlural } from "@/lib/contributions/families";
@@ -15,7 +16,7 @@ import { RestoreAction } from "./governance-actions";
 import { StatusBadge } from "./status-badge";
 import { Page } from "@/components/ui/page";
 import { PageHeader } from "@/components/ui/page-header";
-import { Card } from "@/components/ui/card";
+import { Card, type Tone } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Notice } from "@/components/ui/notice";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -29,7 +30,20 @@ const states: { value: ManagementViewState; label: string }[] = [
   { value: "archived", label: "Archivado" },
 ];
 
+/**
+ * Colour reinforces the state but never carries it: every row also states its
+ * situation in words through StatusBadge.
+ */
+const stateTone: Record<ManagementState, Tone> = {
+  draft: "warning",
+  published: "success",
+  published_with_draft: "primary",
+};
+
 type Query = { [key: string]: string | string[] | undefined };
+
+/** One removable narrowing currently applied to the listing. */
+type AppliedManagementFilter = { key: string; label: string; href: string; remove: string };
 
 // Without a type filter the page is an overview: each family shows a bounded
 // slice per type with an explicit link to that type's complete filtered list,
@@ -43,30 +57,30 @@ function single(query: Query, key: string) {
 
 function ArchivedEntry({ entry }: { entry: ArchivedContentSummary }) {
   const title = archivedContentTitle(entry);
-  return <Card as="article" className="flex flex-wrap items-center justify-between gap-5 p-5">
+  return <Card as="article" className="flex flex-wrap items-start justify-between gap-x-5 gap-y-4 p-5">
     {/* A flex basis rather than flex-1: the archived row carries two controls, so on a
         narrow viewport the action cluster has to wrap below the title instead of
         squeezing it into a column a few words wide. */}
     <div className="min-w-0 flex-[1_1_18rem]">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <StatusBadge state="archived" />
-        <p className="text-sm text-ink-muted">
+        <p className="text-control text-ink-muted">
           {contributionTypeLabel(entry.type)}
           {entry.currentPublishedRevisionNumber ? ` · Versión ${entry.currentPublishedRevisionNumber} publicada` : ""}
           {` · Archivado el ${formatGovernanceTimestamp(entry.archivedAt)}`}
         </p>
       </div>
-      <h4 className="mt-2 text-lg">{title}</h4>
+      <h4 className="mt-2 text-card font-bold">{title}</h4>
       {/* An archived identity whose published metadata cannot be resolved still has
           to be restorable, so it is shown with its stable id rather than dropped. */}
-      {entry.title === null && <p className="mt-1 text-sm text-ink-muted">Identificador: {entry.contentId}</p>}
+      {entry.title === null && <p className="mt-1 text-control text-ink-muted">Identificador: {entry.contentId}</p>}
     </div>
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-wrap items-center gap-3">
       <Link
         href={`/app/contributions/history?type=${entry.type}&content=${entry.contentId}`}
         prefetch={false}
         aria-label={`Ver historial de ${title}`}
-        className="text-sm font-bold"
+        className="text-control font-bold"
       >Ver historial</Link>
       <RestoreAction type={entry.type} contentId={entry.contentId} title={title} />
     </div>
@@ -83,9 +97,10 @@ export default async function ContributionsPage({ searchParams }: { searchParams
   const archivedView = viewState === "archived";
   const filtered = Boolean(search || type || viewState);
 
-  const baseHref = (overrides: { type?: string; state?: string }) => {
+  const baseHref = (overrides: { q?: string; type?: string; state?: string }) => {
     const params = new URLSearchParams();
-    if (search) params.set("q", search);
+    const nextSearch = overrides.q ?? search;
+    if (nextSearch) params.set("q", nextSearch);
     const nextState = overrides.state ?? stateParam;
     if (nextState) params.set("state", nextState);
     const nextType = overrides.type ?? typeParam;
@@ -94,29 +109,57 @@ export default async function ContributionsPage({ searchParams }: { searchParams
     return queryString ? `/app/contributions?${queryString}` : "/app/contributions";
   };
 
-  const filters = <form method="get" className="mt-8 rounded-lg border border-hairline bg-surface p-5 shadow-card">
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr]">
-      <Field label="Buscar contenido">
-        <input name="q" defaultValue={search} placeholder="Título del contenido…" />
-      </Field>
-      <Field label="Tipo de contenido">
-        <select name="type" defaultValue={typeParam}>
-          <option value="">Todos los tipos</option>
-          {contributionTypes.map((item) => <option key={item.type} value={item.type}>{item.label}</option>)}
-        </select>
-      </Field>
-      <Field label="Estado">
-        <select name="state" defaultValue={stateParam}>
-          <option value="">Todos los estados</option>
-          {states.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-        </select>
-      </Field>
-    </div>
-    <div className="mt-4 flex flex-wrap items-center gap-3">
-      <Button type="submit">Aplicar filtros</Button>
-      {filtered && <Link href="/app/contributions" prefetch={false} className="text-sm font-bold">Limpiar</Link>}
-    </div>
-  </form>;
+  // What is currently narrowing the listing, as removable links. Removal is as
+  // URL-driven as application: each chip points at this page without that one
+  // parameter, which also drops any archived keyset cursor, as the form does.
+  const applied = [
+    search && { key: "q", label: `«${search}»`, href: baseHref({ q: "" }), remove: `Quitar la búsqueda ${search}` },
+    type && { key: "type", label: contributionTypeLabel(type), href: baseHref({ type: "" }), remove: `Quitar el filtro de tipo ${contributionTypeLabel(type)}` },
+    viewState && {
+      key: "state",
+      label: states.find((option) => option.value === viewState)!.label,
+      href: baseHref({ state: "" }),
+      remove: `Quitar el filtro de estado ${states.find((option) => option.value === viewState)!.label}`,
+    },
+  ].filter((item): item is AppliedManagementFilter => typeof item === "object");
+
+  const filters = <div className="mt-8">
+    <form method="get" className="rounded-xl border border-hairline bg-surface p-4 shadow-panel explorer:p-5">
+      <div className="grid gap-4 explorer:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto] explorer:items-end">
+        <Field label="Buscar contenido">
+          <input type="search" name="q" defaultValue={search} placeholder="Título del contenido…" />
+        </Field>
+        <Field label="Tipo de contenido">
+          <select name="type" defaultValue={typeParam}>
+            <option value="">Todos los tipos</option>
+            {contributionTypes.map((item) => <option key={item.type} value={item.type}>{item.label}</option>)}
+          </select>
+        </Field>
+        <Field label="Estado">
+          <select name="state" defaultValue={stateParam}>
+            <option value="">Todos los estados</option>
+            {states.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+        </Field>
+        <Button type="submit" size="sm" className="mt-2 explorer:mt-0">Aplicar filtros</Button>
+      </div>
+    </form>
+
+    {applied.length > 0 && <div className="mt-3 flex flex-wrap items-center gap-2">
+      <span className="filter-label">Filtros activos</span>
+      {applied.map((item) => <Link
+        key={item.key}
+        href={item.href}
+        prefetch={false}
+        aria-label={item.remove}
+        className="inline-flex max-w-full items-center gap-2 rounded-full border border-hairline-strong bg-surface px-3 py-1.5 text-control font-semibold text-ink-soft no-underline shadow-card transition-colors hover:border-primary hover:text-primary hover:no-underline"
+      >
+        <span className="min-w-0 truncate">{item.label}</span>
+        <span aria-hidden="true" className="text-meta tracking-normal opacity-60">✕</span>
+      </Link>)}
+      <Link href="/app/contributions" prefetch={false} className="text-control font-bold text-warning-ink">Limpiar todo</Link>
+    </div>}
+  </div>;
 
   const header = <PageHeader
     eyebrow="Gestión editorial"
@@ -172,12 +215,10 @@ export default async function ContributionsPage({ searchParams }: { searchParams
               {entries.map((entry) => <ArchivedEntry key={`${entry.type}-${entry.contentId}`} entry={entry} />)}
             </div>}
       </section>
-      {cursor && <p className="mt-6">
-        <Link href={baseHref({ state: "archived" })} prefetch={false} className="text-sm font-bold">Volver al contenido archivado más reciente</Link>
-      </p>}
-      {morePath && <p className="mt-6">
-        <Link href={morePath} prefetch={false} className="font-bold">Ver más contenido archivado</Link>
-      </p>}
+      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+        {cursor && <Link href={baseHref({ state: "archived" })} prefetch={false} className="text-control font-bold">Volver al contenido archivado más reciente</Link>}
+        {morePath && <Link href={morePath} prefetch={false} className="font-bold">Ver más contenido archivado</Link>}
+      </div>
     </Page>;
   }
 
@@ -197,52 +238,65 @@ export default async function ContributionsPage({ searchParams }: { searchParams
   return <Page width="content">
     {header}
     {filters}
-    <p className="mt-4 text-sm text-ink-muted">{resultCount(contents.length)}</p>
+    <p className="mt-4 text-control text-ink-muted">{resultCount(contents.length)}</p>
 
     {contents.length === 0
       ? <EmptyState
-          className="mt-10"
+          className="mt-8"
           title={filtered ? "Sin resultados para estos filtros" : "Todavía no hay contenido administrable"}
           description={filtered
             ? "Ajusta la búsqueda, el tipo o el estado para encontrar el contenido."
-            : "Crea un borrador para comenzar: usa Crear contenido en la parte superior de esta página."}
+            : "Crea un borrador para comenzar: elige el tipo de contenido y guarda la primera versión."}
+          action={filtered
+            ? <ButtonLink href="/app/contributions" variant="secondary">Limpiar filtros</ButtonLink>
+            : <ButtonLink href="/app/contributions/new">Crear contenido</ButtonLink>}
         />
-      : <div className="mt-10 space-y-12">
+      : <div className="mt-8 space-y-10">
           {contributionFamilies.map((family) => {
             const familyTypes = family.types.filter((item) => (byType.get(item) ?? []).length > 0);
             if (familyTypes.length === 0) return null;
             const total = familyTypes.reduce((sum, item) => sum + (byType.get(item) ?? []).length, 0);
             return <section key={family.id} aria-labelledby={`family-${family.id}`}>
-              <SectionHeader title={family.label} id={`family-${family.id}`} meta={resultCount(total)} />
-              <div className="space-y-8">
+              <SectionHeader title={family.label} id={`family-${family.id}`} meta={resultCount(total)} className="mb-4" />
+              <div className="space-y-6">
                 {familyTypes.map((item) => {
                   const rows = byType.get(item) ?? [];
                   const shown = type ? rows : rows.slice(0, PREVIEW);
                   return <section key={item} aria-labelledby={`type-${item}`}>
-                    <h3 id={`type-${item}`} className="text-sm font-extrabold tracking-[0.04em] text-ink-soft">
-                      {contributionTypePlural(item)} <span className="font-normal text-ink-muted">({rows.length})</span>
+                    <h3 id={`type-${item}`} className="flex flex-wrap items-baseline gap-2 text-control font-extrabold uppercase tracking-[0.1em] text-ink-soft">
+                      {contributionTypePlural(item)} <span className="font-bold tracking-normal text-label">({rows.length})</span>
                     </h3>
-                    <div className="mt-3 grid gap-3">
-                      {shown.map((row) => <Card key={`${row.type}-${row.contentId}`} as="article" className="flex flex-wrap items-center justify-between gap-5 p-5">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-3">
+                    <div className="mt-3 grid gap-2.5">
+                      {shown.map((row) => <Card
+                        key={`${row.type}-${row.contentId}`}
+                        as="article"
+                        accent={stateTone[row.state]}
+                        className="flex flex-wrap items-start justify-between gap-x-5 gap-y-4 p-5"
+                      >
+                        <div className="min-w-0 flex-[1_1_18rem]">
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                             <StatusBadge state={row.state} />
-                            <p className="text-sm text-ink-muted">
+                            <p className="text-control text-ink-muted">
                               {row.currentPublishedRevisionNumber && `Versión ${row.currentPublishedRevisionNumber} publicada`}
                               {row.currentPublishedRevisionNumber && row.draftRevisionNumber ? " · " : ""}
                               {row.draftRevisionNumber && `Versión ${row.draftRevisionNumber} en borrador`}
                             </p>
                           </div>
-                          <h4 className="mt-2 text-lg">{row.title}</h4>
+                          <h4 className="mt-2 text-card font-bold">{row.title}</h4>
+                          <p className="mt-1 text-meta tracking-normal text-label">
+                            Última actividad: {formatGovernanceTimestamp(row.activityAt)}
+                          </p>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3">
-                          {row.currentPublishedRevisionId && <Link href={`/app/contributions/${row.type}/${row.currentPublishedRevisionId}`} prefetch={false} className="text-sm font-bold">Ver versión publicada</Link>}
-                          {row.draftRevisionId && <ButtonLink href={`/app/contributions/${row.type}/${row.draftRevisionId}`} size="sm" variant="secondary">Editar borrador</ButtonLink>}
+                        {/* Editing the Draft is the action this workspace exists for; reading
+                            the published version accompanies it rather than competing with it. */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {row.currentPublishedRevisionId && <ButtonLink href={`/app/contributions/${row.type}/${row.currentPublishedRevisionId}`} size="xs" variant="secondary">Ver versión publicada</ButtonLink>}
+                          {row.draftRevisionId && <ButtonLink href={`/app/contributions/${row.type}/${row.draftRevisionId}`} size="xs">Editar borrador</ButtonLink>}
                         </div>
                       </Card>)}
                     </div>
                     {shown.length < rows.length && <p className="mt-3">
-                      <Link href={baseHref({ type: item })} prefetch={false} className="text-sm font-bold">
+                      <Link href={baseHref({ type: item })} prefetch={false} className="text-control font-bold">
                         Ver {contributionTypePlural(item).toLowerCase()} ({rows.length})
                       </Link>
                     </p>}
@@ -253,13 +307,13 @@ export default async function ContributionsPage({ searchParams }: { searchParams
           })}
         </div>}
 
-    {archivedPreview && archivedPreview.entries.length > 0 && <section aria-labelledby="archived-preview-title" className="mt-12">
+    {archivedPreview && archivedPreview.entries.length > 0 && <section aria-labelledby="archived-preview-title" className="mt-12 border-t border-hairline pt-8">
       <SectionHeader title="Contenido archivado" id="archived-preview-title" />
       <div className="grid gap-3">
         {archivedPreview.entries.map((entry) => <ArchivedEntry key={`${entry.type}-${entry.contentId}`} entry={entry} />)}
       </div>
       <p className="mt-3">
-        <Link href={baseHref({ state: "archived" })} prefetch={false} className="text-sm font-bold">Ver todo el contenido archivado</Link>
+        <Link href={baseHref({ state: "archived" })} prefetch={false} className="text-control font-bold">Ver todo el contenido archivado</Link>
       </p>
     </section>}
   </Page>;
