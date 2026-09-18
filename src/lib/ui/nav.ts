@@ -27,6 +27,21 @@ export function isLibrarySearchPath(pathname: string | null | undefined) {
   return normalize(pathname) === "/app" || isActiveNavPath(pathname, "/app/library");
 }
 
+/**
+ * Whether a path is the canonical detail route of a single module.
+ *
+ * The contextual overlay is presented for exactly these addresses, and it has to
+ * ask, rather than assume, because a parallel slot keeps whatever it is showing
+ * across a client-side navigation. An overlay that did not watch the URL would
+ * stay up over the next page the reader opened from inside it — a module panel
+ * covering a Material — which is the one state the address bar and the screen
+ * must never be able to disagree about.
+ */
+export function isModuleDetailPath(pathname: string | null | undefined) {
+  if (!pathname) return false;
+  return /^\/app\/library\/modules\/[^/]+$/.test(normalize(pathname));
+}
+
 /** Drops query/hash and any trailing slash so comparisons are stable. */
 function normalize(path: string) {
   const bare = path.split(/[?#]/)[0];

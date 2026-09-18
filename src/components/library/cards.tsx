@@ -13,8 +13,10 @@ import type { SearchResult } from "@/lib/curriculum/queries";
  * technology as a row of identical "Abrir módulo"s. The visible label opens the
  * accessible name, so speech control still works on what is written.
  *
- * The destination is `entityHref`, so when Phase 4 adds contextual module
- * navigation it changes here and in that helper, not across the Library.
+ * The destination is `entityHref` — the canonical route, unchanged by contextual
+ * detail. Opening a module from here is intercepted into an overlay by the
+ * router, not by a different link, so the card carries no knowledge of how its
+ * destination will be presented.
  */
 const shell = "group relative flex flex-col p-5 transition-[box-shadow,transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-panel";
 

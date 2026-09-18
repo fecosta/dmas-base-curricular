@@ -37,7 +37,14 @@ export function readView(query: LibraryQuery): LibraryView {
   return paramValue(query, "view") === "programa" ? "programa" : "grilla";
 }
 
-/** Canonical reader destination for a published search result. Phase 4 changes this in one place. */
+/**
+ * Canonical reader destination for a published search result.
+ *
+ * Contextual module detail is a routing presentation, not a second address: the
+ * Library intercepts this same URL rather than pointing anywhere else at it, so
+ * cards, Programa rows and search suggestions all keep one destination, and a
+ * copied link is the link the reader was on.
+ */
 export function entityHref(entityType: "module" | "material" | "institution", id: string) {
   return entityType === "module"
     ? `/app/library/modules/${id}`
