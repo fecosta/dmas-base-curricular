@@ -80,11 +80,25 @@ async function contextual(detail: Record<string, unknown> = full) {
   return renderToStaticMarkup(await ContextualModulePage({ params: Promise.resolve({ id }) }));
 }
 
+/**
+ * Text of the element an `id` names, or null when nothing carries that id.
+ * Nested markup is stripped: a SectionLabel leads with a decorative marker span,
+ * so its accessible text is not the first thing inside the heading.
+ */
+function named(html: string, id: string) {
+  const match = new RegExp(`<(\\w+)[^>]*\\sid="${id.replace(/[:$]/g, "\\$&")}"[^>]*>([\\s\\S]*?)</\\1>`).exec(html);
+  return match ? match[2].replace(/<[^>]*>/g, "").trim() : null;
+}
+
 /** Text of the element an overlay points its aria-labelledby at. */
 function labelledBy(html: string) {
   const labelId = /aria-labelledby="([^"]+)"/.exec(html)?.[1];
-  if (!labelId) return null;
-  return new RegExp(`<[^>]*id="${labelId.replace(/[:$]/g, "\\$&")}"[^>]*>([^<]*)<`).exec(html)?.[1] ?? null;
+  return labelId ? named(html, labelId) : null;
+}
+
+/** Every id the markup declares, in order, so duplicates stay visible. */
+function ids(html: string) {
+  return [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
 }
 
 /**
@@ -215,6 +229,43 @@ describe("contextual module detail", () => {
     expect(html).toContain("Sin instituciones asociadas.");
     expect(html).not.toContain("Resultados de aprendizaje");
     expect(html).not.toContain("Notas docentes generales");
+  });
+
+  /*
+   * The overlay shares a document with the Library behind it, and the Library
+   * names its own "Materiales y estudios" and "Instituciones" sections. Section
+   * ids therefore say which surface they belong to, so each section's
+   * aria-labelledby resolves to its own heading rather than to whichever
+   * element happened to come first.
+   */
+  it.each([
+    ["module-program-title", "Programa"],
+    ["module-outcomes-title", "Resultados de aprendizaje"],
+    ["module-general-notes-title", "Notas docentes generales"],
+    ["module-materials-title", "Materiales y estudios"],
+    ["module-institutions-title", "Instituciones"],
+  ])("names its %s section after the module and labels it with that heading", async (id, heading) => {
+    const html = await contextual();
+    expect(named(html, id)).toBe(heading);
+    expect(html).toContain(`aria-labelledby="${id}"`);
+    expect(ids(html).filter((declared) => declared === id)).toHaveLength(1);
+  });
+
+  it("leaves the Library's own section names to the Library", async () => {
+    for (const html of [await contextual(), await canonical()]) {
+      for (const taken of ["materials-title", "institutions-title", "modules-title"]) {
+        expect(ids(html), `${taken} still claimed by module detail`).not.toContain(taken);
+      }
+    }
+  });
+
+  it("points every labelled section at an element that exists", async () => {
+    const html = await contextual();
+    const references = [...html.matchAll(/aria-labelledby="([^"]+)"/g)].map((match) => match[1]);
+    expect(references.length).toBeGreaterThan(0);
+    for (const reference of references) {
+      expect(named(html, reference), `aria-labelledby="${reference}" resolves to nothing`).not.toBeNull();
+    }
   });
 
   it("sizes the panel as a detail workspace and lays out to the width it is given", async () => {

@@ -43,6 +43,13 @@ function TeachingNoteBody({ note }: { note: TeachingNote }) {
  * place beside the Programa wherever there is room: in a scrolling overlay,
  * stacking it under a long Programa would bury the reference material the
  * reference itself keeps in view.
+ *
+ * Its section ids are prefixed `module-` because the overlay shares a document
+ * with the Library behind it, which names its own Materiales and Instituciones
+ * sections. Two elements answering to one id would leave each section's
+ * aria-labelledby resolving to whichever came first. A fixed prefix is enough:
+ * the two presentations are never on screen together, so they need distinct
+ * names from the Library, not from each other.
  */
 export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleDetail }) {
   const notesByTopic = new Map<string, TeachingNote[]>();
@@ -64,8 +71,8 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
 
     <div className="mt-10 grid gap-10 @4xl:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="min-w-0 space-y-12">
-        <section aria-labelledby="program-title">
-          <SectionLabel id="program-title" tone="primary">Programa</SectionLabel>
+        <section aria-labelledby="module-program-title">
+          <SectionLabel id="module-program-title" tone="primary">Programa</SectionLabel>
           {curriculumModule.programTopics.length
             ? <ol className="mt-5 space-y-4">
                 {curriculumModule.programTopics.map((topic, index) => {
@@ -91,8 +98,8 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
             : <EmptyState className="mt-5" align="start" title="Sin temas de Programa" description="Este módulo aún no tiene temas de Programa publicados." />}
         </section>
 
-        {curriculumModule.learningOutcomes.length > 0 && <section aria-labelledby="outcomes-title">
-          <SectionLabel id="outcomes-title" tone="success">Resultados de aprendizaje</SectionLabel>
+        {curriculumModule.learningOutcomes.length > 0 && <section aria-labelledby="module-outcomes-title">
+          <SectionLabel id="module-outcomes-title" tone="success">Resultados de aprendizaje</SectionLabel>
           {/* Full-sentence outcomes read as a list, not as badges. */}
           <ul className="mt-5 space-y-3">
             {curriculumModule.learningOutcomes.map((outcome) => <li key={outcome} className="flex gap-3 text-ink-soft">
@@ -102,8 +109,8 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
           </ul>
         </section>}
 
-        {generalNotes.length > 0 && <section aria-labelledby="general-notes-title">
-          <SectionLabel id="general-notes-title" tone="accent">Notas docentes generales</SectionLabel>
+        {generalNotes.length > 0 && <section aria-labelledby="module-general-notes-title">
+          <SectionLabel id="module-general-notes-title" tone="accent">Notas docentes generales</SectionLabel>
           <p className="mt-2 text-sm text-ink-muted">Notas del módulo que no corresponden a un tema específico del Programa.</p>
           <div className="mt-5 space-y-4">
             {generalNotes.map((note) => <Card key={note.id} as="article" className="p-5">
@@ -129,8 +136,8 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
             : <p className="mt-3 text-sm text-white/60">Sin perfiles asociados.</p>}
         </DarkCard>
 
-        <section aria-labelledby="materials-title">
-          <SectionLabel id="materials-title" tone="warning" level="h2">Materiales y estudios</SectionLabel>
+        <section aria-labelledby="module-materials-title">
+          <SectionLabel id="module-materials-title" tone="warning" level="h2">Materiales y estudios</SectionLabel>
           <div className="mt-4 space-y-3">
             {curriculumModule.materials.length
               ? curriculumModule.materials.map((material) => <Link
@@ -146,8 +153,8 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
           </div>
         </section>
 
-        <section aria-labelledby="institutions-title">
-          <SectionLabel id="institutions-title" tone="accent" level="h2">Instituciones</SectionLabel>
+        <section aria-labelledby="module-institutions-title">
+          <SectionLabel id="module-institutions-title" tone="accent" level="h2">Instituciones</SectionLabel>
           <div className="mt-4 space-y-3">
             {curriculumModule.institutions.length
               ? curriculumModule.institutions.map((institution) => <Link
