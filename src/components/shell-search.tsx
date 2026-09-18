@@ -55,14 +55,11 @@ function LibrarySearchForm({ className }: { className?: string }) {
   const expanded = open && typed.trim().length >= minSuggestionQuery;
   const optionId = (index: number) => `${listId}-o${index}`;
 
-  // A fresh list invalidates the highlight, which was an index into the old one.
-  // Adjusted during render rather than in an effect so no pass ever paints a
-  // highlight pointing at a suggestion that is no longer there.
-  const [highlighted, setHighlighted] = useState(groups);
-  if (groups !== highlighted) {
-    setHighlighted(groups);
-    setActive(-1);
-  }
+  // The highlight is an index into the options on screen, and those now always
+  // describe the current query. Typing clears it outright, and it is never read
+  // past the end of the list actually rendered, so neither the keyboard nor
+  // assistive technology can reach an option that is not there.
+  const highlighted = active < items.length ? active : -1;
 
   function close() {
     setOpen(false);
@@ -82,19 +79,19 @@ function LibrarySearchForm({ className }: { className?: string }) {
       if (items.length === 0) return;
       event.preventDefault();
       setOpen(true);
-      setActive((current) => {
-        const next = event.key === "ArrowDown" ? current + 1 : current - 1;
-        return (next + items.length) % items.length;
-      });
+      // Moved from the highlight this render painted, so the new index always
+      // lands inside the list the reader is looking at.
+      const next = event.key === "ArrowDown" ? highlighted + 1 : highlighted - 1;
+      setActive((next + items.length) % items.length);
       return;
     }
-    if (event.key === "Enter" && expanded && items[active]) {
-      // With a suggestion highlighted, Enter opens it. With none highlighted the
-      // form submits normally to /app/library?q=… — suggestions never replace
-      // ordinary search.
+    if (event.key === "Enter" && expanded && items[highlighted]) {
+      // With a suggestion highlighted, Enter opens it. With none highlighted —
+      // including while a newly typed query is still settling — the form submits
+      // normally to /app/library?q=… ; suggestions never replace ordinary search.
       event.preventDefault();
       close();
-      router.push(items[active].href);
+      router.push(items[highlighted].href);
     }
   }
 
@@ -119,8 +116,10 @@ function LibrarySearchForm({ className }: { className?: string }) {
       aria-expanded={expanded}
       aria-controls={listId}
       aria-autocomplete="list"
-      aria-activedescendant={expanded && active >= 0 ? optionId(active) : undefined}
-      onChange={(event) => { setTyped(event.target.value); setOpen(true); }}
+      aria-activedescendant={expanded && highlighted >= 0 ? optionId(highlighted) : undefined}
+      // Editing the query abandons the list it was highlighted in, so the
+      // highlight goes with it rather than waiting for the next response.
+      onChange={(event) => { setTyped(event.target.value); setOpen(true); setActive(-1); }}
       onFocus={() => setOpen(true)}
       onKeyDown={onKeyDown}
     />
@@ -129,7 +128,7 @@ function LibrarySearchForm({ className }: { className?: string }) {
       groups={groups}
       ready={ready}
       query={typed.trim()}
-      activeIndex={active}
+      activeIndex={highlighted}
       optionId={optionId}
       onSelect={close}
     />}

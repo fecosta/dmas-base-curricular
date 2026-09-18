@@ -12,12 +12,30 @@ const DEBOUNCE_MS = 200;
 const NONE: SuggestionGroup[] = [];
 
 /**
+ * What the reader may be shown for `term`, given the last answer that arrived.
+ *
+ * An answer belongs to the exact term it was fetched for. While a newer term is
+ * still settling, the caller therefore gets no groups rather than the previous
+ * term's: options that describe a query the reader has already moved on from
+ * must never stay visible, highlightable or actionable. `ready` says the same
+ * thing from the other side — there is a settled answer for what is on screen —
+ * which is what keeps a pending query from being reported as an empty result.
+ *
+ * Kept as a function of its inputs so the rule itself is directly testable.
+ */
+export function suggestionsFor(term: string, answered: { query: string; groups: SuggestionGroup[] }) {
+  const current = term.length >= minSuggestionQuery && answered.query === term;
+  return { groups: current ? answered.groups : NONE, ready: current };
+}
+
+/**
  * Fetches grouped suggestions for what the reader is typing.
  *
  * One request per settled query: the cleanup both cancels a pending debounce and
  * aborts an in-flight request, so a slow earlier response can never overwrite a
- * later one. `ready` reports whether the groups on hand describe the current
- * query, which keeps a stale list from being presented as an empty result.
+ * later one. What the hook hands back is then narrowed to the current query by
+ * suggestionsFor, because cancelling the request does not by itself retract a
+ * list that is already on screen.
  */
 export function useSuggestions(query: string) {
   const term = query.trim();
@@ -41,8 +59,7 @@ export function useSuggestions(query: string) {
     return () => { clearTimeout(timer); controller.abort(); };
   }, [term]);
 
-  const groups = term.length < minSuggestionQuery ? NONE : answered.groups;
-  return { groups, ready: answered.query === term };
+  return suggestionsFor(term, answered);
 }
 
 export function suggestionItems(groups: readonly SuggestionGroup[]): Suggestion[] {

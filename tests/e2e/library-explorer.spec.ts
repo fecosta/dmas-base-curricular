@@ -386,6 +386,89 @@ test.describe("search suggestions", () => {
     await expect(page.getByRole("listbox", { name: "Sugerencias de búsqueda" })).toHaveCount(0);
   });
 
+  /**
+   * Holds the answer for one query open, so the window between two queries —
+   * the debounce, then the request — stays observable for as long as the
+   * assertions need it. Returns the release.
+   */
+  async function holdSuggestionsFor(page: Page, term: string) {
+    let release = () => {};
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    await page.route("**/api/library/suggestions**", async (route) => {
+      if (new URL(route.request().url()).searchParams.get("q")?.includes(term)) await held;
+      // The page may have navigated away by the time this is let go.
+      await route.continue().catch(() => {});
+    });
+    return release;
+  }
+
+  /*
+   * Suggestions belong to the query they were fetched for. Cancelling a request
+   * does not retract a list that is already on screen, so the window between two
+   * queries is where a reader could otherwise still see, highlight and open a
+   * result for a query they had already replaced.
+   */
+  test("stops offering the previous query's suggestions the moment the query changes", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/app/library");
+    const release = await holdSuggestionsFor(page, "evidencia");
+
+    await search(page).fill(`campaña ${marker}`);
+    await expect(page.getByRole("option", { name: new RegExp(MODULE_A) })).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
+    expect(await search(page).getAttribute("aria-activedescendant")).toBeTruthy();
+
+    // The second query is now typed, and its own answer is still held open.
+    await search(page).fill(`evidencia ${marker}`);
+
+    await expect(page.getByRole("option")).toHaveCount(0);
+    await expect(page.getByRole("option", { name: new RegExp(MODULE_A) })).toHaveCount(0);
+    await expect(page.locator('[role="option"][aria-selected="true"]')).toHaveCount(0);
+    // Nothing is announced as active, because the option it named is gone.
+    await expect.poll(() => search(page).getAttribute("aria-activedescendant")).toBeNull();
+    // And the keyboard has nothing left to walk.
+    await page.keyboard.press("ArrowDown");
+    await expect.poll(() => search(page).getAttribute("aria-activedescendant")).toBeNull();
+
+    // So Enter searches for what is typed rather than opening the replaced
+    // query's first suggestion.
+    await search(page).press("Enter");
+    await expect(page).toHaveURL(/\/app\/library\?/);
+    await expect.poll(() => applied(page).get("q")).toBe(`evidencia ${marker}`);
+    expect(page.url()).not.toContain(content.moduleA);
+
+    release();
+  });
+
+  test("offers the new query's suggestions once its own answer arrives", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/app/library");
+    const release = await holdSuggestionsFor(page, "evidencia");
+
+    await search(page).fill(`campaña ${marker}`);
+    await expect(page.getByRole("option", { name: new RegExp(MODULE_A) })).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
+
+    await search(page).fill(`evidencia ${marker}`);
+    await expect(page.getByRole("option")).toHaveCount(0);
+
+    release();
+
+    await expect(page.getByRole("option", { name: new RegExp(MODULE_B) })).toBeVisible();
+    await expect(page.getByRole("option", { name: new RegExp(MODULE_A) })).toHaveCount(0);
+    // The new list arrives with nothing highlighted: the reader walks it again.
+    await expect(page.locator('[role="option"][aria-selected="true"]')).toHaveCount(0);
+    expect(await search(page).getAttribute("aria-activedescendant")).toBeNull();
+
+    // And it is the new query's suggestion that Enter now opens.
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(new RegExp(`/app/library/modules/${content.moduleB}$`));
+  });
+
   test("Escape dismisses the list without clearing what was typed", async ({ page }) => {
     await signIn(page);
     await page.goto("/app/library");

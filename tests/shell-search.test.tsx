@@ -11,6 +11,8 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: () => {} }),
 }));
 import { ShellSearch } from "@/components/shell-search";
+import { SuggestionPopover, suggestionItems, suggestionsFor } from "@/components/search-suggestions";
+import type { SuggestionGroup } from "@/lib/curriculum/suggestions";
 
 function render(pathname: string, search = "") {
   route.pathname = pathname;
@@ -132,5 +134,101 @@ describe("ShellSearch suggestions", () => {
     // HTML attribute names are case-insensitive; React serialises this one in
     // the casing it was given.
     expect(render("/app/library")).toMatch(/autocomplete="off"/i);
+  });
+});
+
+/*
+ * Between two queries there is a window — the debounce, then the request — in
+ * which the only answer on hand belongs to the query that was just replaced.
+ * Exposing it during that window would leave the reader looking at, moving
+ * through and opening results for a query they had already abandoned, since
+ * aborting the request does not retract a list that is already on screen.
+ */
+describe("suggestions describe the query on screen", () => {
+  const answer: SuggestionGroup[] = [{
+    entity: "module",
+    label: "Módulos",
+    items: [{ id: "m1", title: "Campaña territorial", subtitle: "Estrategia y Campaña", href: "/app/library/modules/m1" }],
+  }];
+
+  it("hands an answer over for the term it was fetched for", () => {
+    const { groups, ready } = suggestionsFor("campaña", { query: "campaña", groups: answer });
+    expect(groups).toEqual(answer);
+    expect(ready).toBe(true);
+  });
+
+  it("withholds the previous query's groups while a newer query is still settling", () => {
+    const { groups, ready } = suggestionsFor("campañas", { query: "campaña", groups: answer });
+    expect(groups).toEqual([]);
+    expect(suggestionItems(groups)).toEqual([]);
+    // Withheld, not answered: a pending query is not a query that found nothing.
+    expect(ready).toBe(false);
+  });
+
+  it("withholds them before any answer has arrived at all", () => {
+    expect(suggestionsFor("campaña", { query: "", groups: [] }).ready).toBe(false);
+  });
+
+  it("withholds them for a query too short to have been asked", () => {
+    const { groups, ready } = suggestionsFor("c", { query: "c", groups: answer });
+    expect(groups).toEqual([]);
+    expect(ready).toBe(false);
+  });
+
+  it("reports a settled query that matched nothing", () => {
+    const { groups, ready } = suggestionsFor("campaña", { query: "campaña", groups: [] });
+    expect(groups).toEqual([]);
+    expect(ready).toBe(true);
+  });
+});
+
+describe("the popover renders only the current query's options", () => {
+  const answer: SuggestionGroup[] = [{
+    entity: "module",
+    label: "Módulos",
+    items: [{ id: "m1", title: "Campaña territorial", subtitle: "Estrategia y Campaña", href: "/app/library/modules/m1" }],
+  }];
+
+  function popover({ groups, ready }: { groups: readonly SuggestionGroup[]; ready: boolean }, activeIndex = -1) {
+    return renderToStaticMarkup(<SuggestionPopover
+      id="suggestions"
+      groups={groups}
+      ready={ready}
+      query="campañas"
+      activeIndex={activeIndex}
+      optionId={(index) => `suggestions-o${index}`}
+      onSelect={() => {}}
+    />);
+  }
+
+  /*
+   * Nothing to see, nothing to select, and nothing for assistive technology to
+   * read as belonging to what is typed.
+   */
+  it("renders no option from a query that has been replaced", () => {
+    const html = popover(suggestionsFor("campañas", { query: "campaña", groups: answer }));
+    expect(html).not.toContain('role="option"');
+    expect(html).not.toContain("Campaña territorial");
+    expect(html).not.toContain("/app/library/modules/m1");
+  });
+
+  it("does not claim the pending query found nothing", () => {
+    expect(popover(suggestionsFor("campañas", { query: "campaña", groups: answer }))).not.toContain("Sin sugerencias");
+  });
+
+  it("does report a settled query that found nothing", () => {
+    expect(popover(suggestionsFor("campañas", { query: "campañas", groups: [] }))).toContain("Sin sugerencias");
+  });
+
+  it("selects nothing until the reader moves through the current list", () => {
+    const html = popover(suggestionsFor("campaña", { query: "campaña", groups: answer }));
+    expect(html).toContain('role="option"');
+    expect(html).not.toContain('aria-selected="true"');
+  });
+
+  it("marks the highlighted option of the current list", () => {
+    const html = popover(suggestionsFor("campaña", { query: "campaña", groups: answer }), 0);
+    expect(html).toContain('aria-selected="true"');
+    expect(html).toContain('id="suggestions-o0"');
   });
 });
