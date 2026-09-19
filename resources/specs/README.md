@@ -27,9 +27,9 @@ Do not move a spec to `completed/` merely because an implementation agent report
 3. `SPEC-003` — Content Contribution — completed historical foundation
 4. `SPEC-004` — Admin Content Management & Publication — completed
 5. `SPEC-005` — Audit History & Archival — completed
-6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — active
+6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — completed
 
-`SPEC-006` is the current authorized delivery slice, at [`active/006-explorer-ux-ui-fidelity.md`](active/006-explorer-ux-ui-fidelity.md). None remain planned.
+`SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). No specification is currently active or planned.
 
 ## Dependency model
 
@@ -58,7 +58,7 @@ SPEC-005 is completed at [`completed/005-audit-history-archival.md`](completed/0
 
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 
-SPEC-006's six implementation phases are delivered and await independent review; it stays in `active/` until that review passes. SPEC-006 depends on SPEC-001 through SPEC-005 because it raises the interface fidelity of surfaces those slices delivered. It is a UX/UI slice: it must not alter product scope, authorization, governance lifecycle, publication, archival, audit, data semantics or security. Personal Itinerary remains an approved product capability delivered separately, and is outside SPEC-006's implementation scope.
+SPEC-006's six implementation phases are completed and independently reviewed. SPEC-006 depends on SPEC-001 through SPEC-005 because it raises the interface fidelity of surfaces those slices delivered. It is a UX/UI slice: it did not alter product scope, authorization, governance lifecycle, publication, archival, audit, data semantics or security. Personal Itinerary remains an approved product capability delivered separately, and is outside SPEC-006's implementation scope.
 
 ## Authoritative product sources
 

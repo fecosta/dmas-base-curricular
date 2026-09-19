@@ -15,9 +15,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
-**Technical state:** SPEC-001 through SPEC-005 are completed
+**Technical state:** SPEC-001 through SPEC-006 are completed
 
-**Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification.
+**Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification. SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is completed at [`resources/specs/completed/006-explorer-ux-ui-fidelity.md`](resources/specs/completed/006-explorer-ux-ui-fidelity.md) after independent phase reviews, Phase 6 validation, and final independent review.
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model remains authoritative.
 
@@ -29,7 +29,7 @@ SPEC-005 completes the governance lifecycle with Admin-only, identity-level arch
 
 SPEC-003 provides verified contribution, provenance, pending-revision, lifecycle-event, and private-attachment foundations. D-030 supersedes Contributor authoring as active product behavior but does not erase SPEC-003 implementation history.
 
-SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is implemented across its six phases and **awaits independent review**; it remains the active specification. It brings the interface to the approved Explorer direction without touching product, authorization, governance, data or security contracts: an Explorer-style application shell with compact and mobile navigation and a header Library search; the Library as a filter column beside results, collapsing to an accessible filter drawer at narrow widths, with `Grilla` and `Programa`; grouped, keyboard-operable search suggestions served over an authenticated boundary that returns only current published content; a contextual module overlay that preserves the canonical `/app/library/modules/[id]` URL, so direct visits, reloads, Back and Forward all stay coherent; and the same Explorer language applied to Admin content management. No migration, RLS policy, RPC, Storage rule or role changed, and the production build exposes no development-only route.
+SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is implemented across its six phases and independently reviewed. It brings the interface to the approved Explorer direction without touching product, authorization, governance, data or security contracts: an Explorer-style application shell with compact and mobile navigation and a header Library search; the Library as a filter column beside results, collapsing to an accessible filter drawer at narrow widths, with `Grilla` and `Programa`; grouped, keyboard-operable search suggestions served over an authenticated boundary that returns only current published content; a contextual module overlay that preserves the canonical `/app/library/modules/[id]` URL, so direct visits, reloads, Back and Forward all stay coherent; and the same Explorer language applied to Admin content management. No migration, RLS policy, RPC, Storage rule or role changed, and the production build exposes no development-only route.
 
 ## Documentation
 
@@ -59,9 +59,9 @@ resources/specs/
 
 The most recently completed specification is:
 
-[`resources/specs/completed/005-audit-history-archival.md`](resources/specs/completed/005-audit-history-archival.md)
+[`resources/specs/completed/006-explorer-ux-ui-fidelity.md`](resources/specs/completed/006-explorer-ux-ui-fidelity.md)
 
-The active specification is [`resources/specs/active/006-explorer-ux-ui-fidelity.md`](resources/specs/active/006-explorer-ux-ui-fidelity.md) — Explorer UX/UI Fidelity & Interaction Layer. It raises interface fidelity over the surfaces SPEC-001 through SPEC-005 delivered, without changing product, authorization, governance, data or security contracts.
+No specification is currently active. SPEC-001 through SPEC-006 are completed; no planned specification has been activated.
 
 ## Initial stack
 

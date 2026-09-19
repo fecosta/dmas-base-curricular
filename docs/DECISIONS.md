@@ -469,13 +469,13 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ## Current delivery state
 
-`SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is the active delivery slice, at `resources/specs/active/006-explorer-ux-ui-fidelity.md`. No specification remains planned.
+`SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`. No specification is currently active or planned.
 
 SPEC-006 raises the interface fidelity of the surfaces SPEC-001 through SPEC-005 delivered. It is bounded to UX/UI: it does not alter product scope, authorization, governance lifecycle, publication authority, archival, audit history, data semantics or security, and it introduces no database change. Where its UX reference conflicts with an implemented contract, the contract wins.
 
 Activating it is governance bookkeeping under the repository methodology, not a new product decision.
 
-Its six implementation phases are delivered. Validation confirmed the boundaries it was required to preserve: Admin-only governed-content mutation, the non-Admin published reader boundary, `Draft -> Published`, successor revisions leaving the published version current, published-revision immutability, and archival/restoration semantics. No migration, RLS policy, governance RPC, Storage rule, role or lifecycle state was added or changed. Personal Itinerary and a prototype `Guía` capability both remain outside the delivered slice, and no review workflow was reintroduced. SPEC-006 stays active pending independent review.
+Its six implementation phases are completed. Validation confirmed the boundaries it was required to preserve: Admin-only governed-content mutation, the non-Admin published reader boundary, `Draft -> Published`, successor revisions leaving the published version current, published-revision immutability, and archival/restoration semantics. No migration, RLS policy, governance RPC, Storage rule, role or lifecycle state was added or changed. Personal Itinerary and a prototype `Guía` capability both remain outside the delivered slice, and no review workflow was reintroduced.
 
 ---
 
@@ -565,12 +565,22 @@ This is an operational validation-governance decision. It changes no archival se
 
 ---
 
+### G-006 — SPEC-006 Explorer UX/UI Fidelity & Interaction Layer
+
+**State:** COMPLETED — SIX PHASES, INDEPENDENT VERIFICATION, AND VALIDATION VERIFIED
+
+SPEC-006 is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`. Phases 1–6 were completed, with each phase independently reviewed before progression. The final implementation and validation commit is `116457eb401914788705d6370b68d350f38b09f6`; the final independent review returned `PASS — SPEC-006 READY FOR CLOSURE TASK`, with no merge blockers or fixes required.
+
+Validation covered 385 unit/integration tests, typecheck, lint, production build, 75 development E2E journeys, 75 production-mode E2E journeys, the recorded responsive viewport matrix, keyboard and accessibility behavior, and removal of the temporary development primitives harness after its unique coverage moved to production surfaces. Durable documentation and the approved UX reference relationship were reconciled. The implementation preserved the product, data, authorization, security and governance contracts: no migration, RLS, governance RPC, Storage, authentication, role or lifecycle change was introduced. Personal Itinerary remains approved but separately delivered, and Guide remains outside the delivered scope.
+
+---
+
 ## Product Coherence OS state
 
 Current overall state:
 
-**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-005 COMPLETED**
+**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-006 COMPLETED**
 
-SPEC-001 through SPEC-005 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-005 closed as **COHERENCE VERIFIED**: intent, specification, implementation, security posture, functional validation and durable knowledge are reconciled under the evidence split recorded in G-005.
+SPEC-001 through SPEC-006 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
 
-SPEC-006 is now the active delivery slice. It is an interface-fidelity slice over already-verified product behaviour, so it does not reopen the contracts reconciled above.
+No specification is currently active or planned. The completed SPEC-006 interface-fidelity slice does not reopen the contracts reconciled above, and no Guide capability was delivered.

@@ -1,9 +1,10 @@
 # SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer
 
-**Status:** ACTIVE  
-**Methodology state:** IMPLEMENTATION READY  
+**Status:** COMPLETED — IMPLEMENTED, INDEPENDENTLY VERIFIED, AND VALIDATED
+**Methodology state:** CLOSED
 **Depends on:** SPEC-001, SPEC-002, SPEC-003, SPEC-004, SPEC-005  
 **Product language:** Spanish-first
+**Closure verified:** 2026-09-18
 
 ## UX/UI reference
 
@@ -1406,7 +1407,7 @@ Prototype concepts without equivalent authoritative product approval, such as a 
 
 # Phase 6 Validation Evidence
 
-Recorded by the Phase 6 implementation/validation pass. **Status remains ACTIVE**: this is implementation evidence, not independent verification. Closure follows a separate review.
+Recorded by the Phase 6 implementation/validation pass. At the time of recording, the specification was ACTIVE; this is implementation evidence, not independent verification. Closure is recorded below.
 
 ## Surfaces exercised
 
@@ -1437,3 +1438,11 @@ Removed. Every behaviour the Phase 1 harness covered — dialog semantics and na
 ## Contracts re-verified
 
 Admin-only governed-content mutation; non-Admin published-reader boundary (every management route redirects a reader to `/access-denied`, and no Admin destination appears in reader markup at any width); `Draft -> Published`; successor Draft leaving the published version current and reader-visible; published revisions read-only; archival and restoration semantics including the active-Draft blocker; suggestions returning no Draft or archived content. No migration, RLS policy, governance RPC, Storage rule, auth change, role or lifecycle state was added or modified. Personal Itinerary remains an approved capability outside this delivery slice; a prototype `Guía` capability remains excluded; no review-workflow state was reintroduced.
+
+## Closure Evidence
+
+SPEC-006 is closed after completion of implementation Phases 1–6. Each phase received the required independent review before progression. The final Phase 6 implementation and validation commit is `116457eb401914788705d6370b68d350f38b09f6`, and the final independent review returned `PASS — SPEC-006 READY FOR CLOSURE TASK`; it found no merge blockers and no fixes required.
+
+Automated validation passed: 385 unit/integration tests, typecheck, lint, production build, 75 development E2E journeys, 75 production-mode E2E journeys, and `git diff --check`. Responsive validation covered the recorded viewport matrix; keyboard and accessibility behavior were validated; the temporary development primitives harness was removed after its unique coverage moved to production surfaces; and durable documentation was reconciled. The production-mode E2E result is local validation and is not a claim about hosted production functional validation.
+
+The reviewed implementation preserved Admin-only governed-content mutation, the non-Admin current-published reader boundary, `Draft -> Published`, successor revision semantics, Published revision immutability, canonical module routing, attachment privacy, and archival/restoration semantics. No database, migration, RLS, governance RPC, Storage, authentication, role, lifecycle, or security-boundary change was introduced. Personal Itinerary remains approved but separately delivered, and Guide remains outside the delivered scope.
