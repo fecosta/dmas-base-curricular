@@ -18,9 +18,9 @@ export function isActiveNavPath(pathname: string | null | undefined, href: strin
  * The reference is a single-surface explorer, so its header search is
  * unambiguously the Library search. Production also serves Admin content
  * management, where a field that silently searches the published Library would
- * be ambiguous, and a development harness that owns its own search input. The
- * shell search is therefore scoped to the reader surfaces it actually acts on:
- * the application home and the Library.
+ * be ambiguous and would sit beside the relationship pickers' own search
+ * fields. The shell search is therefore scoped to the reader surfaces it
+ * actually acts on: the application home and the Library.
  */
 export function isLibrarySearchPath(pathname: string | null | undefined) {
   if (!pathname) return false;

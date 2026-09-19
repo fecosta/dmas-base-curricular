@@ -229,8 +229,8 @@ test("archived management pages through the full three-part keyset without skipp
     created.push(material.contentId);
   }
 
-  // Only archived entries render an h4 on this surface, so the count is the page size.
-  const entryTitles = page.getByRole("heading", { level: 4 });
+  // Only archived entries render an h3 on this surface, so the count is the page size.
+  const entryTitles = page.getByRole("heading", { level: 3 });
   await page.goto("/app/contributions?state=archived");
   await expect(entryTitles).toHaveCount(20);
   const first = await entryTitles.allInnerTexts();

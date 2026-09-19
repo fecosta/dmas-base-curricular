@@ -70,7 +70,9 @@ function ArchivedEntry({ entry }: { entry: ArchivedContentSummary }) {
           {` · Archivado el ${formatGovernanceTimestamp(entry.archivedAt)}`}
         </p>
       </div>
-      <h4 className="mt-2 text-card font-bold">{title}</h4>
+      {/* h3, not h4: both archived listings sit directly under the section's own
+          h2, unlike the active listing where a per-type h3 comes between. */}
+      <h3 className="mt-2 text-card font-bold">{title}</h3>
       {/* An archived identity whose published metadata cannot be resolved still has
           to be restorable, so it is shown with its stable id rather than dropped. */}
       {entry.title === null && <p className="mt-1 text-control text-ink-muted">Identificador: {entry.contentId}</p>}

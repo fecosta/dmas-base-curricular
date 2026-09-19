@@ -315,6 +315,24 @@ test.describe("mobile filter drawer", () => {
     await expect(page.getByRole("button", { name: "Filtros 1" })).toBeVisible();
   });
 
+  /*
+   * While a modal overlay holds focus, the Library's "/" shortcut must not pull
+   * it out to the header search behind the scrim — that would undo the
+   * containment the overlay exists to provide.
+   */
+  test("keeps focus when the / shortcut is pressed while it is open", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/app/library");
+
+    await filtersTrigger(page).click();
+    await expect(filtersDrawer(page)).toBeVisible();
+
+    await page.keyboard.press("/");
+
+    expect(await filtersDrawer(page).evaluate((node) => node.contains(document.activeElement))).toBe(true);
+    await expect(search(page)).not.toBeFocused();
+  });
+
   test("is reachable and operable by keyboard alone", async ({ page }) => {
     await signIn(page);
     await page.goto("/app/library");
@@ -505,6 +523,30 @@ test.describe("search suggestions", () => {
     await expect.poll(() => applied(page).get("q")).toBe(marker);
     expect(applied(page).get("view")).toBe("programa");
     expect(applied(page).get("entity")).toBe("module");
+  });
+
+  /*
+   * The shortcut used to be validated on the Phase 1 primitives harness. It
+   * belongs here now: the Library's header search is the only control in
+   * production that claims it, and what matters is that it works there.
+   */
+  test("the / shortcut focuses the search from the page but stays a character inside a field", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/app/library");
+
+    // Focus is on the page, not in a field.
+    await page.getByRole("heading", { name: "Biblioteca", exact: true }).click();
+    await expect(search(page)).not.toBeFocused();
+
+    await page.keyboard.press("/");
+    await expect(search(page)).toBeFocused();
+    // The shortcut must not also type the character it was pressed with.
+    await expect(search(page)).toHaveValue("");
+
+    // Inside a text field, "/" is a character rather than a command.
+    await search(page).fill("campaña");
+    await page.keyboard.press("/");
+    await expect(search(page)).toHaveValue("campaña/");
   });
 
   test("does not query for a query too short to mean anything", async ({ page }) => {

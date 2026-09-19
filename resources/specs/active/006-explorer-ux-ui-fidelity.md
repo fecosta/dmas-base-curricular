@@ -1402,3 +1402,38 @@ It is not:
 Its implementation, persistence, export and detailed UX require a separate delivery slice, not a new decision that the capability exists.
 
 Prototype concepts without equivalent authoritative product approval, such as a standalone Guide capability, remain future candidates requiring separate authority before implementation.
+---
+
+# Phase 6 Validation Evidence
+
+Recorded by the Phase 6 implementation/validation pass. **Status remains ACTIVE**: this is implementation evidence, not independent verification. Closure follows a separate review.
+
+## Surfaces exercised
+
+Application shell (wide, compact, mobile sheet, header search, account/organization/role, Admin-only navigation, sign-out); Library Explorer (search, suggestions, filter panel, filter chips, active-filter removal, mobile drawer, Grilla, Programa, empty states, cards, Material/Institution references, URL persistence); module detail (contextual overlay, canonical route, direct entry, reload, Back, Forward, Escape, close control, scrim, focus entry/containment/restoration, scroll lock, mobile full-screen, navigation out to references); content management (landing, filters, creation picker, all six governed types, create forms, Draft edit, Published read-only, successor Draft, relationships, attachments, publication, archive disclosure, restore, history, validation errors, mobile composition).
+
+## Responsive
+
+Validated at 1440, 1280, 1180, 1024, 900, 768 and 390 px for reader and Admin across the Library (Grilla, Programa, filtered, empty), the standalone module, a reference page, the application home, the management landing, the archived view, the creation picker, two create forms, a Draft detail, a Published detail and the governance history. No horizontal overflow, clipped content, inaccessible control or broken sticky behaviour was found at any width. The compact navigation boundary behaves as intended: inline destinations through 1180 px, the modal sheet below it, never both, and the Admin destination never reaches non-Admin markup at any width.
+
+## Keyboard
+
+Exercised: the `/` shortcut on the Library (focuses the header search, does not type the character, stays a character inside a field, and does not pull focus out of an open modal); suggestion arrow navigation with wrap, `aria-activedescendant`, Enter to open, Escape to dismiss without clearing the query; the mobile navigation sheet and the Library filter drawer (open by Enter, focus contained, Escape, focus restored to the trigger); the module overlay (initial focus on the named panel, Tab and Shift+Tab containment, Escape returning to the exact Library URL with focus back on the originating card); management filters, creation cards, every form control, relationship search, relationship checkboxes, removal chips, lifecycle actions and the archive disclosure.
+
+## Accessibility
+
+One `h1` per surface across fifteen surfaces; no duplicate element ids, including while the module overlay shares a document with the Library; every `aria-labelledby` and `aria-describedby` resolves; every form control, link and button carries an accessible name; navigation, dialogs and drawers are named; a visible 2 px focus outline on every sampled control; the skip link resolves to its target; state is communicated in words as well as colour; overlay motion is suppressed under `prefers-reduced-motion` while the overlays still open and dismiss. One defect was found and fixed: the archived management cards skipped from `h2` to `h4`.
+
+## Corrections made in Phase 6
+
+1. **A rejected save discarded the Admin's work.** React resets an uncontrolled `<form action={…}>` once its action returns, so a validation failure cleared every entered value — and on an existing Draft silently restored the persisted values under an error message. The relationship picker was worse: its checkboxes were reset in the DOM while the chips and count still showed the selection, so the next save would have dropped the relationship. `saveContribution` now returns the submitted values with the error and the fieldset is keyed on the attempt, so the form restores exactly what was entered. Required by §14.5.
+2. **Focus was dropped to the document after a rejected save,** because the submit control is disabled while the action runs. It is now returned to that control; the error `role="alert"` already announced the failure.
+3. **Archived management cards used `h4` directly under an `h2`.** They are now `h3`.
+
+## `/app/ui-primitives`
+
+Removed. Every behaviour the Phase 1 harness covered — dialog semantics and naming, initial focus, focus containment, scroll lock, Escape, focus restoration, close control, scrim dismissal, full-screen sizing, drawer geometry from both edges — is now asserted on real production surfaces by `module-detail.spec.ts`, `library-explorer.spec.ts` and `shell.spec.ts`, in most cases more meaningfully than the harness did. The only coverage without a production equivalent was the `/` shortcut; it was migrated to `library-explorer.spec.ts` against the Library's own header search before the route was deleted. The production build exposes no development-only route.
+
+## Contracts re-verified
+
+Admin-only governed-content mutation; non-Admin published-reader boundary (every management route redirects a reader to `/access-denied`, and no Admin destination appears in reader markup at any width); `Draft -> Published`; successor Draft leaving the published version current and reader-visible; published revisions read-only; archival and restoration semantics including the active-Draft blocker; suggestions returning no Draft or archived content. No migration, RLS policy, governance RPC, Storage rule, auth change, role or lifecycle state was added or modified. Personal Itinerary remains an approved capability outside this delivery slice; a prototype `Guía` capability remains excluded; no review-workflow state was reintroduced.

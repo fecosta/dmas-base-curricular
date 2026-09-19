@@ -31,8 +31,8 @@ describe("shell search scope", () => {
   it("stays off surfaces where a Library search would be ambiguous", () => {
     expect(isLibrarySearchPath("/app/contributions")).toBe(false);
     expect(isLibrarySearchPath("/app/contributions/history")).toBe(false);
-    // The development harness owns its own search input.
-    expect(isLibrarySearchPath("/app/ui-primitives")).toBe(false);
+    // A content form carries search fields of its own, for relationships.
+    expect(isLibrarySearchPath("/app/contributions/new/module")).toBe(false);
   });
 
   it("does not match a sibling that merely shares a prefix", () => {
@@ -46,7 +46,7 @@ describe("ShellSearch", () => {
 
   it("renders nothing outside the surfaces it is scoped to", () => {
     expect(render("/app/contributions")).toBe("");
-    expect(render("/app/ui-primitives")).toBe("");
+    expect(render("/app/contributions/new/module")).toBe("");
   });
 
   it("submits to the canonical Library route over GET", () => {

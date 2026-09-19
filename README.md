@@ -29,6 +29,8 @@ SPEC-005 completes the governance lifecycle with Admin-only, identity-level arch
 
 SPEC-003 provides verified contribution, provenance, pending-revision, lifecycle-event, and private-attachment foundations. D-030 supersedes Contributor authoring as active product behavior but does not erase SPEC-003 implementation history.
 
+SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is implemented across its six phases and **awaits independent review**; it remains the active specification. It brings the interface to the approved Explorer direction without touching product, authorization, governance, data or security contracts: an Explorer-style application shell with compact and mobile navigation and a header Library search; the Library as a filter column beside results, collapsing to an accessible filter drawer at narrow widths, with `Grilla` and `Programa`; grouped, keyboard-operable search suggestions served over an authenticated boundary that returns only current published content; a contextual module overlay that preserves the canonical `/app/library/modules/[id]` URL, so direct visits, reloads, Back and Forward all stay coherent; and the same Explorer language applied to Admin content management. No migration, RLS policy, RPC, Storage rule or role changed, and the production build exposes no development-only route.
+
 ## Documentation
 
 Start with:

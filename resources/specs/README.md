@@ -58,7 +58,7 @@ SPEC-005 is completed at [`completed/005-audit-history-archival.md`](completed/0
 
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 
-SPEC-006 depends on SPEC-001 through SPEC-005 because it raises the interface fidelity of surfaces those slices delivered. It is a UX/UI slice: it must not alter product scope, authorization, governance lifecycle, publication, archival, audit, data semantics or security. Personal Itinerary remains an approved product capability delivered separately, and is outside SPEC-006's implementation scope.
+SPEC-006's six implementation phases are delivered and await independent review; it stays in `active/` until that review passes. SPEC-006 depends on SPEC-001 through SPEC-005 because it raises the interface fidelity of surfaces those slices delivered. It is a UX/UI slice: it must not alter product scope, authorization, governance lifecycle, publication, archival, audit, data semantics or security. Personal Itinerary remains an approved product capability delivered separately, and is outside SPEC-006's implementation scope.
 
 ## Authoritative product sources
 

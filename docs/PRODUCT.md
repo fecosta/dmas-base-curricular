@@ -56,12 +56,12 @@ The product also distinguishes **References**, including institutions and materi
 
 Users can browse modules and reference content, search across the knowledge base, and narrow results through filters such as axis, country, and theme.
 
-The latest static prototype includes two module views:
+The Library provides two module views:
 
 - **Grid (`Grilla`)**
 - **Program (`Programa`)**
 
-These are alternative ways of exploring the same content, not different learning paths.
+These are alternative ways of exploring the same content, not different learning paths. Applied search, filters and the chosen view are carried in the URL, so a narrowed Library can be reloaded and shared.
 
 ### 4.2 View module context
 

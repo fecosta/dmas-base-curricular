@@ -475,6 +475,8 @@ SPEC-006 raises the interface fidelity of the surfaces SPEC-001 through SPEC-005
 
 Activating it is governance bookkeeping under the repository methodology, not a new product decision.
 
+Its six implementation phases are delivered. Validation confirmed the boundaries it was required to preserve: Admin-only governed-content mutation, the non-Admin published reader boundary, `Draft -> Published`, successor revisions leaving the published version current, published-revision immutability, and archival/restoration semantics. No migration, RLS policy, governance RPC, Storage rule, role or lifecycle state was added or changed. Personal Itinerary and a prototype `Guía` capability both remain outside the delivered slice, and no review workflow was reintroduced. SPEC-006 stays active pending independent review.
+
 ---
 
 ## Delivery history
