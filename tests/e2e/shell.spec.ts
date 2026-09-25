@@ -115,6 +115,17 @@ test("the header marks the current destination", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Biblioteca", exact: true })).not.toHaveAttribute("aria-current", "page");
 });
 
+test("the D+ application icon is declared and served without a session", async ({ page, request }) => {
+  await page.goto("/login");
+  const href = await page.locator('head link[rel="icon"]').getAttribute("href");
+  expect(href).toMatch(/^\/icon\.svg/);
+
+  const icon = await request.get(href!, { maxRedirects: 0 });
+  expect(icon.status()).toBe(200);
+  expect(icon.headers()["content-type"]).toContain("image/svg+xml");
+  expect(await icon.text()).toContain("#0013c1");
+});
+
 test("the compact sheet carries destinations, session and sign-out, and is keyboard operable", async ({ page }) => {
   await signIn(page, "Admin");
   await page.setViewportSize({ width: 390, height: 844 });
