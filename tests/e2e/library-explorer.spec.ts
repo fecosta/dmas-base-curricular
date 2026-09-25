@@ -251,6 +251,59 @@ test.describe("Grid and Programa", () => {
     await expect(page.getByText(`Mapeo de actores ${marker}`)).toBeVisible();
   });
 
+  /*
+   * Programa is curricular module structure. Reference surfaces offer no Vista
+   * control and render a grid, even when the URL still carries view=programa, so
+   * returning to a module-capable surface restores the reader's layout.
+   */
+  test("Programa is offered only on module-capable surfaces", async ({ page }) => {
+    await signIn(page);
+    const vista = page.getByRole("group", { name: "Vista" });
+    const tipo = page.getByRole("group", { name: "Tipo" });
+
+    await page.goto(`/app/library?q=${encodeURIComponent(marker)}&view=programa`);
+    await expect(vista.getByRole("link", { name: "Grilla", exact: true })).toBeVisible();
+    await expect(vista.getByRole("link", { name: "Programa", exact: true })).toHaveAttribute("aria-current", "page");
+
+    await tipo.getByRole("link", { name: "Módulos", exact: true }).click();
+    await expect.poll(() => applied(page).get("entity")).toBe("module");
+    await expect(vista.getByRole("link", { name: "Programa", exact: true })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("link", { name: `Ver programa: ${MODULE_A}` })).toBeVisible();
+
+    for (const [label, entity, title] of [["Materiales", "material", MATERIAL], ["Instituciones", "institution", INSTITUTION]]) {
+      await tipo.getByRole("link", { name: label, exact: true }).click();
+      await expect.poll(() => applied(page).get("entity")).toBe(entity);
+      expect(applied(page).get("view")).toBe("programa");
+      await expect(vista).toHaveCount(0);
+      await expect(page.getByRole("link", { name: "Programa", exact: true })).toHaveCount(0);
+      await expect(page.getByRole("heading", { name: title })).toBeVisible();
+    }
+
+    // Back to modules: the preserved view=programa restores the module layout.
+    await tipo.getByRole("link", { name: "Módulos", exact: true }).click();
+    await expect.poll(() => applied(page).get("entity")).toBe("module");
+    await expect(vista.getByRole("link", { name: "Programa", exact: true })).toHaveAttribute("aria-current", "page");
+
+    // History walks the same states.
+    await page.goBack();
+    await expect.poll(() => applied(page).get("entity")).toBe("institution");
+    await expect(vista).toHaveCount(0);
+    await page.goForward();
+    await expect.poll(() => applied(page).get("entity")).toBe("module");
+    await expect(vista.getByRole("link", { name: "Programa", exact: true })).toHaveAttribute("aria-current", "page");
+  });
+
+  test("a stale reference deep link with view=programa renders as a grid without error", async ({ page }) => {
+    await signIn(page);
+    for (const [entity, title] of [["material", MATERIAL], ["institution", INSTITUTION]]) {
+      const response = await page.goto(`/app/library?q=${encodeURIComponent(marker)}&entity=${entity}&view=programa`);
+      expect(response?.status()).toBe(200);
+      await expect(page.getByRole("group", { name: "Vista" })).toHaveCount(0);
+      await expect(page.getByRole("heading", { name: title })).toBeVisible();
+      expect(applied(page).get("view")).toBe("programa");
+    }
+  });
+
   test("both views reach the canonical module route", async ({ page }) => {
     await signIn(page);
 
@@ -344,6 +397,51 @@ test.describe("mobile filter drawer", () => {
     await expect(filtersDrawer(page)).toBeHidden();
     await expect(filtersTrigger(page)).toBeFocused();
   });
+});
+
+/*
+ * The native modal <dialog> contract, held for the two compact overlays the
+ * Library can open (module detail is covered in module-detail.spec.ts): the page
+ * behind is inert and scroll-locked, only the open overlay responds to its
+ * scrim, and dismissal gives focus back to the control that opened it.
+ */
+test.describe("modal overlay contract", () => {
+  test.use({ viewport: { width: NARROW, height: 900 } });
+
+  const overlays = [
+    // The filter drawer is anchored left, the menu sheet right: the opposite edge is scrim.
+    { name: "Filtros", trigger: filtersTrigger, dialog: filtersDrawer, scrim: { x: NARROW - 6, y: 450 } },
+    { name: "Menú", trigger: (page: Page) => page.getByRole("button", { name: "Menú" }), dialog: (page: Page) => page.getByRole("dialog", { name: "Menú" }), scrim: { x: 6, y: 450 } },
+  ];
+
+  for (const overlay of overlays) {
+    test(`${overlay.name}: background inert and locked, scrim dismisses, focus returns`, async ({ page }) => {
+      await signIn(page);
+      await page.goto("/app/library");
+
+      await overlay.trigger(page).click();
+      await expect(overlay.dialog(page)).toBeVisible();
+      await expect(page.locator("dialog[open]")).toHaveCount(1);
+      await expect.poll(() => page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe("hidden");
+      expect(await page.evaluate(() => {
+        const behind = document.querySelector("header a");
+        (behind as HTMLElement | null)?.focus();
+        return document.activeElement === behind;
+      })).toBe(false);
+      await page.keyboard.press("/");
+      await expect(search(page)).not.toBeFocused();
+
+      // Settle the entrance so the click lands on the scrim, not a moving panel.
+      await overlay.dialog(page).evaluate((node) => Promise.all(node.getAnimations({ subtree: true }).map((a) => a.finished)));
+      await page.mouse.click(overlay.scrim.x, overlay.scrim.y);
+
+      await expect(overlay.dialog(page)).toBeHidden();
+      await expect(page.locator("dialog[open]")).toHaveCount(0);
+      await expect.poll(() => page.evaluate(() => getComputedStyle(document.documentElement).overflow)).not.toBe("hidden");
+      await expect(overlay.trigger(page)).toBeFocused();
+      await expect(overlay.trigger(page)).toHaveAttribute("aria-expanded", "false");
+    });
+  }
 });
 
 test.describe("search suggestions", () => {
@@ -591,6 +689,60 @@ test("the Explorer fits every validated width without horizontal overflow", asyn
     // And the results keep the width the sidebar is not using.
     const results = (await page.getByRole("article").first().boundingBox())!;
     expect(results.width, `card collapsed at ${width}px`).toBeGreaterThan(220);
+  }
+});
+
+/*
+ * The header search at every validated width: it never overlaps another header
+ * control, its placeholder fits in the room the field leaves for text, the "/"
+ * hint appears only from the explorer breakpoint up, and the shortcut itself
+ * works everywhere.
+ */
+test("the header search adapts to every validated width without collision", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/app/library");
+  const header = page.locator("header");
+  const hint = header.locator("form[role=search] span[aria-hidden=true]", { hasText: "/" });
+
+  for (const width of ALL_WIDTHS) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect(search(page)).toBeVisible();
+    await expect(search(page)).toHaveAttribute("placeholder", "Buscar en la base…");
+
+    const geometry = await page.evaluate(() => {
+      const form = document.querySelector("header form[role=search]")!;
+      const input = form.querySelector("input[type=search]") as HTMLInputElement;
+      const style = getComputedStyle(input);
+      const context = document.createElement("canvas").getContext("2d")!;
+      context.font = style.font;
+      const textRoom = input.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      const box = form.getBoundingClientRect();
+      const others = [...document.querySelectorAll("header a, header button, header nav, header span.rounded-full")]
+        .filter((node) => !form.contains(node) && node.getClientRects().length > 0)
+        .map((node) => ({ name: node.textContent?.trim() ?? node.tagName, rect: node.getBoundingClientRect() }));
+      const collisions = others
+        .filter(({ rect }) => rect.left < box.right && rect.right > box.left && rect.top < box.bottom && rect.bottom > box.top)
+        .map(({ name }) => name);
+      return {
+        placeholderFits: context.measureText(input.placeholder).width <= textRoom,
+        textEnd: input.getBoundingClientRect().right - parseFloat(style.paddingRight),
+        collisions,
+      };
+    });
+    expect(geometry.collisions, `header collision at ${width}px`).toEqual([]);
+    expect(geometry.placeholderFits, `placeholder truncated at ${width}px`).toBe(true);
+
+    if (width >= 900) {
+      await expect(hint).toBeVisible();
+      // The hint sits in the padding the input reserves for it, clear of text.
+      expect((await hint.boundingBox())!.x, `hint over text at ${width}px`).toBeGreaterThanOrEqual(geometry.textEnd - 0.5);
+    } else {
+      await expect(hint).toBeHidden();
+    }
+
+    await page.getByRole("heading", { name: "Biblioteca", exact: true }).click();
+    await page.keyboard.press("/");
+    await expect(search(page), `/ shortcut at ${width}px`).toBeFocused();
   }
 });
 
