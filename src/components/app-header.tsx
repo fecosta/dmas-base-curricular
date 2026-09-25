@@ -51,7 +51,8 @@ export function AppHeader({ items, organizationName, roleLabel }: {
       <Container width="wide" className="flex h-16 items-center gap-3 compact:gap-5">
         <Link href="/app" prefetch={false} className="flex shrink-0 items-center gap-2.5 no-underline hover:no-underline">
           <span aria-hidden="true" className="grid size-8 place-items-center rounded-[10px] bg-primary text-control font-black text-white">D+</span>
-          <span className="leading-tight">
+          {/* On phones the wordmark yields its width to the search; it stays the link's accessible name. */}
+          <span className="sr-only leading-tight sm:not-sr-only">
             <span className="block text-[0.9375rem] font-extrabold tracking-[-0.02em] text-ink">Base Curricular</span>
             <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-label">Democracia+</span>
           </span>

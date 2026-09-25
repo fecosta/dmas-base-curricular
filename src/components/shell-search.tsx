@@ -110,7 +110,7 @@ function LibrarySearchForm({ className }: { className?: string }) {
       label="Buscar en la biblioteca"
       name="q"
       defaultValue={applied}
-      placeholder="Buscar tema, docente o institución…"
+      placeholder="Buscar en la base…"
       autoComplete="off"
       role="combobox"
       aria-expanded={expanded}

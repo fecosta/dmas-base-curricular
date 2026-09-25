@@ -126,6 +126,12 @@ describe("ShellSearch suggestions", () => {
     expect(html).not.toContain("aria-activedescendant");
   });
 
+  it("promises only what search returns, in one placeholder for every width", () => {
+    const html = render("/app/library");
+    expect(html).toContain('placeholder="Buscar en la base…"');
+    expect(html).not.toContain("docente");
+  });
+
   it("keeps the / shortcut the shell search has always advertised", () => {
     expect(render("/app/library")).toContain('aria-keyshortcuts="/"');
   });

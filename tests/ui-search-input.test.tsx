@@ -50,6 +50,14 @@ describe("SearchInput", () => {
     expect(html).not.toContain(">/</span>");
   });
 
+  it("shows the / hint only where the explorer breakpoint leaves room, reserving its padding only there", () => {
+    const html = render();
+    expect(html).toMatch(/class="[^"]*\bhidden\b[^"]*\bexplorer:block\b[^"]*">\/<\/span>/);
+    expect(html).toMatch(/<input[^>]*class="[^"]*\bpr-4 explorer:pr-9\b/);
+    // Hiding the hint never hides the shortcut from assistive technology.
+    expect(html).toContain('aria-keyshortcuts="/"');
+  });
+
   it("keeps the decorative glyph and key hint out of the accessible name", () => {
     const html = render();
     expect(html).toContain('<span aria-hidden="true" class="pointer-events-none absolute left-3.5 text-sm text-label">⌕</span>');

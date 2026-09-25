@@ -70,12 +70,14 @@ export function SearchInput({
         // Matches the global control rule: 16px below the explorer breakpoint so
         // iOS Safari does not zoom the viewport on focus.
         "mt-0 rounded-full border-hairline py-2.5 pl-9 text-base explorer:text-control",
-        shortcut ? "pr-9" : "pr-4",
+        // The hint only earns its space from the explorer breakpoint up; below it
+        // the field keeps that width. The shortcut and its ARIA work at every width.
+        shortcut ? "pr-4 explorer:pr-9" : "pr-4",
       )}
     />
     {shortcut && <span
       aria-hidden="true"
-      className="pointer-events-none absolute right-3 rounded-sm bg-hairline px-1.5 py-0.5 text-meta font-bold tracking-normal text-label"
+      className="pointer-events-none absolute right-3 hidden rounded-sm bg-hairline px-1.5 py-0.5 text-meta font-bold tracking-normal text-label explorer:block"
     >/</span>}
   </div>;
 }
