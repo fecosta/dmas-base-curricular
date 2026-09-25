@@ -469,7 +469,7 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ## Current delivery state
 
-`SPEC-007` — UX/UI Navigation & Interaction Remediation is **ACTIVE — IMPLEMENTATION READY** at `resources/specs/active/007-ux-ui-navigation-interaction-remediation.md`. No specification is planned.
+`SPEC-007` — UX/UI Navigation & Interaction Remediation is **ACTIVE — IMPLEMENTED, INDEPENDENT COHERENCE REVIEW REQUIRED** at `resources/specs/active/007-ux-ui-navigation-interaction-remediation.md`. No specification is planned.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 
@@ -585,4 +585,4 @@ Current overall state:
 
 SPEC-001 through SPEC-006 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
 
-SPEC-007 — UX/UI Navigation & Interaction Remediation is active and implementation ready; no specification is planned. The completed SPEC-006 interface-fidelity slice and the active SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.
+SPEC-007 — UX/UI Navigation & Interaction Remediation is active, implemented and awaiting independent review; no specification is planned. The completed SPEC-006 interface-fidelity slice and the active SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.

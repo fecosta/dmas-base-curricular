@@ -63,6 +63,8 @@ The Library provides two module views:
 
 These are alternative ways of exploring the same content, not different learning paths. Applied search, filters and the chosen view are carried in the URL, so a narrowed Library can be reloaded and shared.
 
+`Programa` presents curricular module structure, so it applies only to module-capable surfaces (`Todo`, `Módulos`). Reference surfaces (`Materiales`, `Instituciones`) render as a grid and do not offer the view choice; a chosen `Programa` view carried in the URL is kept and applies again when the reader returns to a module-capable surface.
+
 ### 4.2 View module context
 
 A module may aggregate:

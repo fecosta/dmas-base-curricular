@@ -1,6 +1,6 @@
 # SPEC-007 — UX/UI Navigation & Interaction Remediation
 
-**Status:** ACTIVE — IMPLEMENTATION READY\
+**Status:** ACTIVE — IMPLEMENTED, INDEPENDENT COHERENCE REVIEW REQUIRED\
 **Type:** UX/UI remediation\
 **UX reference:** `resources/ux-ui/Base Curricular - Explorador (offline).html`\
 **Depends on:** SPEC-001 through SPEC-006 (completed); the current Library Explorer, application shell and published-content model\
@@ -445,3 +445,33 @@ SPEC-007 is implementation-complete when:
 At that point the SPEC may move to:
 
 **COMPLETED — VALIDATED**
+
+---
+
+## 17. Implementation evidence
+
+Implemented on branch `feat/spec-007-ux-remediation` from `main @ cab16d91f27e86339978a8e5ff509c415075283f`. Completion requires independent review against AC-1 to AC-16; this section is implementation evidence, not closure.
+
+### What changed
+
+- **UXR-1:** placeholder `Buscar en la base…` at every width; the visual `/` hint and its reserved padding apply from `--breakpoint-explorer` (900px) up, via CSS only; `/` and `aria-keyshortcuts` unchanged at every width. At 390px the placeholder still did not fit with the hint hidden (87px of text room for a 148px placeholder), because the brand wordmark took the width. Below Tailwind `sm` (640px, already used in the repository) the wordmark is visually hidden and remains the brand link's accessible name. Search data, result types and suggestions are unchanged.
+- **UXR-2:** `readView` returns the effective view; `supportsProgram` limits `Programa` to `Todo`/`Módulos`. Reference surfaces (including the URL-only `entity=reference`) render no `Vista` control and render as a grid. `view=programa` is preserved in the URL (D3).
+- **UXR-3:** no code change. Existing native `<dialog>` behavior satisfied the contract under test; regression coverage was added for the filter drawer and compact menu sheet.
+- **UXR-4:** the supplied `D+SHAREDFAV.svg`, byte-identical (sha1 `5825b41c5d2bc0c89e18a1f7f0172408d28dfe25`), moved to `src/app/icon.svg` (Next.js 16.3.4 `icon` convention; `.svg` is supported). No derived raster files.
+
+No migration, schema, search-function, RLS, Storage, authentication, role or governance change.
+
+### Automated validation
+
+- Vitest: 35 files, 389 tests passed.
+- `npm run lint`, `npm run typecheck`, `npm run build`: passed.
+- Production-mode Playwright (`E2E_PRODUCTION=1`), full suite: 78 passed, 3 failed. `archival.spec.ts:184` passed on rerun. `archival-governance.spec.ts:216` and `contributions.spec.ts:62` fail identically on unmodified `cab16d9`, so they are pre-existing and unrelated to this slice (accumulated local archived data; an Admin form-fill race).
+- Development-mode Playwright was not run: a separate `next dev` server was already running in the repository and was left untouched.
+
+New coverage: effective-view unit tests; Vista presence per `Tipo`, stale reference `view=programa` deep links, `Módulos → Materiales → Instituciones → Módulos` restoration with Back/Forward; header search collision, placeholder fit, hint visibility and `/` shortcut at 1440/1280/1180/1024/900/768/390px; drawer and menu-sheet inertness, scroll lock, scrim dismissal and focus return; `/icon.svg` declared and served without a session.
+
+### Known limits
+
+- At 320px (outside the validated matrix) the placeholder is still clipped by about 10px.
+- The icon is SVG only. Browsers without SVG favicon support show no tab icon. An `apple-icon.png` is not included.
+- Visual checks were Playwright Chromium screenshots of the header at each validated width and of the rendered icon. A real browser tab, Safari and Firefox were not checked.
