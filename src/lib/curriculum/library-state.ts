@@ -33,8 +33,18 @@ export function readEntity(query: LibraryQuery): LibraryEntity | undefined {
   return (libraryEntities as readonly string[]).includes(value) ? value as LibraryEntity : undefined;
 }
 
+/** Programa is curricular module structure, so only surfaces that list modules can present it. */
+export function supportsProgram(entity: LibraryEntity | undefined) {
+  return entity === undefined || entity === "module";
+}
+
+/**
+ * The layout actually rendered. On a reference surface `view=programa` renders
+ * as Grilla without rewriting the URL, so returning to a module-capable surface
+ * restores the reader's Programa layout.
+ */
 export function readView(query: LibraryQuery): LibraryView {
-  return paramValue(query, "view") === "programa" ? "programa" : "grilla";
+  return paramValue(query, "view") === "programa" && supportsProgram(readEntity(query)) ? "programa" : "grilla";
 }
 
 /**

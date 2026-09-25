@@ -5,6 +5,7 @@ import {
   entityHref,
   readEntity,
   readView,
+  supportsProgram,
 } from "@/lib/curriculum/library-state";
 
 const axes = [
@@ -41,6 +42,23 @@ describe("reading Library URL state", () => {
     expect(readView({ view: "grilla" })).toBe("grilla");
     expect(readView({ view: "lista" })).toBe("grilla");
     expect(readView({})).toBe("grilla");
+  });
+
+  it("offers Programa only on module-capable surfaces", () => {
+    expect(supportsProgram(undefined)).toBe(true);
+    expect(supportsProgram("module")).toBe(true);
+    expect(supportsProgram("material")).toBe(false);
+    expect(supportsProgram("institution")).toBe(false);
+    expect(supportsProgram("reference")).toBe(false);
+  });
+
+  it("renders a reference surface as Grilla even when the URL still asks for Programa", () => {
+    expect(readView({ entity: "module", view: "programa" })).toBe("programa");
+    expect(readView({ entity: "material", view: "programa" })).toBe("grilla");
+    expect(readView({ entity: "institution", view: "programa" })).toBe("grilla");
+    expect(readView({ entity: "reference", view: "programa" })).toBe("grilla");
+    // An entity outside the contract reads as Todo, which can present Programa.
+    expect(readView({ entity: "otro", view: "programa" })).toBe("programa");
   });
 
   it("points each result family at its existing canonical route", () => {

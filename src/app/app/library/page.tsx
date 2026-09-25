@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getLibrary, getProgramOutlines, type SearchResult } from "@/lib/curriculum/queries";
 import { libraryHref, paramValue, type LibraryQuery } from "@/lib/curriculum/library-href";
-import { appliedFilters, clearFiltersHref, readEntity, readView } from "@/lib/curriculum/library-state";
+import { appliedFilters, clearFiltersHref, readEntity, readView, supportsProgram } from "@/lib/curriculum/library-state";
 import { axisToneResolver } from "@/lib/ui/axis-tone";
 import { Page, Container } from "@/components/ui/page";
 import { HeroBand } from "@/components/ui/page-header";
@@ -135,13 +135,13 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                 { label: "Instituciones", href: libraryHref(query, { entity: "institution" }), active: entity === "institution" },
               ]}
             />
-            <SegmentedLinks
+            {supportsProgram(entity) && <SegmentedLinks
               label="Vista"
               options={[
                 { label: "Grilla", href: libraryHref(query, { view: "grilla" }), active: view === "grilla" },
                 { label: "Programa", href: libraryHref(query, { view: "programa" }), active: view === "programa" },
               ]}
-            />
+            />}
             <LibraryFilterDrawer
               activeCount={drawerFilters}
               footer={<ClearFiltersLink query={query}>Limpiar filtros</ClearFiltersLink>}
