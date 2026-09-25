@@ -28,8 +28,9 @@ Do not move a spec to `completed/` merely because an implementation agent report
 4. `SPEC-004` — Admin Content Management & Publication — completed
 5. `SPEC-005` — Audit History & Archival — completed
 6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — completed
+7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — active, implementation ready
 
-`SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). No specification is currently active or planned.
+`SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is the active specification at [`active/007-ux-ui-navigation-interaction-remediation.md`](active/007-ux-ui-navigation-interaction-remediation.md). No specification is planned.
 
 ## Dependency model
 
@@ -50,6 +51,9 @@ SPEC-005 Audit History & Archival
           |
           v
 SPEC-006 Explorer UX/UI Fidelity & Interaction Layer
+          |
+          v
+SPEC-007 UX/UI Navigation & Interaction Remediation
 ```
 
 SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation.
@@ -59,6 +63,8 @@ SPEC-005 is completed at [`completed/005-audit-history-archival.md`](completed/0
 SPEC-003 remains a completed implementation record even though Contributor authoring is inactive under the current product contract.
 
 SPEC-006's six implementation phases are completed and independently reviewed. SPEC-006 depends on SPEC-001 through SPEC-005 because it raises the interface fidelity of surfaces those slices delivered. It is a UX/UI slice: it did not alter product scope, authorization, governance lifecycle, publication, archival, audit, data semantics or security. Personal Itinerary remains an approved product capability delivered separately, and is outside SPEC-006's implementation scope.
+
+SPEC-007 is a bounded UX/UI remediation of the surfaces SPEC-006 delivered: responsive global search, contextual `Grilla / Programa` views, an overlay regression contract and the platform favicon. It changes no product, governance, authorization, data or security contract. Prototype relationship filters and the prototype's non-Admin contribution tabs were reconciled out of its scope during technical preflight.
 
 ## Authoritative product sources
 
