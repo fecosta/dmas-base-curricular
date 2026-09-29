@@ -15,9 +15,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
-**Technical state:** SPEC-001 through SPEC-006 are completed
+**Technical state:** SPEC-001 through SPEC-007 are completed
 
-**Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification. SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is completed at [`resources/specs/completed/006-explorer-ux-ui-fidelity.md`](resources/specs/completed/006-explorer-ux-ui-fidelity.md) after independent phase reviews, Phase 6 validation, and final independent review. SPEC-007 — UX/UI Navigation & Interaction Remediation is active, implemented and awaiting independent review.
+**Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification. SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is completed at [`resources/specs/completed/006-explorer-ux-ui-fidelity.md`](resources/specs/completed/006-explorer-ux-ui-fidelity.md) after independent phase reviews, Phase 6 validation, and final independent review. SPEC-007 — UX/UI Navigation & Interaction Remediation is completed at [`resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`](resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md) after independent coherence verification.
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model remains authoritative.
 
@@ -59,9 +59,9 @@ resources/specs/
 
 The most recently completed specification is:
 
-[`resources/specs/completed/006-explorer-ux-ui-fidelity.md`](resources/specs/completed/006-explorer-ux-ui-fidelity.md)
+[`resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`](resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md)
 
-The currently active specification is [`resources/specs/active/007-ux-ui-navigation-interaction-remediation.md`](resources/specs/active/007-ux-ui-navigation-interaction-remediation.md) — SPEC-007 — UX/UI Navigation & Interaction Remediation, **ACTIVE — IMPLEMENTED, INDEPENDENT COHERENCE REVIEW REQUIRED**. SPEC-001 through SPEC-006 are completed; no specification is planned.
+No specification is currently active or planned. SPEC-001 through SPEC-007 are completed.
 
 ## Initial stack
 

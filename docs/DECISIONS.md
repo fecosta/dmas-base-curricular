@@ -469,13 +469,13 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ## Current delivery state
 
-`SPEC-007` — UX/UI Navigation & Interaction Remediation is **ACTIVE — IMPLEMENTED, INDEPENDENT COHERENCE REVIEW REQUIRED** at `resources/specs/active/007-ux-ui-navigation-interaction-remediation.md`. No specification is planned.
+`SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. No specification is active or planned.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 
 SPEC-007 is a bounded UX/UI remediation of surfaces SPEC-006 delivered: responsive global search, contextual `Grilla / Programa` views, an overlay and modal regression contract, and the platform favicon. It does not alter product scope, authorization, governance lifecycle, publication authority, archival, audit history, data semantics or security, and it requires no database change. Its draft was first added under the already-used `SPEC-006` identifier and was renumbered before implementation; technical preflight also removed two draft requirements that described prototype behavior absent from the current product — Library relationship filters for Docentes/Materiales/Instituciones, and the prototype's non-Admin tabbed contribution form, which D-030 supersedes. Where its UX reference conflicts with an implemented contract, the contract wins.
 
-Activating it is governance bookkeeping under the repository methodology, not a new product decision.
+Its activation and closure were governance bookkeeping under the repository methodology; the only product refinement was the approved mobile header wordmark adaptation (SPEC-007 D7). See G-007.
 
 Its six implementation phases are completed. Validation confirmed the boundaries it was required to preserve: Admin-only governed-content mutation, the non-Admin published reader boundary, `Draft -> Published`, successor revisions leaving the published version current, published-revision immutability, and archival/restoration semantics. No migration, RLS policy, governance RPC, Storage rule, role or lifecycle state was added or changed. Personal Itinerary and a prototype `Guía` capability both remain outside the delivered slice, and no review workflow was reintroduced.
 
@@ -577,12 +577,20 @@ Validation covered 385 unit/integration tests, typecheck, lint, production build
 
 ---
 
+### G-007 — SPEC-007 UX/UI Navigation & Interaction Remediation
+
+**State:** COMPLETED — INDEPENDENT COHERENCE VERIFICATION PASSED
+
+SPEC-007 is completed at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. Implementation HEAD `909f62887b8897b3f9a3ada0407e6827520b54d2` was independently verified against AC-1 to AC-16, all PASS. Validation covered 389 unit/integration tests, lint, typecheck, production build, the full production-mode (79 passed) and development-mode (80 passed) E2E suites, SPEC-007 journeys in WebKit, and Chromium/WebKit visual checks across the responsive matrix. The remaining E2E failures are archival and Admin-form test debt that reproduces on the pre-SPEC-007 base and touches no changed surface. After implementation the product approved one UXR-1 refinement, D7: below 640px the header wordmark is visually hidden, keeping the D+ mark and the brand link's accessible name, so search keeps its width. No migration, RLS, governance RPC, Storage, authentication, role or lifecycle change was introduced.
+
+---
+
 ## Product Coherence OS state
 
 Current overall state:
 
-**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-006 COMPLETED**
+**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-007 COMPLETED**
 
-SPEC-001 through SPEC-006 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
+SPEC-001 through SPEC-007 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
 
-SPEC-007 — UX/UI Navigation & Interaction Remediation is active, implemented and awaiting independent review; no specification is planned. The completed SPEC-006 interface-fidelity slice and the active SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.
+SPEC-007 — UX/UI Navigation & Interaction Remediation closed as **COHERENCE VERIFIED** under the evidence recorded in G-007; no specification is active or planned. The completed SPEC-006 interface-fidelity slice and the SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.

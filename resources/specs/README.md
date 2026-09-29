@@ -28,9 +28,9 @@ Do not move a spec to `completed/` merely because an implementation agent report
 4. `SPEC-004` — Admin Content Management & Publication — completed
 5. `SPEC-005` — Audit History & Archival — completed
 6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — completed
-7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — active, implemented and awaiting independent review
+7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — completed
 
-`SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is the active specification at [`active/007-ux-ui-navigation-interaction-remediation.md`](active/007-ux-ui-navigation-interaction-remediation.md). No specification is planned.
+`SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md). No specification is active or planned.
 
 ## Dependency model
 

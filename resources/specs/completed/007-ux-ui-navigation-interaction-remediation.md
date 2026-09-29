@@ -1,6 +1,6 @@
 # SPEC-007 — UX/UI Navigation & Interaction Remediation
 
-**Status:** ACTIVE — IMPLEMENTED, INDEPENDENT COHERENCE REVIEW REQUIRED\
+**Status:** COMPLETED — VALIDATED\
 **Type:** UX/UI remediation\
 **UX reference:** `resources/ux-ui/Base Curricular - Explorador (offline).html`\
 **Depends on:** SPEC-001 through SPEC-006 (completed); the current Library Explorer, application shell and published-content model\
@@ -142,6 +142,10 @@ The prototype's tabbed contribution workflow is superseded by D-030. Governed co
 ### D6 — No broader redesign
 
 This SPEC must not be used as justification for redesigning unrelated parts of the product.
+
+### D7 — Mobile header wordmark yields to search
+
+Approved after implementation as a refinement of UXR-1. Below the Tailwind `sm` breakpoint (640px) the textual `Base Curricular / Democracia+` wordmark is visually hidden so the global search keeps usable width. The D+ visual mark stays visible, the wordmark remains the brand link's accessible name, and search functionality and discoverability are unchanged. This is a responsive adaptation only, not a mobile-header redesign.
 
 ---
 
@@ -454,7 +458,7 @@ Implemented on branch `feat/spec-007-ux-remediation` from `main @ cab16d91f27e86
 
 ### What changed
 
-- **UXR-1:** placeholder `Buscar en la base…` at every width; the visual `/` hint and its reserved padding apply from `--breakpoint-explorer` (900px) up, via CSS only; `/` and `aria-keyshortcuts` unchanged at every width. At 390px the placeholder still did not fit with the hint hidden (87px of text room for a 148px placeholder), because the brand wordmark took the width. Below Tailwind `sm` (640px, already used in the repository) the wordmark is visually hidden and remains the brand link's accessible name. Search data, result types and suggestions are unchanged.
+- **UXR-1:** placeholder `Buscar en la base…` at every width; the visual `/` hint and its reserved padding apply from `--breakpoint-explorer` (900px) up, via CSS only; `/` and `aria-keyshortcuts` unchanged at every width. At 390px the placeholder still did not fit with the hint hidden (87px of text room for a 148px placeholder), because the brand wordmark took the width. Below Tailwind `sm` (640px, already used in the repository) the wordmark is visually hidden and remains the brand link's accessible name; this was approved after implementation as D7. Search data, result types and suggestions are unchanged.
 - **UXR-2:** `readView` returns the effective view; `supportsProgram` limits `Programa` to `Todo`/`Módulos`. Reference surfaces (including the URL-only `entity=reference`) render no `Vista` control and render as a grid. `view=programa` is preserved in the URL (D3).
 - **UXR-3:** no code change. Existing native `<dialog>` behavior satisfied the contract under test; regression coverage was added for the filter drawer and compact menu sheet.
 - **UXR-4:** the supplied `D+SHAREDFAV.svg`, byte-identical (sha1 `5825b41c5d2bc0c89e18a1f7f0172408d28dfe25`), moved to `src/app/icon.svg` (Next.js 16.3.4 `icon` convention; `.svg` is supported). No derived raster files.
@@ -475,3 +479,49 @@ New coverage: effective-view unit tests; Vista presence per `Tipo`, stale refere
 - At 320px (outside the validated matrix) the placeholder is still clipped by about 10px.
 - The icon is SVG only. Browsers without SVG favicon support show no tab icon. An `apple-icon.png` is not included.
 - Visual checks were Playwright Chromium screenshots of the header at each validated width and of the rendered icon. A real browser tab, Safari and Firefox were not checked.
+
+## 18. Independent verification and closure
+
+Independent coherence verification of `909f62887b8897b3f9a3ada0407e6827520b54d2` against `cab16d9`: the diff was reviewed directly against this SPEC, D-030 and the `docs/` contracts, and every check below was run during verification rather than taken from §17.
+
+### Validation run
+
+- Vitest: 35 files, 389 tests passed. `npm run lint`, `npm run typecheck`, `npm run build` passed; the build emits static `/icon.svg`.
+- Production-mode Playwright, full suite: 79 passed, 2 failed (`archival-governance.spec.ts:216`, `archival.spec.ts:184`). Every SPEC-007 journey passed.
+- Development-mode Playwright, full suite (first run for this SPEC; the process §17 took for a repository `next dev` server was an unrelated application on another port): 80 passed, 1 failed (`archival-governance.spec.ts:216`).
+- Unrelated failures: `archival-governance.spec.ts:216` fails deterministically (expects 3 entries on the archived page, receives the page size of 20 because earlier local runs left archived content) and fails identically on unmodified `cab16d9`. `archival.spec.ts:184` and `contributions.spec.ts:62` are intermittent: each passed twice on rerun at HEAD, and `contributions.spec.ts:62` also failed on `cab16d9`. None touches a surface this SPEC changed.
+- WebKit (Playwright WebKit, development mode; production-mode `Secure` session cookies are not kept over plain-HTTP loopback in WebKit): 24 of 29 SPEC-007-related journeys passed. The 5 failures are pointer-opened focus-restoration assertions (filter drawer, menu sheet, module detail): macOS WebKit does not focus a button or link on mouse click, so there is no invoker to restore. Keyboard-opened drawer and sheet restore focus in WebKit. Those tests and the overlay code predate this SPEC, and browser coverage beyond Chromium is an existing open follow-up.
+- Manual/visual: Chromium and WebKit screenshots of the header at 1440/1180/900/768/640/639/390/320px, `Todo` with `view=programa`, `entity=material&view=programa`, and the rendered `/icon.svg`. The wordmark is visible from 640px and hidden below it with the D+ mark kept; the `/` hint appears from 900px up, clear of the placeholder; no collision or horizontal overflow at any width. Firefox has no Playwright build installed and was not checked. A real browser tab's favicon was not visually inspected; the declared `<link rel="icon">`, unauthenticated `200 image/svg+xml` response and rendered artwork were.
+- `git diff --check` clean.
+
+### Acceptance
+
+| AC | Result | Evidence |
+|---|---|---|
+| AC-1 | PASS | `header search adapts` E2E (collision geometry at 1440–390px), prod + dev; screenshots |
+| AC-2 | PASS | same E2E (placeholder fits text room), `shell-search` unit; 320px clipping is outside the validated matrix |
+| AC-3 | PASS | `search suggestions` E2E group, prod + dev + WebKit |
+| AC-4 | PASS | `/` focus at every width; suppression with drawer/sheet open (overlay contract E2E); `search-input.tsx` field/dialog guards |
+| AC-5 | PASS | `ui-search-input` unit; E2E hint visibility at ≥900 / hidden below |
+| AC-6 | PASS | `Programa is offered only on module-capable surfaces` E2E; `library-state` unit |
+| AC-7 | PASS | same E2E; screenshot of `Materiales` with no `Vista` |
+| AC-8 | PASS | `stale reference deep link` E2E (200, grid); unit `readView` |
+| AC-9 | PASS | restoration and Back/Forward in the same E2E |
+| AC-10 | PASS | drawer, sheet, module-detail Escape/scrim E2E |
+| AC-11 | PASS | focus entry/return E2E in Chromium; WebKit keyboard path; WebKit pointer path recorded above |
+| AC-12 | PASS | overlay contract E2E (inert focus attempt, `overflow: hidden`) |
+| AC-13 | PASS | `Escape dismisses the list without clearing what was typed` E2E |
+| AC-14 | PASS | `src/app/icon.svg`; `application icon` E2E; build route; rendered in Chromium and WebKit |
+| AC-15 | PASS | full Library, module-detail and shell suites pass in both modes |
+| AC-16 | PASS | diff touches no `supabase/`, proxy, auth, RLS, Storage or governance code; draft/archived suggestion E2E passes |
+
+Effective-view ownership is single: `readView`/`supportsProgram` in `library-state.ts`, consumed by the Library page. The approved D7 wordmark behavior matches the implementation.
+
+### Follow-up candidates (outside SPEC-007)
+
+- Archival E2E isolation: `archival-governance.spec.ts:216` depends on no pre-existing local archived content; `archival.spec.ts:184` is intermittent.
+- Admin form-fill race in `contributions.spec.ts:62`.
+- Header search placeholder clipping at 320px.
+- WebKit pointer-opened focus restoration for native dialogs, and broader browser/favicon coverage (Firefox, raster icons).
+
+**Result:** COHERENCE VERIFIED — COMPLETED — VALIDATED.
