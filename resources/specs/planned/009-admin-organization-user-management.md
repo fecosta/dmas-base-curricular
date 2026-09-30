@@ -1,6 +1,6 @@
 # SPEC-009 — Admin Organization & User Management
 
-**Status:** PLANNED — PREFLIGHT DECISIONS RECONCILED  
+**Status:** PLANNED — PREFLIGHT PASSED WITH SPEC RECONCILIATION REQUIRED  
 **Product:** D+ Base Curricular  
 **Primary capability:** Administrative management of organizations and users  
 **Depends on:** Existing authentication, authorization, organization model, admin access, audit/history contracts  
@@ -105,7 +105,7 @@ Admin
 
 Under the current D-030 operating model, `Contributor` is the non-Admin governed-content reader.
 
-The current UI may represent these roles as:
+The current UI represents these roles as:
 
 ```text
 Contributor → Miembro
@@ -119,6 +119,10 @@ Supabase Auth owns the canonical authentication identity and login email.
 The application currently does not expose general organization/user lifecycle management through the Admin UI.
 
 Provisioning therefore requires operational intervention outside the normal product workflow.
+
+The current security contract also distinguishes trusted/verified Auth identities from unexplained or unconfirmed pre-existing identities.
+
+An existing Auth identity must not automatically receive membership merely because its email matches the requested user.
 
 ---
 
@@ -220,7 +224,7 @@ Contributor
 Admin
 ```
 
-The UI may use user-facing Spanish labels such as:
+The UI may use user-facing Spanish labels:
 
 ```text
 Contributor → Miembro
@@ -355,21 +359,38 @@ SPEC-009 must not introduce a profile table merely to display or edit a user's n
 
 ---
 
-## D-009-14 — Existing Auth identities are reused
+## D-009-14 — Existing Auth identities require trusted reuse
 
 User provisioning must not create duplicate authentication identities.
 
-If an Auth identity already exists for the normalized email:
+If an Auth identity already exists for the normalized email, the workflow must determine whether that identity is eligible for trusted reuse.
+
+A confirmed identity created through an established trusted provisioning path, or an identity established or claimed through verified Google OAuth, may be reused.
+
+An unexplained, unconfirmed, or otherwise untrusted pre-existing identity must not receive membership or role authority directly.
+
+Such an identity must first be remediated through the established trusted provisioning process or claimed through verified Google OAuth.
+
+Conceptually:
 
 ```text
-existing Auth identity
+Existing Auth identity
         ↓
-reuse identity
-        ↓
-create/reconcile membership
+Is identity trusted / verified?
+        │
+        ├── Yes
+        │     ↓
+        │   reuse identity
+        │     ↓
+        │   create/reconcile membership
+        │
+        └── No
+              ↓
+          do not grant membership
+              ↓
+          trusted remediation
+          or verified Google OAuth
 ```
-
-The workflow must never intentionally create another Auth identity for the same normalized email.
 
 An Auth identity without an eligible membership remains unable to access the product.
 
@@ -408,6 +429,8 @@ The privileged credential must:
 - remain bounded to the minimum Auth administration operations required by SPEC-009.
 
 Organization/domain/membership authorization continues through explicit Admin-authorized domain operations rather than a generic privileged database client.
+
+The existing browser/application Supabase client remains publishable-key based.
 
 ---
 
@@ -710,29 +733,58 @@ Before provisioning membership, the workflow must validate:
 2. selected organization exists;
 3. organization is in an appropriate state for provisioning;
 4. email domain is an approved domain of the selected organization;
-5. requested role is valid.
+5. requested role is valid;
+6. whether an Auth identity already exists;
+7. if an identity exists, whether it is eligible for trusted reuse.
 
-The workflow then creates or reuses the Auth identity and establishes the explicit membership.
+The workflow may then create a new trusted Auth identity or reuse an existing trusted/verified identity and establish the explicit membership.
+
+An unexplained or untrusted pre-existing identity must not receive membership merely because the normalized email matches.
 
 ---
 
 # 17. Existing User Handling
 
-If the normalized email already belongs to an Auth identity:
+If the normalized email already belongs to an Auth identity, the workflow must first classify whether that identity is safe to reuse under the existing security contract.
+
+Conceptually:
 
 ```text
 Existing Auth identity
         ↓
-Do not duplicate
-        ↓
-Create/reconcile membership
+trusted / verified?
+        │
+        ├── Yes
+        │     ↓
+        │   Do not duplicate
+        │     ↓
+        │   Create/reconcile membership
+        │
+        └── No
+              ↓
+          Do not grant membership
+              ↓
+          Require trusted remediation
+          or verified Google OAuth
 ```
+
+A confirmed identity established through an approved provisioning path or verified Google OAuth may be reused.
+
+An unexplained, unconfirmed, or otherwise untrusted identity must not be automatically confirmed, promoted, or assigned membership by this workflow.
 
 The result must be explicit to the administrator.
 
-If the identity already has a membership, the operation must not silently overwrite conflicting organization/role state.
+If a trusted identity already has a membership, the operation must not silently overwrite conflicting organization, role, or status state.
 
 Any requested change must follow the explicit management/reassignment flow.
+
+The exact technical mechanism used to locate an existing Auth identity by normalized email is implementation freedom, provided that it is:
+
+- server-side only;
+- deterministic;
+- bounded to the required identity lookup;
+- minimally exposing;
+- unable to provide unrestricted `auth.users` access to ordinary clients.
 
 ---
 
@@ -769,7 +821,7 @@ The Admin receives a recoverable error.
 
 The implementation must never compensate for partial failure by granting access based only on email/domain.
 
-A later retry must be able to reuse the existing Auth identity and complete the membership safely.
+A later retry must be able to safely resolve the existing identity, verify that it is trusted for reuse, and complete the membership without creating a duplicate identity.
 
 ---
 
@@ -911,6 +963,7 @@ At minimum:
 - users cannot self-assign organizations;
 - inactive memberships cannot bypass access controls;
 - inactive organizations cannot bypass access controls;
+- untrusted Auth identities cannot receive membership directly;
 - client-side hiding is not authorization.
 
 Organization/domain/membership operations should follow existing hardened RPC/server patterns.
@@ -939,6 +992,10 @@ The privileged credential must never be used directly by browser code.
 
 The privileged Auth client must not become a generic service-role data-access layer for the product.
 
+The existing publishable-key application client remains unchanged for ordinary application access.
+
+A separate server-only client may be introduced for the minimum Auth Admin operations required by this SPEC.
+
 ---
 
 # 27. Admin Global Reads
@@ -961,6 +1018,8 @@ is_active
 where required.
 
 The implementation must not expose unrestricted `auth.users` access to ordinary authenticated clients.
+
+Identity lookup required for provisioning must remain server-side and bounded to the minimum required operation.
 
 ---
 
@@ -1009,6 +1068,8 @@ resulting_state?
 Exact schema is implementation freedom.
 
 Audit storage must be protected from ordinary client modification/deletion.
+
+Where the domain mutation and audit append both occur entirely within PostgreSQL, they should be committed atomically.
 
 `curriculum_lifecycle_events` remains unchanged.
 
@@ -1086,15 +1147,16 @@ Once implemented:
 8. an Admin can view and search users globally;
 9. an Admin can filter users by organization, role, and status;
 10. an Admin can provision a user without managing passwords;
-11. existing Auth identities are reused rather than duplicated;
-12. an Admin can assign a user to a domain-compatible organization;
-13. an Admin can assign `Contributor` or `Admin`;
-14. an Admin can activate/deactivate membership;
-15. login email remains read-only;
-16. unauthorized users cannot perform management operations through UI or direct application interfaces;
-17. historical relationships survive deactivation and reassignment;
-18. security-relevant Admin mutations produce append-only audit evidence;
-19. organization identity remains suitable for SPEC-008 analytics segmentation.
+11. trusted/verified existing Auth identities are reused rather than duplicated;
+12. unexplained or untrusted pre-existing Auth identities cannot receive membership directly;
+13. an Admin can assign a user to a domain-compatible organization;
+14. an Admin can assign `Contributor` or `Admin`;
+15. an Admin can activate/deactivate membership;
+16. login email remains read-only;
+17. unauthorized users cannot perform management operations through UI or direct application interfaces;
+18. historical relationships survive deactivation and reassignment;
+19. security-relevant Admin mutations produce append-only audit evidence;
+20. organization identity remains suitable for SPEC-008 analytics segmentation.
 
 ---
 
@@ -1144,13 +1206,15 @@ Admins can search by email and filter users by organization, canonical role, and
 
 ## AC-11 — User provisioning
 
-An Admin can establish a user through the existing identity model without setting a password.
+An Admin can establish a user through the existing identity model without setting or managing a password.
 
-## AC-12 — Duplicate protection
+## AC-12 — Duplicate and untrusted identity protection
 
-Existing Auth identities are reused.
+The workflow does not intentionally create a duplicate Auth identity for the same normalized email.
 
-The workflow does not intentionally create duplicate identities for the same normalized email.
+Trusted/verified existing identities may be reused.
+
+Unexplained, unconfirmed, or otherwise untrusted pre-existing identities cannot receive membership or role authority until the established trusted remediation or verified Google OAuth path makes them safe to reuse.
 
 ## AC-13 — Organization assignment
 
@@ -1213,7 +1277,9 @@ Ordinary authenticated clients do not gain unrestricted reads of `auth.users` or
 
 ## AC-24 — Partial provisioning fails closed
 
-If Auth identity creation succeeds but membership creation fails, the identity does not gain product access and the operation can be safely retried/reconciled.
+If Auth identity creation succeeds but membership creation fails, the identity does not gain product access.
+
+A retry can safely resolve the existing identity, validate whether it is trusted for reuse, and complete provisioning without creating a duplicate.
 
 ## AC-25 — Analytics readiness
 
@@ -1250,8 +1316,9 @@ Test:
 
 Test:
 
-- provision new Auth identity + membership;
-- reuse existing Auth identity;
+- provision new trusted Auth identity + membership;
+- reuse existing trusted/verified Auth identity;
+- reject direct membership for untrusted existing Auth identity;
 - reject duplicate/conflicting identity state;
 - assign organization;
 - reject domain-incompatible organization;
@@ -1273,7 +1340,8 @@ Test:
 - invalid role assignment fails;
 - invalid organization assignment fails;
 - self-promotion fails;
-- client-side manipulation cannot bypass authorization.
+- client-side manipulation cannot bypass authorization;
+- untrusted existing identities cannot gain membership through provisioning shortcuts.
 
 ## Organization eligibility
 
@@ -1299,6 +1367,11 @@ membership + unapproved current email domain
 → denied
 ```
 
+```text
+Auth identity without membership
+→ denied
+```
+
 ## Data integrity
 
 Test:
@@ -1309,7 +1382,7 @@ Test:
 - organization deactivation does not mutate membership status;
 - multiple approved domains remain normalized and unique;
 - reassignment does not create a second membership;
-- existing Auth identities are reused.
+- trusted existing Auth identities are reused safely.
 
 ## Privileged Auth boundary
 
@@ -1335,8 +1408,30 @@ membership creation fails
 and verify:
 
 - product access remains denied;
-- retry can reuse the identity;
-- no duplicate identity is created.
+- retry can resolve and safely reuse the identity when trusted;
+- no duplicate identity is created;
+- failure does not silently grant membership or role.
+
+## Existing identity trust
+
+Test:
+
+```text
+trusted confirmed identity
+→ may be reused
+```
+
+```text
+verified Google OAuth identity
+→ may be reused
+```
+
+```text
+unexplained/unconfirmed identity
+→ no direct membership
+```
+
+and verify that remediation requirements remain consistent with the existing security contract.
 
 ## Audit
 
@@ -1378,6 +1473,7 @@ Key UX principles:
 - status visible without requiring unnecessary detail navigation;
 - approved domains clearly visible on organization detail;
 - security-sensitive domain removal clearly communicated;
+- untrusted existing-identity conflicts clearly explained to the Admin;
 - destructive-looking actions avoided for routine deactivation;
 - confirmation for role, reassignment, domain-removal, and status changes where appropriate;
 - responsive behavior consistent with the existing product;
@@ -1425,7 +1521,9 @@ docs/PRODUCT_DEFINITION.md
 resources/specs/README.md
 ```
 
-The final implementation preflight must confirm the authoritative locations.
+The existing documentation statement that the application requires no privileged server credential must be reconciled if implementation introduces the bounded Auth Admin credential defined by this SPEC.
+
+The existing operator `SUPABASE_SECRET_KEY` convention may be reused or adapted if technically appropriate, but the application runtime boundary must remain explicit and server-only.
 
 ---
 
@@ -1441,6 +1539,7 @@ The implementation agent may determine:
 - query strategy;
 - pagination;
 - search mechanics;
+- server-side mechanism for bounded Auth identity lookup;
 - validation library;
 - organization-member presentation;
 - confirmation-dialog implementation;
@@ -1461,6 +1560,7 @@ The implementation agent may not silently change:
 - login email being read-only;
 - prohibition on Admin-managed passwords;
 - explicit membership being required;
+- trusted/verified identity requirement for reuse;
 - server-only bounded privileged Auth administration;
 - append-only access-administration audit;
 - existing authorization/security contracts.
@@ -1499,11 +1599,17 @@ Email is visible but read-only.
 
 ## Q-009-03 — Existing identity onboarding
 
-**RESOLVED**
+**RESOLVED — RECONCILED WITH SECURITY CONTRACT**
 
-Reuse an existing Auth identity and create/reconcile its explicit single membership when the requested state is valid.
+Existing Auth identities are not reused solely because the normalized email matches.
 
-Never intentionally create a duplicate Auth identity for the same normalized email.
+A trusted/verified identity may be reused.
+
+An unexplained, unconfirmed, or otherwise untrusted pre-existing identity must not receive membership or role authority directly.
+
+It must first pass the established trusted remediation path or be established/claimed through verified Google OAuth.
+
+The workflow must never intentionally create a duplicate Auth identity for the same normalized email.
 
 ---
 
@@ -1525,6 +1631,8 @@ A server-only privileged Supabase credential may be introduced only for the mini
 
 It must not become a generic authorization bypass.
 
+The normal application Supabase client remains publishable-key based.
+
 ---
 
 ## D-009-B — Access administration audit
@@ -1533,37 +1641,50 @@ It must not become a generic authorization bypass.
 
 SPEC-009 introduces a dedicated append-only access-administration audit rather than overloading curriculum lifecycle history.
 
-No product-decision blocker remains from the initial technical preflight.
+---
+
+## D-009-C — Existing identity trust boundary
+
+**RESOLVED DURING FINAL PREFLIGHT**
+
+The repository security contract is authoritative for pre-existing Auth identities.
+
+Email equality alone is insufficient evidence that an identity is safe to receive membership.
+
+Provisioning must preserve the established distinction between trusted/verified identities and unexplained or unconfirmed identities.
+
+No new product decision is required.
 
 ---
 
 # 38. Final Pre-Implementation Gate
 
-Before moving SPEC-009 to:
+The final repository-grounded technical preflight verified:
+
+1. the canonical organization/membership schema remains compatible;
+2. canonical roles remain `Contributor | Admin`;
+3. multiple approved-domain semantics remain compatible;
+4. existing live authorization supports organization and membership deactivation;
+5. existing hardened `SECURITY DEFINER` RPC patterns can support Admin management operations;
+6. a bounded server-only Supabase Auth Admin client is technically compatible with the current Next.js/Supabase architecture;
+7. the privileged credential can remain isolated from client bundles;
+8. access-administration audit persistence can be introduced separately from curriculum history;
+9. partial provisioning can fail closed because Auth identity alone does not establish product access;
+10. bounded server-side Auth identity lookup is technically feasible;
+11. the existing security contract defines how trusted versus untrusted pre-existing identities must be handled;
+12. no new product behavior needs to be invented for implementation.
+
+The only reconciliation identified by the final preflight was the overly broad existing-identity reuse language.
+
+That conflict is resolved in this revision by D-009-14, AC-12, the Existing User Handling section, and D-009-C.
+
+Before activation, perform a short repository verification that the committed SPEC contains these reconciliations and that no new contradiction was introduced.
+
+If verified, move SPEC-009 to:
 
 **ACTIVE — IMPLEMENTATION READY**
 
-perform one final repository-grounded technical preflight against the updated SPEC.
-
-The final preflight must confirm:
-
-1. current repository HEAD and working state;
-2. current identity/organization/membership schema still matches this SPEC;
-3. canonical `Contributor | Admin` roles remain unchanged;
-4. multiple approved-domain semantics remain unchanged;
-5. Admin RPC/query boundaries can preserve current RLS and live-role authorization;
-6. the bounded server-only Auth Admin path is technically feasible in the current Next.js/Vercel/Supabase architecture;
-7. the privileged credential can remain absent from all client bundles;
-8. access-administration audit persistence can be added without weakening curriculum history;
-9. partial provisioning has a fail-closed and recoverable implementation strategy;
-10. all required mutations have clear authoritative boundaries;
-11. no unresolved data-integrity or authorization issue remains;
-12. acceptance criteria can be implemented without inventing new product behavior;
-13. specification indexes and durable project knowledge can be reconciled during activation/implementation.
-
-If these checks pass, move SPEC-009 to:
-
-**ACTIVE — IMPLEMENTATION READY**
+and reconcile the specification indexes/current-delivery documentation.
 
 If a material contradiction appears:
 
@@ -1573,25 +1694,31 @@ If a material contradiction appears:
 
 # 39. Knowledge Updates Required
 
-After implementation, reconcile durable project knowledge.
+At activation and after implementation, reconcile durable project knowledge as appropriate.
 
 At minimum review:
 
+- `README.md`;
+- specification index;
 - architecture;
 - security;
 - authorization documentation;
 - identity/organization model documentation;
 - Admin UX documentation;
 - decisions;
-- specification index;
 - environment configuration;
 - operational onboarding documentation.
+
+Activation must remove stale statements that no specification is planned or active.
+
+Implementation must reconcile the current statement that no privileged application credential exists if the bounded Auth Admin server credential is introduced.
 
 Documentation must distinguish:
 
 ```text
 current behavior
 historical decisions
+planned behavior
 future identity-management possibilities
 ```
 
@@ -1608,7 +1735,9 @@ Closure requires evidence that:
 - organization lifecycle management works;
 - multiple approved domains work;
 - user provisioning works;
-- existing identities are reused;
+- trusted/verified existing identities are reused safely;
+- untrusted pre-existing identities cannot receive membership directly;
+- duplicate Auth identities are not intentionally created;
 - canonical membership is preserved;
 - domain compatibility is enforced;
 - role changes are safely authorized;
