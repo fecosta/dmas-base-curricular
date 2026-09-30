@@ -13,7 +13,11 @@ export default async function ApplicationLayout({ children }: { children: React.
   // never be serialised into a reader's markup. AppHeader renders exactly what
   // this array holds, at every width.
   const navigation: NavItem[] = [{ label: "Biblioteca", href: "/app/library" }];
-  if (access.role === "Admin") navigation.push({ label: "Administrar contenido", href: "/app/contributions" });
+  if (access.role === "Admin") navigation.push(
+    { label: "Administrar contenido", href: "/app/contributions" },
+    { label: "Organizaciones", href: "/app/organizations" },
+    { label: "Usuarios", href: "/app/users" },
+  );
 
   return <div className="flex min-h-screen flex-col bg-canvas">
     {/*

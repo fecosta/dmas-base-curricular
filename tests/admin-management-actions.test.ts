@@ -47,12 +47,12 @@ afterEach(() => vi.unstubAllEnvs());
 it("rechecks live Admin access and revalidates organization and user surfaces after create", async () => {
   const form = new FormData();
   form.set("name", "Organización nueva");
-  form.append("domains", "partner.test");
+  form.set("domains", "partner.test\n segundo.test \n");
 
   await expect(createOrganizationAction({}, form)).resolves.toEqual({ success: "Organización creada." });
 
   expect(requireAccess).toHaveBeenCalledExactlyOnceWith("Admin");
-  expect(createOrganization).toHaveBeenCalledExactlyOnceWith("Organización nueva", ["partner.test"]);
+  expect(createOrganization).toHaveBeenCalledExactlyOnceWith("Organización nueva", ["partner.test", "segundo.test"]);
   expect(revalidatePath).toHaveBeenCalledWith("/app/organizations");
   expect(revalidatePath).toHaveBeenCalledWith("/app/users");
 });

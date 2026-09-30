@@ -100,6 +100,8 @@ test("wide shell presents brand, destinations, search and session in one band", 
   await expect(page.getByRole("button", { name: "Cerrar sesión" })).toHaveCount(1);
   await expect(page.getByRole("link", { name: "Biblioteca", exact: true })).toHaveCount(1);
   await expect(page.getByRole("link", { name: "Administrar contenido" })).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Organizaciones" })).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Usuarios" })).toHaveCount(1);
   await expect(page.getByRole("navigation", { name: "Navegación principal" })).toHaveCount(1);
 });
 
@@ -146,6 +148,8 @@ test("the compact sheet carries destinations, session and sign-out, and is keybo
   // Everything the wide header offers is reachable here, exactly once.
   await expect(sheet.getByRole("link", { name: "Biblioteca", exact: true })).toHaveCount(1);
   await expect(sheet.getByRole("link", { name: "Administrar contenido" })).toHaveCount(1);
+  await expect(sheet.getByRole("link", { name: "Organizaciones" })).toHaveCount(1);
+  await expect(sheet.getByRole("link", { name: "Usuarios" })).toHaveCount(1);
   await expect(sheet.getByRole("button", { name: "Cerrar sesión" })).toHaveCount(1);
   await expect(sheet.getByText(`${organizationName} · Administrador`)).toBeVisible();
   // Still one sign-out in the whole document, not one per responsive variant.
@@ -235,8 +239,11 @@ test("the shell fits every validated width for an Admin, whose extra destination
     expect(await horizontalOverflow(page), `horizontal overflow at ${width}px`).toBeLessThanOrEqual(0);
 
     // Destinations stay reachable at every width, inline or behind the trigger.
-    if (width >= 1180) await expect(page.getByRole("link", { name: "Administrar contenido" })).toBeVisible();
-    else await expect(menuTrigger(page)).toBeVisible();
+    if (width >= 1180) {
+      await expect(page.getByRole("link", { name: "Administrar contenido" })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Organizaciones" })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Usuarios" })).toBeVisible();
+    } else await expect(menuTrigger(page)).toBeVisible();
   }
 });
 
@@ -250,6 +257,8 @@ test("no responsive width serialises the Admin destination for a reader", async 
     // Absent from the document, not merely hidden by CSS or collapsed state.
     expect(markup, `Admin destination serialised at ${width}px`).not.toContain("Administrar contenido");
     expect(markup, `Admin route serialised at ${width}px`).not.toContain("/app/contributions");
+    expect(markup, `Organizations route serialised at ${width}px`).not.toContain("/app/organizations");
+    expect(markup, `Users route serialised at ${width}px`).not.toContain("/app/users");
     expect(await horizontalOverflow(page), `horizontal overflow at ${width}px`).toBeLessThanOrEqual(0);
   }
 
@@ -261,5 +270,9 @@ test("no responsive width serialises the Admin destination for a reader", async 
   const opened = await page.content();
   expect(opened).not.toContain("Administrar contenido");
   expect(opened).not.toContain("/app/contributions");
+  expect(opened).not.toContain("Organizaciones");
+  expect(opened).not.toContain("Usuarios");
+  expect(opened).not.toContain("/app/organizations");
+  expect(opened).not.toContain("/app/users");
   await expect(menuSheet(page).getByRole("link", { name: "Biblioteca", exact: true })).toBeVisible();
 });

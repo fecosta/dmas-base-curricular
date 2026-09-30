@@ -22,6 +22,7 @@ export default defineConfig({
     env: {
       NEXT_PUBLIC_SUPABASE_URL: supabase.url,
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.key,
+      SUPABASE_AUTH_ADMIN_SECRET_KEY: supabase.secret,
       APP_URL: baseURL,
     },
     timeout: 120_000,

@@ -6,6 +6,18 @@ import { AdminManagementError, addOrganizationDomain, createOrganization, remove
 
 export type OrganizationActionState = { error?: string; success?: string };
 
+function submittedDomains(form: FormData): unknown[] {
+  const domains: unknown[] = [];
+  for (const value of form.getAll("domains")) {
+    if (typeof value !== "string") {
+      domains.push(value);
+      continue;
+    }
+    domains.push(...value.split(/\r?\n/).map((domain) => domain.trim()).filter(Boolean));
+  }
+  return domains;
+}
+
 async function runOrganizationAction(
   operation: () => Promise<void | string>,
   successMessage: (result: void | string) => string,
@@ -24,7 +36,7 @@ async function runOrganizationAction(
 
 export async function createOrganizationAction(_state: OrganizationActionState, form: FormData): Promise<OrganizationActionState> {
   return runOrganizationAction(
-    async () => { await createOrganization(form.get("name"), form.getAll("domains")); },
+    async () => { await createOrganization(form.get("name"), submittedDomains(form)); },
     () => "Organización creada.",
     "No pudimos crear la organización.",
   );

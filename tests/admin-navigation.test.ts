@@ -39,12 +39,16 @@ describe("role-aware application navigation", () => {
   it("shows content management only to Admins", async () => {
     const html = await shell("Admin");
     expect(html).toContain("Administrar contenido");
+    expect(html).toContain("Organizaciones");
+    expect(html).toContain("Usuarios");
     expect(html).not.toContain("Mis contribuciones");
   });
 
   it("does not advertise authoring to non-Admin readers", async () => {
     const html = await shell("Contributor");
     expect(html).not.toContain("Administrar contenido");
+    expect(html).not.toContain("Organizaciones");
+    expect(html).not.toContain("Usuarios");
     expect(html).not.toContain("contribuciones");
     expect(html).toContain("Biblioteca");
   });
@@ -72,6 +76,8 @@ describe("role-aware application navigation", () => {
   it("keeps the Admin destination out of reader markup at every responsive width", async () => {
     const html = await shell("Contributor");
     expect(html).not.toContain("/app/contributions");
+    expect(html).not.toContain("/app/organizations");
+    expect(html).not.toContain("/app/users");
     // Not merely hidden: absent.
     expect(html).not.toMatch(/Administrar contenido/);
   });
@@ -80,6 +86,8 @@ describe("role-aware application navigation", () => {
     // The closed navigation sheet renders no destinations, so an Admin sees the
     // inline row only. A second copy would duplicate the link's accessible name.
     expect(occurrences(await shell("Admin"), 'href="/app/contributions"')).toBe(1);
+    expect(occurrences(await shell("Admin"), 'href="/app/organizations"')).toBe(1);
+    expect(occurrences(await shell("Admin"), 'href="/app/users"')).toBe(1);
   });
 
   it("renders exactly one sign-out control", async () => {
