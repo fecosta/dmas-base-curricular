@@ -1,6 +1,6 @@
 # SPEC-009 — Admin Organization & User Management
 
-**Status:** PLANNED — PREFLIGHT PASSED WITH SPEC RECONCILIATION REQUIRED  
+**Status:** ACTIVE — IMPLEMENTATION READY
 **Product:** D+ Base Curricular  
 **Primary capability:** Administrative management of organizations and users  
 **Depends on:** Existing authentication, authorization, organization model, admin access, audit/history contracts  
