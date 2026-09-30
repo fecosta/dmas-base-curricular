@@ -1,6 +1,6 @@
 # SPEC-009 — Admin Organization & User Management
 
-**Status:** PLANNED — DECISION READY  
+**Status:** PLANNED — PREFLIGHT DECISIONS RECONCILED  
 **Product:** D+ Base Curricular  
 **Primary capability:** Administrative management of organizations and users  
 **Depends on:** Existing authentication, authorization, organization model, admin access, audit/history contracts  
@@ -13,9 +13,10 @@
 
 D+ Base Curricular is preparing to open the platform to users from additional organizations.
 
-The current operating model must therefore support a reliable way for authorized administrators to manage:
+The product therefore needs a reliable way for authorized administrators to manage:
 
 - organizations;
+- approved organization domains;
 - users;
 - organization membership;
 - user roles;
@@ -23,13 +24,13 @@ The current operating model must therefore support a reliable way for authorized
 
 This SPEC introduces an administrative interface for managing those entities without requiring direct database manipulation or ad-hoc operational procedures.
 
-The capability should support the external pilot while preserving the existing authentication, authorization, audit, and data-governance contracts.
+The capability supports the external pilot while preserving the existing authentication, authorization, audit, and data-governance contracts.
 
 ---
 
 # 2. Product Objective
 
-The objective is to allow an authorized platform administrator to perform the core lifecycle operations needed to onboard and manage pilot organizations and their users.
+The objective is to allow an authorized platform administrator to perform the core lifecycle operations required to onboard and manage pilot organizations and their users.
 
 The intended administrative model is:
 
@@ -40,13 +41,13 @@ Admin
 │   ├── List
 │   ├── Create
 │   ├── Edit
+│   ├── Manage approved domains
 │   ├── Activate / deactivate
 │   └── View members
 │
 └── Users
     ├── List
-    ├── Create / invite
-    ├── Edit
+    ├── Create / provision
     ├── Assign organization
     ├── Assign role
     └── Activate / deactivate
@@ -58,26 +59,66 @@ It is not intended to become a general-purpose identity-management platform.
 
 ---
 
-# 3. Current State
+# 3. Verified Current State
 
-The platform already has concepts related to:
+The repository-grounded preflight confirmed the following canonical model.
 
-- authenticated users;
-- organizations;
-- organization membership;
-- roles;
-- active/inactive state;
-- admin authorization.
+## Organizations
 
-Previous administrative work established that users can be associated with organizations and promoted to administrative roles.
+```text
+organizations
+  id
+  name
+  is_active
+```
 
-However, organization and user lifecycle management is not yet exposed as a complete admin product workflow.
+## Approved domains
 
-Operational tasks such as onboarding new organizations or correcting user membership may therefore require manual intervention outside the normal application interface.
+```text
+organization_domains
+  domain
+  organization_id
+```
 
-Before implementation, technical preflight must verify the actual current repository state and authoritative schema.
+An organization may have multiple approved domains.
 
-This SPEC must not assume that remembered or historical database structures remain unchanged.
+## Memberships
+
+```text
+memberships
+  user_id          PRIMARY KEY
+  organization_id
+  role
+  is_active
+```
+
+Because `user_id` is the primary key, one Auth user currently has at most one canonical organization membership.
+
+## Roles
+
+The persisted product roles are:
+
+```text
+Contributor
+Admin
+```
+
+Under the current D-030 operating model, `Contributor` is the non-Admin governed-content reader.
+
+The current UI may represent these roles as:
+
+```text
+Contributor → Miembro
+Admin       → Administrador
+```
+
+## Authentication
+
+Supabase Auth owns the canonical authentication identity and login email.
+
+The application currently does not expose general organization/user lifecycle management through the Admin UI.
+
+Provisioning therefore requires operational intervention outside the normal product workflow.
 
 ---
 
@@ -85,15 +126,16 @@ This SPEC must not assume that remembered or historical database structures rema
 
 The external pilot introduces recurring operational needs:
 
-- create a new participating organization;
-- register its users;
+- create a participating organization;
+- configure one or more approved domains;
+- register or provision its users;
 - assign each user to the correct organization;
 - define the appropriate role;
-- correct user information;
+- correct membership configuration;
 - deactivate users who should no longer access the platform;
 - deactivate organizations without destroying historical relationships.
 
-Without an admin interface, these tasks create avoidable operational and security risks:
+Without an Admin interface, these tasks create avoidable operational and security risks:
 
 - direct database changes;
 - inconsistent organization membership;
@@ -102,7 +144,7 @@ Without an admin interface, these tasks create avoidable operational and securit
 - weak auditability;
 - dependency on technical staff for routine administration.
 
-The lack of a stable organization/user management workflow also creates ambiguity for SPEC-008, because product analytics intends to use the canonical organization relationship as the main organizational segmentation dimension.
+The lack of a stable organization/user management workflow also creates ambiguity for SPEC-008 because product analytics intends to use the canonical organization relationship as the primary organizational segmentation dimension.
 
 ---
 
@@ -112,7 +154,7 @@ The lack of a stable organization/user management workflow also creates ambiguit
 
 Organization and user management is an administrative capability.
 
-Only users authorized as platform administrators may access or perform the operations defined in this SPEC.
+Only users authorized as platform Admins may access or perform the operations defined in this SPEC.
 
 Existing authorization remains authoritative.
 
@@ -120,106 +162,97 @@ The feature must not create a parallel or weaker permission mechanism.
 
 ---
 
-## D-009-02 — Two admin surfaces
+## D-009-02 — Two Admin surfaces
 
-The admin experience will provide two primary management surfaces:
+The Admin experience will provide two primary management surfaces:
 
 ```text
 Organizations
 Users
 ```
 
-Both should allow administrators to discover and manage the same underlying canonical entities from different operational perspectives.
+Both operate on the same canonical identity, organization, and membership model.
 
 ---
 
 ## D-009-03 — Explicit organization membership
 
-A user's canonical organization relationship must be represented by the application's existing organization/membership model.
+A user's canonical organization relationship is represented by the existing membership model.
 
-Email domain must not replace explicit organization membership.
+Email domain does not create membership.
 
-For example:
+Conceptually:
 
 ```text
-user
-  ↓
-organization_id
-  ↓
+Auth user
+    ↓
+membership
+    ↓
 organization
 ```
 
-remains authoritative where that matches the current model.
-
-Domain may support identification or onboarding logic but is not, by itself, proof of membership.
+Explicit membership remains authoritative.
 
 ---
 
-## D-009-04 — Organization-first pilot model
+## D-009-04 — Single-organization membership
 
-For the initial external pilot, each managed user belongs to at most one canonical organization unless repository evidence demonstrates that the existing product already supports a different authoritative model.
-
-This SPEC does not introduce multi-organization membership.
-
-If current architecture already supports multiple memberships in a way that cannot safely be simplified, the preflight must return:
-
-**DECISION REQUIRED**
-
-rather than silently redefining membership semantics.
-
----
-
-## D-009-05 — Roles remain simple
-
-This SPEC does not introduce a new custom permission system.
-
-The initial administrative model should preserve existing roles.
-
-Expected product-level roles are conceptually:
+The current schema already enforces one membership per user because:
 
 ```text
-Admin
-User
+memberships.user_id
 ```
 
-but the technical preflight must verify the canonical role names and authorization model.
+is the primary key.
 
-No new role should be created merely to satisfy this UI.
+SPEC-009 preserves this contract.
+
+It does not introduce multi-organization membership.
+
+---
+
+## D-009-05 — Existing roles remain authoritative
+
+The canonical persisted roles remain:
+
+```text
+Contributor
+Admin
+```
+
+The UI may use user-facing Spanish labels such as:
+
+```text
+Contributor → Miembro
+Admin       → Administrador
+```
+
+SPEC-009 must not introduce a new persisted `User` role or a new permission system.
 
 ---
 
 ## D-009-06 — Deactivation over deletion
 
-The normal removal operation for users and organizations is **deactivation**, not destructive deletion.
+The normal removal operation for users and organizations is deactivation, not destructive deletion.
 
-Users and organizations may have historical relationships with:
-
-- content;
-- audit events;
-- publication actions;
-- future analytics;
-- other domain records.
-
-Therefore:
+The lifecycle remains conceptually:
 
 ```text
 Active
 Inactive
 ```
 
-is the default lifecycle model.
+Historical relationships must remain intact.
 
-Hard deletion is not required by this SPEC.
+Hard deletion is not part of the normal Admin workflow.
 
 ---
 
-## D-009-07 — No admin-created passwords
+## D-009-07 — No Admin-created passwords
 
 Administrators must not create or manage passwords on behalf of users.
 
-The admin flow should create the necessary application identity/membership state and then rely on the existing authentication mechanism.
-
-The exact invitation or first-login mechanics must follow the current authentication architecture.
+User authentication continues through the existing Supabase Auth mechanisms.
 
 ---
 
@@ -227,141 +260,342 @@ The exact invitation or first-login mechanics must follow the current authentica
 
 Organization identity and membership created through this feature must be suitable for later use by SPEC-008.
 
-The application's canonical organization identifier should remain stable enough to support analytics segmentation.
+The canonical organization identifier remains stable and may later be used for analytics segmentation.
 
-Analytics requirements must not redefine the domain model.
+Analytics must not redefine the organization model.
 
 ---
 
-# 6. Scope
+## D-009-09 — Multiple approved domains
 
-## 6.1 Organizations
+The existing organization-domain model remains authoritative:
 
-Administrators must be able to:
+```text
+Organization
+ ├── approved domain A
+ ├── approved domain B
+ └── approved domain C
+```
+
+Domains are represented by `organization_domains`.
+
+The Admin experience must therefore support multiple approved domains rather than a single `organization.domain` property.
+
+---
+
+## D-009-10 — Canonical user status
+
+Administrative user status is represented by:
+
+```text
+memberships.is_active
+```
+
+SPEC-009 does not introduce a separate user-status column.
+
+An inactive membership prevents the user from satisfying the normal access contract while preserving the Auth identity and historical membership.
+
+---
+
+## D-009-11 — Organization deactivation blocks access
+
+Current authorization requires both:
+
+```text
+membership.is_active
+AND
+organization.is_active
+```
+
+Therefore:
+
+```text
+organization.is_active = false
+```
+
+makes all memberships belonging to that organization ineligible on the next authoritative access check.
+
+Organization deactivation must not rewrite each member's `membership.is_active` value.
+
+When an organization is reactivated, only memberships that remain individually active become eligible again.
+
+---
+
+## D-009-12 — Login email is read-only
+
+Supabase Auth owns the canonical login email.
+
+Admins may use email for:
+
+- identifying users;
+- searching users;
+- duplicate detection;
+- membership administration.
+
+SPEC-009 does not allow Admins to edit login email.
+
+Email-change workflows requiring Auth-provider verification are outside this SPEC.
+
+---
+
+## D-009-13 — No profile/name model introduced
+
+The current product does not require a separate user profile/name model for this capability.
+
+The initial Admin user-management surface therefore operates on:
+
+```text
+Email
+Organization
+Role
+Status
+```
+
+SPEC-009 must not introduce a profile table merely to display or edit a user's name.
+
+---
+
+## D-009-14 — Existing Auth identities are reused
+
+User provisioning must not create duplicate authentication identities.
+
+If an Auth identity already exists for the normalized email:
+
+```text
+existing Auth identity
+        ↓
+reuse identity
+        ↓
+create/reconcile membership
+```
+
+The workflow must never intentionally create another Auth identity for the same normalized email.
+
+An Auth identity without an eligible membership remains unable to access the product.
+
+---
+
+## D-009-15 — Trusted boundary for domain mutations
+
+Ordinary authenticated sessions, including Admin sessions, must not receive generic direct write privileges on:
+
+```text
+organizations
+organization_domains
+memberships
+```
+
+Organization, domain, membership, role, and status mutations must pass through narrowly scoped Admin-authorized operations that re-check live Admin authority at a trusted server/database boundary.
+
+Hardened database RPCs consistent with existing project conventions are the preferred pattern.
+
+Client-side authorization is not sufficient.
+
+---
+
+## D-009-16 — Server-only privileged Auth administration
+
+SPEC-009 may introduce a privileged Supabase server credential only where required for Supabase Auth administrative operations that cannot be performed with normal user credentials.
+
+The privileged credential must:
+
+- exist only in server-side environment configuration;
+- never use a `NEXT_PUBLIC_*` variable;
+- never be serialized to the browser;
+- never be exposed to client components;
+- never become a generic authorization bypass;
+- only be invoked after live Admin authorization has been established;
+- remain bounded to the minimum Auth administration operations required by SPEC-009.
+
+Organization/domain/membership authorization continues through explicit Admin-authorized domain operations rather than a generic privileged database client.
+
+---
+
+## D-009-17 — Domain-compatible membership
+
+Explicit membership remains authoritative, but the existing authorization model also requires the Auth email domain to be approved for the assigned organization.
+
+Therefore membership eligibility requires:
+
+```text
+explicit membership
++
+active membership
++
+approved Auth email domain
++
+active organization
+```
+
+Creation and organization reassignment must validate that the user's current Auth email domain is approved for the target organization.
+
+An assignment that would immediately produce an ineligible membership must be rejected with a clear Admin-facing explanation.
+
+SPEC-009 does not weaken the existing domain-eligibility requirement.
+
+---
+
+## D-009-18 — Dedicated access-administration audit
+
+`curriculum_lifecycle_events` remains the audit/history contract for governed curriculum content.
+
+It must not be overloaded with identity-administration semantics.
+
+SPEC-009 introduces a bounded append-only access-administration audit for security-relevant changes involving:
+
+- organizations;
+- approved domains;
+- memberships;
+- roles;
+- activation/deactivation;
+- organization reassignment.
+
+The audit must preserve enough information to identify:
+
+```text
+actor
+action
+target
+timestamp
+relevant before/after state
+```
+
+without unnecessarily duplicating PII.
+
+This is a separate audit domain, not a replacement for curriculum lifecycle history.
+
+---
+
+# 6. Organizations Scope
+
+Admins must be able to:
 
 - view organizations;
 - search organizations;
 - create an organization;
 - open an organization detail/edit view;
-- edit supported organization metadata;
+- edit the organization name;
+- view approved domains;
+- add approved domains;
+- remove approved domains;
 - activate an organization;
 - deactivate an organization;
 - view users associated with an organization.
 
-Candidate organization fields:
+Canonical organization-management fields are:
 
 ```text
-name
-domain
-status
+Name
+Approved domains[]
+Status
 ```
 
-The technical preflight must validate the actual schema and determine whether any additional required fields exist.
+where status maps to:
+
+```text
+organizations.is_active
+```
 
 ---
 
-## 6.2 Users
+# 7. Users Scope
 
-Administrators must be able to:
+Admins must be able to:
 
 - view users;
 - search users;
 - filter users;
-- create or invite a user;
-- edit supported user/profile information;
-- assign a user to an organization;
-- change a user's role within the existing role model;
-- activate a user;
-- deactivate a user.
+- create/provision a user;
+- assign the user to an organization;
+- reassign the organization when valid;
+- change role;
+- activate membership;
+- deactivate membership.
 
-Candidate user fields:
+Canonical user-management fields are:
 
 ```text
-name
-email
-organization
-role
-status
+Email          read-only
+Organization
+Role
+Status
 ```
 
-The implementation must use the application's actual canonical identity/profile fields.
+where status maps to:
+
+```text
+memberships.is_active
+```
 
 ---
 
-## 6.3 Organization members
+# 8. Organization Members
 
 An organization detail surface should show its associated users.
 
 At minimum:
 
 ```text
-Name
 Email
 Role
 Status
 ```
 
-where those fields are available and safe to display to administrators.
-
-The organization surface does not need to become a separate membership-management system if the existing user-management workflow can safely handle membership changes.
+The user count must be derived from canonical membership data rather than stored independently.
 
 ---
 
-# 7. Admin Navigation
+# 9. Admin Navigation
 
 The expected information architecture is:
 
 ```text
 Admin
 │
-├── Content / existing admin capabilities
+├── Existing content-management capabilities
 │
 ├── Organizations
 │
 └── Users
 ```
 
-Organization and User management should integrate with the current Admin visual/navigation system rather than creating a separate application shell.
+Organization and User management should integrate with the existing Admin visual/navigation system.
 
-Exact placement may be adjusted during implementation to preserve current navigation conventions.
+SPEC-009 must not introduce a separate Admin application shell.
 
 ---
 
-# 8. Organization List
+# 10. Organization List
 
-The organization list should allow administrators to quickly understand the current pilot population.
+The organization list should allow administrators to understand the current pilot population.
 
-A conceptual view:
+Conceptually:
 
 ```text
-Organization        Domain                 Users     Status
-VélezReyes+         velezreyesmas.com        8      Active
-Democracia+         democraciamas.com        5      Active
-Foundation XYZ      foundationxyz.org        3      Active
+Organization        Domains    Users    Status
+VélezReyes+            1         8      Active
+Democracia+            2         5      Active
+Foundation XYZ         1         3      Active
 ```
 
-Exact visual presentation is implementation freedom.
+Exact presentation is implementation freedom.
 
-Useful fields include:
+Useful information includes:
 
 - organization name;
-- domain, where applicable;
-- number of associated users;
+- approved-domain count or bounded domain summary;
+- associated-user count;
 - active/inactive status.
-
-The user count should be derived from canonical membership data rather than maintained independently.
 
 ---
 
-# 9. Organization Creation
+# 11. Organization Creation
 
-Creating an organization should require only information needed by the current product.
-
-Minimum expected input:
+Creating an organization should require:
 
 ```text
 Name
-Domain
+At least one approved domain
 ```
 
 plus active status where appropriate.
@@ -369,66 +603,78 @@ plus active status where appropriate.
 The implementation must validate:
 
 - required fields;
-- duplicate or conflicting organization records;
-- domain normalization where domain is used;
-- current database constraints.
+- duplicate/conflicting organizations where applicable;
+- domain normalization;
+- global domain uniqueness;
+- existing database constraints.
 
-A domain should normally be normalized before persistence, for example:
+For example:
 
 ```text
 Example.org
 example.org
 ```
 
-must not accidentally become distinct domains where the current domain model expects uniqueness.
-
-Exact normalization rules belong to technical implementation if not already defined.
+must not become distinct approved domains.
 
 ---
 
-# 10. Organization Editing
+# 12. Organization Editing
 
-Administrators may update supported metadata such as:
+Admins may update:
 
-- name;
-- domain;
-- status.
+- organization name;
+- approved-domain set;
+- organization status.
 
-Changing an organization's metadata must not change its canonical identifier.
+Changing organization metadata must not change its canonical identifier.
 
-Historical references must continue pointing to the same organization.
+Historical references continue pointing to the same organization.
 
 ---
 
-# 11. Organization Deactivation
+# 13. Approved Domain Management
 
-Deactivation should:
+Admins may add and remove approved domains.
 
-- prevent the organization from being treated as active according to current platform rules;
-- preserve its record;
+Domain changes are security-relevant because they affect eligibility.
+
+The interface must make this consequence clear.
+
+Removing a domain may cause users whose Auth email belongs to that domain to become ineligible on their next authoritative access check.
+
+Domain management must preserve normalization and uniqueness constraints.
+
+---
+
+# 14. Organization Deactivation
+
+Deactivation:
+
+```text
+organization.is_active = false
+```
+
+must:
+
+- make all organization memberships ineligible;
+- preserve the organization record;
+- preserve individual membership status;
 - preserve historical relationships;
-- preserve membership/history needed for audit and analytics continuity.
+- preserve audit and future analytics continuity.
 
-The preflight must determine whether deactivating an organization should automatically affect the ability of its users to access the platform.
-
-This behavior must not be guessed.
-
-If existing authorization contracts do not answer this question, mark it:
-
-**DECISION REQUIRED**
-
-before implementation.
+Reactivation must not automatically activate memberships that are individually inactive.
 
 ---
 
-# 12. User List
+# 15. User List
 
 The user-management surface should support:
 
-- search by available administrative identity information;
+- search by email;
 - filter by organization;
 - filter by role;
-- filter by active/inactive status.
+- filter by active/inactive membership status.
 
 Conceptually:
 
@@ -440,224 +686,337 @@ Role ▾
 Status ▾
 ```
 
-The UI should remain usable as the pilot grows beyond the first few organizations.
+The interface should remain usable as the pilot grows beyond the initial organizations.
 
 ---
 
-# 13. User Creation / Invitation
+# 16. User Creation / Provisioning
 
-The administrator should be able to provide the minimum identity information required by the existing authentication model.
-
-Expected inputs may include:
+The minimum Admin input is:
 
 ```text
-Name
 Email
 Organization
 Role
 ```
 
-The technical preflight must verify whether the current authentication/profile architecture requires first name/last name separately or another canonical representation.
+No password is collected.
 
-The admin must not set a password.
+No profile/name field is required.
 
-After the admin operation, the user's first authentication should follow the platform's existing login/onboarding mechanism.
+Before provisioning membership, the workflow must validate:
+
+1. normalized email;
+2. selected organization exists;
+3. organization is in an appropriate state for provisioning;
+4. email domain is an approved domain of the selected organization;
+5. requested role is valid.
+
+The workflow then creates or reuses the Auth identity and establishes the explicit membership.
 
 ---
 
-# 14. Existing User Handling
+# 17. Existing User Handling
 
-Attempting to create a user whose authentication identity already exists must not silently duplicate the person.
+If the normalized email already belongs to an Auth identity:
 
-The implementation must determine whether the correct behavior is:
-
-- associate the existing user with an organization;
-- complete an existing profile;
-- report that the user already exists;
-- or another behavior established by current architecture.
+```text
+Existing Auth identity
+        ↓
+Do not duplicate
+        ↓
+Create/reconcile membership
+```
 
 The result must be explicit to the administrator.
 
-Duplicate authentication identities are not acceptable.
+If the identity already has a membership, the operation must not silently overwrite conflicting organization/role state.
+
+Any requested change must follow the explicit management/reassignment flow.
 
 ---
 
-# 15. User Editing
+# 18. Partial Provisioning Failure
 
-Administrators may update supported administrative properties including:
+User provisioning spans:
 
-- profile name fields;
-- organization assignment;
-- role;
-- active/inactive status.
+```text
+Supabase Auth
++
+application membership
+```
 
-Email changes must follow the security and authentication constraints of the current identity provider.
+These operations may not share one database transaction.
 
-The admin UI must not directly mutate authentication-sensitive identity fields if doing so would bypass required verification.
+The workflow must therefore fail closed.
 
-Technical preflight must determine the correct supported behavior for email changes.
+For example:
+
+```text
+Auth identity created       ✓
+Membership creation         ✗
+```
+
+must result in:
+
+```text
+Auth identity exists
+but
+no eligible product access
+```
+
+The Admin receives a recoverable error.
+
+The implementation must never compensate for partial failure by granting access based only on email/domain.
+
+A later retry must be able to reuse the existing Auth identity and complete the membership safely.
 
 ---
 
-# 16. Organization Reassignment
+# 19. User Editing
 
-Where allowed by the canonical membership model, an administrator may move a user from one organization to another.
+Admins may change:
+
+```text
+Organization
+Role
+Status
+```
+
+The login email remains visible but read-only.
+
+No profile/name editing is introduced.
+
+---
+
+# 20. Organization Reassignment
+
+An Admin may move a user from one organization to another.
+
+Because the current model supports one membership per user, reassignment updates the canonical membership rather than creating simultaneous memberships.
 
 The operation must:
 
+- preserve the Auth identity;
+- preserve historical records;
+- validate the target organization;
+- validate the current Auth email domain against the target organization's approved domains;
+- reject incompatible assignments;
 - update the canonical membership safely;
-- preserve the user's identity;
-- preserve relevant historical records;
-- avoid creating simultaneous memberships if the product remains single-organization;
-- respect authorization and audit requirements.
+- create audit evidence.
 
-Existing historical events should not be rewritten merely because current organization membership changes.
+Historical events must not be rewritten merely because current membership changes.
 
 ---
 
-# 17. Role Changes
+# 21. Role Changes
 
-Administrators may change a user's role within the established role system.
-
-The implementation must protect against authorization errors such as:
-
-- unauthorized users promoting themselves;
-- non-admin users invoking admin mutations directly;
-- client-side-only authorization;
-- invalid role values.
-
-Role enforcement must remain server/database authoritative according to existing architecture.
-
----
-
-# 18. User Deactivation
-
-User deactivation is the standard mechanism for removing access.
-
-Deactivation should preserve:
-
-- user identity;
-- organization relationship where appropriate;
-- audit history;
-- authored/published content relationships;
-- other historical references.
-
-The exact authorization effect must follow existing application rules.
-
-The implementation must not depend solely on hiding the user in the UI.
-
----
-
-# 19. Hard Delete
-
-Hard deletion of organizations or users is outside the normal admin workflow defined by this SPEC.
-
-The UI should not expose destructive deletion unless technical preflight identifies an already-established and safe domain contract requiring it.
-
-Future deletion requirements related to privacy/legal erasure should be handled separately because they have different semantics from routine administration.
-
----
-
-# 20. Domain Semantics
-
-Organization domain is useful metadata but must not be treated as the sole membership rule.
-
-Valid cases may include:
-
-- consultants using personal email;
-- invited external collaborators;
-- organizations sharing infrastructure;
-- users whose email domain differs from their organization.
-
-Therefore:
+Admins may assign only the canonical roles:
 
 ```text
-email domain ≠ canonical organization membership
+Contributor
+Admin
 ```
 
-unless a separate explicit rule establishes otherwise.
+The UI may display:
+
+```text
+Miembro
+Administrador
+```
+
+Role enforcement must remain authoritative outside the browser.
+
+The implementation must prevent:
+
+- unauthorized promotion;
+- non-Admin mutation;
+- client-only authorization;
+- invalid role values;
+- privilege escalation through direct backend calls.
 
 ---
 
-# 21. Status Semantics
+# 22. User Deactivation
 
-Organizations and users should expose understandable administrative status.
+User deactivation maps to:
+
+```text
+memberships.is_active = false
+```
+
+It preserves:
+
+- Auth identity;
+- organization relationship;
+- historical records;
+- authored/published content relationships;
+- audit history;
+- future analytics continuity.
+
+Deactivation must affect authorization through the existing eligibility contract.
+
+It must not rely merely on hiding the user in the Admin UI.
+
+---
+
+# 23. Hard Delete
+
+Hard deletion of organizations, memberships, or Auth identities is outside the normal Admin workflow.
+
+The UI must not expose routine destructive deletion.
+
+Future privacy/legal erasure requirements require a separate contract because they have different semantics from administrative deactivation.
+
+---
+
+# 24. Domain Semantics
+
+Email domain alone never establishes access.
+
+The current authorization relationship is:
+
+```text
+Auth identity
+      ↓
+explicit membership
+      +
+active membership
+      +
+approved current Auth email domain
+      +
+active organization
+      ↓
+eligible organization access
+```
+
+An organization may have multiple approved domains.
+
+Exceptions for personal or otherwise unapproved domains are outside SPEC-009 because they would require changing the existing authorization contract.
+
+---
+
+# 25. Security Architecture
+
+All management operations must be enforced through trusted authorization boundaries.
+
+At minimum:
+
+- only live Admins may access management operations;
+- backend operations must re-check Admin authority;
+- organization identifiers must be validated;
+- role values must be validated;
+- domains must be normalized and validated;
+- users cannot self-promote;
+- users cannot self-assign organizations;
+- inactive memberships cannot bypass access controls;
+- inactive organizations cannot bypass access controls;
+- client-side hiding is not authorization.
+
+Organization/domain/membership operations should follow existing hardened RPC/server patterns.
+
+---
+
+# 26. Privileged Auth Boundary
+
+Supabase Auth administration is the exceptional privileged operation in this SPEC.
 
 Conceptually:
 
 ```text
-Active
-Inactive
+Browser
+   ↓
+authenticated request
+   ↓
+trusted server boundary
+   ↓
+live Admin authorization
+   ↓
+bounded Auth Admin operation
 ```
 
-If the existing data model includes additional lifecycle states such as:
+The privileged credential must never be used directly by browser code.
+
+The privileged Auth client must not become a generic service-role data-access layer for the product.
+
+---
+
+# 27. Admin Global Reads
+
+Current user-facing RLS does not imply that Admins should receive unrestricted direct table access to all users/memberships.
+
+Global Admin views should use narrowly scoped trusted queries/RPCs returning only information required by this feature.
+
+For example:
 
 ```text
-Invited
-Pending
-Suspended
+user_id
+email
+organization_id
+organization_name
+role
+is_active
 ```
 
-the preflight must determine whether those states are canonical product states or authentication-provider implementation details.
+where required.
 
-Do not expose infrastructure states as product concepts without justification.
-
----
-
-# 22. Security Requirements
-
-All organization and user mutations must be enforced through trusted authorization boundaries.
-
-At minimum:
-
-- only admins may access management operations;
-- direct API/database calls must enforce the same rule;
-- role values must be validated;
-- organization identifiers must be validated;
-- users must not self-promote;
-- users must not assign themselves to arbitrary organizations;
-- inactive users must not bypass access rules;
-- client-side hiding is not sufficient authorization.
-
-Existing RLS, RPC, server-action, API, or other security conventions should be reused where appropriate.
+The implementation must not expose unrestricted `auth.users` access to ordinary authenticated clients.
 
 ---
 
-# 23. Auditability
+# 28. Access-Administration Audit
 
-Administrative mutations are security- and governance-relevant.
+Security-relevant Admin mutations must produce append-only audit evidence.
 
-Where the existing audit/history model supports these entity types, actions should be auditable.
-
-Relevant actions include:
+Candidate semantic actions include:
 
 ```text
 organization_created
 organization_updated
-organization_deactivated
 organization_activated
+organization_deactivated
 
-user_created_or_invited
-user_updated
-user_organization_changed
-user_role_changed
-user_deactivated
-user_activated
+organization_domain_added
+organization_domain_removed
+
+membership_created
+membership_organization_changed
+membership_role_changed
+membership_activated
+membership_deactivated
 ```
 
-This list describes semantic actions, not mandatory event names.
+Exact persisted enum/string design is implementation freedom provided the semantics remain stable.
 
-The preflight must determine how these actions fit the existing audit architecture.
+The audit should capture:
 
-Do not create a second audit system solely for this SPEC.
+```text
+id
+occurred_at
+
+actor_user_id
+actor_organization_id
+
+action
+
+target_user_id?
+target_organization_id?
+
+previous_state?
+resulting_state?
+```
+
+Exact schema is implementation freedom.
+
+Audit storage must be protected from ordinary client modification/deletion.
+
+`curriculum_lifecycle_events` remains unchanged.
 
 ---
 
-# 24. Relationship to SPEC-008
+# 29. Relationship to SPEC-008
 
 SPEC-009 should be implemented and stabilized before production analytics for the external pilot is enabled.
-
-SPEC-008 should rely on the canonical organization/user relationships established by the application.
 
 The intended dependency is:
 
@@ -673,25 +1032,27 @@ Product analytics instrumentation
 External pilot measurement
 ```
 
-Analytics must use canonical organization identifiers rather than reconstructing organizations from email domains.
+SPEC-008 must use canonical organization identifiers rather than reconstructing organizations from email domains.
 
 ---
 
-# 25. Out of Scope
+# 30. Out of Scope
 
-This SPEC does not introduce:
+SPEC-009 does not introduce:
 
 - multiple organization memberships per user;
 - organization hierarchy;
 - departments or teams;
 - custom roles;
 - custom permission builder;
+- profile/name management;
+- Admin login-email editing;
 - bulk user import;
 - CSV upload;
 - organization self-service;
 - organization-admin role;
 - organization-admin user management;
-- automatic domain-based enrollment;
+- automatic domain-based membership creation;
 - SSO;
 - SAML;
 - SCIM;
@@ -699,207 +1060,364 @@ This SPEC does not introduce:
 - subscriptions;
 - license seats;
 - organization quotas;
-- user invitation campaigns;
+- invitation campaigns;
 - automated onboarding sequences;
 - password administration;
 - destructive user deletion;
 - destructive organization deletion;
+- privacy/legal erasure workflows;
 - analytics instrumentation.
 
 These may be evaluated separately if pilot evidence creates a need.
 
 ---
 
-# 26. Expected Behavior
+# 31. Expected Behavior
 
 Once implemented:
 
-1. an authorized admin can view organizations;
-2. an admin can create an organization;
-3. an admin can edit supported organization information;
-4. an admin can activate/deactivate an organization;
-5. an admin can view the users associated with an organization;
-6. an admin can view and search users;
-7. an admin can filter users by relevant administrative dimensions;
-8. an admin can create/invite a user without managing passwords;
-9. an admin can assign the user to the correct organization;
-10. an admin can assign an existing valid role;
-11. an admin can edit supported user information;
-12. an admin can activate/deactivate a user;
-13. unauthorized users cannot perform those actions through UI or direct application interfaces;
-14. historical entity relationships survive deactivation;
-15. organization identity remains suitable for later analytics segmentation.
+1. an authorized Admin can view organizations;
+2. an Admin can create an organization;
+3. an Admin can edit organization name and approved domains;
+4. an Admin can manage multiple approved domains;
+5. an Admin can activate/deactivate an organization;
+6. organization deactivation immediately affects eligibility without rewriting individual membership status;
+7. an Admin can view users associated with an organization;
+8. an Admin can view and search users globally;
+9. an Admin can filter users by organization, role, and status;
+10. an Admin can provision a user without managing passwords;
+11. existing Auth identities are reused rather than duplicated;
+12. an Admin can assign a user to a domain-compatible organization;
+13. an Admin can assign `Contributor` or `Admin`;
+14. an Admin can activate/deactivate membership;
+15. login email remains read-only;
+16. unauthorized users cannot perform management operations through UI or direct application interfaces;
+17. historical relationships survive deactivation and reassignment;
+18. security-relevant Admin mutations produce append-only audit evidence;
+19. organization identity remains suitable for SPEC-008 analytics segmentation.
 
 ---
 
-# 27. Acceptance Criteria
+# 32. Acceptance Criteria
 
-## AC-01 — Admin organizations surface
+## AC-01 — Admin Organizations surface
 
-Authorized admins can access an Organizations management surface.
+Authorized Admins can access an Organizations management surface.
 
 ## AC-02 — Organization list
 
-The surface shows canonical organization records and their current active/inactive status.
+The surface shows canonical organizations and their active/inactive status.
 
 ## AC-03 — Organization creation
 
-An authorized admin can create a valid organization using the canonical data model.
+An authorized Admin can create a valid organization using the canonical model.
 
 ## AC-04 — Organization editing
 
-An authorized admin can update supported organization metadata without replacing the canonical organization identity.
+An Admin can update supported organization metadata without replacing the canonical organization ID.
 
-## AC-05 — Organization deactivation
+## AC-05 — Multiple approved domains
+
+An Admin can view, add, and remove multiple approved domains while normalization and uniqueness constraints remain enforced.
+
+## AC-06 — Organization deactivation
 
 An organization can be deactivated and later reactivated without deleting its historical record.
 
-## AC-06 — Organization membership visibility
+## AC-07 — Organization deactivation authorization effect
 
-An admin can view users associated with an organization.
+Deactivating an organization denies product eligibility to its members on the next authoritative access check without rewriting individual membership status.
 
-## AC-07 — Admin users surface
+Reactivation does not reactivate memberships that are individually inactive.
 
-Authorized admins can access a global Users management surface.
+## AC-08 — Organization membership visibility
 
-## AC-08 — User discovery
+An Admin can view users associated with an organization.
 
-Admins can search users and filter them by relevant available dimensions including organization, role, and status where supported.
+## AC-09 — Admin Users surface
 
-## AC-09 — User creation/invitation
+Authorized Admins can access a global Users management surface.
 
-An admin can establish a new user through the current identity model without setting a password.
+## AC-10 — User discovery
 
-## AC-10 — Duplicate protection
+Admins can search by email and filter users by organization, canonical role, and membership status.
 
-Attempting to create an identity that already exists produces a safe, deterministic result rather than creating a duplicate identity.
+## AC-11 — User provisioning
 
-## AC-11 — Organization assignment
+An Admin can establish a user through the existing identity model without setting a password.
 
-A managed user can be associated with the intended canonical organization according to the approved membership model.
+## AC-12 — Duplicate protection
 
-## AC-12 — Role management
+Existing Auth identities are reused.
 
-Admins can assign only valid existing roles.
+The workflow does not intentionally create duplicate identities for the same normalized email.
 
-## AC-13 — User deactivation
+## AC-13 — Organization assignment
 
-A user can be deactivated/reactivated without destructive deletion.
+A managed user can be associated with the intended canonical organization.
 
-## AC-14 — Server-side authorization
+## AC-14 — Domain-compatible assignment
 
-All mutations enforce admin authorization outside the client UI.
+Provisioning and reassignment reject a target organization when the user's current Auth email domain is not an approved domain of that organization.
 
-## AC-15 — Self-escalation protection
+## AC-15 — Role management
 
-A non-admin cannot promote themselves or another user through unauthorized direct calls.
+Admins can assign only:
 
-## AC-16 — Historical preservation
+```text
+Contributor
+Admin
+```
 
-Deactivation and reassignment do not destroy historical records that are expected to remain durable.
+## AC-16 — User deactivation
 
-## AC-17 — Audit coherence
+A membership can be deactivated/reactivated without destructive deletion.
 
-Administrative actions integrate with the existing audit/history contract where applicable, without creating a duplicate audit system.
+## AC-17 — Email remains read-only
 
-## AC-18 — Analytics readiness
+The Admin UI and ordinary Admin-authorized domain operations provide no login-email mutation path.
+
+## AC-18 — Server-side authorization
+
+All mutations enforce live Admin authorization outside the client UI.
+
+## AC-19 — Self-escalation protection
+
+A non-Admin cannot promote themselves or another user through unauthorized direct calls.
+
+## AC-20 — Historical preservation
+
+Deactivation and reassignment do not destroy historical records expected to remain durable.
+
+## AC-21 — Access-administration audit
+
+Security-relevant organization, domain, membership, role, reassignment, and status mutations append durable access-administration audit evidence.
+
+Curriculum lifecycle history remains unchanged.
+
+## AC-22 — Privileged Auth boundary
+
+Any privileged Supabase Auth administration credential is:
+
+- server-only;
+- unavailable to browser code;
+- invoked only after live Admin authorization;
+- bounded to required Auth operations;
+- not used as a generic product-authorization bypass.
+
+## AC-23 — Minimal Admin identity exposure
+
+Global Admin user queries expose only identity/membership information required by this feature.
+
+Ordinary authenticated clients do not gain unrestricted reads of `auth.users` or global membership rows.
+
+## AC-24 — Partial provisioning fails closed
+
+If Auth identity creation succeeds but membership creation fails, the identity does not gain product access and the operation can be safely retried/reconciled.
+
+## AC-25 — Analytics readiness
 
 The canonical organization relationship can later be consumed by SPEC-008 without deriving membership from email domain.
 
-## AC-19 — Existing product behavior preserved
+## AC-26 — Existing product behavior preserved
 
-Normal Library/content workflows remain unchanged for users outside the new admin-management surfaces.
+Normal Library/content workflows remain unchanged outside the new Admin-management surfaces.
 
-## AC-20 — Tests
+## AC-27 — Tests
 
 Automated tests cover security-sensitive management behavior and pass before completion.
 
 ---
 
-# 28. Testing Requirements
+# 33. Testing Requirements
 
-Testing should cover at minimum:
+## Organization lifecycle
 
-### Organization lifecycle
+Test:
 
 - create valid organization;
 - reject invalid organization data;
 - edit organization;
+- add approved domain;
+- remove approved domain;
+- normalize domains;
+- reject duplicate domains;
 - deactivate organization;
 - reactivate organization;
 - preserve canonical ID.
 
-### User lifecycle
+## User lifecycle
 
-- create/invite user;
-- handle duplicate identity;
+Test:
+
+- provision new Auth identity + membership;
+- reuse existing Auth identity;
+- reject duplicate/conflicting identity state;
 - assign organization;
-- change organization where supported;
-- assign role;
-- deactivate user;
-- reactivate user.
+- reject domain-incompatible organization;
+- reassign organization;
+- assign `Contributor`;
+- assign `Admin`;
+- deactivate membership;
+- reactivate membership;
+- preserve read-only login email.
 
-### Authorization
+## Authorization
 
-- admin may perform mutations;
-- non-admin may not;
+Test:
+
+- Admin may perform allowed mutations;
+- Contributor may not;
 - unauthenticated users may not;
 - direct backend calls remain protected;
-- invalid role assignments fail;
-- invalid organization assignments fail.
+- invalid role assignment fails;
+- invalid organization assignment fails;
+- self-promotion fails;
+- client-side manipulation cannot bypass authorization.
 
-### Data integrity
+## Organization eligibility
 
-- deactivation does not cascade-delete historical records unexpectedly;
-- organization counts derive from canonical membership;
-- membership remains internally consistent.
+Test:
 
-### Regression
+```text
+active membership + active organization
+→ eligible
+```
 
-Existing authentication, admin content management, Library navigation, and authorization tests must continue to pass.
+```text
+active membership + inactive organization
+→ denied
+```
+
+```text
+inactive membership + active organization
+→ denied
+```
+
+```text
+membership + unapproved current email domain
+→ denied
+```
+
+## Data integrity
+
+Test:
+
+- deactivation does not cascade-delete historical records;
+- organization counts derive from membership;
+- membership remains internally consistent;
+- organization deactivation does not mutate membership status;
+- multiple approved domains remain normalized and unique;
+- reassignment does not create a second membership;
+- existing Auth identities are reused.
+
+## Privileged Auth boundary
+
+Verify:
+
+- privileged Auth administration executes server-side only;
+- unauthenticated requests cannot invoke it effectively;
+- non-Admin requests cannot invoke it effectively;
+- secret credentials are absent from browser bundles;
+- secret credentials are absent from serialized payloads;
+- secret credentials do not use public environment variables;
+- privileged credentials are not used for generic organization/membership authorization.
+
+## Partial failure
+
+Test the equivalent of:
+
+```text
+Auth identity creation succeeds
+membership creation fails
+```
+
+and verify:
+
+- product access remains denied;
+- retry can reuse the identity;
+- no duplicate identity is created.
+
+## Audit
+
+Verify:
+
+- relevant mutations append access-administration events;
+- actor is captured;
+- action is captured;
+- target is captured;
+- timestamp is captured;
+- bounded before/after state is preserved where relevant;
+- ordinary clients cannot rewrite/delete audit history;
+- curriculum lifecycle history is unaffected.
+
+## Regression
+
+Existing:
+
+- authentication;
+- authorization;
+- Admin content management;
+- Library navigation;
+- curriculum lifecycle;
+- archival/history
+
+tests must continue to pass.
 
 ---
 
-# 29. UX Requirements
+# 34. UX Requirements
 
-The feature should use the current Base Curricular design system and established Admin patterns.
+The feature should use the current Base Curricular design system and existing Admin patterns.
 
 Key UX principles:
 
 - clear separation between Organizations and Users;
 - easy search;
 - useful filtering;
-- status visible without requiring detail navigation;
+- status visible without requiring unnecessary detail navigation;
+- approved domains clearly visible on organization detail;
+- security-sensitive domain removal clearly communicated;
 - destructive-looking actions avoided for routine deactivation;
-- clear confirmation for security-sensitive role or status changes;
-- responsive enough for normal administrative use;
-- understandable Spanish labels consistent with the rest of the product.
+- confirmation for role, reassignment, domain-removal, and status changes where appropriate;
+- responsive behavior consistent with the existing product;
+- Spanish labels consistent with the rest of the application.
 
-The implementation should not introduce a parallel visual language for admin management.
+Suggested role labels:
+
+```text
+Contributor → Miembro
+Admin       → Administrador
+```
+
+The implementation must not introduce a parallel Admin visual language.
 
 ---
 
-# 30. Impact Surface
+# 35. Impact Surface
 
-Expected impact may include:
+Expected impact includes:
 
 - Admin navigation;
-- user/profile model;
-- organization model;
-- membership model;
-- authentication integration;
+- Supabase Auth integration;
+- organization model operations;
+- organization-domain operations;
+- membership operations;
 - authorization;
 - RLS/RPC/server operations;
-- audit history;
-- admin UI;
+- privileged server-only Auth boundary;
+- access-administration audit;
+- Admin UI;
 - tests;
+- environment configuration;
 - security documentation;
 - architecture documentation;
 - product documentation.
 
-Potentially relevant files/docs include:
+Potentially affected durable knowledge includes:
 
 ```text
+README.md
 docs/ARCHITECTURE.md
 docs/SECURITY.md
 docs/DECISIONS.md
@@ -907,173 +1425,153 @@ docs/PRODUCT_DEFINITION.md
 resources/specs/README.md
 ```
 
-The technical preflight must identify the actual authoritative locations.
+The final implementation preflight must confirm the authoritative locations.
 
 ---
 
-# 31. Implementation Freedom
+# 36. Implementation Freedom
 
 The implementation agent may determine:
 
 - page versus modal patterns;
 - exact route structure;
 - table/card layout;
-- server action/API/RPC implementation;
+- exact RPC boundaries;
+- exact Server Action/route-handler organization;
 - query strategy;
-- pagination implementation;
+- pagination;
 - search mechanics;
 - validation library;
-- exact organization-member presentation;
+- organization-member presentation;
 - confirmation-dialog implementation;
-- technical audit integration;
-- technical invitation flow consistent with current auth.
+- exact schema of the bounded access-administration audit;
+- exact server-only Supabase Auth Admin client structure;
+- recoverable partial-failure mechanics;
+- technical provisioning details consistent with this SPEC.
 
 The implementation agent may not silently change:
 
-- admin-only authority;
-- canonical organization semantics;
-- role semantics;
-- single-organization pilot assumption;
-- deactivation-over-deletion decision;
-- prohibition on admin-managed passwords;
-- domain not being authoritative membership;
+- Admin-only authority;
+- single-organization membership;
+- canonical `Contributor | Admin` roles;
+- approved-domain eligibility;
+- multiple-domain organization semantics;
+- deactivation-over-deletion;
+- `membership.is_active` as user administrative status;
+- login email being read-only;
+- prohibition on Admin-managed passwords;
+- explicit membership being required;
+- server-only bounded privileged Auth administration;
+- append-only access-administration audit;
 - existing authorization/security contracts.
 
-If repository evidence conflicts with one of these product decisions in a material way, return:
+A material conflict requires:
 
 **BLOCKED / DECISION REQUIRED**
 
-before implementation.
+before implementation continues.
 
 ---
 
-# 32. Pre-Implementation Technical Preflight
+# 37. Preflight Decisions Resolved
+
+The repository-grounded preflight resolved the previous open questions.
+
+## Q-009-01 — Organization deactivation
+
+**RESOLVED**
+
+Existing eligibility requires `organizations.is_active`.
+
+Deactivation therefore blocks organization members without rewriting individual membership status.
+
+---
+
+## Q-009-02 — Email editing
+
+**RESOLVED**
+
+Admin login-email editing is outside SPEC-009.
+
+Email is visible but read-only.
+
+---
+
+## Q-009-03 — Existing identity onboarding
+
+**RESOLVED**
+
+Reuse an existing Auth identity and create/reconcile its explicit single membership when the requested state is valid.
+
+Never intentionally create a duplicate Auth identity for the same normalized email.
+
+---
+
+## Q-009-04 — Audit coverage
+
+**RESOLVED**
+
+Security-relevant organization, approved-domain, membership, role, status, and reassignment changes are recorded in the bounded append-only access-administration audit.
+
+`curriculum_lifecycle_events` remains curriculum-only.
+
+---
+
+## D-009-A — Auth administration boundary
+
+**RESOLVED**
+
+A server-only privileged Supabase credential may be introduced only for the minimum Auth Admin operations required by SPEC-009 and only after live Admin authorization.
+
+It must not become a generic authorization bypass.
+
+---
+
+## D-009-B — Access administration audit
+
+**RESOLVED**
+
+SPEC-009 introduces a dedicated append-only access-administration audit rather than overloading curriculum lifecycle history.
+
+No product-decision blocker remains from the initial technical preflight.
+
+---
+
+# 38. Final Pre-Implementation Gate
 
 Before moving SPEC-009 to:
 
 **ACTIVE — IMPLEMENTATION READY**
 
-perform a repository-grounded technical preflight.
+perform one final repository-grounded technical preflight against the updated SPEC.
 
-At minimum verify:
+The final preflight must confirm:
 
-## Identity
+1. current repository HEAD and working state;
+2. current identity/organization/membership schema still matches this SPEC;
+3. canonical `Contributor | Admin` roles remain unchanged;
+4. multiple approved-domain semantics remain unchanged;
+5. Admin RPC/query boundaries can preserve current RLS and live-role authorization;
+6. the bounded server-only Auth Admin path is technically feasible in the current Next.js/Vercel/Supabase architecture;
+7. the privileged credential can remain absent from all client bundles;
+8. access-administration audit persistence can be added without weakening curriculum history;
+9. partial provisioning has a fail-closed and recoverable implementation strategy;
+10. all required mutations have clear authoritative boundaries;
+11. no unresolved data-integrity or authorization issue remains;
+12. acceptance criteria can be implemented without inventing new product behavior;
+13. specification indexes and durable project knowledge can be reconciled during activation/implementation.
 
-- current auth provider;
-- canonical user identifier;
-- profile model;
-- email normalization;
-- first-login/onboarding flow;
-- existing invitation behavior;
-- whether admin-created auth identities are supported.
-
-## Organizations
-
-- canonical organization table/model;
-- domain semantics;
-- active/inactive fields;
-- uniqueness rules;
-- foreign-key relationships.
-
-## Membership
-
-- whether membership is represented directly on the user/profile or through a join table;
-- whether multiple memberships are currently possible;
-- how current organization is resolved;
-- whether membership changes affect existing authorization.
-
-## Roles
-
-- canonical role values;
-- where roles are stored;
-- how admin status is evaluated;
-- whether role assignment has existing RPC/API support.
-
-## Security
-
-- RLS policies;
-- privileged operations;
-- service-role usage;
-- server-side authorization;
-- current admin-management patterns.
-
-## Audit
-
-- current audit/history tables or lifecycle events;
-- whether organization/user changes already have an established audit pathway.
-
-## UX
-
-- existing Admin routes;
-- existing tables/forms/modals;
-- admin visual system;
-- responsive conventions;
-- Spanish terminology.
-
-## Data safety
-
-Evaluate the consequences of:
-
-- organization deactivation;
-- user deactivation;
-- organization reassignment;
-- role changes;
-- attempted duplicate users;
-- email changes.
-
-Do not implement until these behaviors are understood.
-
----
-
-# 33. Required Decisions During Preflight
-
-If repository evidence does not already establish these behaviors, the preflight must explicitly surface them rather than guess.
-
-## Q-009-01 — Organization deactivation
-
-Does deactivating an organization automatically block all members from accessing the platform?
-
-## Q-009-02 — Email editing
-
-Can admins edit a user's login email, or must email changes use the authentication provider's verification flow?
-
-## Q-009-03 — Existing identity onboarding
-
-If an authentication identity already exists but has no organization membership, should the admin operation attach that identity rather than create a new one?
-
-## Q-009-04 — Audit coverage
-
-Which organization/user administrative mutations must be represented in the existing audit history?
-
-These questions are implementation blockers only if the current architecture does not already provide authoritative answers.
-
----
-
-# 34. Activation Gate
-
-SPEC-009 may move to:
+If these checks pass, move SPEC-009 to:
 
 **ACTIVE — IMPLEMENTATION READY**
 
-when:
-
-1. current identity and organization models are verified;
-2. canonical membership semantics are verified;
-3. admin authorization mechanics are verified;
-4. user creation/invitation behavior is defined;
-5. organization/user deactivation behavior is defined;
-6. email-update behavior is defined;
-7. audit integration is understood;
-8. no unresolved data-integrity or authorization issue remains;
-9. acceptance criteria can be implemented without inventing new product behavior.
-
-If material uncertainty remains:
+If a material contradiction appears:
 
 **BLOCKED / DECISION REQUIRED**
 
 ---
 
-# 35. Knowledge Updates Required
+# 39. Knowledge Updates Required
 
 After implementation, reconcile durable project knowledge.
 
@@ -1082,36 +1580,46 @@ At minimum review:
 - architecture;
 - security;
 - authorization documentation;
-- organization/user model documentation;
-- admin UX documentation;
+- identity/organization model documentation;
+- Admin UX documentation;
 - decisions;
 - specification index;
+- environment configuration;
 - operational onboarding documentation.
 
 Documentation must distinguish:
 
-- current behavior;
-- historical decisions;
-- future identity-management possibilities.
+```text
+current behavior
+historical decisions
+future identity-management possibilities
+```
 
-Do not duplicate identity/organization rules across multiple competing sources of truth.
+Do not create competing sources of truth.
 
 ---
 
-# 36. Completion Evidence
+# 40. Completion Evidence
 
 SPEC-009 is not complete merely because Admin pages exist.
 
 Closure requires evidence that:
 
-- organization CRUD-equivalent lifecycle works using deactivation rather than routine deletion;
-- user management works;
+- organization lifecycle management works;
+- multiple approved domains work;
+- user provisioning works;
+- existing identities are reused;
 - canonical membership is preserved;
+- domain compatibility is enforced;
 - role changes are safely authorized;
-- non-admin access is denied;
-- duplicate identity behavior is deterministic;
+- non-Admin access is denied;
+- privileged Auth administration remains server-only;
+- partial provisioning failures fail closed;
+- login email remains read-only;
 - deactivated records preserve expected history;
-- audit behavior is coherent;
+- organization deactivation behaves according to the eligibility contract;
+- access-administration audit works;
+- curriculum lifecycle audit remains intact;
 - existing application behavior remains intact;
 - relevant automated tests pass;
 - hosted behavior is validated where required;
@@ -1129,12 +1637,15 @@ The following are deliberately deferred:
 
 - organization administrators;
 - organizations managing their own users;
-- multiple organization membership;
+- multiple organization memberships;
+- user profile/name management;
+- Admin email-change workflow;
 - departments/teams;
 - bulk imports;
 - SCIM provisioning;
 - SAML/enterprise SSO;
-- automatic enrollment by domain;
+- automatic membership creation by domain;
+- exceptions for users with non-approved email domains;
 - seat/license management;
 - subscription/billing relationships;
 - organization usage limits;
@@ -1142,4 +1653,4 @@ The following are deliberately deferred:
 - legal/privacy deletion workflows;
 - self-service organization onboarding.
 
-These should be driven by evidence from actual pilot operations rather than introduced preemptively.
+These capabilities should be driven by evidence from actual pilot operations rather than introduced preemptively.
