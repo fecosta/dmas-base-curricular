@@ -25,6 +25,14 @@ it("accepts browser-safe publishable configuration", () => {
   expect(getSupabaseConfig()).toEqual({ url: "https://project.supabase.co", key: "sb_publishable_test-not-a-real-key" });
 });
 
+it("keeps the Auth Admin secret out of the normal application client configuration", () => {
+  vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://project.supabase.co");
+  vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_test-not-a-real-key");
+  vi.stubEnv("SUPABASE_AUTH_ADMIN_SECRET_KEY", "sb_secret_server-only-test");
+  expect(getSupabaseConfig()).toEqual({ url: "https://project.supabase.co", key: "sb_publishable_test-not-a-real-key" });
+  expect(getSupabaseConfig()).not.toHaveProperty("secret");
+});
+
 it("accepts only an application origin suitable for OAuth callbacks", () => {
   vi.stubEnv("APP_URL", "https://base.example.org");
   expect(getApplicationUrl()).toBe("https://base.example.org");
