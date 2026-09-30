@@ -220,6 +220,58 @@ export type Database = {
       begin_attachment_deletion: { Args: { requested_attachment_id: string }; Returns: undefined };
       cancel_attachment_deletion: { Args: { requested_attachment_id: string }; Returns: undefined };
       finalize_attachment_deletion: { Args: { requested_attachment_id: string }; Returns: undefined };
+      list_admin_organizations: {
+        Args: never;
+        Returns: {
+          approved_domains: string[];
+          is_active: boolean;
+          member_count: number;
+          organization_id: string;
+          organization_name: string;
+        }[];
+      };
+      list_admin_organization_members: {
+        Args: { requested_organization_id: string };
+        Returns: { email: string; is_active: boolean; role: Database["public"]["Enums"]["product_role"]; user_id: string }[];
+      };
+      list_admin_memberships: {
+        Args: {
+          active_filter?: boolean | null;
+          email_search?: string | null;
+          organization_filter?: string | null;
+          page_offset?: number;
+          page_size?: number;
+          role_filter?: Database["public"]["Enums"]["product_role"] | null;
+        };
+        Returns: {
+          email: string;
+          is_active: boolean;
+          organization_id: string;
+          organization_name: string;
+          role: Database["public"]["Enums"]["product_role"];
+          user_id: string;
+        }[];
+      };
+      admin_create_organization: { Args: { requested_domains: string[]; requested_name: string }; Returns: string };
+      admin_update_organization_name: { Args: { requested_name: string; requested_organization_id: string }; Returns: undefined };
+      admin_set_organization_active: { Args: { requested_is_active: boolean; requested_organization_id: string }; Returns: undefined };
+      admin_add_organization_domain: { Args: { requested_domain: string; requested_organization_id: string }; Returns: undefined };
+      admin_remove_organization_domain: { Args: { requested_domain: string }; Returns: undefined };
+      admin_create_membership: {
+        Args: {
+          requested_is_active?: boolean;
+          requested_organization_id: string;
+          requested_role: Database["public"]["Enums"]["product_role"];
+          requested_user_id: string;
+        };
+        Returns: undefined;
+      };
+      admin_reassign_membership: { Args: { requested_organization_id: string; requested_user_id: string }; Returns: undefined };
+      admin_set_membership_role: {
+        Args: { requested_role: Database["public"]["Enums"]["product_role"]; requested_user_id: string };
+        Returns: undefined;
+      };
+      admin_set_membership_active: { Args: { requested_is_active: boolean; requested_user_id: string }; Returns: undefined };
     };
     Enums: {
       curriculum_content_type: "module" | "program_topic" | "instructor" | "teaching_note" | "material" | "institution";
