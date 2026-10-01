@@ -61,6 +61,10 @@ export type Database = {
         { is_active: boolean; organization_id: string; role: Database["public"]["Enums"]["product_role"]; user_id: string },
         { is_active?: boolean; organization_id: string; role?: Database["public"]["Enums"]["product_role"]; user_id: string }
       >;
+      analytics_preferences: Table<{
+        analytics_decided_at: string; analytics_enabled: boolean; consent_version: string;
+        privacy_notice_version: string; updated_at: string; user_id: string;
+      }>;
       curriculum_attachments: Table<{
         contributor_organization_id: string; created_at: string; created_by: string; id: string;
         material_revision_id: string | null; mime_type: string; object_name: string; original_filename: string;
@@ -127,6 +131,17 @@ export type Database = {
         Returns: { organization_id: string; organization_name: string; role: Database["public"]["Enums"]["product_role"]; user_id: string }[];
       };
       is_admin: { Args: never; Returns: boolean };
+      set_analytics_preference: {
+        Args: {
+          requested_analytics_enabled: boolean;
+          requested_consent_version: string;
+          requested_privacy_notice_version: string;
+        };
+        Returns: {
+          analytics_decided_at: string; analytics_enabled: boolean; consent_version: string;
+          privacy_notice_version: string; updated_at: string;
+        }[];
+      };
       list_published_modules: {
         Args: { axis_filter?: string; search_query?: string; theme_filter?: string };
         Returns: {
