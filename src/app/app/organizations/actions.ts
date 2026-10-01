@@ -22,11 +22,13 @@ async function runOrganizationAction(
   operation: () => Promise<void | string>,
   successMessage: (result: void | string) => string,
   fallbackMessage: string,
+  organizationId?: string,
 ): Promise<OrganizationActionState> {
   await requireAccess("Admin");
   try {
     const result = await operation();
     revalidatePath("/app/organizations");
+    if (organizationId) revalidatePath(`/app/organizations/${organizationId}`);
     revalidatePath("/app/users");
     return { success: successMessage(result) };
   } catch (error) {
@@ -47,6 +49,7 @@ export async function updateOrganizationNameAction(_state: OrganizationActionSta
     () => updateOrganizationName(form.get("organization_id"), form.get("name")),
     () => "Nombre de la organización actualizado.",
     "No pudimos actualizar la organización.",
+    typeof form.get("organization_id") === "string" ? String(form.get("organization_id")) : undefined,
   );
 }
 

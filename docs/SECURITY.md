@@ -369,6 +369,7 @@ Active identity-sensitive events include, where applicable:
 - Draft edits;
 - publication;
 - archival/restoration.
+- organization, approved-domain, membership, role, reassignment, and activation/deactivation changes under the separate access-administration audit.
 
 Historical events already created under SPEC-003 remain valid, including submission-related events.
 
@@ -617,7 +618,7 @@ Ineligible users read no rows.
 
 Both Contributor and Admin sessions lack insert/update/delete privileges and write policies on these configuration tables.
 
-Role assignment, activation, organization association, and allowlist maintenance use trusted operational administration rather than request payloads or ordinary product credentials.
+Role assignment, activation, organization association, and allowlist maintenance use narrow live-Admin-authorized database operations. Ordinary clients retain no direct table-write privileges.
 
 `private.current_access()` is a read-only security-definer function owned by the migration's trusted database role.
 
@@ -638,7 +639,7 @@ Public `current_access()` and `is_admin()` wrappers are security-invoker and res
 
 ### Sessions, secrets, and operational configuration
 
-- The app uses the public Supabase URL and publishable key only. No service-role credential is present in the application. Test fixture administration uses locally obtained privileged keys in Node-only test code and refuses non-local projects.
+- The ordinary app client uses the public Supabase URL and publishable key. SPEC-009 adds a separate server-only Auth Admin boundary using `SUPABASE_AUTH_ADMIN_SECRET_KEY`; it is called only after live Admin authorization and wraps only Auth identity lookup/creation. It is not used for database access. Test fixture administration uses locally obtained privileged keys in Node-only test code and refuses non-local projects.
 - Supabase SSR stores/refreshes sessions in cookies through the server client and proxy. Cookies use `SameSite=Lax`, path `/`, and `Secure` in production.
 - Cookies remain JavaScript-readable because the implementation retains Supabase SSR's default `httpOnly: false`; no production browser Supabase client is currently used. Tokens are not accepted as identity based on cookie contents alone.
 - Evaluating HttpOnly cookie hardening remains a separate follow-up requiring compatibility validation of the SSR/session-refresh flow.
@@ -774,7 +775,7 @@ At the application boundary, each server-only curriculum query calls `requireAcc
 
 Protected curriculum routes are dynamically rendered per request, prefetch is disabled on protected navigation, and proxy responses remain `private, no-store`.
 
-No service-role credential is present in application code.
+The reader and governed-content paths described for SPEC-002 do not use a privileged database credential. SPEC-009 later adds a separate bounded Auth Admin credential; see §27.
 
 The trusted import script requires an operator credential and exact target confirmation outside the browser.
 
@@ -791,7 +792,7 @@ Cloud inspection confirmed:
 
 Hosted validation confirmed eligible access, authenticated-ineligible denial, and private/no-store protected responses.
 
-The deployed application uses a modern Supabase publishable key and no privileged Vercel credential.
+The deployed application uses a modern Supabase publishable key for ordinary data access. SPEC-009 requires a separate server-only Auth Admin secret at runtime; the secret is never a browser variable or database bypass.
 
 The trusted operator/import path uses the `SUPABASE_SECRET_KEY` convention with an `sb_secret_*` key.
 
@@ -1063,7 +1064,32 @@ Reactivating collaborative governance requires an explicit product decision/spec
 
 ---
 
-## 27. Source basis
+## 27. SPEC-009 organization, user, and Auth administration boundary
+
+SPEC-009 preserves the existing eligibility chain, role model, and single-membership relationship:
+
+```text
+confirmed Auth identity
++ exact approved current email domain
++ explicit active membership (`memberships.user_id` remains the primary key)
++ active organization
++ persisted `Contributor` or `Admin` role
+-> access
+```
+
+Organization and membership changes use narrow `SECURITY DEFINER` RPCs that call `private.require_admin_content_access()` and therefore re-evaluate live Admin authority. The RPCs accept target organization/user values as operation inputs, never as actor identity. Authenticated clients receive no generic `INSERT`, `UPDATE`, or `DELETE` grant on `organizations`, `organization_domains`, or `memberships`, and no unrestricted global table reads. Admin-wide reads return only the bounded fields needed by organization/user management.
+
+The separate `access_administration_events` table is RLS-enabled, has no ordinary client policy or table grant, and rejects updates/deletes. Each PostgreSQL mutation appends its actor, actor organization, action, target, timestamp, and bounded before/after state in the same transaction. It is separate from `curriculum_lifecycle_events`, which remains unchanged.
+
+The Auth Admin boundary is `server-only` and reads `SUPABASE_AUTH_ADMIN_SECRET_KEY`, a modern `sb_secret_*` key. Live Admin access is checked before any Auth Admin request. The boundary exposes only paginated `auth.admin.listUsers` and `auth.admin.createUser` operations; it does not expose a privileged Supabase client or call database APIs. The normal app client remains publishable-key based. No password is created or returned, and the Admin UI never changes a login email.
+
+An existing identity is reusable only when its current Auth state is confirmed, non-anonymous, non-deleted, and not banned, and it is either established through verified Google OAuth or carries the server-controlled Auth app-metadata marker `spec009_trusted_provisioning=true`. `user_metadata`, email equality, and domain membership alone are not proof. New identities receive that marker only from the live-Admin Auth provisioning boundary. An unconfirmed or unexplained pre-existing email identity is rejected and receives no membership; Google OAuth is the verified claim path. Identity creation and membership are separate operations: Auth identity alone grants no product access. If the membership RPC transaction fails, it appends no membership or audit success event; the Admin receives a recoverable message and retry resolves the same trusted identity rather than duplicating it. A response lost after a committed transaction is reconciled by reading the existing canonical membership.
+
+The implementation is locally validated. Focused database coverage (165 pgTAP tests across the Admin management, identity RLS, and curriculum lifecycle suites) passes, while the full SQL and Playwright suites expose existing fixture/data collisions in the pre-populated local database; no reset was performed. The full unit suite (429 passed, 1 optional local integration skipped), typecheck, lint, production build, local Auth Admin integration, and a browser-static-bundle scan with a test sentinel pass. Targeted SPEC-009/browser journeys pass in development and production. The active migration is not present in linked Cloud migration history; no Cloud migration push or hosted user/organization mutation was performed. Independent review and resulting Cloud RLS/grant/function/audit verification remain required before SPEC-009 closure.
+
+---
+
+## 28. Source basis
 
 This security baseline was derived from:
 
@@ -1078,3 +1104,4 @@ This security baseline was derived from:
 - verified SPEC-003 contribution and private Storage implementation;
 - D-030 Admin-only initial operational content-management decision — 2026-09-14;
 - revised SPEC-004 Admin Content Management & Publication contract.
+- active SPEC-009 Admin Organization & User Management security, identity-trust, and audit requirements.

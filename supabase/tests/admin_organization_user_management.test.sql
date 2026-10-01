@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(61);
+select plan(64);
 
 insert into public.organizations(id, name, is_active) values
   ('91000000-0000-4000-8000-000000000001', 'Organización Admin', true),
@@ -82,6 +82,21 @@ select lives_ok($$select public.admin_update_organization_name('91000000-0000-40
   'organization name updated');
 select is((select organization_id from public.list_admin_organizations() where organization_name = 'Destino actualizado'), '91000000-0000-4000-8000-000000000002'::uuid,
   'organization canonical ID preserved during edit');
+select is((select member_count from public.list_admin_organizations() where organization_id = '91000000-0000-4000-8000-000000000002'),
+  3::bigint, 'organization name update leaves canonical memberships unchanged');
+select is((select array_to_string(approved_domains, ',') from public.list_admin_organizations()
+  where organization_id = '91000000-0000-4000-8000-000000000002'), 'admin.actor.test,destino.test',
+  'organization name update leaves the approved-domain set unchanged');
+reset role;
+select is((select count(*) from public.access_administration_events
+  where actor_user_id = '92000000-0000-4000-8000-000000000001'
+    and target_organization_id = '91000000-0000-4000-8000-000000000002'
+    and action = 'organization_updated'
+    and previous_state->>'name' = 'Organización destino'
+    and resulting_state->>'name' = 'Destino actualizado'), 1::bigint,
+  'organization name update appends trusted bounded before/after audit state');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"92000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 select lives_ok($$select public.admin_add_organization_domain('91000000-0000-4000-8000-000000000002', ' NUEVO.DESTINO.TEST ')$$,
   'approved domain added after normalization');
 select ok(exists(select 1 from unnest((select approved_domains from public.list_admin_organizations()

@@ -4,6 +4,7 @@ const {
   requireAccess,
   revalidatePath,
   createOrganization,
+  updateOrganizationName,
   setOrganizationActive,
   provisionUser,
   setUserRole,
@@ -11,6 +12,7 @@ const {
   requireAccess: vi.fn(),
   revalidatePath: vi.fn(),
   createOrganization: vi.fn(),
+  updateOrganizationName: vi.fn(),
   setOrganizationActive: vi.fn(),
   provisionUser: vi.fn(),
   setUserRole: vi.fn(),
@@ -18,10 +20,17 @@ const {
 
 vi.mock("@/lib/auth/access", () => ({ requireAccess }));
 vi.mock("next/cache", () => ({ revalidatePath }));
+vi.mock("next/navigation", () => ({
+  redirect: (path: string) => {
+    const error = new Error(`redirect:${path}`);
+    Object.assign(error, { digest: `NEXT_REDIRECT;push;${path};307;` });
+    throw error;
+  },
+}));
 vi.mock("@/lib/admin-management", () => ({
   AdminManagementError: class AdminManagementError extends Error {},
   createOrganization,
-  updateOrganizationName: vi.fn(),
+  updateOrganizationName,
   addOrganizationDomain: vi.fn(),
   removeOrganizationDomain: vi.fn(),
   setOrganizationActive,
@@ -31,7 +40,7 @@ vi.mock("@/lib/admin-management", () => ({
   setUserRole,
 }));
 
-import { createOrganizationAction, setOrganizationActiveAction } from "@/app/app/organizations/actions";
+import { createOrganizationAction, setOrganizationActiveAction, updateOrganizationNameAction } from "@/app/app/organizations/actions";
 import { provisionUserAction, setUserRoleAction } from "@/app/app/users/actions";
 import { AdminManagementError } from "@/lib/admin-management";
 
@@ -39,6 +48,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   requireAccess.mockResolvedValue({ role: "Admin" });
   createOrganization.mockResolvedValue("organization-id");
+  updateOrganizationName.mockResolvedValue(undefined);
   provisionUser.mockResolvedValue({ userId: "user-id", status: "created" });
 });
 
@@ -65,6 +75,31 @@ it("does not catch authorization redirects or invoke a mutation as a Contributor
 
   await expect(setOrganizationActiveAction({}, form)).rejects.toThrow("redirect:/access-denied");
   expect(setOrganizationActive).not.toHaveBeenCalled();
+  expect(revalidatePath).not.toHaveBeenCalled();
+});
+
+it("updates organization metadata without changing the canonical ID and revalidates its detail path", async () => {
+  const organizationId = "91000000-0000-4000-8000-000000000001";
+  const form = new FormData();
+  form.set("organization_id", organizationId);
+  form.set("name", "Nombre actualizado");
+  await expect(updateOrganizationNameAction({}, form)).resolves.toEqual({ success: "Nombre de la organización actualizado." });
+
+  expect(requireAccess).toHaveBeenCalledExactlyOnceWith("Admin");
+  expect(updateOrganizationName).toHaveBeenCalledExactlyOnceWith(organizationId, "Nombre actualizado");
+  expect(revalidatePath).toHaveBeenCalledWith(`/app/organizations/${organizationId}`);
+  expect(revalidatePath).toHaveBeenCalledWith("/app/users");
+});
+
+it("rejects a name-edit Server Action after live Admin revocation", async () => {
+  requireAccess.mockRejectedValue(new Error("redirect:/access-denied"));
+
+  const form = new FormData();
+  form.set("organization_id", "91000000-0000-4000-8000-000000000001");
+  form.set("name", "Changed");
+  await expect(updateOrganizationNameAction({}, form))
+    .rejects.toThrow("redirect:/access-denied");
+  expect(updateOrganizationName).not.toHaveBeenCalled();
   expect(revalidatePath).not.toHaveBeenCalled();
 });
 

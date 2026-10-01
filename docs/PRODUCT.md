@@ -2,7 +2,7 @@
 
 **Status:** Product baseline confirmed  
 **Methodology state:** DECISION READY — PRODUCT BASELINE CONFIRMED  
-**Last reconciled:** 2026-09-14
+**Last reconciled:** 2026-09-30
 
 ## 1. Purpose
 
@@ -113,6 +113,12 @@ The itinerary does not imply:
 - enrollment;
 - certification;
 - completion tracking.
+
+### 4.5 Administer organizations and users
+
+Authorized platform Admins can manage participating organizations, their multiple approved email domains, and explicit user memberships through the shared application. They can provision users without setting passwords, assign an existing organization-compatible membership, select only `Contributor` or `Admin`, and activate or deactivate organizations and memberships. The canonical organization and membership IDs remain stable for later organizational segmentation.
+
+This capability does not introduce organization-admin roles, multi-organization membership, profiles, email editing, password administration, or domain-based automatic membership.
 
 ## 5. Knowledge participation model
 

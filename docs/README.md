@@ -8,11 +8,11 @@ The platform supports discovery, contribution, review, publication, revision, ar
 
 ## Product coherence status
 
-**Lifecycle state:** DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED
+**Lifecycle state:** DECISION READY — PRODUCT AND INITIAL STACK CONFIRMED; SPEC-009 ACTIVE
 
 The product baseline, governance model, security requirements, and initial technical stack are confirmed.
 
-The bounded implementation specifications are under `resources/specs/`. SPEC-001 through SPEC-007 are completed. SPEC-007 — UX/UI Navigation & Interaction Remediation closed as COHERENCE VERIFIED at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`; no specification is active or planned. SPEC-006's six implementation phases changed no product, governance, security or data contract and introduced no database change. SPEC-004 passed independent phase review, controlled local multi-user acceptance against real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. Its destructive acceptance journeys were intentionally not run against production.
+The bounded implementation specifications are under `resources/specs/`. SPEC-001 through SPEC-007 are completed. SPEC-007 — UX/UI Navigation & Interaction Remediation closed as COHERENCE VERIFIED at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. SPEC-009 — Admin Organization & User Management is active; its four implementation phases and local integrated verification/documentation are committed, with fresh independent review and Cloud migration/security verification still required. SPEC-008 remains planned and follows SPEC-009. SPEC-006's six implementation phases changed no product, governance, security or data contract and introduced no database change. SPEC-004 passed independent phase review, controlled local multi-user acceptance against real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. Its destructive acceptance journeys were intentionally not run against production.
 
 SPEC-005 adds Admin-only identity-level archival/restoration and the bounded lifecycle-history boundary, closed under the same evidence split: production Cloud is authoritative for migration/schema/security posture, while functional Archive/Restore/History acceptance ran on the complete local real stack. See `docs/DECISIONS.md` (G-005).
 

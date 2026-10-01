@@ -15,9 +15,9 @@ It is a library, not a Learning Management System (LMS).
 
 **Product state:** baseline confirmed; D-030 establishes the initial Admin-only governed-content model
 
-**Technical state:** SPEC-001 through SPEC-007 are completed
+**Technical state:** SPEC-001 through SPEC-007 are completed. SPEC-009's implementation is delivered in four feature commits, and Phase 5 has reconciled local integrated validation and current documentation. A fresh independent review and the outstanding Cloud migration/security gate are still required before closure.
 
-**Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification. SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is completed at [`resources/specs/completed/006-explorer-ux-ui-fidelity.md`](resources/specs/completed/006-explorer-ux-ui-fidelity.md) after independent phase reviews, Phase 6 validation, and final independent review. SPEC-007 — UX/UI Navigation & Interaction Remediation is completed at [`resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`](resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md) after independent coherence verification.
+**Delivery state:** SPEC-003 — Content Contribution remains completed historical implementation foundation. SPEC-004 — Admin Content Management & Publication is completed at [`resources/specs/completed/004-admin-content-management-publication.md`](resources/specs/completed/004-admin-content-management-publication.md) after independent phase review, controlled local multi-user acceptance, Cloud migration/security verification, and production deployment verification. SPEC-006 — Explorer UX/UI Fidelity & Interaction Layer is completed at [`resources/specs/completed/006-explorer-ux-ui-fidelity.md`](resources/specs/completed/006-explorer-ux-ui-fidelity.md) after independent phase reviews, Phase 6 validation, and final independent review. SPEC-007 — UX/UI Navigation & Interaction Remediation is completed at [`resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`](resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md) after independent coherence verification. SPEC-009 remains active until a fresh independent review verifies its acceptance criteria and required deployment gates; SPEC-008 remains planned and depends on SPEC-009.
 
 **Authentication strategy:** the implemented MVP authentication experience is **Google OAuth through Supabase Auth (primary)**, with **Email OTP through Supabase Auth (fallback)** — see [`docs/DECISIONS.md`](docs/DECISIONS.md) (D-028). All participating organizations currently use Google Workspace. This changes the authentication UX only; the organization/domain/membership/role authorization model remains authoritative.
 
@@ -61,7 +61,7 @@ The most recently completed specification is:
 
 [`resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`](resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md)
 
-No specification is currently active or planned. SPEC-001 through SPEC-007 are completed.
+SPEC-009 — Admin Organization & User Management is active at [`resources/specs/active/009-admin-organization-user-management.md`](resources/specs/active/009-admin-organization-user-management.md). SPEC-008 — Product Analytics & Pilot Observability is planned and follows SPEC-009. Do not treat SPEC-009 as completed until independent review and the documented Cloud/deployment gates are satisfied.
 
 ## Initial stack
 
@@ -128,10 +128,11 @@ Set `.env.local` using the local status output:
 | `NEXT_PUBLIC_SUPABASE_URL` | `http://127.0.0.1:55321` locally; the project's HTTPS URL on Cloud | Browser-safe |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `PUBLISHABLE_KEY` from local status or Cloud project settings (local `ANON_KEY` also supported) | Browser-safe |
 | `APP_URL` | `http://127.0.0.1:3000` locally; the exact deployed HTTPS origin on Vercel | Server runtime, not secret |
+| `SUPABASE_AUTH_ADMIN_SECRET_KEY` | `SECRET_KEY` from local status or the modern Supabase secret key for the project | Server runtime secret; Auth Admin only |
 
-The application needs **no service-role/secret key**. Never put one in a `NEXT_PUBLIC_*` variable. Local status also prints privileged development credentials; those are not application configuration. `.env.local` is ignored by Git.
+The ordinary application client remains publishable-key based. The separate `SUPABASE_AUTH_ADMIN_SECRET_KEY` is used only by the `server-only` Auth Admin boundary for identity lookup and creation after live Admin authorization; it does not perform database reads or writes. Never put it in a `NEXT_PUBLIC_*` variable or expose it to a Client Component. Local status also prints privileged development credentials; only the Auth Admin secret belongs in this server-only application variable. `.env.local` is ignored by Git.
 
-Production uses a modern Supabase publishable key for browser-safe application access. Privileged operator tasks such as the trusted curriculum importer use an `sb_secret_*` key only through the uncommitted `SUPABASE_SECRET_KEY` operator environment convention. Legacy anon/service-role API keys are disabled on the production project.
+Production uses a modern Supabase publishable key for browser-safe application access and a modern `sb_secret_*` key in `SUPABASE_AUTH_ADMIN_SECRET_KEY` for the bounded Auth Admin operations. Privileged operator tasks such as the trusted curriculum importer continue using their separate, uncommitted `SUPABASE_SECRET_KEY` convention. Neither secret is public application configuration. Legacy anon/service-role API keys are disabled on the production project.
 
 ```sh
 npm run dev
@@ -149,9 +150,9 @@ secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_SECRET)"
 skip_nonce_check = false
 ```
 
-### Provision an eligible account
+### Bootstrap the first eligible Admin account
 
-SPEC-001 uses operator-managed provisioning through trusted Supabase administration. No public signup or membership-management UI is implemented. Provisioning authority and the named people allowed to assign Admin remain operational responsibilities of Democracia+; see [`docs/SECURITY.md`](docs/SECURITY.md).
+The first eligible Admin still requires trusted operator bootstrap. After that Admin is established, routine organization/domain and member management is available in the authenticated Admin surfaces at `/app/organizations` and `/app/users`; those surfaces do not set passwords, edit login emails, or create membership from domain alone. Provisioning authority and the people allowed to assign Admin remain operational responsibilities of Democracia+; see [`docs/SECURITY.md`](docs/SECURITY.md).
 
 1. Verify the participating organization and institutional address with the network operator.
 2. In Studio/Cloud SQL Editor, create an active organization and its exact approved lowercase domains. An organization may have multiple domains; a domain belongs to one organization. Subdomains require their own explicit entry.
@@ -173,15 +174,17 @@ SPEC-001 uses operator-managed provisioning through trusted Supabase administrat
 
    Do not insert directly into `auth.users`.
 
-4. After independently verifying the person and institutional address, copy the Auth user's UUID and provision an active membership using trusted SQL:
+4. After independently verifying the initial Admin and institutional address, copy the Auth user's UUID and provision the bootstrap Admin membership using trusted SQL:
 
    ```sql
    insert into public.memberships (user_id, organization_id, is_active)
    values ('<Auth user UUID>', '<organization UUID>', true);
    ```
 
-   The role defaults to `Contributor`. Under D-030 this means eligible non-Admin reader access for governed content. Only for an explicitly authorized Democracia+ administrator may a trusted operator set `role = 'Admin'`. Email domain and user metadata never make this assignment.
+   The role defaults to `Contributor`. Under D-030 this means eligible non-Admin reader access for governed content. Only for an explicitly authorized Democracia+ administrator may the bootstrap operator set `role = 'Admin'`. Email domain and user metadata never make this assignment.
 5. Request a code from `/login`, read the local inbox (or the institutional mailbox on Cloud), and enter it. A confirmed Auth identity alone still receives no product access without matching active membership/domain/organization records.
+
+After the bootstrap Admin can sign in, use **Organizaciones** to create organizations and manage multiple approved domains, and **Usuarios** to provision users, assign domain-compatible organizations, change the two canonical roles, and activate/deactivate memberships. New Auth identities created by this flow receive a server-controlled trusted-provisioning marker, then receive an explicit membership through the Admin-authorized database RPC. Existing confirmed identities are reused only when verified through Google or carrying that trusted marker; unexplained email-only identities must first use the verified Google OAuth path. If Auth identity creation succeeds but membership creation fails, the identity remains without product access and retry reuses it.
 
 Deactivate a membership with `update public.memberships set is_active = false where user_id = '<UUID>';`. Deactivate an organization to deny all its memberships. Revoking a domain, changing the Auth email, or revoking Admin role affects authority on the next authoritative request.
 
@@ -213,7 +216,7 @@ git diff --check
 
 - Vitest covers server authorization orchestration, form validation, manipulated inputs, and configuration boundaries.
 - pgTAP tests exercise real SQL grants, RLS, eligibility, role separation, and revocation with `anon`/`authenticated` roles.
-- Playwright provisions isolated local fixtures, receives real Auth codes through Mailpit, tests shell/API access and direct Supabase requests, then removes its fixtures. It requires local Supabase on port 55321 and an unused port 3000. Test-only privileged credentials are obtained from the local CLI and never passed to the app/browser. It refuses a non-local Supabase URL.
+- Playwright provisions local fixtures, receives real Auth codes through Mailpit, and tests shell/API access and direct Supabase requests. Each Admin organization/user E2E run creates a unique local Admin actor in a shared fixture organization. These actors are retained because append-only access-administration audit rows reference them (`ON DELETE RESTRICT`); target users and organizations are cleaned up. Repeated local runs therefore leave additional synthetic Admin identities and audit rows. The suite requires local Supabase on port 55321 and an unused application port (3000 by default; override with `E2E_PORT`). Test-only privileged credentials are obtained from the local CLI and never passed to browser code. It refuses a non-local Supabase URL.
 - `test:e2e:production` builds and runs the same journeys with `next start`, including production Secure-cookie assertions. Chromium treats loopback as trustworthy; hosted deployment must use HTTPS.
 - `npm run build` builds independently; `npm run start` serves the build and requires the public environment configuration at runtime.
 
@@ -242,7 +245,9 @@ Configure Cloud Auth for the implemented provider strategy:
 - Match the local one-hour access-token lifetime and refresh-token rotation. Longer-term session/offboarding policy remains an operational decision in `docs/SECURITY.md`.
 - Expose only the `public` API schema; keep `private` unexposed. Provision approved organizations, memberships, and the authorized initial Admin separately.
 
-In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables and the exact HTTPS `APP_URL` origin for each deployment environment. Redeploy after changing browser-safe build-time variables. Every preview origin used for OAuth needs its own exact `APP_URL` and Supabase redirect-allow-list entry; do not use an arbitrary redirect wildcard. Preview environments should point to the intended test project. The reviewed SPEC-003 migration and private Storage bucket/policies are applied to the intended Supabase project and hosted authoring validation is complete; do not create a public bucket or add a privileged Vercel credential.
+In Vercel, import the repository using the **Next.js** preset, repository root, Node.js **22.x**, install command `npm ci`, and build command `npm run build`. Supply both `NEXT_PUBLIC_SUPABASE_*` variables, the exact HTTPS `APP_URL` origin, and `SUPABASE_AUTH_ADMIN_SECRET_KEY` as a server-only environment variable for each application environment. Redeploy after changing browser-safe build-time variables. Every preview origin used for OAuth needs its own exact `APP_URL` and Supabase redirect-allow-list entry; do not use an arbitrary redirect wildcard. Preview environments should point to the intended test project. The Auth Admin secret is never a database client credential in application code; ordinary database access continues through the publishable-key SSR client and the narrow Admin RPCs.
+
+Migration `20260917000100_admin_organization_user_management.sql` is committed but has **not** been applied to Supabase Cloud. After independent review, inspect `npx supabase db push --dry-run` against the intended project, apply the migration only through the approved deployment process, then confirm the remote migration ledger, function signatures/owners/`SECURITY DEFINER`/empty `search_path`/grants, organization RLS, and append-only access-audit protections. This implementation run did not push a Cloud migration or mutate production users/organizations.
 
 Hosted acceptance has exercised, against the deployed origin (`https://dmas-base-curricular.vercel.app`): a real first-time Google sign-in, approved-domain/no-membership denial (redirect to `/access-denied` and `/api/access` 403), eligible Admin access with persisted user/organization/role context, the Email OTP fallback (including institutional SMTP delivery via Resend), live membership revocation without waiting for token refresh (and restoration), and hosted sign-out. A real hosted adversarial pre-account-takeover test was also performed and did not reproduce the previously hypothesized Google-linking vulnerability. Long-duration session-expiry/renewal behavior, browser coverage beyond Chromium, an OTP pre-registration variant that never completes Google OAuth first, and operational rate-limit monitoring were not part of this validation pass and remain open follow-ups.
 

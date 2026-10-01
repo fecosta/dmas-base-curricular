@@ -9,7 +9,6 @@ import {
   createOrganizationAction,
   removeOrganizationDomainAction,
   setOrganizationActiveAction,
-  updateOrganizationNameAction,
   type OrganizationActionState,
 } from "./actions";
 
@@ -32,23 +31,6 @@ export function CreateOrganizationForm() {
       {state.success && <Notice tone="success">{state.success}</Notice>}
     </div>
     {state.error && <Notice tone="error">{state.error}</Notice>}
-  </form>;
-}
-
-export function OrganizationNameForm({ organizationId, currentName }: { organizationId: string; currentName: string }) {
-  const [state, action, pending] = useActionState(updateOrganizationNameAction, initialState);
-  const [name, setName] = useState(currentName);
-
-  return <form action={action} className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-    <input type="hidden" name="organization_id" value={organizationId} />
-    <Field label="Nombre de la organización">
-      <input name="name" value={name} onChange={(event) => setName(event.target.value)} maxLength={200} required />
-    </Field>
-    <Button type="submit" variant="secondary" size="sm" disabled={pending || name.trim() === currentName}>
-      {pending ? "Guardando…" : "Guardar nombre"}
-    </Button>
-    {state.error && <Notice tone="error" className="sm:col-span-2">{state.error}</Notice>}
-    {state.success && <Notice tone="success" className="sm:col-span-2">{state.success}</Notice>}
   </form>;
 }
 

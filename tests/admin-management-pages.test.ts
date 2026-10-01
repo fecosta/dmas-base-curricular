@@ -66,6 +66,7 @@ it("searches and summarizes organizations from canonical records", async () => {
 it("shows approved domains and the associated users on the organization detail", async () => {
   const html = renderToStaticMarkup(await OrganizationDetailPage({
     params: Promise.resolve({ organizationId: organization.organizationId }),
+    searchParams: Promise.resolve({}),
   }));
 
   expect(html).toContain("second.red.test");

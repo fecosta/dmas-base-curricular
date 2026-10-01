@@ -29,12 +29,14 @@ Do not move a spec to `completed/` merely because an implementation agent report
 5. `SPEC-005` — Audit History & Archival — completed
 6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — completed
 7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — completed
+8. `SPEC-009` — Admin Organization & User Management — active
+9. `SPEC-008` — Product Analytics & Pilot Observability — planned; follows SPEC-009
 
 `SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md).
 
 `SPEC-001–007` — completed
-`SPEC-009` - active
-`SPEC-008` - planned / follows SPEC-009
+`SPEC-009` — active, pending independent verification and closure gates
+`SPEC-008` — planned / follows SPEC-009
 
 ## Dependency model
 
@@ -58,7 +60,15 @@ SPEC-006 Explorer UX/UI Fidelity & Interaction Layer
           |
           v
 SPEC-007 UX/UI Navigation & Interaction Remediation
+          |
+          v
+SPEC-009 Admin Organization & User Management
+          |
+          v
+SPEC-008 Product Analytics & Pilot Observability (planned)
 ```
+
+SPEC-009 implementation phases 1–4 are committed on the active branch. Phase 5 records local integrated validation and reconciles current architecture/security/setup documentation. The implementation has not moved SPEC-009 to `completed/`; a fresh independent review and the outstanding Cloud migration/security verification remain required. Production analytics under SPEC-008 must not begin before those gates and SPEC-009's closure are satisfied.
 
 SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation.
 

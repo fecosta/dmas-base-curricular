@@ -7,10 +7,14 @@ import { Page } from "@/components/ui/page";
 import { PageHeader } from "@/components/ui/page-header";
 import { SectionHeader } from "@/components/ui/section-header";
 import { listAdminOrganizationMembers, listAdminOrganizations } from "@/lib/admin-management";
-import { AddOrganizationDomainForm, OrganizationNameForm, OrganizationStatusAction, RemoveOrganizationDomainAction } from "../management-forms";
+import { AddOrganizationDomainForm, OrganizationStatusAction, RemoveOrganizationDomainAction } from "../management-forms";
+import { OrganizationNameForm } from "../name-form";
+import { Notice } from "@/components/ui/notice";
 
-export default async function OrganizationDetailPage({ params }: { params: Promise<{ organizationId: string }> }) {
-  const { organizationId } = await params;
+type Query = { [key: string]: string | string[] | undefined };
+
+export default async function OrganizationDetailPage({ params, searchParams }: { params: Promise<{ organizationId: string }>; searchParams: Promise<Query> }) {
+  const [{ organizationId }, query] = await Promise.all([params, searchParams]);
   const organizations = await listAdminOrganizations();
   const organization = organizations.find((item) => item.organizationId === organizationId);
   if (!organization) notFound();
@@ -23,12 +27,14 @@ export default async function OrganizationDetailPage({ params }: { params: Promi
       lede="Administra el nombre, los dominios institucionales, el estado y las membresías de esta organización."
       actions={<ButtonLink href="/app/organizations" variant="secondary">Volver a organizaciones</ButtonLink>}
     />
+    {query.name_updated === "1" && <Notice tone="success" className="mt-6">Nombre de la organización actualizado.</Notice>}
+    {query.name_error === "1" && <Notice tone="error" className="mt-6">No pudimos actualizar el nombre. Revisa el dato e inténtalo nuevamente.</Notice>}
 
     <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.85fr)]">
       <div className="space-y-8">
         <section aria-labelledby="organization-details-title">
           <SectionHeader title="Datos de la organización" id="organization-details-title" />
-          <Card className="p-5 sm:p-6"><OrganizationNameForm key={organization.name} organizationId={organizationId} currentName={organization.name} /></Card>
+          <Card className="p-5 sm:p-6"><OrganizationNameForm organizationId={organizationId} currentName={organization.name} /></Card>
         </section>
 
         <section aria-labelledby="organization-domains-title">

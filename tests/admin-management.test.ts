@@ -21,6 +21,7 @@ import {
   removeOrganizationDomain,
   setUserActive,
   setUserRole,
+  updateOrganizationName,
 } from "@/lib/admin-management";
 import { mapManagementSummaries } from "@/lib/contributions/queries";
 
@@ -102,6 +103,7 @@ it("denies direct management calls when live access no longer resolves to Admin"
 
 it("rejects malformed organization identifiers and roles before invoking mutation RPCs", async () => {
   await expect(listAdminOrganizationMembers("attacker-id")).rejects.toThrow("Selecciona una opción válida.");
+  await expect(updateOrganizationName("attacker-id", "Nombre manipulado")).rejects.toThrow("Selecciona una opción válida.");
   await expect(setUserRole(userId, "Owner")).rejects.toThrow("Selecciona un rol válido.");
   await expect(setUserActive(userId, "yes")).rejects.toThrow("Selecciona un estado válido para el usuario.");
   expect(rpc).not.toHaveBeenCalled();
@@ -233,6 +235,33 @@ it("keeps Auth-created identities fail-closed when the membership RPC throws", a
 
   await expect(provisionUser("person@partner.test", orgId, "Contributor"))
     .rejects.toThrow("La identidad de Auth existe, pero todavía no tiene acceso. Verifica el dominio aprobado y vuelve a intentarlo; se reutilizará la misma identidad.");
+});
+
+it("safely retries a failed Auth-first provisioning with the same trusted identity", async () => {
+  resolveOrCreateTrustedIdentity
+    .mockResolvedValueOnce({ status: "created", userId })
+    .mockResolvedValueOnce({ status: "reused", userId });
+  let membershipAttempts = 0;
+  rpc.mockImplementation(async (name: string) => {
+    if (name === "list_admin_organizations") return { data: [organization], error: null };
+    if (name === "list_admin_memberships") return { data: [], error: null };
+    if (name === "admin_create_membership") {
+      membershipAttempts += 1;
+      return membershipAttempts === 1
+        ? { data: null, error: { code: "XX000", message: "transient database failure" } }
+        : { data: undefined, error: null };
+    }
+    return { data: undefined, error: null };
+  });
+
+  await expect(provisionUser("person@partner.test", orgId, "Contributor"))
+    .rejects.toThrow("La identidad de Auth existe, pero todavía no tiene acceso.");
+  await expect(provisionUser("person@partner.test", orgId, "Contributor"))
+    .resolves.toEqual({ userId, status: "created" });
+
+  expect(resolveOrCreateTrustedIdentity).toHaveBeenNthCalledWith(1, "person@partner.test");
+  expect(resolveOrCreateTrustedIdentity).toHaveBeenNthCalledWith(2, "person@partner.test");
+  expect(membershipAttempts).toBe(2);
 });
 
 it("reconciles a concurrent successful membership create without a duplicate", async () => {

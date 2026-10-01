@@ -121,13 +121,15 @@ test.afterAll(async () => {
 test("Admin manages organizations, trusted users, domains, status and roles through live boundaries", async ({ page, browser }) => {
   test.setTimeout(120_000);
   const organizationA = `SPEC-009 Organización ${marker}`;
+  const renamedOrganizationA = `${organizationA} Editada`;
   const organizationB = `SPEC-009 Reasignación ${marker}`;
   const domainA = `spec009-a-${marker}.test`;
   const domainB = `spec009-b-${marker}.test`;
   const domainC = `spec009-c-${marker}.test`;
+  const untrustedEmail = `preexistente-${marker}@${domainA}`;
   const memberEmail = `miembro-${marker}@${domainB}`;
-  organizationsToRemove.push(organizationA, organizationB);
-  emailsToRemove.push(memberEmail);
+  organizationsToRemove.push(organizationA, renamedOrganizationA, organizationB);
+  emailsToRemove.push(untrustedEmail, memberEmail);
 
   await login(page, actorEmail);
   await page.goto("/app/organizations");
@@ -145,6 +147,19 @@ test("Admin manages organizations, trusted users, domains, status and roles thro
   await expect(page.getByRole("heading", { name: organizationA, exact: true })).toBeVisible();
   await expect(page.getByText(domainA, { exact: true })).toBeVisible();
   await expect(page.getByText(domainB, { exact: true })).toBeVisible();
+  await expect(page.locator('form[data-client-ready="true"]')).toBeVisible();
+  const organizationNameInput = page.getByLabel("Nombre de la organización");
+  await organizationNameInput.fill(renamedOrganizationA);
+  await expect(organizationNameInput).toHaveValue(renamedOrganizationA);
+  const organizationNameRequest = page.waitForRequest((request) => request.method() === "POST" && !!request.headers()["next-action"]);
+  await page.getByRole("button", { name: "Guardar nombre" }).click();
+  expect(await (await organizationNameRequest).postData()).toContain(renamedOrganizationA);
+  await expect(page.getByRole("status")).toContainText("Nombre de la organización actualizado.");
+  await expect(page.getByRole("heading", { name: renamedOrganizationA, exact: true })).toBeVisible();
+  await page.goto("/app/organizations");
+  const renamedCard = page.locator("article").filter({ hasText: renamedOrganizationA });
+  expect(await renamedCard.getByRole("link", { name: "Gestionar organización" }).getAttribute("href"))
+    .toBe(`/app/organizations/${organizationAId}`);
 
   await page.goto("/app/organizations");
   await page.getByLabel("Nombre de la organización").fill(organizationB);
@@ -156,8 +171,24 @@ test("Admin manages organizations, trusted users, domains, status and roles thro
   expect(organizationBPath).toMatch(/^\/app\/organizations\/[0-9a-f-]+$/);
   const organizationBId = organizationBPath!.split("/").pop()!;
 
+  const untrustedIdentity = assertSuccess(await operator.auth.admin.createUser({
+    email: untrustedEmail,
+    email_confirm: true,
+    user_metadata: { role: "Admin", spec009_trusted_provisioning: true },
+  }));
+  expect(untrustedIdentity.data.user).toBeTruthy();
+
   await page.goto("/app/users");
   await page.locator("#provision-user > summary").click();
+  await page.getByLabel("Correo de acceso").fill(untrustedEmail);
+  await page.getByLabel("Organización").first().selectOption(organizationAId);
+  await page.getByLabel("Rol").first().selectOption("Admin");
+  await page.getByRole("button", { name: "Agregar usuario", exact: true }).last().click();
+  await expect(page.getByText(/no se puede reutilizar/)).toBeVisible();
+  const untrustedMembership = assertSuccess(await operator.from("memberships").select("user_id")
+    .eq("user_id", untrustedIdentity.data.user!.id).maybeSingle()).data;
+  expect(untrustedMembership).toBeNull();
+
   await page.getByLabel("Correo de acceso").fill(memberEmail);
   await page.getByLabel("Organización").first().selectOption(organizationAId);
   await page.getByLabel("Rol").first().selectOption("Contributor");
@@ -213,6 +244,7 @@ test("Admin manages organizations, trusted users, domains, status and roles thro
 
     // Organization status blocks access without rewriting the membership state.
     await page.goto(`/app/organizations/${organizationBId}`);
+    await expect(page.getByRole("region", { name: "Miembros" }).getByText(memberEmail)).toBeVisible();
     await page.getByRole("button", { name: "Desactivar organización" }).click();
     await expect(page.getByText(/perderán acceso mientras permanezca inactiva/)).toBeVisible();
     await page.getByRole("button", { name: "Confirmar desactivación" }).click();

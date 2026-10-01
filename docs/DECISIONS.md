@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-09-17
+**Last reconciled:** 2026-09-30
 
 ## Decision register
 
@@ -469,7 +469,7 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ## Current delivery state
 
-`SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. No specification is active or planned.
+`SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management remains active pending independent review; `SPEC-008` remains planned and follows SPEC-009.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 
@@ -585,12 +585,69 @@ SPEC-007 is completed at `resources/specs/completed/007-ux-ui-navigation-interac
 
 ---
 
+### G-009 — SPEC-009 Admin Organization & User Management
+
+**State:** IMPLEMENTATION PHASES 1–5 DELIVERED; LOCAL VALIDATION AND DOCUMENTATION RECORDED; INDEPENDENT REVIEW AND CLOUD APPLICATION PENDING
+
+SPEC-009 remains active at `resources/specs/active/009-admin-organization-user-management.md`. Its four implementation commits are:
+
+- `9625fc3` — bounded Admin organization/domain/membership RPCs, access-administration audit, and pgTAP tests;
+- `07b4f6d` — server-only Auth Admin boundary and trusted identity provisioning/reconciliation;
+- `712c538` — typed Admin query/mutation domain layer and Server Actions;
+- `4151d4a` — Organizations and Users UI, Admin navigation, confirmations, and local E2E coverage.
+
+The implementation retains the `Contributor | Admin` roles and one canonical membership per Auth user. Org/domain/membership operations use live-Admin database RPCs without global table grants. `access_administration_events` is append-only and separate from curriculum lifecycle history. Auth provisioning uses the server-only `SUPABASE_AUTH_ADMIN_SECRET_KEY` boundary for bounded Auth API lookup/create only; membership remains a separate authoritative transaction and failed membership creation does not grant access.
+
+Phase 5 corrected the organization-name editor so the current edited value reaches its Server Action after the Client Component hydrates. Regression evidence verifies that the canonical organization ID, domains, and memberships remain unchanged and the audit records the before/after names.
+
+Local validation includes 165 focused pgTAP tests for SPEC-009, identity RLS, and curriculum lifecycle persistence; `npm run db:lint`; the full Vitest suite (429 passed, 1 optional local integration skipped), typecheck, lint, production build, a browser-static-bundle sentinel scan, and a real local Supabase Auth create/reuse/untrusted-identity integration. The targeted SPEC-009 plus shell Playwright set passed 11 Chromium journeys in both development and production modes, including responsive widths. The full development and production Playwright suites each passed 81/82; the archival keyset test observed 20 pre-existing archived records where its fixture expected 3. The full SQL suite also collides with pre-existing local archive/search data. No local database reset was performed. The SPEC-009 E2E fixture cleans target users and organizations but retains synthetic Admin actor identities and their shared local actor organization because append-only access-audit foreign keys preserve actor attribution.
+
+The complete SQL test suite was attempted against the repository's existing populated local database. Existing archive fixtures and global curriculum-search assertions collide with that local data; the database was not reset or destructively cleaned. No production or hosted functional mutation was performed. A read-only `supabase migration list --linked` check reports `20260917000100` not applied to Supabase Cloud. The migration, new server-only environment variable, and safe Cloud verification steps are documented in the README; independent review, Cloud schema/security verification, and any authorized deployment remain outstanding.
+
+SPEC-009 has not moved to `completed/`. Do not begin SPEC-008 until a fresh independent review accepts the SPEC-009 implementation and its Cloud/deployment gates are satisfied.
+
+#### Acceptance evidence map (local; independent review pending)
+
+The map points to available local evidence for each active-spec criterion. It is not an independent acceptance or a completion claim. Full-suite fixture collisions and the outstanding Cloud gate remain as stated above.
+
+| Criterion | Local evidence | State |
+|---|---|---|
+| AC-01 — Admin Organizations surface | `tests/e2e/admin-organization-users.spec.ts`; `src/app/app/organizations/page.tsx` | Exercised in targeted dev/prod browser runs |
+| AC-02 — Organization list | `tests/admin-management-pages.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | Canonical list, status, domains, and member counts exercised |
+| AC-03 — Organization creation | `supabase/tests/admin_organization_user_management.test.sql`; `tests/e2e/admin-organization-users.spec.ts` | SQL and browser flows exercised |
+| AC-04 — Organization editing | `supabase/tests/admin_organization_user_management.test.sql`; `tests/e2e/admin-organization-users.spec.ts` | Name edit, stable ID, unchanged domains/memberships, and audit exercised |
+| AC-05 — Multiple approved domains | `supabase/tests/admin_organization_user_management.test.sql`; `tests/admin-management.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | Normalization, uniqueness, add/remove, and multi-domain display covered |
+| AC-06 — Organization deactivation | `supabase/tests/admin_organization_user_management.test.sql`; `tests/e2e/admin-organization-users.spec.ts` | Deactivation/reactivation exercised |
+| AC-07 — Organization eligibility effect | `supabase/tests/admin_organization_user_management.test.sql`; `supabase/tests/identity_rls.test.sql` | Inactive organization denies access; reactivation preserves individual membership status |
+| AC-08 — Organization member visibility | `tests/admin-management-pages.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | Associated members and roles exercised |
+| AC-09 — Admin Users surface | `tests/e2e/admin-organization-users.spec.ts`; `tests/e2e/shell.spec.ts` | Admin access/navigation exercised in dev and prod |
+| AC-10 — User discovery | `tests/admin-management-pages.test.ts`; `tests/admin-management.test.ts` | Email search and organization/role/status filters covered |
+| AC-11 — User provisioning | `tests/auth-admin.test.ts`; `tests/auth-admin.local.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | No-password identity creation and membership flow exercised |
+| AC-12 — Duplicate/untrusted identity protection | `tests/auth-admin.test.ts`; `tests/auth-admin.local.test.ts`; `tests/admin-management.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | Trusted reuse and untrusted rejection covered; race/retry paths tested |
+| AC-13 — Organization assignment | `supabase/tests/admin_organization_user_management.test.sql`; `tests/e2e/admin-organization-users.spec.ts` | Canonical membership assignment/reassignment exercised |
+| AC-14 — Domain-compatible assignment | `supabase/tests/admin_organization_user_management.test.sql`; `tests/admin-management.test.ts` | Incompatible provisioning/reassignment rejected |
+| AC-15 — Role management | `supabase/tests/admin_organization_user_management.test.sql`; `tests/admin-management-actions.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | Canonical roles and live Admin authorization covered |
+| AC-16 — User deactivation | `supabase/tests/admin_organization_user_management.test.sql`; `tests/e2e/admin-organization-users.spec.ts` | Membership deactivate/reactivate and access effect exercised |
+| AC-17 — Read-only login email | `tests/admin-management-pages.test.ts`; `tests/admin-management.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | UI and mutation boundary preserve email as read-only |
+| AC-18 — Server-side authorization | `supabase/tests/admin_organization_user_management.test.sql`; `tests/admin-management-actions.test.ts`; `tests/admin-management.test.ts` | Live Admin checks and direct-operation denial covered |
+| AC-19 — Self-escalation protection | `supabase/tests/admin_organization_user_management.test.sql`; `supabase/tests/identity_rls.test.sql` | Unauthorized role mutation and privilege boundaries covered |
+| AC-20 — Historical preservation | `supabase/tests/admin_organization_user_management.test.sql` | Reassignment preserves canonical membership; audit/history assertions covered |
+| AC-21 — Access-administration audit | `supabase/tests/admin_organization_user_management.test.sql` | Actor, targets, before/after state, append-only and access controls covered |
+| AC-22 — Privileged Auth boundary | `tests/auth-admin.test.ts`; `tests/auth-admin.local.test.ts`; production bundle sentinel scan | Server-only/live-Admin/bounded use covered locally; no sentinel/key string in browser bundle |
+| AC-23 — Minimal Admin identity exposure | `supabase/tests/admin_organization_user_management.test.sql`; `src/lib/admin-management.ts` | Bounded RPC projections and absence of broad direct grants covered |
+| AC-24 — Partial provisioning failure | `tests/admin-management.test.ts`; `tests/admin-management-actions.test.ts`; `tests/e2e/admin-organization-users.spec.ts` | Fail-closed state and safe retry with same identity covered |
+| AC-25 — Analytics readiness | `supabase/tests/admin_organization_user_management.test.sql`; `docs/CONTENT_MODEL.md` | Stable canonical organization/membership IDs retained; no domain-derived membership |
+| AC-26 — Existing product behavior | Full Vitest suite; targeted shell Playwright in dev/prod; full-suite results above | Targeted regression checks pass; full SQL/E2E remain affected by documented pre-existing local data collisions |
+| AC-27 — Automated tests | Focused pgTAP, full Vitest, typecheck/lint, and targeted dev/prod Playwright results above | Focused and targeted checks pass; full-suite limitations documented; independent review pending |
+
+---
+
 ## Product Coherence OS state
 
 Current overall state:
 
-**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-007 COMPLETED**
+**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-007; SPEC-009 ACTIVE**
 
 SPEC-001 through SPEC-007 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
 
-SPEC-007 — UX/UI Navigation & Interaction Remediation closed as **COHERENCE VERIFIED** under the evidence recorded in G-007; no specification is active or planned. The completed SPEC-006 interface-fidelity slice and the SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.
+SPEC-007 — UX/UI Navigation & Interaction Remediation closed as **COHERENCE VERIFIED** under the evidence recorded in G-007. SPEC-009 implementation and local evidence are recorded in G-009; the specification remains active pending fresh independent review and required Cloud verification. SPEC-008 remains planned and must not begin before SPEC-009's dependency and governance gates are satisfied. The completed SPEC-006 interface-fidelity slice and the SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.

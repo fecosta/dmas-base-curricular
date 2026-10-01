@@ -96,6 +96,9 @@ function databaseError(error: { code?: string; message?: string }, fallback: str
   if (error.code === "42501") authorizationChanged();
   if (error.code === "23505") throw new AdminManagementError("Ese dominio ya está aprobado para otra organización.");
   if (error.code === "23514") throw new AdminManagementError("El dominio actual del correo no está aprobado para esa organización.");
+  if (error.code === "22023" && error.message === "organization name is unchanged") {
+    throw new AdminManagementError("El nombre de la organización no presenta cambios.");
+  }
   if (error.code === "22023") throw new AdminManagementError("Revisa los datos e inténtalo nuevamente.");
   throw new AdminManagementError(fallback);
 }

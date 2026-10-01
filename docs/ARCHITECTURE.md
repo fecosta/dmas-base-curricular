@@ -2,7 +2,7 @@
 
 ## 1. Status
 
-**Technical state: SPEC-001 THROUGH SPEC-004 COMPLETED**
+**Technical state: SPEC-001 through SPEC-007 completed; SPEC-009 implementation delivered, independent review pending**
 
 The Next.js application and Supabase identity foundation are implemented, locally tested, and have passed independent security/RLS review. The Google OAuth application flow is hosted-validated against the deployed Vercel application and intended Supabase Cloud project. The SPEC-002 read-only curriculum library is committed at `23564067774ba9ec314fbdace3733f34d096e142`; the SPEC-003 contribution and private-attachment implementation is committed at `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20`. Both slices are independently verified, applied to the intended Supabase Cloud project, and hosted-validated on Vercel.
 
@@ -66,8 +66,10 @@ Next.js
    |
    |-- Reader UI
    |-- Admin Content Management UI
+   |-- Admin Organizations and Users
    |-- Route Handlers / Server Actions
    |-- Publication orchestration
+   |-- Bounded server-only Auth identity provisioning
    |-- Search orchestration
    |
    v
@@ -77,6 +79,8 @@ Supabase
    |-- Row Level Security
    `-- Private Storage
 ```
+
+The Auth identity provisioning boundary calls only the Supabase Auth Admin API with its server-only credential. Organization, domain, and membership reads/writes continue through the ordinary publishable-key client and bounded live-Admin database RPCs.
 
 Resend remains available for authentication/institutional email delivery and future notification needs, but governance workflow email is not required by the active Admin-only phase.
 
@@ -502,3 +506,16 @@ SPEC-007 is a bounded UX/UI remediation. It adds no table, migration, RPC, RLS p
 - **Responsive header search:** the placeholder is `Buscar en la base…` at every width. The visual `/` hint and the input padding reserved for it apply from the explorer breakpoint up (CSS only, so server and client markup match); the `/` shortcut and `aria-keyshortcuts` work at every width. Below Tailwind's `sm` breakpoint the header wordmark is visually hidden, remaining the brand link's accessible name, so the phone-width field fits its placeholder.
 - **Overlay contract:** unchanged implementation. The native modal `<dialog>` primitives remain the mechanism for topmost-only Escape, inert background, focus containment and restoration, with the existing `html:has(dialog[open])` scroll lock. SPEC-007 adds E2E regression coverage for the filter drawer and compact menu sheet (scrim dismissal, focus return, inertness, scroll lock) alongside the existing module-detail coverage. No overlay manager or nested-modal architecture exists.
 - **Application icon:** `src/app/icon.svg` is the supplied D+ asset under the Next.js App Router `icon` file convention, emitted as a static `/icon.svg` with a generated `<link rel="icon">`. It is outside the proxy matcher and served without a session.
+
+## 23. SPEC-009 implemented structure — independent and Cloud verification pending
+
+SPEC-009 adds Admin organization/domain/user management without changing the existing two-role eligibility model or one-membership-per-Auth-user schema.
+
+- **Database:** migration `20260917000100_admin_organization_user_management.sql` adds `access_administration_events`, a separate append-only audit table, plus bounded live-Admin RPCs for organization summaries/members, filtered/paginated membership reads, organization/domain changes, membership creation/reassignment, canonical role changes, and membership activation/deactivation. Membership remains keyed by `memberships.user_id`; organization and domain identifiers remain canonical.
+- **Database authorization:** every Admin read/mutation RPC reuses `private.require_admin_content_access()`, which derives the caller from live `private.current_access()`. The RPCs are `SECURITY DEFINER` with empty `search_path`, qualified relations, and `EXECUTE` only for `authenticated`; they grant no broad table privileges or global direct membership reads. The access audit has RLS enabled, no ordinary table grants/policies, and update/delete rejection; mutation plus event append is transactional. Curriculum lifecycle history remains unchanged.
+- **Auth Admin boundary:** `src/lib/supabase/auth-admin.ts` is marked `server-only`; `SUPABASE_AUTH_ADMIN_SECRET_KEY` must be a modern `sb_secret_*` key. The module obtains the key only after live Admin authorization and exposes only bounded Auth Admin lookup/create functions. It does not expose an Admin Supabase client to the rest of the application and does not call database APIs with the privileged key. The normal SSR/data client stays publishable-key based.
+- **Trusted identity state:** Auth users created by this Admin provisioning boundary receive the server-controlled Auth `app_metadata.spec009_trusted_provisioning` marker. Reuse also accepts a confirmed, eligible Auth identity established through verified Google OAuth. User metadata/email equality alone never establishes trust. New Auth identities receive no password; membership creation remains a separate database transaction and a failure leaves no product access. Retry resolves the same marked identity before attempting membership again.
+- **Application:** `src/lib/admin-management.ts` holds server-only queries and orchestration; `/app/organizations` and `/app/users` Server Actions delegate to it and recheck Admin access. Organization/domain compatibility is checked before Auth creation and again inside the membership RPC. Conflicting existing memberships are not overwritten; an exact successful retry is idempotent. Errors returned to Admins are Spanish-safe and do not expose raw provider/database details.
+- **UX:** the existing role-filtered application navigation adds Organizations and Users only for a live Admin. The existing Base Curricular UI primitives render the list, detail/member, provisioning, search/filter and membership-management surfaces responsively; role labels are `Miembro` and `Administrador`, while persistence remains `Contributor` and `Admin`.
+
+**Verification evidence is local only at this stage.** The local migration ledger reports `20260917000100` applied; focused pgTAP coverage (identity RLS, curriculum lifecycle persistence, and SPEC-009: 165 tests) and database lint pass. The full SQL suite was attempted against a pre-populated local database and fails on an archival fixture's current-revision update and two global-search assertions that see existing local curriculum; the database was not reset. The full unit suite (429 passed, 1 optional local integration skipped), typecheck, lint, and production build pass. The local Auth Admin integration passes identity creation/reuse/untrusted rejection. Targeted SPEC-009 plus shell Playwright passes all 11 Chromium journeys in development and production, including responsive widths. The complete Playwright suite was attempted in both modes: 81/82 pass, with the existing archived-keyset E2E expecting 3 rows but seeing 20 pre-existing archived records; no destructive reset was performed. The SPEC-009 E2E retains synthetic Admin actor identities/organization so append-only actor references remain valid; target users and organizations are cleaned up. A production-build bundle scan with a test sentinel found no privileged Auth key/name in `.next/static`. A read-only `supabase migration list --linked` check confirmed `20260917000100` is not applied to linked Supabase Cloud. No Cloud migration push or hosted/production user/organization mutation was performed. Independent review and safe Cloud schema/security verification remain before SPEC-009 closure.

@@ -1,7 +1,7 @@
 # Base Curricular — Content Model
 
 **Status:** Baseline content model  
-**Last reconciled:** 2026-09-15
+**Last reconciled:** 2026-09-30
 
 ## 1. Purpose
 
@@ -318,6 +318,8 @@ Conceptual fields:
 Detailed authorization rules are owned by `SECURITY.md` and `GOVERNANCE.md`.
 
 The persisted `Contributor` role currently represents an eligible non-Admin reader for governed content; the `Admin` role grants governed-content management authority.
+
+For the MVP, `memberships.user_id` remains the canonical primary key, so each Auth identity has at most one organization membership. Login email remains owned by Supabase Auth and read-only in organization/user management; no profile/name table is introduced.
 
 ## 14. Personal Itinerary
 
