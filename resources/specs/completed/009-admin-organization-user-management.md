@@ -1,6 +1,6 @@
 # SPEC-009 — Admin Organization & User Management
 
-**Status:** ACTIVE — IMPLEMENTATION READY
+**Status:** COMPLETED — IMPLEMENTED, INDEPENDENTLY VERIFIED, CLOUD-APPLIED/SECURITY-VERIFIED, AND COHERENCE VERIFIED
 **Product:** D+ Base Curricular  
 **Primary capability:** Administrative management of organizations and users  
 **Depends on:** Existing authentication, authorization, organization model, admin access, audit/history contracts  
@@ -1757,6 +1757,34 @@ Closure requires evidence that:
 Only then should SPEC-009 move to:
 
 **COMPLETED / COHERENCE VERIFIED**
+
+---
+
+# 41. Closure Record
+
+## Implementation evidence
+
+Four commits on `main`: `9625fc3` (bounded Admin organization/domain/membership RPCs, `access_administration_events`, pgTAP), `07b4f6d` (server-only Auth Admin boundary, trusted-identity provisioning), `712c538` (typed query/mutation domain layer and Server Actions), `4151d4a` (Organizations/Users UI, Admin navigation, confirmations, local E2E). `80cd776` corrected the organization-name editor hydration bug.
+
+Local validation: 165 focused pgTAP assertions for SPEC-009/identity RLS/curriculum lifecycle persistence; full Vitest (429 passed, 1 optional local integration skipped); typecheck; lint; production build; a browser-static-bundle sentinel scan; a real local Supabase Auth create/reuse/untrusted-identity integration; targeted SPEC-009 + shell Playwright (11/11 Chromium journeys, development and production, including responsive widths).
+
+## Independent implementation review
+
+Returned `PUSH READY` against this SPEC's AC-01–AC-27.
+
+## Cloud migration/security evidence
+
+Migration `20260917000100` applied to the intended linked Supabase Cloud project (`npx supabase db push`); remote ledger reports it applied with no drift. Verified directly against Cloud metadata: all twelve Admin RPCs are `postgres`-owned, `SECURITY DEFINER`, `search_path=""`, `EXECUTE` granted only to `authenticated` (no `anon`/`PUBLIC`/`service_role`); the three `private` helpers are `postgres`-only; `organizations`/`organization_domains`/`memberships`/`access_administration_events` all have RLS enabled, with `SELECT`-only client grants on the first three and no grant on the audit table; thirty direct `authenticated`/`anon` mutation probes refused with `42501`; forged elevated JWT claims and a membership-less identity denied across every RPC; append-only `UPDATE`/`DELETE` on the audit table raise `55000` even as table owner. `SUPABASE_AUTH_ADMIN_SECRET_KEY` is configured in Vercel Production as a server-only secret and is absent from the full client bundle and every deployed Admin-route chunk.
+
+## Hosted validation
+
+`main @ 80cd776` deployed and aliased to `https://dmas-base-curricular.vercel.app` with clean build/runtime logs; unauthenticated `/app/organizations` and `/app/users` refused server-side with a `307` redirect to `/login`. Hosted destructive mutation/provisioning/role-change/deactivation/audit-append flows were intentionally **not** exercised: production held three Admin memberships, no Contributor identity, and no designated safe test organization or user, so manufacturing such state would have meant inventing production data. That evidence rests on the local real-stack functional validation above plus the Cloud structural verification; production inventory was unchanged after the gate (including zero `access_administration_events` rows).
+
+## Final coherence review
+
+Performed fresh (not copied from prior reviews) against the authoritative decisions in this SPEC, `docs/PRODUCT.md`, `docs/SECURITY.md`, `docs/ARCHITECTURE.md`, and `docs/DECISIONS.md`. No silent deviation found: `Contributor | Admin` roles, single-organization membership, deactivation-over-deletion, read-only email, no profile/name model, domain-compatible assignment, server-only Auth Admin boundary, and the separate append-only access-administration audit all match implementation. AC-01 through AC-27: all PASS on the combined evidence above; no criterion required an unsafe production mutation to close. Known non-blocking limitations (full SQL/E2E suite fixture-isolation collisions with pre-existing local data; no production Contributor identity; hosted destructive flows not exercised) were judged non-blocking because equivalent behavior is proven by local real-stack tests plus Cloud structural verification, consistent with the validation-split precedent set by SPEC-004/SPEC-005.
+
+**Result:** COHERENCE VERIFIED — COMPLETED.
 
 ---
 

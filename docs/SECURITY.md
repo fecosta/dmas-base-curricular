@@ -1110,4 +1110,4 @@ This security baseline was derived from:
 - verified SPEC-003 contribution and private Storage implementation;
 - D-030 Admin-only initial operational content-management decision — 2026-09-14;
 - revised SPEC-004 Admin Content Management & Publication contract.
-- active SPEC-009 Admin Organization & User Management security, identity-trust, and audit requirements.
+- completed SPEC-009 Admin Organization & User Management security, identity-trust, and audit requirements.

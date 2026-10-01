@@ -2,7 +2,7 @@
 
 ## 1. Status
 
-**Technical state: SPEC-001 through SPEC-007 completed; SPEC-009 implementation delivered, independent review pending**
+**Technical state: SPEC-001 through SPEC-007 and SPEC-009 completed**
 
 The Next.js application and Supabase identity foundation are implemented, locally tested, and have passed independent security/RLS review. The Google OAuth application flow is hosted-validated against the deployed Vercel application and intended Supabase Cloud project. The SPEC-002 read-only curriculum library is committed at `23564067774ba9ec314fbdace3733f34d096e142`; the SPEC-003 contribution and private-attachment implementation is committed at `e50feabc698e29c7bac6cf8b33e98b2a0cbfce20`. Both slices are independently verified, applied to the intended Supabase Cloud project, and hosted-validated on Vercel.
 

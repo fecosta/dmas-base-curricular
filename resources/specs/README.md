@@ -29,14 +29,13 @@ Do not move a spec to `completed/` merely because an implementation agent report
 5. `SPEC-005` — Audit History & Archival — completed
 6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — completed
 7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — completed
-8. `SPEC-009` — Admin Organization & User Management — active
+8. `SPEC-009` — Admin Organization & User Management — completed
 9. `SPEC-008` — Product Analytics & Pilot Observability — planned; follows SPEC-009
 
-`SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md).
+`SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md). `SPEC-009` is completed at [`completed/009-admin-organization-user-management.md`](completed/009-admin-organization-user-management.md) after independent implementation review, Cloud migration/security verification, safe hosted validation, and final coherence verification.
 
-`SPEC-001–007` — completed
-`SPEC-009` — active, independently reviewed and Cloud-verified, pending coherence closure
-`SPEC-008` — planned / follows SPEC-009
+`SPEC-001–007, SPEC-009` — completed
+`SPEC-008` — planned; now unblocked as the next planned slice, not yet activated
 
 ## Dependency model
 
@@ -68,7 +67,7 @@ SPEC-009 Admin Organization & User Management
 SPEC-008 Product Analytics & Pilot Observability (planned)
 ```
 
-SPEC-009 implementation phases 1–4 are committed on the active branch. Phase 5 records local integrated validation and reconciles current architecture/security/setup documentation. Independent review returned `PUSH READY`, and a subsequent Cloud gate applied migration `20260917000100` to the intended linked project and verified Cloud RPC security, grants, RLS, append-only audit protection, the server-only Auth Admin secret, the deployed commit, and unauthenticated Admin-route denial. Hosted destructive mutation was intentionally not exercised because production has no designated safe test organization or user; that evidence rests on local real-stack validation plus Cloud structural verification. SPEC-009 remains in `active/` pending the independent coherence-closure review. Production analytics under SPEC-008 must not begin before that closure is satisfied.
+SPEC-009 is completed at [`completed/009-admin-organization-user-management.md`](completed/009-admin-organization-user-management.md). Its four implementation commits delivered bounded Admin organization/domain/membership RPCs with a separate append-only access-administration audit, the server-only Auth Admin boundary, the typed Server Action layer, and the Organizations/Users Admin UI. Independent review returned `PUSH READY`, and a subsequent Cloud gate applied migration `20260917000100` to the intended linked project and verified Cloud RPC security, grants, RLS, append-only audit protection, the server-only Auth Admin secret, the deployed commit, and unauthenticated Admin-route denial. Hosted destructive mutation was intentionally not exercised because production has no designated safe test organization or user; that evidence rests on local real-stack validation plus Cloud structural verification. A fresh final coherence review closed SPEC-009 as COHERENCE VERIFIED. SPEC-008 remains planned and is now unblocked by SPEC-009's closure, but has not been separately activated.
 
 SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation.
 
