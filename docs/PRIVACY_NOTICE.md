@@ -1,34 +1,47 @@
 # Aviso de Privacidad — D+ Base Curricular
 
 **Última actualización:** 1 de octubre de 2026  
-**Versión:** 1.0
+**Versión:** 1.1
 
 En Democracia+ valoramos tu privacidad y queremos que entiendas de forma clara qué información utilizamos cuando accedes a **D+ Base Curricular**, para qué la utilizamos y qué opciones tienes sobre tus datos.
 
-Este Aviso de Privacidad explica cómo tratamos la información relacionada con el uso de Base Curricular.
+Este Aviso de Privacidad describe específicamente el tratamiento de información relacionado con Base Curricular.
+
+Base Curricular forma parte de Democracia+, pero cuenta con prácticas de privacidad específicas debido a la naturaleza de la plataforma, su modelo de acceso y las herramientas utilizadas para analizar y mejorar el producto.
 
 ---
 
 ## 1. ¿Quién es responsable de tus datos?
 
-Base Curricular es una plataforma operada por:
+D+ Base Curricular es un producto de Democracia+ operado por:
 
-**Democracia+**
+**FVR Ltd**  
+**Registro:** 378038  
+**Jurisdicción de constitución:** Islas Caimán
 
-Información legal:
+Para Base Curricular, **FVR Ltd es la entidad responsable del tratamiento descrito en este aviso**.
 
-- Razón social: **[información a completar: razón social de la entidad responsable]**
-- País de constitución: **[información a completar: país de constitución]**
-- Domicilio legal: **[información a completar: domicilio legal]**
-- Identificador legal o tributario: **[información a completar: identificador legal o tributario, cuando corresponda]**
+Democracia+ mantiene documentos institucionales generales que pueden identificar otras organizaciones relacionadas con determinadas actividades de Democracia+. Este aviso describe específicamente el tratamiento realizado en relación con Base Curricular.
 
-Si tienes preguntas sobre privacidad o deseas ejercer alguno de tus derechos relacionados con tus datos personales, puedes escribirnos a:
+Si tienes preguntas sobre privacidad o deseas realizar una solicitud relacionada con tus datos personales, puedes escribirnos a:
 
 **hola@democraciamas.com**
 
 ---
 
-## 2. ¿Qué es Base Curricular?
+## 2. Relación con la Política de Tratamiento de Datos de Democracia+
+
+Democracia+ mantiene una Política de Tratamiento de Datos Personales de alcance institucional que establece principios, derechos y procedimientos generales relacionados con el tratamiento de datos personales.
+
+Este Aviso de Privacidad **complementa esa política para explicar específicamente cómo funciona Base Curricular**.
+
+La existencia de finalidades, tecnologías o tipos de tratamiento en otros programas, sitios o actividades de Democracia+ no significa que Base Curricular utilice automáticamente esas mismas prácticas.
+
+Cuando este aviso establece una práctica más específica o restrictiva para Base Curricular, esa descripción refleja el comportamiento previsto para este producto.
+
+---
+
+## 3. ¿Qué es Base Curricular?
 
 D+ Base Curricular es una plataforma privada de Democracia+ que permite a personas de organizaciones autorizadas explorar y consultar conocimiento curricular compartido.
 
@@ -36,7 +49,7 @@ El acceso requiere una cuenta habilitada y una relación válida con una organiz
 
 ---
 
-## 3. ¿Qué información tratamos?
+## 4. ¿Qué información tratamos?
 
 La información que tratamos depende de cómo utilizas Base Curricular.
 
@@ -54,7 +67,7 @@ Podemos tratar información como:
 - registros relacionados con seguridad, administración y acceso;
 - y registros necesarios para mantener la integridad y trazabilidad de la plataforma.
 
-Utilizamos esta información para permitir y proteger tu acceso a Base Curricular.
+Utilizamos esta información para proporcionar y proteger tu acceso a Base Curricular.
 
 ### Información opcional sobre el uso del producto
 
@@ -74,7 +87,7 @@ Esta información nos ayuda a entender cómo mejorar Base Curricular durante el 
 
 ---
 
-## 4. ¿Para qué utilizamos la información?
+## 5. ¿Para qué utilizamos la información?
 
 Podemos utilizar la información necesaria de la plataforma para:
 
@@ -88,7 +101,7 @@ Podemos utilizar la información necesaria de la plataforma para:
 - proporcionar las funciones solicitadas;
 - y operar y mantener la plataforma.
 
-Cuando autorizas la analítica opcional, utilizamos la información de uso para comprender, por ejemplo:
+Cuando autorizas la analítica opcional, utilizamos información limitada de uso para comprender, por ejemplo:
 
 - si las organizaciones están utilizando Base Curricular;
 - si las personas encuentran y exploran el contenido;
@@ -99,7 +112,7 @@ Cuando autorizas la analítica opcional, utilizamos la información de uso para 
 
 ---
 
-## 5. Lo que no hacemos con la analítica
+## 6. Lo que no hacemos con la analítica
 
 La analítica de Base Curricular está diseñada para ayudarnos a entender y mejorar el producto.
 
@@ -112,11 +125,12 @@ No utilizamos la analítica de producto para:
 - evaluar el desempeño laboral individual;
 - crear rankings de usuarios;
 - determinar opiniones o preferencias políticas;
+- determinar características personales sensibles;
 - o tomar decisiones automatizadas sobre una persona basadas en su nivel de actividad en Base Curricular.
 
 ---
 
-## 6. ¿Qué información enviamos para analítica?
+## 7. ¿Qué información enviamos para analítica?
 
 Cuando autorizas la analítica del producto, podemos utilizar:
 
@@ -142,7 +156,7 @@ Utilizamos identificadores internos siempre que sea posible para evitar enviar i
 
 ---
 
-## 7. Privacidad de las búsquedas
+## 8. Privacidad de las búsquedas
 
 Podemos registrar que realizaste una búsqueda y, por ejemplo, si esa búsqueda produjo resultados.
 
@@ -152,21 +166,21 @@ Esto nos permite evaluar si la función de búsqueda resulta útil sin necesitar
 
 ---
 
-## 8. Analítica opcional
+## 9. Analítica opcional
 
 La analítica del producto es opcional.
 
-Cuando corresponda, te presentaremos una opción para:
+Antes de comenzar la recopilación opcional, te ofreceremos una opción para:
 
 - aceptar la analítica;
 - rechazar la analítica;
 - o revisar tus preferencias.
 
-Si no has tomado una decisión, la analítica opcional permanecerá desactivada.
+Si todavía no has tomado una decisión, la analítica opcional permanecerá desactivada.
 
 Rechazar la analítica **no limita tu acceso normal a Base Curricular**.
 
-Puedes continuar utilizando funciones como:
+Puedes continuar utilizando las funciones disponibles para tu cuenta, incluyendo:
 
 - iniciar sesión;
 - consultar la Biblioteca;
@@ -176,29 +190,31 @@ Puedes continuar utilizando funciones como:
 - consultar referencias;
 - y descargar recursos autorizados.
 
+Aceptar los Términos de Uso de Base Curricular **no significa aceptar automáticamente la analítica opcional**.
+
 ---
 
-## 9. ¿Cómo puedo cambiar mi decisión?
+## 10. ¿Cómo puedo cambiar mi decisión?
 
-Puedes cambiar posteriormente tu preferencia sobre la analítica del producto desde la opción:
+Puedes cambiar posteriormente tu preferencia sobre la analítica del producto desde:
 
 **Preferencias de datos**
 
-disponible dentro de Base Curricular.
+dentro de Base Curricular.
 
 Puedes activar o desactivar la analítica opcional sin perder el acceso normal a la plataforma.
 
-Cuando desactivas la analítica, dejamos de recopilar de forma intencional nueva información opcional de uso asociada a esta finalidad.
+Cuando desactivas la analítica, dejamos de recopilar intencionalmente nueva información opcional de uso asociada a esta finalidad.
 
 Cambiar esta preferencia no implica necesariamente la eliminación automática de información recopilada anteriormente.
 
-Si deseas realizar una solicitud relacionada con tus datos, puedes escribir a:
+Si deseas realizar una solicitud relacionada con información recopilada anteriormente, puedes escribir a:
 
 **hola@democraciamas.com**
 
 ---
 
-## 10. Tecnologías necesarias
+## 11. Tecnologías necesarias
 
 Base Curricular utiliza tecnologías necesarias para proporcionar y proteger el servicio.
 
@@ -216,7 +232,7 @@ Cuando sean indispensables para proporcionar o proteger Base Curricular, no pued
 
 ---
 
-## 11. ¿Qué proveedor utilizamos para analítica?
+## 12. ¿Qué proveedor utilizamos para analítica?
 
 Utilizamos **PostHog** como proveedor de analítica del producto.
 
@@ -224,29 +240,27 @@ La instancia utilizada por Base Curricular está configurada en:
 
 **PostHog Cloud EU**
 
-Utilizamos PostHog para procesar los eventos limitados de uso descritos en este aviso cuando la analítica está habilitada.
+Utilizamos PostHog para procesar los eventos limitados de uso descritos en este aviso únicamente cuando la analítica está habilitada para el usuario.
 
-PostHog actúa como proveedor tecnológico para esta finalidad y no sustituye los sistemas internos de Base Curricular como fuente oficial de información sobre usuarios, organizaciones, permisos o contenido.
+PostHog funciona como proveedor tecnológico para esta finalidad y no sustituye los sistemas internos de Base Curricular como fuente oficial de información sobre usuarios, organizaciones, permisos o contenido.
 
 ---
 
-## 12. Transferencias y procesamiento internacional
+## 13. Procesamiento internacional
 
-Base Curricular utiliza proveedores tecnológicos que pueden procesar información fuera del país en el que te encuentras.
+Base Curricular utiliza proveedores tecnológicos que pueden procesar información en jurisdicciones diferentes del país en el que te encuentras.
 
 Para la analítica del producto utilizamos **PostHog Cloud EU**, configurado en la región europea del servicio.
 
-El procesamiento de datos por proveedores puede involucrar infraestructura y subprocesadores ubicados en diferentes jurisdicciones, de acuerdo con la arquitectura del proveedor y las salvaguardas aplicables.
+Otros componentes de Base Curricular pueden utilizar infraestructura tecnológica ubicada en otras jurisdicciones según el proveedor y servicio correspondiente.
 
-Democracia+ procura utilizar mecanismos contractuales, técnicos y organizativos apropiados para proteger la información cuando intervienen proveedores internacionales.
+Por este motivo, no asumimos que toda la información de Base Curricular sea almacenada o procesada exclusivamente en las Islas Caimán.
 
-Mecanismos contractuales aplicables:
-
-**[información a completar: DPA, cláusulas contractuales u otros mecanismos aplicables]**
+FVR Ltd procura utilizar medidas contractuales, técnicas y organizativas apropiadas para proteger la información cuando intervienen proveedores internacionales, de acuerdo con las obligaciones aplicables.
 
 ---
 
-## 13. ¿Durante cuánto tiempo conservamos los datos?
+## 14. ¿Durante cuánto tiempo conservamos los datos?
 
 Los eventos de analítica del producto tienen inicialmente un período de retención de:
 
@@ -256,21 +270,21 @@ Esta política será revisada después del piloto.
 
 No buscamos conservar información de analítica indefinidamente simplemente porque el proveedor permita hacerlo.
 
-Otras categorías de información, como datos necesarios para administrar cuentas, mantener la seguridad, preservar registros administrativos o cumplir obligaciones aplicables, pueden tener períodos de conservación diferentes.
+Otras categorías de información, como datos necesarios para administrar cuentas, mantener la seguridad, preservar registros administrativos o cumplir obligaciones aplicables, pueden tener períodos de conservación diferentes según su finalidad.
 
 ---
 
-## 14. Grabación de sesiones
+## 15. Grabación de sesiones
 
 Durante el piloto inicial, **la grabación de sesiones está desactivada**.
 
-Esto significa que la autorización de analítica descrita en este aviso no implica automáticamente la grabación visual de tus sesiones.
+Esto significa que autorizar la analítica descrita en este aviso no implica automáticamente la grabación visual de tus sesiones.
 
 Cualquier futura activación de esta funcionalidad requerirá una evaluación adicional de privacidad y seguridad y, cuando corresponda, una actualización de la información y las opciones presentadas a los usuarios.
 
 ---
 
-## 15. ¿Con quién compartimos información?
+## 16. ¿Con quién compartimos información?
 
 Podemos compartir o permitir el procesamiento limitado de información por proveedores tecnológicos cuando sea necesario para operar, proteger o mejorar Base Curricular.
 
@@ -283,17 +297,13 @@ Esto puede incluir proveedores relacionados con:
 - comunicaciones necesarias;
 - y analítica opcional del producto.
 
-Estos proveedores deben recibir únicamente la información necesaria para la finalidad correspondiente y están sujetos a los acuerdos y salvaguardas aplicables.
-
-Lista o categorías adicionales de proveedores:
-
-**[información a completar: proveedores o categorías adicionales que deban declararse]**
+Estos proveedores deben recibir únicamente la información necesaria para la finalidad correspondiente y estar sujetos a las medidas contractuales y de seguridad aplicables.
 
 No vendemos tus datos personales a anunciantes.
 
 ---
 
-## 16. ¿Cómo protegemos la información?
+## 17. ¿Cómo protegemos la información?
 
 Aplicamos medidas técnicas y organizativas orientadas a proteger la información y limitar el acceso no autorizado.
 
@@ -312,9 +322,9 @@ Ningún sistema puede garantizar seguridad absoluta, pero buscamos aplicar medid
 
 ---
 
-## 17. Tus derechos
+## 18. Tus derechos
 
-Dependiendo del país en el que te encuentres y de la legislación aplicable, puedes tener derechos relacionados con tus datos personales.
+Dependiendo de la legislación aplicable, puedes tener derechos relacionados con tus datos personales.
 
 Estos pueden incluir, según corresponda:
 
@@ -322,71 +332,67 @@ Estos pueden incluir, según corresponda:
 - acceder a tus datos;
 - solicitar su actualización;
 - solicitar la corrección de información inexacta;
-- solicitar la eliminación de determinada información;
-- oponerte a determinados tratamientos;
-- revocar un consentimiento cuando el tratamiento dependa de él;
-- solicitar información sobre determinados usos o comparticiones;
-- solicitar portabilidad cuando corresponda;
+- solicitar la eliminación o supresión de determinada información;
+- conocer cómo utilizamos tus datos;
+- solicitar prueba de una autorización cuando corresponda;
+- revocar una autorización cuando el tratamiento dependa de ella;
+- oponerte a determinados tratamientos cuando la legislación aplicable lo permita;
 - y presentar una solicitud o reclamación ante la autoridad competente.
 
-La existencia y alcance de cada derecho depende de la legislación aplicable y de las circunstancias del tratamiento.
+La Política de Tratamiento de Datos Personales de Democracia+ contiene información adicional sobre derechos y procedimientos institucionales.
 
-Para realizar una solicitud, puedes escribir a:
+Para iniciar una solicitud relacionada con Base Curricular, no necesitas determinar internamente qué persona o área debe atenderla.
+
+Puedes escribir directamente a:
 
 **hola@democraciamas.com**
 
-Procedimiento interno:
-
-**[información a completar: procedimiento para verificar identidad, gestionar y responder solicitudes de titulares]**
+FVR Ltd se encargará de dirigir la solicitud al procedimiento correspondiente.
 
 ---
 
-## 18. Base legal y autorización
+## 19. Menores de edad
 
-Las bases jurídicas aplicables al tratamiento pueden variar según el país, el tipo de información y la finalidad del tratamiento.
+El marco general de privacidad de Democracia+ contempla que determinados productos o servicios puedan involucrar a menores de edad, quienes deben relacionarse con Democracia+ a través de sus representantes legales cuando corresponda.
 
-La información necesaria para operar y proteger Base Curricular puede tratarse bajo las bases legales o autorizaciones aplicables al funcionamiento del servicio, la relación con las organizaciones participantes, obligaciones legales y seguridad.
+Base Curricular no establece mediante este aviso una regla diferente.
 
-Para la analítica opcional del producto, Base Curricular adopta inicialmente un modelo de elección afirmativa: la analítica permanece desactivada hasta que el usuario decida habilitarla.
-
-Base jurídica definitiva por jurisdicción:
-
-**[información a completar: base legal confirmada después de revisión jurídica]**
+Si Base Curricular llegara a dirigirse específicamente a menores de edad o habilitara su registro directo, revisaremos previamente las condiciones de privacidad, autorización y consentimiento aplicables.
 
 ---
 
-## 19. Uso en diferentes países
+## 20. Base legal y autorización
+
+Las bases jurídicas aplicables al tratamiento pueden variar según el país, el tipo de información, la finalidad del tratamiento y la relación entre FVR Ltd, las organizaciones participantes y los usuarios.
+
+La información necesaria para operar y proteger Base Curricular será tratada de acuerdo con las bases jurídicas aplicables a la prestación y seguridad del servicio y a las obligaciones correspondientes.
+
+Para la analítica opcional del producto, Base Curricular adopta inicialmente un modelo de elección afirmativa: la analítica permanece desactivada hasta que decidas habilitarla.
+
+La aceptación de los Términos de Uso no sustituye esta elección específica sobre analítica.
+
+---
+
+## 21. Uso en diferentes países
 
 Base Curricular puede ser utilizada por personas de diferentes países de América Latina.
 
 Las normas de privacidad y protección de datos no son idénticas en todos estos países.
 
-Por esta razón, Democracia+ adopta una base común de privacidad orientada a:
+Por esta razón, Base Curricular adopta una base común de privacidad orientada a:
 
 - minimizar la recopilación de datos;
 - explicar claramente las finalidades;
 - separar funciones necesarias de analítica opcional;
 - ofrecer control sobre la analítica;
 - proteger la información;
-- y proporcionar un canal para ejercer derechos.
+- y proporcionar un canal accesible para ejercer derechos.
 
 Cuando una legislación aplicable otorgue derechos o protecciones adicionales, estos serán atendidos de acuerdo con esa legislación.
 
 ---
 
-## 20. Menores de edad
-
-Base Curricular está diseñada como una plataforma institucional para personas autorizadas por organizaciones participantes.
-
-Política específica respecto al acceso de menores de edad:
-
-**[información a completar: confirmar si el acceso de menores está prohibido, restringido o sujeto a condiciones específicas]**
-
-Si el producto llegara a ser utilizado directamente por menores de edad, Democracia+ deberá revisar las condiciones de privacidad y consentimiento aplicables antes de habilitar dicho uso.
-
----
-
-## 21. Cambios a este Aviso de Privacidad
+## 22. Cambios a este Aviso de Privacidad
 
 Podemos actualizar este Aviso de Privacidad cuando cambien:
 
@@ -403,21 +409,19 @@ Si un cambio modifica de forma relevante un tratamiento opcional previamente aut
 
 ---
 
-## 22. Contacto
+## 23. Contacto
 
 Si tienes preguntas sobre este Aviso de Privacidad, sobre el tratamiento de tus datos o deseas ejercer un derecho relacionado con tu información, puedes contactarnos en:
 
-**Democracia+**
+**FVR Ltd — Democracia+**
 
+**Registro:** 378038  
+**Jurisdicción:** Islas Caimán  
 **Correo electrónico:** hola@democraciamas.com
-
-**Dirección:** [información a completar: domicilio o dirección de contacto, cuando corresponda]
-
-**Responsable o área de privacidad:** [información a completar: área o responsable, cuando corresponda]
 
 ---
 
-## 23. Resumen de tus opciones
+## 24. Resumen de tus opciones
 
 En Base Curricular:
 
@@ -427,6 +431,8 @@ En Base Curricular:
 
 **Puedes rechazar la analítica y seguir utilizando Base Curricular normalmente.**
 
+**Aceptar los Términos de Uso no significa aceptar la analítica opcional.**
+
 **Puedes cambiar posteriormente tu decisión desde Preferencias de datos.**
 
 **No enviamos intencionalmente a la analítica tu nombre, correo electrónico ni el texto de tus búsquedas.**
@@ -435,6 +441,6 @@ En Base Curricular:
 
 **La grabación de sesiones está desactivada durante el piloto inicial.**
 
-Para cualquier pregunta sobre privacidad:
+Para cualquier pregunta o solicitud sobre privacidad:
 
 **hola@democraciamas.com**
