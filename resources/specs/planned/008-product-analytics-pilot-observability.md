@@ -1,19 +1,20 @@
 # SPEC-008 — Product Analytics & Pilot Observability
 
-**Status:** PLANNED — DECISION READY  
+**Status:** PLANNED — DECISION READY / PRODUCT CONTRACT RECONCILED  
 **Product:** D+ Base Curricular  
 **Primary capability:** Product analytics and pilot observability  
-**Proposed analytics platform:** PostHog  
-**Depends on:** Existing authentication, organization membership, Library/navigation architecture, and current privacy/security contracts  
-**Does not depend on:** Marketing analytics, CRM, experimentation, or production support tooling
+**Analytics platform:** PostHog Cloud EU  
+**Depends on:** Existing authentication, organization membership, Library/navigation architecture, Admin organization/user management, and authoritative privacy contracts  
+**Does not depend on:** Marketing analytics, CRM, experimentation, Session Replay, advertising analytics, or production support tooling  
+**Reconciled:** 2026-10-01
 
 ---
 
-## 1. Purpose
+# 1. Purpose
 
-D+ Base Curricular is entering a new testing stage in which users from additional organizations will access the platform.
+D+ Base Curricular is preparing for an external-organization pilot.
 
-The product needs a structured way to understand whether those organizations can successfully discover, navigate, search, explore, and return to the Base Curricular without relying only on qualitative feedback.
+The product needs a structured way to understand whether participating organizations can successfully discover, navigate, search, explore, and return to Base Curricular without relying only on qualitative stakeholder feedback.
 
 This SPEC introduces a bounded **Product Analytics & Pilot Observability** capability.
 
@@ -26,15 +27,45 @@ The purpose of analytics is to answer specific product questions about:
 - returning usage;
 - UX friction during the pilot.
 
-Analytics exists to improve the product and evaluate pilot adoption.
+Analytics exists to improve the product and understand pilot adoption.
 
-It must not become an employee-monitoring, individual-performance, or user-surveillance system.
+It must not become:
+
+- employee monitoring;
+- individual performance evaluation;
+- advertising infrastructure;
+- behavioral profiling;
+- user scoring;
+- or generalized surveillance.
 
 ---
 
-# 2. Measurement Principle
+# 2. Authoritative Product Contracts
 
-Instrumentation must begin from a product question, not from a UI interaction.
+This SPEC implements decisions already established in the following product contracts:
+
+```text
+docs/PRIVACY_AND_DATA_COLLECTION.md
+docs/PRIVACY_NOTICE.md
+docs/PRIVACY_UX_CONTRACT.md
+docs/TERMS_OF_USE.md
+```
+
+These documents are authoritative for privacy, user choice, Terms/analytics separation, legal responsibility, and user-facing behavior.
+
+This SPEC must not redefine those contracts.
+
+If implementation discovers a technical constraint that would require changing them, return:
+
+**BLOCKED / DECISION REQUIRED**
+
+rather than changing product behavior for implementation convenience.
+
+---
+
+# 3. Measurement Principle
+
+Instrumentation begins with a product question, not a UI interaction.
 
 Every tracked event must be traceable through:
 
@@ -52,76 +83,90 @@ Properties
 Interpretation
 ```
 
-An interaction must not be tracked merely because the analytics platform makes it possible.
+An interaction must not be tracked merely because PostHog makes it possible.
 
 Events without a defined product purpose are out of scope.
 
-The initial analytics implementation should deliberately favor a small number of meaningful events over comprehensive interaction tracking.
+The initial implementation deliberately favors a small number of meaningful semantic events over comprehensive interaction tracking.
 
 ---
 
-# 3. Current State
+# 4. Current State
 
-The platform already provides the core Base Curricular experience, including authenticated access, organization-aware users, Library exploration, search/filter interactions, content navigation, and multiple content surfaces.
+Base Curricular already provides:
+
+- authenticated access;
+- organization-aware users;
+- organization and membership administration;
+- Library exploration;
+- search;
+- filtering;
+- content navigation;
+- external references;
+- downloadable resources;
+- established authorization boundaries;
+- established privacy and Terms contracts.
 
 SPEC-007 established the current navigation and interaction contracts.
 
-The platform is now preparing to expand testing beyond the initial stakeholder/user group to additional organizations.
+SPEC-009 established the current Admin organization and user-management capability required before external-organization expansion.
 
-There is currently no canonical analytics contract defining:
+The product now has authoritative privacy contracts defining:
 
-- what questions analytics should answer;
-- what interactions should be measured;
-- how events should be named;
-- which properties may accompany events;
-- how organizations should be represented;
-- what information must never leave the application;
-- how session replay should operate;
-- or what constitutes meaningful pilot adoption.
+- optional analytics;
+- affirmative user choice;
+- preference persistence;
+- data minimization;
+- analytics identity;
+- PostHog Cloud EU;
+- environment isolation;
+- Session Replay prohibition for the initial pilot;
+- Terms/analytics separation;
+- user-facing privacy behavior.
 
-Without such a contract, ad-hoc instrumentation risks producing inconsistent events, excessive collection, unusable metrics, and privacy problems.
+There is not yet an implemented canonical product-analytics capability.
 
 ---
 
-# 4. Problem / Gap
+# 5. Problem / Gap
 
-Opening the platform to external organizations creates a product-learning requirement that cannot be satisfied by application logs or stakeholder feedback alone.
+Opening Base Curricular to external organizations creates a product-learning requirement that application logs and stakeholder feedback alone cannot satisfy.
 
 The team needs to distinguish between situations such as:
 
-- an organization being onboarded but never meaningfully using the platform;
+- an organization being onboarded but never exploring the product;
 - users entering once and never returning;
 - users reaching the Library but not exploring content;
-- users searching but not selecting results;
-- filters being difficult to discover or ineffective;
-- certain types of content receiving significantly more exploration than others;
-- different organizations finding value through different parts of the Base Curricular;
-- UX friction causing users to abandon exploration.
+- users searching but not reaching content;
+- filters being unused or associated with abandoned exploration;
+- some types of content receiving more exploration than others;
+- organizations using Base Curricular in different ways;
+- UX friction causing exploration to stop.
 
-Technical logs indicate system activity but do not adequately explain these product journeys.
+Technical logs can describe system activity but do not provide a purpose-built model of these product journeys.
 
-Conversely, tracking every interaction would create large amounts of telemetry without a clear product purpose.
+Conversely, tracking every interaction would create unnecessary telemetry without a clear product purpose.
 
-The platform therefore requires a deliberately small, privacy-conscious analytics model tied directly to the pilot's learning objectives.
+The platform therefore requires a deliberately small, privacy-conscious analytics model tied directly to pilot learning objectives.
 
 ---
 
-# 5. Product Decisions
+# 6. Product Decisions
 
 ## D-008-01 — Product analytics
 
-The platform will introduce dedicated product analytics for the external-organization pilot.
+Base Curricular will introduce dedicated product analytics for the external-organization pilot.
 
-Analytics must primarily support:
+Analytics primarily supports:
 
 - adoption analysis;
 - product discovery;
 - UX investigation;
-- funnel/path analysis;
+- path analysis;
 - retention analysis;
 - organization-level usage analysis.
 
-Marketing attribution is not the primary objective.
+Marketing attribution is not part of this capability.
 
 ---
 
@@ -129,246 +174,400 @@ Marketing attribution is not the primary objective.
 
 No analytics event may be introduced without a defined analytical purpose.
 
-The canonical measurement plan must identify:
+The measurement plan must identify:
 
-- the product question;
+- product question;
 - why it matters;
-- the observable signal;
-- the supporting event;
+- observable signal;
+- supporting event;
 - relevant properties;
-- how the signal should be interpreted.
+- interpretation.
 
-The implementation must not expand instrumentation simply because the provider supports additional events.
+Instrumentation must not expand simply because the provider supports additional capture.
 
 ---
 
-## D-008-03 — Primary analytics platform
+## D-008-03 — Analytics provider
 
-**PostHog is the proposed primary analytics platform.**
+The approved provider is:
 
-Technical preflight must validate compatibility with the current application architecture, deployment model, security requirements, and privacy constraints.
+**PostHog Cloud EU**
 
-If no material blocker is found, PostHog becomes the implementation target.
+Approved project:
 
-A material blocker must return this SPEC to:
+```text
+https://eu.posthog.com/project/289698
+```
+
+The technical preflight must verify integration compatibility with the current application architecture.
+
+A material technical incompatibility must return:
 
 **BLOCKED / DECISION REQUIRED**
 
-rather than silently replacing PostHog.
+The implementation agent may not silently replace PostHog or change processing region.
 
 ---
 
 ## D-008-04 — Organization-first analysis
 
-The primary analytical unit for the pilot is the **organization**.
+The primary analytical perspective for the pilot is the **organization**.
 
-The analytics model should support questions such as:
+Analytics should support questions such as:
 
-- Which organizations have used the platform?
-- Which organizations show meaningful activity?
+- Which organizations have product activity?
+- Which organizations progress into meaningful exploration?
 - Which organizations return?
 - How do discovery patterns differ between organizations?
+- Which content types are explored across organizations?
 
-The application remains the source of truth for organizations and memberships.
+The application remains authoritative for:
 
-The analytics platform only observes product usage.
+- organizations;
+- memberships;
+- users;
+- roles;
+- permissions.
+
+PostHog only observes approved product usage.
+
+Organization-first analysis must not become organization ranking.
 
 ---
 
 ## D-008-05 — Meaningful activity remains observational
 
-The pilot must distinguish:
+The pilot should distinguish:
 
 ```text
-Onboarded organization
+Organization onboarded
 ```
 
 from:
 
 ```text
-Organization with meaningful product activity
+Organization demonstrating meaningful product activity
 ```
 
-However, this SPEC does **not** permanently define meaningful activity using an arbitrary threshold such as:
+This SPEC does not permanently define meaningful activity through an arbitrary threshold such as:
 
-- number of logins;
-- number of pages;
-- number of opened items;
-- time spent.
+- login count;
+- event count;
+- number of opened resources;
+- time spent;
+- search count.
 
-Pilot evidence should first reveal which behaviors correlate with genuine use.
+Pilot evidence should first reveal useful patterns.
 
-The analytics/reporting layer may support exploratory definitions without turning them into a permanent product contract.
+Temporary analytical definitions may be used for investigation if clearly labeled as exploratory.
+
+No permanent organization engagement score is introduced.
 
 ---
 
-## D-008-06 — Data minimization
+## D-008-06 — Optional analytics
 
-Only information necessary for approved product analysis may be sent to the analytics provider.
+Product analytics is optional.
 
-The default rule is:
+The authoritative privacy UX is defined in:
 
-> Do not send personally identifiable information when a pseudonymous or aggregate identifier can satisfy the analytical requirement.
+```text
+docs/PRIVACY_UX_CONTRACT.md
+```
 
-Analytics must not receive unnecessary:
+Analytics is:
+
+```text
+OFF by default
+```
+
+and remains OFF until the authenticated user affirmatively enables it.
+
+Terms acceptance does not enable analytics.
+
+Rejecting analytics does not reduce normal Base Curricular functionality.
+
+---
+
+## D-008-07 — User-owned preference
+
+The analytics preference belongs to the authenticated user.
+
+An organization or Base Curricular Admin cannot enable optional analytics on behalf of all users.
+
+The product must distinguish:
+
+```text
+undecided
+rejected
+accepted
+```
+
+even though both `undecided` and `rejected` result in analytics being OFF.
+
+---
+
+## D-008-08 — Preference persistence
+
+Analytics preference must be persisted in the authoritative application data layer.
+
+At minimum, the model must preserve the semantics of:
+
+```text
+user_id
+analytics_enabled
+analytics_decided_at
+privacy_notice_version
+consent_version
+updated_at
+```
+
+The exact schema is implementation freedom provided these semantics remain recoverable.
+
+Browser-local state must not be the sole source of truth.
+
+---
+
+## D-008-09 — Data minimization
+
+Only information necessary for approved product analysis may be sent to PostHog.
+
+Do not intentionally send unnecessary:
 
 - names;
 - email addresses;
-- authentication credentials or tokens;
+- organization names;
+- organization domains;
+- authentication credentials;
+- passwords;
+- access tokens;
 - free-text user input;
 - uploaded documents;
-- private content;
-- sensitive organization information;
+- private content text;
 - raw search queries;
+- original attachment filenames;
+- complete external URLs;
 - unrelated application data.
 
----
-
-## D-008-07 — Search privacy
-
-Raw search queries must **not** be sent to the analytics provider in the initial pilot.
-
-The first objective is to understand whether search is being used and whether it leads to content exploration.
-
-If future evidence shows that query-level analysis is necessary, that requires a separate privacy/product decision.
+Use pseudonymous or canonical internal identifiers where they satisfy the analytical requirement.
 
 ---
 
-## D-008-08 — Analytics is not an operational database
+## D-008-10 — Search privacy
 
-PostHog must not become a source of truth for:
+Raw search queries must not be sent to PostHog.
+
+Prohibited properties include:
+
+```text
+query
+search_text
+q
+```
+
+or any equivalent property containing search text.
+
+Search analytics should answer whether search is being used and whether it supports exploration without knowing what the person typed.
+
+---
+
+## D-008-11 — Analytics is not operational state
+
+PostHog must not become authoritative for:
 
 - users;
 - organizations;
+- memberships;
 - roles;
 - permissions;
+- privacy preferences;
 - content;
 - publication state;
 - curriculum relationships;
-- or other domain entities.
+- authorization;
+- audit history.
 
-Analytics consumes observations about product usage.
+Analytics consumes observations.
 
 It does not own application state.
 
 ---
 
-## D-008-09 — Session replay
+## D-008-12 — No individual performance monitoring
 
-Session replay may be enabled during the pilot because qualitative observation of navigation behavior can materially improve UX investigation.
+Analytics must not:
 
-Replay is an **investigation tool**, not a KPI.
+- rank users;
+- score users;
+- evaluate employee performance;
+- evaluate whether an individual is sufficiently active;
+- infer political preferences;
+- infer sensitive personal characteristics;
+- determine eligibility;
+- drive consequential automated decisions.
 
-Aggregate analytics should first identify a problem or unusual journey.
+Pseudonymous user identity may be used where necessary for approved:
 
-Replay can then help investigate why that behavior occurred.
-
-Replay must operate under privacy-first configuration.
-
-At minimum:
-
-- form inputs must be masked where applicable;
-- sensitive text must not be captured;
-- authentication information must never be recorded;
-- sensitive application surfaces must be excluded or masked;
-- replay may be sampled rather than enabled for every session.
-
-Masking must be explicitly verified before production activation.
-
----
-
-## D-008-10 — No individual performance monitoring
-
-Analytics must not be designed to rank, evaluate, score, or monitor individual users.
-
-Individual/session-level identifiers may exist where technically required for:
-
-- session continuity;
-- funnels;
-- retention;
 - journey analysis;
-- replay investigation.
+- retention;
+- deduplication;
+- organization-level analysis.
 
-The analytical objective remains product and organization behavior rather than individual performance.
+The purpose remains product learning, not individual evaluation.
 
 ---
 
-# 6. Measurement Plan
+## D-008-13 — Session Replay disabled
+
+**Session Replay is disabled for the initial pilot.**
+
+It is outside the implementation scope of SPEC-008.
+
+The implementation must not:
+
+- enable replay;
+- configure replay sampling;
+- record sessions;
+- present replay as part of analytics preferences;
+- treat analytics acceptance as replay acceptance.
+
+Any future Session Replay proposal requires a separate product/privacy/security decision.
+
+---
+
+## D-008-14 — Semantic capture only
+
+The initial analytics capability uses explicitly defined semantic events.
+
+The implementation must not rely on:
+
+- broad autocapture;
+- arbitrary click capture;
+- form capture;
+- arbitrary text capture;
+- unsafe automatic pageviews;
+- automatic search capture.
+
+PostHog defaults must be configured so they cannot silently expand collection beyond this SPEC.
+
+---
+
+## D-008-15 — Production-only analytics
+
+Optional product analytics is available only in the intended production environment.
+
+```text
+Production
+→ available subject to persisted user preference
+
+Preview
+→ no-op
+
+Development
+→ no-op
+
+Test
+→ no-op
+```
+
+Non-production environments must never send telemetry to the production PostHog project.
+
+---
+
+## D-008-16 — Fail safely
+
+Analytics is non-critical functionality.
+
+Provider failure must not affect:
+
+- authentication;
+- authorization;
+- Library navigation;
+- search;
+- filtering;
+- content opening;
+- downloads;
+- external references;
+- Admin functionality;
+- normal product use.
+
+Privacy must fail closed.
+
+If the application cannot reliably resolve or persist an affirmative analytics preference, analytics remains OFF.
+
+---
+
+# 7. Measurement Plan
 
 The initial pilot has five primary product questions.
 
 ---
 
-## MP-01 — Are organizations actually adopting the platform?
+## MP-01 — Are organizations adopting Base Curricular?
 
 ### Product question
 
-Are the organizations invited to the pilot progressing from onboarding into real product usage?
+Are invited organizations progressing from onboarding into real product exploration?
 
 ### Why we care
 
-Creating accounts or signing in does not demonstrate adoption.
+Account creation alone does not demonstrate adoption.
 
-We need to distinguish between:
+We need to distinguish:
 
 ```text
 Onboarded
     ↓
-First use
+Library reached
     ↓
 Meaningful exploration
     ↓
-Returned
+Returned usage
 ```
 
 ### Signals
 
-- organization has at least one product session;
+- organization has approved product activity;
 - organization reaches the Library;
-- organization performs meaningful exploration;
-- organization returns in a later usage period.
+- organization explores content;
+- organization returns in a later period.
 
-### Supporting data
-
-Primarily:
+### Supporting events
 
 ```text
-session_started
 library_viewed
 content_opened
 ```
 
-combined with:
+combined where appropriate with approved pseudonymous:
 
 ```text
 organization_id
 user_id
 ```
 
-where available and appropriate.
-
 ### Interpretation
 
-These signals help identify adoption patterns.
+These signals support adoption analysis.
 
-They must not yet be converted into a permanent automated organization score.
+They must not become a permanent automated organization score.
 
 ---
 
-## MP-02 — Can users successfully begin exploring the Base Curricular?
+## MP-02 — Can users begin exploring Base Curricular?
 
 ### Product question
 
-After entering the product, are users able to reach the main exploration experience and begin interacting with content?
+After entering the authenticated product, are users able to reach the main exploration experience and begin interacting with content?
 
 ### Why we care
 
-A user may authenticate successfully while still failing to understand what to do next.
+Successful authentication does not necessarily mean successful product exploration.
 
 ### Conceptual journey
 
 ```text
-Authenticated session
+Authenticated product use
        ↓
 Library
        ↓
@@ -377,18 +576,13 @@ Search / Filter / Browse
 Content opened
 ```
 
-### Important interpretation rule
-
 This is not a mandatory linear funnel.
 
-A user who directly browses and opens useful content may be succeeding without ever searching or filtering.
-
-The purpose is to observe successful exploration paths, not prescribe one correct journey.
+A user may successfully browse directly to useful content without searching or filtering.
 
 ### Supporting events
 
 ```text
-session_started
 library_viewed
 search_performed
 filter_applied
@@ -401,45 +595,47 @@ content_opened
 
 ### Product question
 
-Which discovery mechanisms lead users to content?
+Which discovery mechanisms are associated with content exploration?
 
 ### Why we care
 
 Search, filtering, and direct browsing represent different discovery patterns.
 
-Understanding them can reveal whether navigation is helping or blocking users.
+Understanding them may reveal where navigation helps or creates friction.
 
 ### Conceptual paths
 
 ```text
 Library
- ├── Search ───────→ Result → Content
+ ├── Search ───────→ Content
  ├── Filter ───────→ Content
  └── Browse ───────→ Content
 ```
 
 ### Signals
 
-- search used;
-- filter used;
-- search result selected;
+- search performed;
+- filter applied;
 - content opened;
-- sequence between discovery actions.
+- event sequence within approved analytics data.
 
 ### Supporting events
 
 ```text
 search_performed
 filter_applied
-search_result_selected
 content_opened
 ```
 
+No dedicated `search_result_selected` event is required for the initial pilot.
+
+Where useful, the relationship between search/filter activity and subsequent content opening should be derived from the semantic event sequence rather than additional click instrumentation.
+
 ### Interpretation
 
-No discovery method should initially be considered inherently superior.
+No discovery method is considered inherently superior.
 
-The pilot should reveal how users naturally find content.
+The pilot should reveal how organizations naturally explore the product.
 
 ---
 
@@ -447,117 +643,116 @@ The pilot should reveal how users naturally find content.
 
 ### Product question
 
-Which types of Base Curricular content are actually being explored?
+Which types of Base Curricular content are being explored?
 
 ### Why we care
 
-Different organizations may derive value from different content types.
+Different organizations may derive value from different content structures.
 
-Understanding this helps evaluate the product structure without assuming beforehand which content category matters most.
-
-### Supporting event
-
-Use one generic semantic event:
+### Supporting events
 
 ```text
 content_opened
+external_reference_opened
+content_downloaded
 ```
 
-with properties such as:
+`content_opened` may include approved properties such as:
 
 ```text
 content_id
 content_type
 ```
 
-Possible `content_type` values should map to real canonical product entities, for example:
+Canonical initial `content_type` values are:
 
 ```text
 module
 material
 institution
-reference
 ```
 
-where those values match the implemented domain model.
+A reference is represented through `external_reference_opened` rather than inventing an additional canonical content type unless repository evidence establishes otherwise.
 
 ### Interpretation
 
-This should support views such as:
+Analytics may compare patterns across content types and organizations.
 
-```text
-Organization A
-→ predominantly modules
+Opening behavior indicates interest or exploration.
 
-Organization B
-→ predominantly materials
-
-Organization C
-→ references + institutions
-```
-
-without creating separate event names for each content type.
+It must not be interpreted as proof of educational quality or effectiveness.
 
 ---
 
-## MP-05 — Do users find enough value to return?
+## MP-05 — Do users and organizations return?
 
 ### Product question
 
-Do users and organizations return after their initial exploration?
+Do users and organizations return after initial exploration?
 
 ### Why we care
 
-Initial curiosity is different from continued adoption.
+Initial curiosity differs from continued adoption.
 
-Returning usage is one of the strongest signals available during the pilot that the platform may be useful beyond a first demonstration.
+Returning usage provides useful pilot evidence about whether Base Curricular continues to provide value.
 
 ### Analysis levels
 
-#### User retention
+#### Pseudonymous user return
 
-Did a pseudonymous user return after initial meaningful exploration?
+Did a user who enabled analytics return and generate approved product activity in a later period?
 
-#### Organization retention
+#### Organization return
 
-Did the organization continue using the platform, even if different members returned?
+Did an organization generate approved activity in a later period, potentially through different consenting users?
 
-Organization retention is especially important because institutional adoption may involve several users.
+Organization return is particularly important because institutional adoption may involve multiple people.
 
 ### Supporting data
 
-Primarily session and organization identity combined with existing product events.
+Retention should be derived from timestamps and approved semantic events.
 
-A separate `user_returned` event should not be created if retention can be derived reliably from normal session/event data.
-
----
-
-# 7. Canonical Event Taxonomy
-
-The initial event taxonomy should remain intentionally small.
-
-Candidate canonical events:
+Do not create:
 
 ```text
 session_started
+user_returned
+```
+
+solely for retention if the same analysis can be derived from approved event history.
+
+### Privacy interpretation
+
+Analytics cannot observe optional product behavior from users who have not enabled analytics.
+
+Reporting must therefore not present PostHog analytics as a complete census of all Base Curricular usage.
+
+---
+
+# 8. Canonical Event Taxonomy
+
+The initial canonical taxonomy is:
+
+```text
 library_viewed
 search_performed
 filter_applied
-search_result_selected
 content_opened
 external_reference_opened
 content_downloaded
 ```
 
-The technical preflight must reconcile this list with actual current application behavior.
+This list is intentionally small.
 
-Events corresponding to nonexistent functionality must not be invented.
+The implementation must not add events merely because an interaction exists.
+
+A future event such as `search_suggestion_selected` requires a defined measurement need and privacy-compatible product decision before addition.
 
 ---
 
-# 8. Event Semantics
+# 9. Event Semantics
 
-Events describe product actions, not implementation details.
+Events describe product actions, not UI implementation details.
 
 Good:
 
@@ -567,187 +762,435 @@ content_opened
 filter_applied
 ```
 
-Avoid:
+Do not introduce events such as:
 
 ```text
 button_clicked
 card_clicked
 modal_opened
+tab_clicked
 blue_button_clicked
 click_23
 ```
 
-Instrumentation should survive reasonable UI refactoring without changing the meaning of the event.
+Instrumentation should survive reasonable UI refactoring without changing analytical meaning.
 
 ---
 
-# 9. Standard Properties
+# 10. Approved Properties
 
-Where applicable and already authoritative within the application, events may include:
+Where appropriate, events may include approved properties such as:
 
 ```text
 organization_id
 user_id
 user_role
+environment
 
 content_id
 content_type
 
 filter_type
+
+result_count
+has_results
+
+attachment_id
+```
+
+Not every event requires every property.
+
+Properties must have a defined measurement purpose.
+
+They must represent authoritative application concepts rather than analytics-specific domain inventions.
+
+---
+
+# 11. Analytics Identity
+
+The approved PostHog identity is pseudonymous.
+
+The Supabase Auth UUID may be used as:
+
+```text
+distinct_id
+```
+
+Approved identity/context may include:
+
+```text
+user_id
+organization_id
+user_role
 environment
 ```
 
-Additional properties require a clear analytical purpose.
-
-Not every event must carry every property.
-
-Properties must represent existing application concepts rather than analytics-specific domain inventions.
-
----
-
-# 10. Search Measurement
-
-Search is a critical part of content discovery.
-
-Initial analytics should make it possible to understand:
-
-- how often search is used;
-- whether search leads to result selection;
-- whether search sessions lead to content opening;
-- whether users perform repeated searches during the same journey;
-- which result positions are selected, if available without unnecessary complexity.
-
-The initial implementation must not send the raw search query.
-
-A potentially useful investigation signal is:
+Do not intentionally identify analytics users using:
 
 ```text
-Search performed
-       ↓
-No result selected / no content opened
+name
+email
+organization_name
+organization_domain
 ```
 
-This may suggest discovery friction without exposing query text.
+PostHog identity is not an authorization mechanism.
 
 ---
 
-# 11. Filter Measurement
+# 12. Search Measurement
 
-Filter usage should be captured at the semantic filter-type level.
-
-Examples may include current canonical dimensions such as:
+`search_performed` may capture:
 
 ```text
-country
-topic
+organization_id
+user_id
+result_count
+has_results
+environment
+```
+
+where appropriate.
+
+It must not capture:
+
+```text
+query
+search_text
+q
+```
+
+or equivalent raw search content.
+
+Initial analysis should support questions such as:
+
+- How often is search used among users who enabled analytics?
+- How often does search produce results?
+- Is search followed by content exploration?
+- Are repeated searches associated with exploration stopping?
+
+The implementation must also prevent search text from leaking through URLs, automatic pageviews, or automatic capture.
+
+---
+
+# 13. Filter Measurement
+
+Approved initial filter dimensions are:
+
+```text
 axis
-content_type
+entity
+country
+theme
 ```
 
-only where they exist in the implemented product.
-
-Initial analysis should answer:
-
-- Which filter types are used?
-- Does filter usage lead to content exploration?
-- Are users repeatedly changing filters?
-- Do certain discovery paths depend heavily on filtering?
-
-Analytics must not introduce new filtering semantics.
-
----
-
-# 12. Session Replay
-
-Session replay should primarily investigate patterns already detected through aggregate analytics.
-
-Example:
+The Library presentation mode:
 
 ```text
-Analytics finding:
-Many Library sessions do not reach content_opened.
-
-        ↓
-
-Replay investigation:
-Inspect a small sample of those sessions to understand navigation behavior.
+view
 ```
 
-Potential investigation areas include:
+is not a content filter.
 
-- users repeatedly opening/closing navigation;
-- difficulty discovering filters;
-- navigation loops;
-- unexpected backtracking;
-- abandoned search journeys;
-- confusion between content types;
-- mobile/responsive interaction problems.
+Initial analytics should prefer recording the filter dimension rather than unnecessary human-readable selected values.
 
-Replay is not itself a success metric.
+Any future collection of filter values requires a defined analytical purpose and privacy review where appropriate.
 
 ---
 
-# 13. Explicitly Out-of-Scope Measurements
+# 14. Content Measurement
 
-The initial pilot should **not** track by default:
+The canonical initial content types are:
 
-- every click;
-- mouse movement;
-- scroll depth;
-- every modal open/close;
-- every component interaction;
-- raw search text;
-- user names;
-- email addresses;
-- arbitrary time-on-component metrics;
-- behavioral engagement scores;
-- individual user rankings;
-- employee/user performance measures.
+```text
+module
+material
+institution
+```
 
-Broad page-view collection should also not replace the semantic product events defined in this SPEC.
+`content_opened` should use stable internal identifiers.
 
-The goal is useful evidence, not maximum telemetry.
+Do not transmit content bodies, descriptions, teaching notes, or other private text where an internal identifier is sufficient.
 
 ---
 
-# 14. Pilot Analytics Views
+# 15. External Reference Measurement
 
-The initial reporting model should remain compact.
+`external_reference_opened` may include:
 
-Rather than creating one large dashboard, analysis should be organized around four perspectives.
+```text
+organization_id
+user_id
+content_id
+content_type
+environment
+```
+
+where applicable.
+
+The complete destination URL must not be transmitted during the initial pilot unless separately approved.
 
 ---
 
-## 14.1 Pilot Overview
+# 16. Download Measurement
+
+`content_downloaded` may include:
+
+```text
+organization_id
+user_id
+content_id
+content_type
+attachment_id
+environment
+```
+
+where applicable.
+
+Original filenames should not be transmitted where `attachment_id` is sufficient.
+
+---
+
+# 17. Privacy Choice Integration
+
+Analytics initialization must follow the authoritative sequence defined in `docs/PRIVACY_UX_CONTRACT.md`.
+
+Conceptually:
+
+```text
+Authentication
+      ↓
+Authorization / organization resolution
+      ↓
+Load persisted analytics preference
+      ↓
+Preference = ON?
+   ↙             ↘
+ No              Yes
+ ↓                ↓
+No analytics   Initialize PostHog
+                  ↓
+              Identify pseudonymously
+                  ↓
+              Approved future events
+```
+
+No optional analytics event may be emitted before an affirmative persisted decision.
+
+---
+
+# 18. Initial Privacy Choice
+
+For users without a recorded analytics decision:
+
+```text
+Analytics = OFF
+```
+
+The product must provide:
+
+```text
+Rechazar analítica
+Configurar
+Aceptar
+```
+
+and access to:
+
+```text
+Aviso de Privacidad
+```
+
+Exact user-facing behavior and copy are governed by:
+
+```text
+docs/PRIVACY_UX_CONTRACT.md
+docs/PRIVACY_NOTICE.md
+```
+
+SPEC-008 must implement those contracts rather than create alternative consent UX.
+
+---
+
+# 19. Data Preferences
+
+The product must provide:
+
+**Preferencias de datos**
+
+with the two conceptual categories defined by the privacy UX contract:
+
+```text
+Necesario
+Analítica del producto
+```
+
+The user must be able to change optional analytics between:
+
+```text
+OFF
+ON
+```
+
+Changing:
+
+```text
+OFF → ON
+```
+
+enables only future approved analytics.
+
+Changing:
+
+```text
+ON → OFF
+```
+
+must stop future optional analytics and reset/clear analytics identity as appropriate.
+
+Historical deletion is handled through the privacy-rights process rather than through the analytics toggle.
+
+---
+
+# 20. Logout Isolation
+
+On sign-out:
+
+- analytics identity must be reset or cleared;
+- another user must never inherit the previous user's analytics identity;
+- the authoritative persisted preference remains associated with the user.
+
+On the next authenticated session, analytics initialization occurs only after identity, authorization, organization, and preference resolution.
+
+---
+
+# 21. Automatic Collection
+
+The initial pilot uses semantic capture only.
+
+The PostHog integration must ensure:
+
+```text
+Autocapture                 OFF
+Unsafe automatic pageviews  OFF
+Automatic form capture      OFF
+Arbitrary text capture      OFF
+Search text capture         OFF
+Session Replay              OFF
+```
+
+If the SDK or framework defaults enable any of these behaviors, the implementation must explicitly disable them.
+
+---
+
+# 22. Session Replay
+
+Session Replay is:
+
+**OUT OF SCOPE / DISABLED**
+
+for SPEC-008.
+
+No Session Replay implementation, masking configuration, sampling strategy, testing, or production validation is required because replay must not be enabled.
+
+A future replay capability requires a separate product/privacy/security decision.
+
+---
+
+# 23. Environment Isolation
+
+Environment behavior is authoritative:
+
+| Environment | Optional analytics |
+|---|---|
+| Production | Available subject to persisted user preference |
+| Preview | Disabled / no-op |
+| Development | Disabled / no-op |
+| Test | Disabled / no-op |
+
+The implementation agent may choose the technical mechanism that enforces this behavior.
+
+It may not choose a strategy that sends Preview, Development, or Test events to the production PostHog project and relies only on later filtering.
+
+Tests must never send real telemetry to production PostHog.
+
+---
+
+# 24. Analytics Failure Behavior
+
+Analytics must fail safely.
+
+If PostHog:
+
+- fails to initialize;
+- is unavailable;
+- is blocked;
+- times out;
+- rejects an event;
+- or lacks configuration,
+
+normal Base Curricular functionality continues.
+
+Provider availability must not affect the stored user preference.
+
+---
+
+# 25. Preference Failure Behavior
+
+Privacy fails closed.
+
+If an affirmative preference cannot be persisted reliably:
+
+```text
+Analytics remains OFF
+```
+
+The product must not infer consent from:
+
+- UI state;
+- button click alone;
+- browser-local state;
+- previous unpersisted interaction.
+
+A clear retryable user-facing error should be provided where appropriate.
+
+---
+
+# 26. Pilot Analytics Views
+
+Initial analysis should remain compact and organized around five perspectives.
+
+## 26.1 Pilot Overview
 
 Candidate indicators:
 
 ```text
 Organizations onboarded
-Organizations with usage
-Organizations with meaningful activity
-Organizations returning
+Organizations represented in consenting analytics
+Organizations with observed exploration
+Organizations with observed returning activity
 
-Active users
-Returning users
+Observed active users
+Observed returning users
 
-Library sessions
+Library views
 Search usage
 Filter usage
 Content opened
+External references opened
+Downloads
 ```
 
-"Meaningful activity" remains exploratory during the pilot and must be clearly labeled if a temporary reporting definition is used.
+Analytics-derived counts must not be presented as complete platform-wide usage where non-consenting users are excluded.
 
 ---
 
-## 14.2 Journeys
+## 26.2 Journeys
 
-Analyze product paths such as:
+Analyze paths such as:
 
 ```text
-Authenticated session
-→ Library
+Library
 → discovery action
 → content
 ```
@@ -756,149 +1199,68 @@ and:
 
 ```text
 Search
-→ result selected
 → content opened
 ```
 
-Journeys must not assume that there is only one successful navigation path.
+Journeys must not assume one mandatory successful path.
 
 ---
 
-## 14.3 Organizations
+## 26.3 Organizations
 
-Allow comparison of usage patterns by organization, including:
+Allow analysis of observed patterns by canonical `organization_id`, including:
 
-- presence of activity;
-- returning activity;
+- presence of analytics activity;
+- returning observed activity;
 - discovery mechanisms;
 - content types explored.
 
-The goal is to understand adoption patterns, not rank organizations.
+The goal is understanding adoption patterns.
+
+Organizations must not be ranked.
 
 ---
 
-## 14.4 Content
+## 26.4 Content
 
 Analyze:
 
 - content types explored;
-- frequently opened content;
-- differences in exploration across organizations;
-- discovery paths leading to content.
+- frequently opened content identifiers;
+- external-reference use;
+- downloads;
+- differences in observed exploration across organizations;
+- discovery paths associated with content.
 
-Analytics should measure interest, not infer educational quality or effectiveness from opening behavior alone.
-
----
-
-## 14.5 Retention
-
-Analyze both:
-
-- pseudonymous user return;
-- organization return.
-
-Organization retention should receive particular attention during the external pilot.
+Opening or downloading content indicates observed interest, not educational effectiveness.
 
 ---
 
-# 15. Privacy and Security Constraints
+## 26.5 Retention
 
-Analytics is an external data-processing boundary.
+Analyze:
 
-Before production activation, implementation must verify:
+- pseudonymous consenting-user return;
+- organization return represented through consenting-user activity.
 
-1. exactly which data leaves the application;
-2. PostHog deployment/environment/region;
-3. session replay masking;
-4. data-retention configuration;
-5. access permissions to analytics;
-6. environment separation;
-7. whether existing privacy notices or Terms require changes;
-8. whether cookie/consent requirements apply to target jurisdictions.
-
-Secrets or privileged credentials must never be exposed in client code.
-
-Only credentials specifically designed for client-side analytics may be exposed to the browser.
+Retention reporting must acknowledge the opt-in nature of the dataset.
 
 ---
 
-# 16. Environment Separation
+# 27. Explicitly Out of Scope
 
-Development and test activity must not contaminate production pilot metrics.
+SPEC-008 does not introduce:
 
-The implementation must provide a clear isolation strategy.
-
-Possible approaches include:
-
-- separate PostHog projects;
-- environment properties plus reliable filtering;
-- another provider-supported isolation mechanism.
-
-The implementation agent may select the smallest reliable option compatible with current deployment architecture.
-
-Production reporting must exclude development/test telemetry.
-
----
-
-# 17. Analytics Failure Behavior
-
-Analytics is non-critical infrastructure.
-
-Failure of the provider must not prevent users from:
-
-- authenticating;
-- navigating;
-- searching;
-- filtering;
-- opening content;
-- or otherwise using the Base Curricular.
-
-Analytics must fail safely.
-
-Core product functionality must never depend on successful telemetry delivery.
-
----
-
-# 18. Impact Surface
-
-Expected impact includes:
-
-- analytics initialization/application shell;
-- authentication/session lifecycle;
-- organization context;
-- Library;
-- search;
-- filters;
-- content navigation;
-- environment configuration;
-- security/privacy documentation;
-- deployment configuration;
-- tests.
-
-Potentially affected documentation includes:
-
-```text
-docs/ARCHITECTURE.md
-docs/SECURITY.md
-docs/DECISIONS.md
-docs/PRODUCT_DEFINITION.md
-resources/specs/README.md
-```
-
-Technical preflight must determine the actual authoritative files.
-
----
-
-# 19. Out of Scope
-
-This SPEC does not introduce:
-
+- Session Replay;
 - marketing campaign attribution;
 - advertising analytics;
+- advertising audiences;
 - CRM integration;
 - user scoring;
 - employee monitoring;
 - organization ranking;
+- raw search-term analysis;
+- names/emails in analytics;
 - A/B testing;
 - feature flags;
 - automated personalization;
@@ -906,320 +1268,692 @@ This SPEC does not introduce:
 - behavioral targeting;
 - automated decisions based on analytics;
 - custom analytics warehouse;
+- exhaustive UI interaction tracking;
+- every-click capture;
+- mouse movement capture;
+- scroll-depth tracking;
+- arbitrary component telemetry;
 - replacement of application logs;
 - replacement of security monitoring;
-- replacement of error monitoring;
-- exhaustive UI interaction tracking.
+- replacement of error monitoring.
 
 Google Analytics is not part of this SPEC.
 
-Dedicated error monitoring such as Sentry may be considered separately.
+Dedicated error observability such as Sentry remains a separate product/technical decision.
 
 ---
 
-# 20. Expected Behavior
+# 28. Impact Surface
+
+Expected implementation impact includes:
+
+- analytics integration boundary;
+- authenticated application shell;
+- authentication/logout lifecycle;
+- organization context;
+- analytics-preference persistence;
+- privacy-choice UX;
+- Data Preferences UX;
+- Library;
+- search;
+- filters;
+- content navigation;
+- external references;
+- downloads;
+- environment configuration;
+- tests;
+- deployment configuration.
+
+Expected knowledge impact includes review/reconciliation of:
+
+```text
+docs/ARCHITECTURE.md
+docs/SECURITY.md
+docs/DECISIONS.md
+docs/PRODUCT.md
+docs/PRIVACY_AND_DATA_COLLECTION.md
+docs/PRIVACY_NOTICE.md
+docs/PRIVACY_UX_CONTRACT.md
+docs/TERMS_OF_USE.md
+resources/specs/README.md
+```
+
+Authoritative privacy contracts should be referenced rather than duplicated.
+
+---
+
+# 29. Expected Behavior
 
 Once implemented:
 
-1. production usage generates only approved canonical analytics events;
-2. every event maps to an explicit measurement purpose;
-3. events use consistent semantic definitions;
-4. events can be segmented by organization where appropriate;
-5. the team can analyze organizational adoption;
-6. initial exploration paths are observable;
-7. search/filter/content discovery behavior can be analyzed;
-8. content interest can be compared by content type;
-9. user and organization return behavior can be measured;
-10. replay can assist UX investigation without becoming the primary analytical mechanism;
-11. development telemetry does not contaminate pilot reporting;
-12. analytics failure does not affect product behavior;
-13. unnecessary PII and raw search text are not intentionally sent.
+1. analytics remains OFF until an authenticated user affirmatively enables it;
+2. Terms acceptance does not enable analytics;
+3. rejection preserves normal product access;
+4. analytics preference persists per authenticated user;
+5. undecided and rejected states remain distinguishable;
+6. users can change their preference later;
+7. OFF → ON enables only future approved telemetry;
+8. ON → OFF stops future optional telemetry;
+9. logout clears analytics identity;
+10. production emits only approved semantic events;
+11. Preview, Development, and Test emit no production analytics;
+12. events use approved pseudonymous identity/context;
+13. organizations can be analyzed through canonical identifiers;
+14. search behavior can be analyzed without raw search text;
+15. content exploration can be analyzed without transmitting private content;
+16. Session Replay remains disabled;
+17. autocapture and unsafe automatic collection remain disabled;
+18. analytics failure does not affect product functionality;
+19. preference persistence failure cannot accidentally enable analytics;
+20. reporting acknowledges that opt-in analytics is not a complete census of all product usage.
 
 ---
 
-# 21. Acceptance Criteria
+# 30. Acceptance Criteria
 
 ## AC-01 — Measurement plan
 
-Every canonical event is documented against at least one approved product question.
+Every canonical event maps to at least one approved product question.
 
 ## AC-02 — Centralized integration
 
-The application has one documented analytics integration boundary rather than unrelated provider calls distributed throughout the product.
+The application has one documented analytics integration boundary rather than unrelated PostHog calls distributed throughout the product.
 
-## AC-03 — Bounded taxonomy
+## AC-03 — Canonical taxonomy
 
-Tracked events conform to the intentionally small canonical taxonomy.
-
-## AC-04 — Organization segmentation
-
-Authenticated organization usage can be analyzed using the canonical organization identifier where appropriate.
-
-## AC-05 — No unnecessary PII
-
-Inspection of emitted payloads confirms that prohibited personal information is not intentionally transmitted.
-
-## AC-06 — Search privacy
-
-Raw search text is not transmitted.
-
-## AC-07 — Initial exploration
-
-Analytics can represent the main paths from authenticated usage into meaningful content exploration.
-
-## AC-08 — Discovery analysis
-
-Search, filtering, direct browsing, result selection, and content opening can be meaningfully distinguished where the implemented product supports them.
-
-## AC-09 — Content analysis
-
-`content_opened` can be segmented using canonical content type and identifier properties without requiring separate event names per content type.
-
-## AC-10 — Retention
-
-The team can distinguish first-time and returning usage at both user and organization levels sufficiently for pilot analysis.
-
-## AC-11 — Session replay privacy
-
-Replay is configured so identified sensitive inputs/content are masked or excluded.
-
-The configuration is manually verified before production enablement.
-
-## AC-12 — Environment isolation
-
-Development/test activity can be reliably excluded from production reporting.
-
-## AC-13 — Failure isolation
-
-Blocking or disabling analytics does not break core application behavior.
-
-## AC-14 — Pilot reporting
-
-The analytics configuration can support:
-
-- Pilot Overview;
-- Journeys;
-- Organizations;
-- Content;
-- Retention.
-
-## AC-15 — Meaningful activity remains non-permanent
-
-No permanent organization engagement score or arbitrary adoption threshold is introduced as part of this implementation.
-
-## AC-16 — Existing authorization preserved
-
-Analytics introduces no change to application authorization or organization-access rules.
-
-## AC-17 — Documentation
-
-Relevant architecture, security/privacy, decisions, measurement-plan, and specification indexes reflect the capability after implementation.
-
----
-
-# 22. Testing Requirements
-
-Implementation must include appropriate tests for the analytics abstraction.
-
-Tests should verify at minimum:
-
-- expected event emission;
-- event/property semantics;
-- organization association where applicable;
-- content property association;
-- absence of known prohibited properties;
-- raw search queries are not emitted;
-- safe behavior when analytics is unavailable;
-- environment/configuration guards.
-
-Tests must not send real telemetry to the production analytics environment.
-
-Where session replay privacy cannot be sufficiently verified automatically, closure evidence must include manual verification.
-
----
-
-# 23. Implementation Freedom
-
-The implementation agent may determine:
-
-- the exact PostHog SDK compatible with the application;
-- analytics wrapper/module structure;
-- client/server event boundaries;
-- initialization strategy;
-- environment isolation;
-- batching/provider configuration;
-- replay sampling percentage;
-- dashboard implementation details;
-- technical test strategy.
-
-The implementation agent may reconcile candidate event names where repository evidence demonstrates that a different semantic name more accurately describes current product behavior.
-
-It may not silently change:
-
-- the approved measurement questions;
-- organization-first analysis;
-- data-minimization requirements;
-- search-query privacy;
-- replay privacy requirements;
-- the non-critical nature of analytics;
-- existing authorization semantics;
-- or navigation behavior merely to simplify instrumentation.
-
-New events not covered by the measurement plan require justification before being added.
-
-A conflict requiring material product changes must return:
-
-**BLOCKED / DECISION REQUIRED**
-
----
-
-# 24. Knowledge Updates Required
-
-After implementation and validation, reconcile durable project knowledge.
-
-At minimum review:
-
-- architecture documentation;
-- security/privacy documentation;
-- decisions;
-- environment/configuration documentation;
-- specification index;
-- deployment/setup documentation.
-
-The canonical measurement plan/event taxonomy must have one authoritative location.
-
-Avoid creating duplicate analytics dictionaries across multiple documents.
-
----
-
-# 25. Pre-Implementation Gate
-
-Before moving this SPEC to **ACTIVE / IMPLEMENTATION READY**, perform a repository-grounded technical preflight.
-
-The preflight must verify:
-
-### Architecture
-
-- current framework/runtime;
-- appropriate PostHog integration boundary;
-- client/server rendering implications;
-- organization-context availability;
-- authentication/session lifecycle;
-- navigation instrumentation points.
-
-### Existing telemetry
-
-Search for:
-
-- analytics dependencies;
-- telemetry utilities;
-- monitoring;
-- logging;
-- existing event tracking;
-- environment variables.
-
-Avoid duplicate capabilities.
-
-### Product journeys
-
-Validate the measurement plan against the actual implemented UX.
-
-Confirm whether:
+Only the approved initial events are emitted:
 
 ```text
-session_started
 library_viewed
 search_performed
 filter_applied
-search_result_selected
 content_opened
 external_reference_opened
 content_downloaded
 ```
 
-map cleanly to current behavior.
+## AC-04 — Default OFF
 
-Remove or adjust events that do not.
+A user with no persisted analytics decision emits no optional analytics.
 
-Do not instrument obsolete prototype behavior.
+## AC-05 — Separate Terms decision
 
-### Data
+Accepting Terms does not enable optional analytics.
 
-Confirm authoritative sources for:
+## AC-06 — Explicit acceptance
 
-- organization ID;
-- pseudonymous user identity;
-- roles;
-- content identifiers;
-- content types;
-- filter types.
+Analytics initializes for an authenticated user only after an affirmative preference is successfully persisted.
 
-### Privacy/security
+## AC-07 — Rejection
 
-Determine:
+Rejecting analytics persists the decision and preserves normal product functionality.
 
-- exactly what data would leave the platform;
-- replay masking requirements;
-- hosting/data-region implications;
-- retention requirements;
-- analytics access controls;
-- whether Privacy Policy or Terms updates are required;
-- whether consent/cookie requirements apply.
+## AC-08 — Preference management
+
+The authenticated user can access `Preferencias de datos` and change optional analytics between OFF and ON.
+
+## AC-09 — Revocation
+
+Changing ON → OFF stops future optional analytics and resets/clears analytics identity appropriately.
+
+## AC-10 — Re-enablement
+
+Changing OFF → ON enables only future approved analytics.
+
+No historical disabled-period behavior is retroactively submitted.
+
+## AC-11 — Undecided versus rejected
+
+The application can distinguish no decision from explicit rejection.
+
+## AC-12 — Logout isolation
+
+Signing out prevents another user from inheriting the previous user's analytics identity.
+
+## AC-13 — Organization segmentation
+
+Approved analytics events can be segmented by canonical organization identifier where appropriate.
+
+## AC-14 — No unnecessary PII
+
+Inspection of emitted payloads confirms prohibited personal information is not intentionally transmitted.
+
+## AC-15 — Search privacy
+
+Raw search text is absent from analytics payloads and is not leaked through automatic URL/pageview capture.
+
+## AC-16 — Content privacy
+
+Private content text is not transmitted where canonical identifiers are sufficient.
+
+## AC-17 — Filter semantics
+
+Analytics uses only canonical filter dimensions approved for the initial pilot.
+
+## AC-18 — Environment isolation
+
+Preview, Development, and Test do not send telemetry to the production PostHog project.
+
+## AC-19 — Semantic capture
+
+Autocapture, automatic form/text capture, unsafe pageviews, and equivalent broad collection are disabled.
+
+## AC-20 — Session Replay
+
+Session Replay is disabled.
+
+## AC-21 — Failure isolation
+
+Blocking or disabling PostHog does not break core application behavior.
+
+## AC-22 — Preference failure
+
+Failure to persist a new affirmative preference never enables analytics accidentally.
+
+## AC-23 — Initial exploration
+
+Approved analytics can represent the main observed paths from Library usage into content exploration.
+
+## AC-24 — Discovery analysis
+
+Search, filtering, direct browsing, and content opening can be meaningfully analyzed without dedicated click-level events.
+
+## AC-25 — Content analysis
+
+`content_opened` supports canonical content type and identifier analysis.
+
+External references and downloads are observable through their dedicated approved events.
+
+## AC-26 — Retention
+
+The team can analyze returning observed usage at both pseudonymous-user and organization levels.
+
+## AC-27 — Opt-in interpretation
+
+Pilot reporting does not present PostHog activity as a complete census of all Base Curricular usage.
+
+## AC-28 — Meaningful activity remains exploratory
+
+No permanent user or organization engagement score or arbitrary adoption threshold is introduced.
+
+## AC-29 — Existing authorization preserved
+
+Analytics changes no authorization, organization-access, publication, archive, or governance rule.
+
+## AC-30 — Privacy UX
+
+Implementation satisfies the acceptance criteria in:
+
+```text
+docs/PRIVACY_UX_CONTRACT.md
+```
+
+## AC-31 — Accessibility and responsive privacy UX
+
+Privacy choice and Data Preferences satisfy the accessibility and responsive requirements established by the privacy UX contract.
+
+## AC-32 — Documentation
+
+Relevant architecture, security, decisions, deployment/configuration, privacy references, and specification indexes reflect the verified implementation after closure.
 
 ---
 
-# 26. Activation Gate
+# 31. Testing Requirements
 
-SPEC-008 may move to:
+Implementation must include automated tests for the analytics and preference boundaries.
+
+At minimum verify:
+
+- no analytics before affirmative preference;
+- affirmative preference persistence before initialization;
+- rejection persistence;
+- undecided versus rejected behavior;
+- OFF → ON;
+- ON → OFF;
+- logout identity reset;
+- expected event emission;
+- canonical event names;
+- approved property semantics;
+- organization association;
+- content association;
+- absence of prohibited identity properties;
+- absence of raw search text;
+- absence of private content text where identifiers suffice;
+- environment guards;
+- PostHog no-op outside production;
+- autocapture disabled configuration;
+- Session Replay disabled configuration;
+- safe behavior when PostHog is unavailable;
+- fail-closed behavior when preference persistence fails;
+- Terms acceptance does not enable analytics.
+
+Tests must never send real telemetry to the production PostHog project.
+
+Hosted validation must verify actual browser payload behavior before pilot analytics is enabled externally.
+
+---
+
+# 32. Security Requirements
+
+Analytics must not weaken existing security boundaries.
+
+In particular:
+
+- Supabase Auth remains authoritative for authentication;
+- live Base Curricular membership remains authoritative for access;
+- RLS remains authoritative for database access;
+- organization isolation remains enforced by application/database security;
+- private content remains protected;
+- Storage authorization remains protected;
+- audit mechanisms remain independent;
+- PostHog is never an authorization source.
+
+Only client-safe PostHog configuration may be exposed to the browser.
+
+Never expose:
+
+- Supabase service-role credentials;
+- Auth Admin credentials;
+- privileged PostHog credentials;
+- server secrets;
+- access tokens;
+- equivalent privileged configuration.
+
+---
+
+# 33. Analytics Access
+
+Access to the PostHog project is separate from the Base Curricular `Admin` role.
+
+Being an application Admin does not automatically grant PostHog access.
+
+PostHog access must be restricted to authorized Democracia+ personnel who require it for legitimate:
+
+- product;
+- research;
+- technical;
+- privacy;
+- or administrative purposes.
+
+Final operational access membership must be documented before external pilot analytics activation.
+
+---
+
+# 34. Retention
+
+Initial analytics event retention is:
+
+**12 months**
+
+The implementation/operational setup must verify that this retention is configured or otherwise enforced.
+
+Retention should be reviewed after the pilot.
+
+It must not be extended merely because longer provider retention is technically available.
+
+---
+
+# 35. Implementation Freedom
+
+The implementation agent may determine:
+
+- PostHog SDK compatible with the current stack;
+- analytics wrapper/module structure;
+- client/server boundaries;
+- preference table/schema naming;
+- API/RPC structure;
+- state-management approach;
+- initialization mechanics;
+- loading/error presentation;
+- technical event dispatch mechanism;
+- exact privacy component structure;
+- exact responsive layout;
+- placement of `Preferencias de datos`;
+- technical testing strategy.
+
+The implementation agent may not independently change:
+
+- analytics default OFF;
+- affirmative opt-in;
+- direct rejection;
+- Terms/analytics separation;
+- user-owned preference;
+- persistent preference;
+- normal access after rejection;
+- canonical event taxonomy;
+- approved property constraints;
+- raw-search prohibition;
+- pseudonymous identity requirements;
+- no names/emails in analytics;
+- no advertising;
+- no individual performance analysis;
+- PostHog Cloud EU;
+- production-only analytics;
+- Session Replay disabled;
+- semantic-capture-only requirement;
+- 12-month initial retention;
+- fail-closed privacy behavior;
+- existing authorization semantics.
+
+A technical constraint requiring one of these changes must return:
+
+**BLOCKED / DECISION REQUIRED**
+
+---
+
+# 36. Technical Preflight Refresh
+
+Before moving SPEC-008 from `planned/` to `active/`, perform a repository-grounded technical preflight against the current `main`.
+
+The previous analytics preflight predates:
+
+- completion of SPEC-009;
+- final privacy contract;
+- Privacy Notice;
+- Terms of Use;
+- Privacy UX Contract.
+
+The refresh should validate implementation facts, not reopen settled product decisions.
+
+## Architecture
+
+Verify:
+
+- current framework/runtime;
+- current application-shell boundaries;
+- appropriate centralized PostHog integration point;
+- client/server rendering implications;
+- authentication lifecycle;
+- logout lifecycle;
+- current organization-context source;
+- current role source;
+- current production/environment detection.
+
+## Existing telemetry
+
+Search for:
+
+- analytics dependencies;
+- PostHog packages/configuration;
+- telemetry utilities;
+- monitoring;
+- logging;
+- existing event tracking;
+- analytics environment variables.
+
+Avoid duplicate infrastructure.
+
+## Privacy preference persistence
+
+Determine the smallest safe implementation for the authoritative semantics:
+
+```text
+user_id
+analytics_enabled
+analytics_decided_at
+privacy_notice_version
+consent_version
+updated_at
+```
+
+Verify:
+
+- RLS requirements;
+- read/write ownership;
+- migration requirements;
+- server/client boundary;
+- behavior for existing users;
+- behavior for users without a decision.
+
+## Product journeys
+
+Validate actual instrumentation points for:
+
+```text
+library_viewed
+search_performed
+filter_applied
+content_opened
+external_reference_opened
+content_downloaded
+```
+
+Do not introduce events for obsolete or nonexistent behavior.
+
+## Data
+
+Confirm authoritative sources for:
+
+```text
+user_id
+organization_id
+user_role
+content_id
+content_type
+filter_type
+attachment_id
+```
+
+## Search
+
+Verify:
+
+- where search state is stored;
+- whether query text appears in URL parameters;
+- whether any analytics initialization could capture those URLs;
+- safe instrumentation point for `result_count` and `has_results`.
+
+## Privacy UX
+
+Verify implementation surfaces for:
+
+- first privacy choice;
+- `Preferencias de datos`;
+- Privacy Notice access;
+- preference error state;
+- logout reset;
+- responsive behavior;
+- accessibility.
+
+## PostHog configuration
+
+Verify that the chosen SDK can enforce:
+
+```text
+Autocapture OFF
+Unsafe automatic pageviews OFF
+Session Replay OFF
+Production-only initialization
+Consent-gated initialization
+Identity reset
+```
+
+## Deployment
+
+Confirm:
+
+- production-safe public project key handling;
+- server/client secret boundaries;
+- environment configuration;
+- Preview/Development/Test no-op behavior.
+
+## Testing
+
+Identify existing test patterns suitable for:
+
+- preference persistence;
+- analytics wrapper behavior;
+- privacy UI;
+- environment guards;
+- emitted payload inspection.
+
+---
+
+# 37. Implementation Activation Gate
+
+SPEC-008 may move from:
+
+```text
+resources/specs/planned/
+```
+
+to:
+
+```text
+resources/specs/active/
+```
+
+with status:
 
 **ACTIVE — IMPLEMENTATION READY**
 
 when:
 
-1. the measurement plan remains coherent with the implemented product;
-2. technical preflight finds no unresolved architectural blocker;
-3. PostHog is confirmed compatible with deployment architecture;
-4. organization context can be associated safely;
-5. final canonical event taxonomy has been reconciled with real behavior;
-6. privacy/replay requirements are implementable;
-7. no unresolved consent/privacy issue blocks pilot deployment.
+1. this reconciled product contract is in the repository;
+2. the technical preflight refresh finds no unresolved architecture/data/security blocker;
+3. PostHog Cloud EU integration is technically compatible;
+4. preference persistence can be implemented safely;
+5. the six canonical events map to real current product behavior;
+6. approved identity/context sources are confirmed;
+7. production-only/no-op environment behavior is enforceable;
+8. privacy UX is implementable without changing its authoritative contract;
+9. no implementation question requires inventing product behavior.
 
-If any requirement would materially change the product or privacy contract, return:
-
-**DECISION READY — STAKEHOLDER APPROVAL REQUIRED**
-
-or:
-
-**BLOCKED / DECISION REQUIRED**
-
-as appropriate.
+Legal review is **not required to begin implementation** provided external optional analytics remains disabled until the external activation gate is satisfied.
 
 ---
 
-# 27. Completion Evidence
+# 38. External Pilot Analytics Activation Gate
 
-SPEC-008 is not complete because an SDK was installed.
+Implementation readiness and external analytics activation are separate gates.
+
+Optional analytics must not be enabled for external-pilot users until:
+
+1. implementation is complete and validated;
+2. emitted browser/network payloads have been inspected;
+3. zero optional telemetry before opt-in is verified;
+4. raw search leakage is ruled out;
+5. prohibited PII leakage is ruled out;
+6. Session Replay is verified disabled;
+7. autocapture/unsafe automatic collection is verified disabled;
+8. PostHog Cloud EU destination is verified;
+9. 12-month retention is configured or operationally enforced;
+10. PostHog access is restricted to authorized personnel;
+11. Privacy Notice matches actual behavior;
+12. Terms/analytics separation matches actual behavior;
+13. privacy-choice UX matches `docs/PRIVACY_UX_CONTRACT.md`;
+14. legal review required by `docs/PRIVACY_AND_DATA_COLLECTION.md` has been completed for the intended external pilot.
+
+Until this gate is satisfied, the capability may exist technically while external optional analytics remains disabled.
+
+---
+
+# 39. Completion Evidence
+
+SPEC-008 is not complete merely because:
+
+- the PostHog SDK is installed;
+- a preference table exists;
+- events appear in a development console;
+- or an implementation agent reports success.
 
 Closure requires evidence that:
 
-- approved product questions can be answered;
-- production-compatible initialization works;
-- canonical events are emitted correctly;
-- events map to the measurement plan;
+- authoritative privacy UX is implemented;
+- analytics remains OFF before affirmative preference;
+- Terms acceptance does not enable analytics;
+- preference persistence works;
+- rejection works without access penalty;
+- revocation works;
+- logout resets analytics identity;
+- six canonical events emit correctly;
+- approved properties are correct;
 - organization segmentation works;
-- discovery journeys can be analyzed;
-- content interest can be segmented;
-- user and organization retention can be analyzed;
-- replay privacy has been manually verified;
-- prohibited data and raw search queries are not intentionally emitted;
-- analytics failure does not affect application behavior;
+- search analytics contains no raw query;
+- prohibited PII is absent;
+- private content is not unnecessarily transmitted;
+- Session Replay is disabled;
+- autocapture is disabled;
+- non-production telemetry is no-op;
+- provider failure does not affect product behavior;
+- preference failure is fail-closed;
+- pilot reporting can answer approved measurement questions within the limitations of opt-in data;
 - automated tests pass;
-- relevant hosted behavior has been validated;
-- durable project documentation has been reconciled.
+- required real-stack validation passes;
+- appropriate hosted validation passes;
+- external activation remains gated until legal requirements are satisfied;
+- durable documentation is reconciled.
 
-Only after those checks should SPEC-008 move to:
+After implementation, an independent review must compare:
+
+```text
+authoritative product contracts
+        ↓
+SPEC-008
+        ↓
+actual implementation
+        ↓
+tests
+        ↓
+hosted behavior
+        ↓
+durable documentation
+```
+
+Only after required implementation and coherence validation should SPEC-008 move to:
 
 **COMPLETED / COHERENCE VERIFIED**
+
+---
+
+# 40. Knowledge Updates Required
+
+After implementation and validation, review and reconcile at minimum:
+
+```text
+docs/ARCHITECTURE.md
+docs/SECURITY.md
+docs/DECISIONS.md
+docs/PRODUCT.md
+resources/specs/README.md
+```
+
+Update privacy contracts only if verified implementation or an approved product decision requires reconciliation.
+
+Do not duplicate the privacy UX contract or event taxonomy unnecessarily across documentation.
+
+The canonical privacy behavior remains in:
+
+```text
+docs/PRIVACY_AND_DATA_COLLECTION.md
+docs/PRIVACY_UX_CONTRACT.md
+docs/PRIVACY_NOTICE.md
+docs/TERMS_OF_USE.md
+```
+
+The canonical analytics measurement/event implementation contract remains in this SPEC.
+
+---
+
+# 41. Current State Decision
+
+SPEC-008 is currently:
+
+**PLANNED — DECISION READY / PRODUCT CONTRACT RECONCILED**
+
+The product decisions required for implementation are established.
+
+The remaining gate before activation is:
+
+**TECHNICAL PREFLIGHT REFRESH**
+
+That refresh must verify current implementation facts after SPEC-009 and the privacy-contract additions.
+
+If no blocker is found, activate SPEC-008 separately as:
+
+**ACTIVE — IMPLEMENTATION READY**
+
+The external pilot analytics activation remains independently gated by implementation validation and required legal review.
 
 ---
 
@@ -1227,12 +1961,13 @@ Only after those checks should SPEC-008 move to:
 
 The following may become useful after the pilot produces evidence but are not part of SPEC-008:
 
-- durable definition of organizational activation;
+- durable organizational activation definitions;
 - longitudinal organization adoption models;
 - deeper cohort analysis;
 - structured product-health metrics;
 - privacy-reviewed search-term analysis;
-- experimentation/A-B testing;
+- Session Replay;
+- experimentation / A-B testing;
 - feature flags;
 - contextual feedback prompts;
 - analytics warehouse/export;
@@ -1240,4 +1975,4 @@ The following may become useful after the pilot produces evidence but are not pa
 - dedicated error observability such as Sentry;
 - public-site marketing analytics.
 
-These require separate decisions based on evidence gathered during the pilot.
+These capabilities require separate decisions based on evidence gathered during the pilot.
