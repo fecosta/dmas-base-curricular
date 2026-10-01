@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { requireAccess } from "@/lib/auth/access";
+import { getAnalyticsPreference } from "@/lib/privacy/analytics-preference";
+import { privacyDocuments } from "@/lib/privacy/contract";
 import { AppHeader } from "@/components/app-header";
 import { type NavItem } from "@/components/primary-nav";
 import { Container } from "@/components/ui/page";
@@ -8,6 +11,13 @@ export const dynamic = "force-dynamic";
 export default async function ApplicationLayout({ children }: { children: React.ReactNode }) {
   const access = await requireAccess();
   const roleLabel = access.role === "Admin" ? "Administrador" : "Miembro";
+
+  // The persisted row is the only source of this decision. An unreadable
+  // preference is not a decision and must not enable analytics, so it resolves
+  // to "rejected" for the shell: analytics stays OFF, and the user is not
+  // prompted on the strength of a failed read.
+  const preference = await getAnalyticsPreference();
+  const analyticsDecision = preference.status === "resolved" ? preference.preference.decision : "rejected";
 
   // Filtered here, not in the client component: an Admin-only destination must
   // never be serialised into a reader's markup. AppHeader renders exactly what
@@ -26,7 +36,12 @@ export default async function ApplicationLayout({ children }: { children: React.
       header; the organisation and role it carried now sit in the header's
       account control, and in the navigation sheet at compact widths.
     */}
-    <AppHeader items={navigation} organizationName={access.organizationName} roleLabel={roleLabel} />
+    <AppHeader
+      items={navigation}
+      organizationName={access.organizationName}
+      roleLabel={roleLabel}
+      analyticsDecision={analyticsDecision}
+    />
 
     <div className="flex-1">{children}</div>
 
@@ -39,8 +54,14 @@ export default async function ApplicationLayout({ children }: { children: React.
         </p>
       </Container>
       <div className="border-t border-white/10">
-        <Container width="wide" className="py-4 text-meta tracking-normal text-white/55">
-          Democracia+ · Red de formación política
+        <Container width="wide" className="flex flex-wrap items-center gap-x-5 gap-y-2 py-4 text-meta tracking-normal text-white/55">
+          <span>Democracia+ · Red de formación política</span>
+          {/*
+            The authoritative privacy documents, reachable from every
+            authenticated surface rather than only from the privacy dialogs.
+          */}
+          <Link href={privacyDocuments.notice.href} prefetch={false}>{privacyDocuments.notice.title}</Link>
+          <Link href={privacyDocuments.terms.href} prefetch={false}>{privacyDocuments.terms.title}</Link>
         </Container>
       </div>
     </footer>

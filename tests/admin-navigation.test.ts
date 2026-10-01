@@ -2,12 +2,20 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { requireAccess, route } = vi.hoisted(() => ({
+const { requireAccess, getAnalyticsPreference, route } = vi.hoisted(() => ({
   requireAccess: vi.fn(),
+  getAnalyticsPreference: vi.fn(),
   route: { pathname: "/app/library", search: "" },
 }));
 vi.mock("@/lib/auth/access", () => ({ requireAccess }));
+// The shell renders the privacy surfaces from the persisted preference row;
+// there is no database here.
+vi.mock("@/lib/privacy/analytics-preference", () => ({ getAnalyticsPreference }));
 vi.mock("@/app/login/actions", () => ({ signOut: vi.fn() }));
+vi.mock("@/app/app/privacidad/actions", () => ({
+  acceptAnalyticsAction: vi.fn(),
+  rejectAnalyticsAction: vi.fn(),
+}));
 // The shell is a client component that reads the current route to mark the
 // active destination and to scope the Library search; there is no router here.
 vi.mock("next/navigation", () => ({
@@ -19,8 +27,24 @@ vi.mock("next/navigation", () => ({
 }));
 import ApplicationLayout from "@/app/app/layout";
 
-async function shell(role: "Admin" | "Contributor", organizationName = "Red") {
+const resolved = (decision: "undecided" | "rejected" | "accepted") => ({
+  status: "resolved" as const,
+  preference: {
+    decision,
+    analyticsEnabled: decision === "accepted",
+    decidedAt: decision === "undecided" ? null : "2026-10-01T10:00:00Z",
+    privacyNoticeVersion: decision === "undecided" ? null : "1.1",
+    consentVersion: decision === "undecided" ? null : "1.1",
+  },
+});
+
+async function shell(
+  role: "Admin" | "Contributor",
+  organizationName = "Red",
+  preference: ReturnType<typeof resolved> | { status: "unavailable" } = resolved("rejected"),
+) {
   requireAccess.mockResolvedValue({ organizationName, role });
+  getAnalyticsPreference.mockResolvedValue(preference);
   return renderToStaticMarkup(await ApplicationLayout({ children: React.createElement("main") }));
 }
 
@@ -34,6 +58,7 @@ describe("role-aware application navigation", () => {
     vi.resetAllMocks();
     route.pathname = "/app/library";
     route.search = "";
+    getAnalyticsPreference.mockResolvedValue(resolved("rejected"));
   });
 
   it("shows content management only to Admins", async () => {
@@ -116,5 +141,90 @@ describe("role-aware application navigation", () => {
     const html = await shell("Contributor");
     expect(html).toContain("Base Curricular");
     expect(html).toContain('href="/app"');
+  });
+});
+
+/*
+ * The privacy surfaces belong to the authenticated session, so the shell is
+ * where they are reachable. Admin status changes nothing about them: the
+ * analytics preference is owned by the user, not granted by a role.
+ */
+describe("privacy surfaces in the application shell", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    route.pathname = "/app/library";
+    route.search = "";
+    getAnalyticsPreference.mockResolvedValue(resolved("rejected"));
+  });
+
+  it("offers Preferencias de datos to a non-Admin reader", async () => {
+    expect(await shell("Contributor")).toContain("Preferencias de datos");
+  });
+
+  it("offers Preferencias de datos to an Admin on the same terms", async () => {
+    expect(await shell("Admin")).toContain("Preferencias de datos");
+  });
+
+  it("renders exactly one Preferencias de datos trigger and one dialog", async () => {
+    const html = await shell("Contributor");
+    // The closed navigation sheet renders no contents, so the inline control is
+    // the only trigger and the accessible name is not duplicated. The dialog's
+    // own heading is the remaining occurrence; the shell owns a single dialog
+    // rather than one per surface that can open it.
+    expect(occurrences(html, "Preferencias de datos</button>")).toBe(1);
+    expect(occurrences(html, "Preferencias de datos</h2>")).toBe(1);
+  });
+
+  it("links the authoritative Privacy Notice and Terms from every authenticated surface", async () => {
+    const html = await shell("Contributor");
+    expect(html).toContain('href="/app/privacidad/aviso"');
+    expect(html).toContain('href="/app/privacidad/terminos"');
+    expect(html).toContain("Aviso de Privacidad");
+    expect(html).toContain("Términos de Uso");
+  });
+
+  it("presents the first privacy choice to a user with no recorded decision", async () => {
+    const html = await shell("Contributor", "Red", resolved("undecided"));
+    expect(html).toContain("Ayúdanos a mejorar Base Curricular");
+    expect(html).toContain("Rechazar analítica");
+    expect(html).toContain("Configurar");
+    expect(html).toContain("Aceptar");
+  });
+
+  /* Rejection is a recorded decision; re-prompting it would be pressure. */
+  it("does not re-prompt a user who rejected analytics", async () => {
+    const html = await shell("Contributor", "Red", resolved("rejected"));
+    expect(html).not.toContain("Ayúdanos a mejorar Base Curricular");
+    expect(html).not.toContain("Rechazar analítica");
+  });
+
+  it("does not prompt a user who already accepted analytics", async () => {
+    expect(await shell("Contributor", "Red", resolved("accepted")))
+      .not.toContain("Ayúdanos a mejorar Base Curricular");
+  });
+
+  /*
+   * A failed preference read is not a decision. It must leave analytics OFF,
+   * and it must not present a consent prompt whose outcome would be recorded
+   * against an unreadable row.
+   */
+  it("treats an unreadable preference as analytics off without prompting", async () => {
+    const html = await shell("Contributor", "Red", { status: "unavailable" });
+    expect(html).not.toContain("Ayúdanos a mejorar Base Curricular");
+    expect(html).toContain("Preferencias de datos");
+  });
+
+  /*
+   * Session Replay is disabled and must not be presented as a preference.
+   * Asserted against the rendered body only: React appends its own
+   * form-replay bootstrap script, which is framework plumbing and not product
+   * copy about session recording.
+   */
+  it("does not present Session Replay as a preference", async () => {
+    const body = (await shell("Contributor", "Red", resolved("undecided"))).split("<script>")[0].toLowerCase();
+    expect(body).not.toContain("session replay");
+    expect(body).not.toContain("repetición de sesión");
+    expect(body).not.toContain("grabación de sesion");
+    expect(body).not.toContain("grabación de sesión");
   });
 });

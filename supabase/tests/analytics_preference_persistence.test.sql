@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(39);
+select plan(41);
 
 insert into public.organizations(id, name, is_active) values
   ('a1000000-0000-4000-8000-000000000001', 'Organización analítica', true),
@@ -48,6 +48,18 @@ select is(
     where n.nspname = 'public' and p.proname like '%analytics_preference%'
       and p.oid <> 'public.set_analytics_preference(boolean, text, text)'::regprocedure),
   0::bigint, 'no additional public analytics-preference function exists');
+-- service_role may read for privacy-rights fulfilment but holds no write
+-- privilege, so no operator path can enable analytics for someone else.
+select is(
+  (select string_agg(distinct privilege_type, ',' order by privilege_type)
+    from information_schema.role_table_grants
+    where table_schema = 'public' and table_name = 'analytics_preferences' and grantee = 'service_role'),
+  'SELECT', 'service_role may read the preference but not write it');
+select is(
+  (select string_agg(distinct privilege_type, ',' order by privilege_type)
+    from information_schema.role_table_grants
+    where table_schema = 'public' and table_name = 'analytics_preferences' and grantee = 'authenticated'),
+  'SELECT', 'authenticated may read its own preference but not write it');
 
 set local role anon;
 select throws_ok('select * from public.analytics_preferences', '42501',

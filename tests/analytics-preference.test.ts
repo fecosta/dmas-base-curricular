@@ -16,12 +16,8 @@ const { requireAccess, rpc, maybeSingle, select, from } = vi.hoisted(() => {
 vi.mock("@/lib/auth/access", () => ({ requireAccess }));
 vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from, rpc }) }));
 
-import {
-  consentVersion,
-  getAnalyticsPreference,
-  privacyNoticeVersion,
-  setAnalyticsPreference,
-} from "@/lib/privacy/analytics-preference";
+import { getAnalyticsPreference, setAnalyticsPreference } from "@/lib/privacy/analytics-preference";
+import { consentVersion, privacyNoticeVersion } from "@/lib/privacy/contract";
 
 const stored = (analytics_enabled: boolean) => ({
   analytics_enabled,

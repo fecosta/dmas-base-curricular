@@ -22,8 +22,14 @@ alter table public.analytics_preferences enable row level security;
 -- Mutation goes through the RPC below, as everywhere else in this schema. No
 -- ordinary write policy and no write grant exists, so a compromised browser
 -- session cannot reach the row directly.
+--
+-- service_role keeps SELECT but deliberately no write privilege. Read access
+-- supports operator fulfilment of a privacy-rights request; a write path would
+-- be exactly the "organization or Admin enables analytics on another user's
+-- behalf" that the product forbids, so it stays structurally absent rather than
+-- merely unimplemented. Only the row's own live owner can record a decision.
 revoke all on public.analytics_preferences from public, anon, authenticated, service_role;
-grant select on public.analytics_preferences to authenticated;
+grant select on public.analytics_preferences to authenticated, service_role;
 
 -- Mirrors the identity policies: own row, and only while the identity is still
 -- live and eligible. An Admin session resolves to its own user_id like any other.

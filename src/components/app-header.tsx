@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "@/app/login/actions";
+import type { AnalyticsDecision } from "@/lib/privacy/contract";
 import { PrimaryNav, type NavItem } from "@/components/primary-nav";
 import { ShellSearch } from "@/components/shell-search";
+import { PrivacyChoice } from "@/components/privacy/privacy-choice";
+import { DataPreferencesDialog } from "@/components/privacy/data-preferences";
 import { Container } from "@/components/ui/page";
 import { Button } from "@/components/ui/button";
 import { Drawer } from "@/components/ui/drawer";
@@ -29,13 +32,23 @@ const COMPACT = "(min-width: 73.75rem)";
  * once: the inline row is display:none below the breakpoint, and the sheet's
  * contents are not rendered at all until it opens, so neither destinations nor
  * sign-out are ever duplicated in the accessibility tree.
+ *
+ * It also hosts the privacy surfaces, because they belong to the authenticated
+ * session rather than to any one route: `Preferencias de datos` is reachable
+ * from the account controls at every width and for every role, and the first
+ * privacy choice appears directly below the band until a decision is persisted.
+ * `analyticsDecision` arrives from the server-rendered persisted row — this
+ * component never infers it.
  */
-export function AppHeader({ items, organizationName, roleLabel }: {
+export function AppHeader({ items, organizationName, roleLabel, analyticsDecision }: {
   items: NavItem[];
   organizationName: string;
   roleLabel: string;
+  analyticsDecision: AnalyticsDecision;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [decision, setDecision] = useState(analyticsDecision);
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
 
   // Growing past the compact breakpoint hides the trigger, so leaving the sheet
   // open there would strand it next to the inline navigation it stands in for.
@@ -75,6 +88,22 @@ export function AppHeader({ items, organizationName, roleLabel }: {
             <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-success" />
             <span className="font-bold text-ink">{organizationName}</span> · {roleLabel}
           </span>
+
+          {/*
+            Available to every authenticated user, not only Admins.
+            The wrapper carries the responsive display, as the sign-out form
+            does: Button's own base class sets inline-flex, which would win over
+            a `hidden` placed on the control itself and crowd the search field
+            at compact widths.
+          */}
+          <div className="hidden shrink-0 compact:block">
+            <Button
+              type="button"
+              variant="secondary"
+              size="xs"
+              onClick={() => setPreferencesOpen(true)}
+            >Preferencias de datos</Button>
+          </div>
 
           <form action={signOut} className="hidden shrink-0 compact:block">
             <Button type="submit" variant="secondary" size="xs">Cerrar sesión</Button>
@@ -118,13 +147,38 @@ export function AppHeader({ items, organizationName, roleLabel }: {
         </nav>
 
         {/*
-          The only sign-out control at this width; the header's copy is
-          display:none below the compact breakpoint.
+          The only sign-out and preferences controls at this width; the header's
+          copies are display:none below the compact breakpoint. Closing the
+          sheet first keeps two modal dialogs off the screen at once.
         */}
-        <form action={signOut} className="mt-auto">
-          <Button type="submit" variant="on-dark" size="sm" className="w-full">Cerrar sesión</Button>
-        </form>
+        <div className="mt-auto space-y-3">
+          <Button
+            type="button"
+            variant="on-dark"
+            size="sm"
+            className="w-full"
+            onClick={() => { setMenuOpen(false); setPreferencesOpen(true); }}
+          >Preferencias de datos</Button>
+          <form action={signOut}>
+            <Button type="submit" variant="on-dark" size="sm" className="w-full">Cerrar sesión</Button>
+          </form>
+        </div>
       </div>
     </Drawer>
+
+    {/* Shown only while no decision is persisted; rejection is not re-prompted. */}
+    {decision === "undecided" && <PrivacyChoice
+      onConfigure={() => setPreferencesOpen(true)}
+      onDecision={setDecision}
+    />}
+
+    {/* The shell owns the one Data Preferences dialog, reached from the account
+        controls at either width and from the first choice's Configurar. */}
+    <DataPreferencesDialog
+      open={preferencesOpen}
+      onClose={() => setPreferencesOpen(false)}
+      decision={decision}
+      onDecision={setDecision}
+    />
   </>;
 }

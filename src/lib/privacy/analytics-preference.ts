@@ -2,6 +2,11 @@ import "server-only";
 
 import { requireAccess } from "@/lib/auth/access";
 import { createClient } from "@/lib/supabase/server";
+import {
+  consentVersion,
+  privacyNoticeVersion,
+  type AnalyticsDecision,
+} from "@/lib/privacy/contract";
 
 /**
  * The authoritative optional-analytics preference boundary.
@@ -14,17 +19,6 @@ import { createClient } from "@/lib/supabase/server";
  * states, but every state other than a successfully persisted `accepted` leaves
  * analytics OFF — including `unavailable`, which is what a failed read is.
  */
-
-/**
- * Versions the decision is recorded against, so a later material privacy change
- * can tell which information applied when the user decided. These track the
- * authoritative documents: `docs/PRIVACY_NOTICE.md` (version 1.1) and
- * `docs/PRIVACY_AND_DATA_COLLECTION.md` (version 1.1).
- */
-export const privacyNoticeVersion = "1.1";
-export const consentVersion = "1.1";
-
-export type AnalyticsDecision = "undecided" | "rejected" | "accepted";
 
 export type AnalyticsPreference = {
   decision: AnalyticsDecision;
