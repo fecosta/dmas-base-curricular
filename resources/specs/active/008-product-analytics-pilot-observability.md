@@ -1,6 +1,6 @@
 # SPEC-008 — Product Analytics & Pilot Observability
 
-**Status:** PLANNED — DECISION READY / PRODUCT CONTRACT RECONCILED  
+**Status:** ACTIVE — IMPLEMENTATION READY
 **Product:** D+ Base Curricular  
 **Primary capability:** Product analytics and pilot observability  
 **Analytics platform:** PostHog Cloud EU  

@@ -35,7 +35,7 @@ Do not move a spec to `completed/` merely because an implementation agent report
 `SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md). `SPEC-009` is completed at [`completed/009-admin-organization-user-management.md`](completed/009-admin-organization-user-management.md) after independent implementation review, Cloud migration/security verification, safe hosted validation, and final coherence verification.
 
 `SPEC-001–007, SPEC-009` — completed
-`SPEC-008` — planned; now unblocked as the next planned slice, not yet activated
+`SPEC-008` — active; implementation ready
 
 ## Dependency model
 
