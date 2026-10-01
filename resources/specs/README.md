@@ -35,7 +35,7 @@ Do not move a spec to `completed/` merely because an implementation agent report
 `SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md).
 
 `SPEC-001–007` — completed
-`SPEC-009` — active, pending independent verification and closure gates
+`SPEC-009` — active, independently reviewed and Cloud-verified, pending coherence closure
 `SPEC-008` — planned / follows SPEC-009
 
 ## Dependency model
@@ -68,7 +68,7 @@ SPEC-009 Admin Organization & User Management
 SPEC-008 Product Analytics & Pilot Observability (planned)
 ```
 
-SPEC-009 implementation phases 1–4 are committed on the active branch. Phase 5 records local integrated validation and reconciles current architecture/security/setup documentation. The implementation has not moved SPEC-009 to `completed/`; a fresh independent review and the outstanding Cloud migration/security verification remain required. Production analytics under SPEC-008 must not begin before those gates and SPEC-009's closure are satisfied.
+SPEC-009 implementation phases 1–4 are committed on the active branch. Phase 5 records local integrated validation and reconciles current architecture/security/setup documentation. Independent review returned `PUSH READY`, and a subsequent Cloud gate applied migration `20260917000100` to the intended linked project and verified Cloud RPC security, grants, RLS, append-only audit protection, the server-only Auth Admin secret, the deployed commit, and unauthenticated Admin-route denial. Hosted destructive mutation was intentionally not exercised because production has no designated safe test organization or user; that evidence rests on local real-stack validation plus Cloud structural verification. SPEC-009 remains in `active/` pending the independent coherence-closure review. Production analytics under SPEC-008 must not begin before that closure is satisfied.
 
 SPEC-004 is completed after independent phase review, controlled local multi-user acceptance through real Supabase/application/browser boundaries, Cloud preservation and post-migration security verification, and production deployment verification. The local destructive journeys are not hosted production validation.
 
