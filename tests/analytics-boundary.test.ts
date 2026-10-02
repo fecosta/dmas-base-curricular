@@ -581,3 +581,99 @@ describe("the canonical taxonomy", () => {
     ]) expect(analyticsEvents).not.toContain(forbidden);
   });
 });
+
+/*
+ * The payloads the canonical events actually produce when analytics is
+ * enabled.
+ *
+ * The browser suite cannot show this: a non-production environment is inert by
+ * design, and making it emit would mean weakening the environment guard. So
+ * the real boundary is driven here with a production-like environment and a
+ * provider double, which is the only place the enabled-state payloads can be
+ * inspected without a deployment.
+ */
+describe("enabled-state payloads", () => {
+  async function emitted(run: (emit: typeof import("@/lib/analytics/boundary").track) => void) {
+    const captured: { event: string; properties: Record<string, unknown> }[] = [];
+    const client = {
+      init: () => {}, identify: () => {}, reset: () => {},
+      opt_in_capturing: () => {}, opt_out_capturing: () => {},
+      capture: (event: string, properties: Record<string, unknown>) => { captured.push({ event, properties }); },
+    };
+    configureAnalyticsForTest({
+      loader: async () => client,
+      env: env({ NEXT_PUBLIC_VERCEL_ENV: "production", NEXT_PUBLIC_POSTHOG_KEY: "phc_test" }),
+    });
+    enable(identity);
+    run(track);
+    await settle();
+    return captured;
+  }
+
+  const context = {
+    user_id: "user-1", organization_id: "org-1", user_role: "Contributor", environment: "production",
+  };
+
+  it("library_viewed carries approved context only", async () => {
+    const captured = await emitted((emit) => emit("library_viewed"));
+    expect(captured).toEqual([{ event: "library_viewed", properties: context }]);
+  });
+
+  it("search_performed carries the outcome and no query", async () => {
+    const captured = await emitted((emit) => emit("search_performed", { result_count: 4, has_results: true }));
+    expect(captured[0].properties).toEqual({ ...context, result_count: 4, has_results: true });
+  });
+
+  it("filter_applied carries the dimension and no value", async () => {
+    const captured = await emitted((emit) => emit("filter_applied", { filter_type: "theme" }));
+    expect(captured[0].properties).toEqual({ ...context, filter_type: "theme" });
+  });
+
+  it("content_opened carries canonical identifiers for each content type", async () => {
+    for (const contentType of ["module", "material", "institution"] as const) {
+      const captured = await emitted((emit) =>
+        emit("content_opened", { content_id: `${contentType}-1`, content_type: contentType }));
+      expect(captured[0].properties).toEqual({
+        ...context, content_id: `${contentType}-1`, content_type: contentType,
+      });
+    }
+  });
+
+  it("external_reference_opened carries no destination URL", async () => {
+    const captured = await emitted((emit) =>
+      emit("external_reference_opened", { content_id: "material-1", content_type: "material" }));
+    expect(captured[0].properties).toEqual({ ...context, content_id: "material-1", content_type: "material" });
+    expect(Object.keys(captured[0].properties)).not.toContain("url");
+  });
+
+  it("content_downloaded carries ids and no filename", async () => {
+    const captured = await emitted((emit) => emit("content_downloaded", {
+      attachment_id: "a1", content_id: "material-1", content_type: "material",
+    }));
+    expect(captured[0].properties).toEqual({
+      ...context, attachment_id: "a1", content_id: "material-1", content_type: "material",
+    });
+  });
+
+  it("emits every canonical event with no prohibited property anywhere", async () => {
+    const captured = await emitted((emit) => {
+      emit("library_viewed");
+      emit("search_performed", { result_count: 1, has_results: true });
+      emit("filter_applied", { filter_type: "axis" });
+      emit("content_opened", { content_id: "module-1", content_type: "module" });
+      emit("external_reference_opened", { content_id: "module-1", content_type: "module" });
+      emit("content_downloaded", { attachment_id: "a1", content_id: "module-1", content_type: "module" });
+    });
+
+    expect(captured.map((entry) => entry.event)).toEqual([...analyticsEvents]);
+    const approved = new Set([
+      "organization_id", "user_id", "user_role", "environment",
+      "content_id", "content_type", "filter_type", "result_count", "has_results", "attachment_id",
+    ]);
+    for (const { event, properties } of captured) {
+      for (const key of Object.keys(properties)) {
+        expect(approved.has(key), `${key} on ${event}`).toBe(true);
+      }
+    }
+  });
+});

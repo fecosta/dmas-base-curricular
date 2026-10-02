@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { ModuleDetail, TeachingNote } from "@/lib/curriculum/queries";
+import { ContentOpened } from "@/components/analytics/content-opened";
+import { ExternalReferenceLink } from "@/components/analytics/external-reference-link";
 import { PublishedAttachments } from "@/app/app/library/published-attachments";
 import { Card, DarkCard } from "@/components/ui/card";
 import { MetaItem } from "@/components/ui/field";
@@ -10,7 +12,7 @@ import { EmptyState, EmptyNote } from "@/components/ui/empty-state";
  * A Teaching Note stays its own governed object; this only renders it in the
  * context of the Program Topic it already references.
  */
-function TeachingNoteBody({ note }: { note: TeachingNote }) {
+function TeachingNoteBody({ note, moduleId }: { note: TeachingNote; moduleId: string }) {
   return <>
     {note.text && <p className="mt-2 whitespace-pre-line text-sm text-ink-soft">{note.text}</p>}
     {note.materials.length > 0 && <div className="mt-3 flex flex-wrap gap-2">
@@ -21,8 +23,19 @@ function TeachingNoteBody({ note }: { note: TeachingNote }) {
         className="rounded-full bg-surface px-3 py-1 text-xs font-bold no-underline hover:bg-primary/10 hover:no-underline"
       >{material.title}</Link>)}
     </div>}
-    {note.sourceUrl && <a href={note.sourceUrl} rel="noreferrer" target="_blank" className="mt-3 inline-block text-sm font-bold">Abrir fuente externa</a>}
-    <PublishedAttachments attachments={note.attachments} />
+    {/*
+      A Teaching Note is a governed object but not a canonical analytics
+      content type, so its external source and attachments are attributed to
+      the module that publishes them — which is the record whose interest the
+      measurement plan asks about.
+    */}
+    {note.sourceUrl && <ExternalReferenceLink
+      href={note.sourceUrl}
+      contentId={moduleId}
+      contentType="module"
+      className="mt-3 inline-block text-sm font-bold"
+    >Abrir fuente externa</ExternalReferenceLink>}
+    <PublishedAttachments attachments={note.attachments} contentId={moduleId} contentType="module" />
   </>;
 }
 
@@ -64,6 +77,13 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
   }
 
   return <div className="@container">
+    {/*
+      Here rather than in either route, so the standalone page and the
+      contextual overlay report one identical event. Neither presentation
+      decides what the event means.
+    */}
+    <ContentOpened contentId={curriculumModule.id} contentType="module" />
+
     {(curriculumModule.theme || curriculumModule.suggestedDuration) && <dl className="grid gap-4 @md:grid-cols-2">
       {curriculumModule.theme && <MetaItem label="Área temática">{curriculumModule.theme}</MetaItem>}
       {curriculumModule.suggestedDuration && <MetaItem label="Carga sugerida">{curriculumModule.suggestedDuration}</MetaItem>}
@@ -88,7 +108,7 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
                           {/* Authors often title a note after the topic it covers; repeating
                               it here would read as duplicated content. */}
                           {note.title !== topic.title && <h4 className="mt-1 font-bold">{note.title}</h4>}
-                          <TeachingNoteBody note={note} />
+                          <TeachingNoteBody note={note} moduleId={curriculumModule.id} />
                         </div>)}
                       </div>
                     </div>
@@ -115,7 +135,7 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
           <div className="mt-5 space-y-4">
             {generalNotes.map((note) => <Card key={note.id} as="article" className="p-5">
               <h3>{note.title}</h3>
-              <TeachingNoteBody note={note} />
+              <TeachingNoteBody note={note} moduleId={curriculumModule.id} />
             </Card>)}
           </div>
         </section>}
@@ -130,7 +150,12 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
                   <h3>{instructor.name}</h3>
                   <p className="mt-1 text-sm text-white/65">{[instructor.roleOrTitle, instructor.institution, instructor.country].filter(Boolean).join(" · ")}</p>
                   {instructor.profile && <p className="mt-2 text-sm text-white/80">{instructor.profile}</p>}
-                  {instructor.linkedinUrl && <a href={instructor.linkedinUrl} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-bold">Ver perfil</a>}
+                  {instructor.linkedinUrl && <ExternalReferenceLink
+                    href={instructor.linkedinUrl}
+                    contentId={curriculumModule.id}
+                    contentType="module"
+                    className="mt-2 inline-block text-sm font-bold"
+                  >Ver perfil</ExternalReferenceLink>}
                 </article>)}
               </div>
             : <p className="mt-3 text-sm text-white/60">Sin perfiles asociados.</p>}

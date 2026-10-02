@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getLibrary, getProgramOutlines, type SearchResult } from "@/lib/curriculum/queries";
 import { libraryHref, paramValue, type LibraryQuery } from "@/lib/curriculum/library-href";
 import { appliedFilters, clearFiltersHref, readEntity, readView, supportsProgram } from "@/lib/curriculum/library-state";
+import { librarySignals } from "@/lib/analytics/library-signals";
+import { LibraryActivity } from "@/components/analytics/library-activity";
 import { axisToneResolver } from "@/lib/ui/axis-tone";
 import { Page, Container } from "@/components/ui/page";
 import { HeroBand } from "@/components/ui/page-header";
@@ -88,7 +90,18 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
     </section>;
   };
 
+  // Derived on the server from the URL, after the results are known, so
+  // search_performed can carry the outcome and the raw query never reaches
+  // client or analytics code.
+  const signals = librarySignals(query);
+
   return <Page width="bleed">
+    <LibraryActivity
+      searchApplied={signals.searchApplied}
+      resultCount={library.results.length}
+      appliedFilters={signals.appliedFilters}
+    />
+
     <HeroBand
       eyebrow="Explorador curricular"
       title="Biblioteca"

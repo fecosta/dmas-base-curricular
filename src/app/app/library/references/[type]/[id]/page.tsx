@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getReference } from "@/lib/curriculum/queries";
+import { ContentOpened } from "@/components/analytics/content-opened";
+import { ExternalReferenceLink } from "@/components/analytics/external-reference-link";
 import { PublishedAttachments } from "@/app/app/library/published-attachments";
 import { Page, Container } from "@/components/ui/page";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +14,8 @@ export default async function ReferencePage({ params }: { params: Promise<{ type
   const kind = reference.entityType === "material" ? "Material o estudio" : "Institución o centro de referencia";
 
   return <Page width="bleed">
+    <ContentOpened contentId={reference.id} contentType={reference.entityType} />
+
     <div className="on-dark relative isolate overflow-hidden bg-night text-white">
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(70%_120%_at_12%_0%,#151a6b_0%,transparent_60%),radial-gradient(60%_120%_at_85%_20%,#2a1350_0%,transparent_55%)]" />
       <Container width="content" className="py-10 lg:py-14">
@@ -26,13 +30,17 @@ export default async function ReferencePage({ params }: { params: Promise<{ type
         {reference.description
           ? <p className="max-w-2xl text-lg text-ink-soft">{reference.description}</p>
           : <EmptyNote>Esta referencia no tiene descripción publicada.</EmptyNote>}
-        {externalUrl && <a
+        {externalUrl && <ExternalReferenceLink
           href={externalUrl}
-          target="_blank"
-          rel="noreferrer"
+          contentId={reference.id}
+          contentType={reference.entityType}
           className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-3 font-bold text-white no-underline shadow-raised hover:bg-primary-strong hover:text-white hover:no-underline"
-        >Abrir sitio externo</a>}
-        {reference.entityType === "material" && <PublishedAttachments attachments={reference.attachments ?? []} />}
+        >Abrir sitio externo</ExternalReferenceLink>}
+        {reference.entityType === "material" && <PublishedAttachments
+          attachments={reference.attachments ?? []}
+          contentId={reference.id}
+          contentType={reference.entityType}
+        />}
       </div>
 
       <dl className="space-y-5 rounded-lg border border-hairline bg-surface p-5 shadow-card lg:self-start">
