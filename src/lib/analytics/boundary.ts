@@ -35,7 +35,7 @@ type Provider = {
    * explicit opt-in. That call is the only place consent is translated into
    * provider state, and it happens after the preference is already persisted.
    */
-  opt_in_capturing: () => void;
+  opt_in_capturing: (options?: { captureEventName?: string | null | false }) => void;
   opt_out_capturing?: () => void;
 };
 
@@ -85,9 +85,11 @@ type State = {
   provider: Provider | null;
   /** In flight or settled initialization, so concurrent events do not race. */
   starting: Promise<Provider | null> | null;
+  /** Invalidates asynchronous work started for an earlier consent/session. */
+  generation: number;
 };
 
-const state: State = { identity: null, provider: null, starting: null };
+const state: State = { identity: null, provider: null, starting: null, generation: 0 };
 
 let loader: Loader = loadPostHog;
 let environment: NodeJS.ProcessEnv = process.env;
@@ -99,6 +101,7 @@ export function configureAnalyticsForTest(options: { loader?: Loader; env?: Node
   state.identity = null;
   state.provider = null;
   state.starting = null;
+  state.generation += 1;
 }
 
 /** True only when the environment allows analytics and consent is in effect. */
@@ -127,14 +130,32 @@ async function provider(): Promise<Provider | null> {
 
   const identity = state.identity;
   if (!identity) return null;
+  const generation = state.generation;
   const key = postHogProjectKey(environment);
   if (!key || !analyticsEnvironmentAllowed(environment)) return null;
+
+  const current = () => state.generation === generation && state.identity === identity;
+  const retire = (loaded: Provider) => {
+    try {
+      loaded.reset();
+      loaded.opt_out_capturing?.();
+    } catch {
+      // A stale broken provider must not affect the current session.
+    }
+  };
 
   state.starting = (async () => {
     const loaded = await loader();
     if (!loaded) return null;
+    if (!current()) return null;
+    let initialized = false;
     try {
       loaded.init(key, postHogOptions());
+      initialized = true;
+      if (!current()) {
+        retire(loaded);
+        return null;
+      }
       /*
        * The SDK is a singleton, so this instance may carry state from an
        * earlier session in the same browser. Reset first — which also returns
@@ -144,11 +165,30 @@ async function provider(): Promise<Provider | null> {
        * user's identity survives into this one.
        */
       loaded.reset();
-      loaded.opt_in_capturing();
+      if (!current()) {
+        retire(loaded);
+        return null;
+      }
+      // Keep the SDK's consent state without emitting its non-canonical
+      // `$opt_in` event.
+      loaded.opt_in_capturing({ captureEventName: false });
+      if (!current()) {
+        retire(loaded);
+        return null;
+      }
       // Pseudonymous identification, with approved context only.
       loaded.identify(identity.userId, context(identity));
+      if (!current()) {
+        retire(loaded);
+        return null;
+      }
     } catch {
       // A provider that cannot initialize simply yields no telemetry.
+      if (initialized && !current()) retire(loaded);
+      return null;
+    }
+    if (!current()) {
+      retire(loaded);
       return null;
     }
     state.provider = loaded;
@@ -169,7 +209,13 @@ async function provider(): Promise<Provider | null> {
  */
 export function enable(identity: AnalyticsIdentity) {
   if (!analyticsEnvironmentAllowed(environment)) return;
+  if (state.identity
+    && state.identity.userId === identity.userId
+    && state.identity.organizationId === identity.organizationId
+    && state.identity.userRole === identity.userRole) return;
   if (state.identity && state.identity.userId !== identity.userId) disable();
+  state.generation += 1;
+  state.starting = null;
   state.identity = identity;
 }
 
@@ -181,6 +227,7 @@ export function enable(identity: AnalyticsIdentity) {
  */
 export function disable() {
   const current = state.provider;
+  state.generation += 1;
   state.identity = null;
   state.provider = null;
   state.starting = null;
@@ -226,13 +273,14 @@ export function track<Event extends AnalyticsEvent>(
 ) {
   const identity = state.identity;
   if (!identity || !analyticsEnvironmentAllowed(environment)) return;
+  const generation = state.generation;
 
   const payload = { ...approved(properties as Record<string, unknown>), ...context(identity) };
   void (async () => {
     try {
       const client = await provider();
       // The preference may have been revoked while the provider was loading.
-      if (!client || !state.identity) return;
+      if (!client || state.generation !== generation || state.identity !== identity || state.provider !== client) return;
       client.capture(event, payload);
     } catch {
       // Analytics failure is never product failure.

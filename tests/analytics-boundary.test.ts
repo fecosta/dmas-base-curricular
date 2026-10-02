@@ -31,7 +31,7 @@ function provider() {
     identify: vi.fn<(distinctId: string, properties: Payload) => void>(() => { calls.push("identify"); }),
     capture: vi.fn<(event: string, properties: Payload) => void>(),
     reset: record("reset"),
-    opt_in_capturing: record("opt_in_capturing"),
+    opt_in_capturing: vi.fn(() => { calls.push("opt_in_capturing"); }),
     opt_out_capturing: record("opt_out_capturing"),
   };
   return { client, calls, loader: vi.fn(async () => client) };
@@ -214,6 +214,7 @@ describe("consent gating", () => {
     await settle();
 
     expect(calls).toEqual(["init", "reset", "opt_in_capturing", "identify"]);
+    expect(client.opt_in_capturing).toHaveBeenCalledWith({ captureEventName: false });
     expect(client.capture).toHaveBeenCalledTimes(1);
   });
 
@@ -268,6 +269,26 @@ describe("consent gating", () => {
     await settle();
 
     expect(client.capture).not.toHaveBeenCalled();
+    expect(client.init).not.toHaveBeenCalled();
+    expect(client.opt_in_capturing).not.toHaveBeenCalled();
+    expect(client.identify).not.toHaveBeenCalled();
+  });
+
+  it("retires a provider when revocation occurs during initialization", async () => {
+    const { client } = provider();
+    client.init.mockImplementation(() => disable());
+    configureAnalyticsForTest({ loader: async () => client, env: productionEnv });
+
+    enable(identity);
+    track("library_viewed");
+    await settle();
+
+    expect(client.init).toHaveBeenCalledOnce();
+    expect(client.opt_in_capturing).not.toHaveBeenCalled();
+    expect(client.identify).not.toHaveBeenCalled();
+    expect(client.capture).not.toHaveBeenCalled();
+    expect(client.reset).toHaveBeenCalledOnce();
+    expect(client.opt_out_capturing).toHaveBeenCalledOnce();
   });
 
   it("re-enabling after revocation emits only from that point forward", async () => {
@@ -291,6 +312,55 @@ describe("consent gating", () => {
 });
 
 describe("logout isolation", () => {
+  it("invalidates a pending loader on logout", async () => {
+    const { client } = provider();
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    configureAnalyticsForTest({ loader: async () => { await gate; return client; }, env: productionEnv });
+
+    enable(identity);
+    track("library_viewed");
+    disable();
+    release();
+    await settle();
+
+    expect(client.init).not.toHaveBeenCalled();
+    expect(client.opt_in_capturing).not.toHaveBeenCalled();
+    expect(client.identify).not.toHaveBeenCalled();
+    expect(client.capture).not.toHaveBeenCalled();
+  });
+
+  it("does not let user A's pending initializer affect user B", async () => {
+    const first = provider();
+    const second = provider();
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const loader = vi.fn()
+      .mockImplementationOnce(async () => { await gate; return first.client; })
+      .mockImplementationOnce(async () => second.client);
+    configureAnalyticsForTest({ loader, env: productionEnv });
+
+    enable(identity);
+    track("library_viewed");
+    disable();
+    enable({ userId: "user-2", organizationId: "org-2", userRole: "Admin" });
+    track("library_viewed");
+    await settle();
+    release();
+    await settle();
+
+    expect(first.client.init).not.toHaveBeenCalled();
+    expect(first.client.opt_in_capturing).not.toHaveBeenCalled();
+    expect(first.client.identify).not.toHaveBeenCalled();
+    expect(first.client.capture).not.toHaveBeenCalled();
+    expect(second.client.identify).toHaveBeenCalledWith("user-2", expect.any(Object));
+    expect(second.client.capture).toHaveBeenCalledOnce();
+
+    track("library_viewed");
+    await settle();
+    expect(loader).toHaveBeenCalledTimes(2);
+    expect(second.client.capture).toHaveBeenCalledTimes(2);
+  });
   it("resets the provider identity so a later user cannot inherit it", async () => {
     const { client, loader } = provider();
     configureAnalyticsForTest({ loader, env: productionEnv });

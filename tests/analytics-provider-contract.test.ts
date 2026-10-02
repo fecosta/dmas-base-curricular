@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { postHogOptions } from "@/lib/analytics/config";
 
 /*
@@ -101,5 +101,15 @@ describe("the installed PostHog SDK", () => {
     expect(options.disable_external_dependency_loading).toBe(true);
     expect(options.person_profiles).toBe("identified_only");
     expect(options.api_host).toBe("https://eu.i.posthog.com");
+  });
+
+  it("supports opting in without emitting the non-canonical $opt_in event", async () => {
+    const { PostHog } = await import("posthog-js");
+    const client = new PostHog();
+    const capture = vi.spyOn(client, "capture");
+
+    client.opt_in_capturing({ captureEventName: false });
+
+    expect(capture).not.toHaveBeenCalled();
   });
 });
