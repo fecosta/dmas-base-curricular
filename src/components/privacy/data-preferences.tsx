@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { privacyDocuments, type AnalyticsDecision } from "@/lib/privacy/contract";
+import { analyticsAllowed, privacyDocuments, type AnalyticsDecision } from "@/lib/privacy/contract";
+import { disable as stopAnalytics } from "@/lib/analytics/boundary";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Notice } from "@/components/ui/notice";
@@ -43,6 +44,9 @@ export function DataPreferences({ decision, onDecision }: {
         setError(result.error ?? "No pudimos guardar tu preferencia. Inténtalo de nuevo.");
         return;
       }
+      // Revocation takes effect at once rather than on the next render pass,
+      // so no event can be emitted between the stored OFF and the re-render.
+      if (!analyticsAllowed(result.decision)) stopAnalytics();
       setCurrent(result.decision);
       onDecision?.(result.decision);
     });

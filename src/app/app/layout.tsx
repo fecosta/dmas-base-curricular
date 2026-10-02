@@ -3,6 +3,7 @@ import { requireAccess } from "@/lib/auth/access";
 import { getAnalyticsPreference } from "@/lib/privacy/analytics-preference";
 import { privacyDocuments } from "@/lib/privacy/contract";
 import { AppHeader } from "@/components/app-header";
+import { AnalyticsBoundary } from "@/components/analytics/analytics-boundary";
 import { type NavItem } from "@/components/primary-nav";
 import { Container } from "@/components/ui/page";
 
@@ -30,6 +31,20 @@ export default async function ApplicationLayout({ children }: { children: React.
   );
 
   return <div className="flex min-h-screen flex-col bg-canvas">
+    {/*
+      The only place analytics is switched on, and only from the persisted
+      decision resolved above. Pseudonymous context only: the organization
+      name and the user's email are deliberately not passed.
+    */}
+    <AnalyticsBoundary
+      identity={{
+        userId: access.userId,
+        organizationId: access.organizationId,
+        userRole: access.role,
+      }}
+      decision={analyticsDecision}
+    />
+
     {/*
       One band, as in the reference. The previous dark utility strip stacked a
       second bar above the toolbar, which read as a conventional administrative

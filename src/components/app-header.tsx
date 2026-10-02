@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "@/app/login/actions";
 import type { AnalyticsDecision } from "@/lib/privacy/contract";
+import { disable as resetAnalyticsIdentity } from "@/lib/analytics/boundary";
 import { PrimaryNav, type NavItem } from "@/components/primary-nav";
 import { ShellSearch } from "@/components/shell-search";
 import { PrivacyChoice } from "@/components/privacy/privacy-choice";
@@ -105,7 +106,13 @@ export function AppHeader({ items, organizationName, roleLabel, analyticsDecisio
             >Preferencias de datos</Button>
           </div>
 
-          <form action={signOut} className="hidden shrink-0 compact:block">
+          {/*
+            onSubmit clears the analytics identity before the authoritative
+            server-side sign-out redirects. Unmounting the shell would also
+            clear it, but that must not be the only guarantee: the next user of
+            this browser can never inherit the previous identity.
+          */}
+          <form action={signOut} onSubmit={resetAnalyticsIdentity} className="hidden shrink-0 compact:block">
             <Button type="submit" variant="secondary" size="xs">Cerrar sesión</Button>
           </form>
 
@@ -159,7 +166,7 @@ export function AppHeader({ items, organizationName, roleLabel, analyticsDecisio
             className="w-full"
             onClick={() => { setMenuOpen(false); setPreferencesOpen(true); }}
           >Preferencias de datos</Button>
-          <form action={signOut}>
+          <form action={signOut} onSubmit={resetAnalyticsIdentity}>
             <Button type="submit" variant="on-dark" size="sm" className="w-full">Cerrar sesión</Button>
           </form>
         </div>
