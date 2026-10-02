@@ -343,6 +343,10 @@ There is currently no approved requirement for Base Curricular to become:
 
 These capabilities are outside the current baseline unless explicitly approved later.
 
+Optional product analytics exists to support pilot learning and must not become employee monitoring, individual performance evaluation, user or organization scoring, behavioural profiling, advertising infrastructure or generalized surveillance. It is OFF by default, belongs to the authenticated user rather than to their organization or to an Admin, and rejecting it costs no product access. Accepting the Terms of Use does not enable it. Because it is opt-in, analytics observes a subset of usage and must never be reported as a complete census of Base Curricular activity.
+
+The authoritative privacy contracts are `docs/PRIVACY_AND_DATA_COLLECTION.md`, `docs/PRIVACY_UX_CONTRACT.md`, `docs/PRIVACY_NOTICE.md` and `docs/TERMS_OF_USE.md`.
+
 ## 13. Product principles
 
 ### Structured knowledge, not a file dump
@@ -382,7 +386,8 @@ The initial product implementation uses:
 - Resend as an approved email-delivery provider;
 - PostgreSQL full-text search and SQL filters;
 - Vitest and Playwright for testing;
-- Vercel for application hosting.
+- Vercel for application hosting;
+- PostHog Cloud EU for optional product analytics.
 
 These technical choices implement the product contracts defined here; they do not redefine them.
 

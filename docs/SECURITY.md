@@ -1095,7 +1095,27 @@ Hosted destructive mutation was intentionally not exercised. Production contains
 
 ---
 
-## 28. Source basis
+## 28. SPEC-008 optional analytics security boundary
+
+Optional product analytics weakens no existing security boundary. Supabase Auth remains authoritative for authentication, live Base Curricular membership for access, and RLS for database access. PostHog is never an authorization source, holds no operational state, and receives no governance, publication or audit information.
+
+**The analytics preference is user-owned and structurally so.** `public.analytics_preferences` has RLS enabled with a single SELECT policy restricting the row to its own live eligible owner. The table has no write grant and no write policy for any role. The only mutation path, `public.set_analytics_preference(boolean, text, text)`, accepts no subject argument, so the row written is always `auth.uid()`'s — an Admin or an organization has no parameter through which to enable or disable analytics for another user. `service_role` holds `SELECT` only, to support privacy-rights fulfilment; it has no write privilege. Role revocation stops both reads and writes on the next authoritative request, and deleting the Auth identity removes the preference.
+
+**Privacy fails closed.** An unreadable preference and a failed write both resolve to analytics OFF. Consent is never inferred from UI state, a button click, browser-local state or a previous unpersisted interaction, and no analytics preference is stored in `localStorage` or `sessionStorage`. Terms acceptance is a separate decision and the Terms surface performs no preference mutation.
+
+**Only client-safe analytics configuration reaches the browser.** The implementation reads a single browser-safe publishable project key (`NEXT_PUBLIC_POSTHOG_KEY`) and rejects personal/private key shapes (`phx_`, `phs_`). No server-side PostHog credential, personal API key or privileged analytics configuration exists in the implementation, and no server-side analytics is introduced. Supabase service-role and Auth Admin credentials remain untouched and server-only.
+
+**Collection cannot exceed the approved taxonomy without a code change that fails review or the build.** The provider is a runtime import in exactly one module; no product surface can call it. The property vocabulary is closed and enforced at the boundary, which drops prohibited names and any non-scalar value, so names, emails, organization names/domains, credentials, tokens, content text, filenames and URLs cannot be transmitted even if a future edit passes them. Automatic collection is disabled explicitly rather than inherited from provider defaults, and the options object is typed as the SDK's own config so a renamed privacy option fails typecheck instead of silently reverting to a collecting default. Session Replay is disabled and no recording, sampling or masking configuration exists to enable.
+
+**Search text cannot leak.** The raw query is reduced on the server to a salted, truncated, non-reversible token used only for change detection; it never crosses into client or analytics code, so there is no value downstream to redact. Automatic pageview, referrer and title capture are disabled and additionally scrubbed, which is what prevents the Library's URL-carried query from escaping through provider-added properties.
+
+**Non-production environments cannot emit.** The production guard reads `NEXT_PUBLIC_VERCEL_ENV`, because `NODE_ENV` cannot distinguish Production from a Preview deployment. Preview, Development, Test, an unset value and unrecognised custom environments are all no-ops rather than filtered-after-the-fact, and test runs are forced inert so no test can send real telemetry.
+
+**Analytics failure is never product failure.** A missing configuration, failed import, blocked script, failed initialization or throwing provider all degrade to no telemetry while authentication, authorization, Library navigation, search, filtering, content opening, downloads, external references, Admin functionality and the privacy surfaces continue. Provider availability never affects the stored preference. Logout clears the analytics identity explicitly, so no later user of the same browser can inherit it.
+
+**Access to the PostHog project is separate from the Base Curricular `Admin` role** and must be restricted to authorized Democracia+ personnel before external pilot activation. That restriction, the 12-month retention configuration and the required legal review are part of the still-closed External Pilot Analytics Activation Gate.
+
+## 29. Source basis
 
 This security baseline was derived from:
 
@@ -1110,4 +1130,5 @@ This security baseline was derived from:
 - verified SPEC-003 contribution and private Storage implementation;
 - D-030 Admin-only initial operational content-management decision — 2026-09-14;
 - revised SPEC-004 Admin Content Management & Publication contract.
-- completed SPEC-009 Admin Organization & User Management security, identity-trust, and audit requirements.
+- completed SPEC-009 Admin Organization & User Management security, identity-trust, and audit requirements;
+- SPEC-008 optional product-analytics privacy and security contracts, implemented and locally verified.
