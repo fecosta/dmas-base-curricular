@@ -1131,4 +1131,4 @@ This security baseline was derived from:
 - D-030 Admin-only initial operational content-management decision — 2026-09-14;
 - revised SPEC-004 Admin Content Management & Publication contract.
 - completed SPEC-009 Admin Organization & User Management security, identity-trust, and audit requirements;
-- SPEC-008 optional product-analytics privacy and security contracts, implemented and locally verified.
+- SPEC-008 optional product-analytics privacy and security contracts, implemented, Cloud-verified, and hosted-validated with analytics disabled (SPEC-008 §42).

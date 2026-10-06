@@ -1,6 +1,6 @@
 # SPEC-008 — Product Analytics & Pilot Observability
 
-**Status:** ACTIVE — IMPLEMENTATION READY
+**Status:** ACTIVE — ANALYTICS-DISABLED HOSTED VALIDATED; ENABLED-STATE GATED (see §42)
 **Product:** D+ Base Curricular  
 **Primary capability:** Product analytics and pilot observability  
 **Analytics platform:** PostHog Cloud EU  
@@ -1954,6 +1954,105 @@ If no blocker is found, activate SPEC-008 separately as:
 **ACTIVE — IMPLEMENTATION READY**
 
 The external pilot analytics activation remains independently gated by implementation validation and required legal review.
+
+§42 records the current state and supersedes this section's status line.
+
+---
+
+# 42. Hosted Validation Record — Analytics Disabled
+
+**State:** ACTIVE — ANALYTICS-DISABLED HOSTED VALIDATED; ENABLED-STATE GATED
+
+This is not closure, not analytics activation, and does not open the External Pilot Analytics Activation Gate (§38), which remains **CLOSED**.
+
+**Environment.** Production `https://bc.democraciamas.com`, deployment `dpl_2sQCqdu1ysuwZAphQGpDXuScbpj1` built from `dbb40c45012b7f3267beba6b6363d2788f755107` (earlier evidence on `dpl_HPUngLwndvS11MpWN71J7xi2fvvQ`, same commit). `NEXT_PUBLIC_POSTHOG_KEY` is absent from Vercel Production, so the provider is unconfigured. Validation ran 2026-10-02 and 2026-10-06 in a real browser with every request logged, using normal email-code login only. No session was forged, no role was altered and `service_role` was not used as evidence.
+
+**Identities.** Dedicated non-Admin members in two organizations (VélezReyes+ and Democracia+), a third dedicated member provisioned through the normal Admin Users UI with no prior decision, and one existing Admin used only as the caller for the non-override attempts. All three dedicated members end with `analytics_enabled = false`. The Admin's own preference was not changed.
+
+## Cloud
+
+- Migration `20261001000100` is applied to the linked project.
+- `public.analytics_preferences` has RLS enabled and a single SELECT policy. Grants are `authenticated: SELECT` and `service_role: SELECT` only.
+- `public.set_analytics_preference(boolean, text, text)` is `SECURITY DEFINER` with `search_path=""` and is executable only by `authenticated`.
+- Behaviorally, each member reads only their own row. Reading another user's row (cross-user and cross-organization) returns 0 rows.
+- Direct insert, update or delete on another user's row, and direct writes on one's own row, are refused with `42501`. Passing a subject argument to the RPC fails with `PGRST202`. Rows were unchanged afterwards.
+- An eligible Admin reads 0 rows for other users and is refused every write. Admin has no analytics-preference override.
+
+## Hosted consent and privacy UX
+
+- Undecided, rejected, accepted and revoked states persist correctly in Cloud. `Configurar` records nothing.
+- Preferences persist across reload and across a new session, with no re-prompt after a decision.
+- Logout leaves no `sb-` cookies or storage, and a subsequent user sees only their own identity and state.
+- The Privacy Notice and Terms render at `/app/privacidad/aviso` and `/app/privacidad/terminos`. Neither carries an accept control or analytics switch, so Terms stays independent of analytics consent.
+- At 390px, the first-choice prompt for the fresh undecided member renders in normal flow below the header, is not modal and does not make the main content inert. There is no horizontal overflow, clipping or overlap.
+  - `Rechazar analítica` comes first in visual and keyboard order. Rejection is not hidden, and acceptance differs only by design-system primary styling.
+  - The menu stays reachable and navigation keeps working.
+- Keyboard smoke test at 390px:
+  - Focus order is skip link, header, `Aviso de Privacidad`, `Rechazar analítica`, `Configurar`, `Aceptar`, with a visible 2px focus ring on each.
+  - `Configurar` opens `Preferencias de datos` with the switch off and returns focus on Escape. Shift+Tab leaves the prompt, so there is no trap.
+  - Accessible names equal the visible labels.
+  - Rejection by keyboard (Enter) persisted `false`.
+- Preferences, Notice and Terms were also checked at 390px. Desktop keyboard, focus, `role=switch`/`aria-checked` and skip-link smoke checks passed.
+- This is smoke validation, not a WCAG audit.
+
+## Analytics-disabled network
+
+- Preference OFF and preference ON both produced zero PostHog or collector requests (`posthog`, `/capture`, `/batch`, `/decide`, `/flags`, `/e/`, `session_recording`, `eu.i.posthog.com`).
+- The SDK chunk was never fetched. Only the app's lazy boundary module loaded. `window.posthog` was undefined and there were no `ph_*` cookies or storage.
+- Library, search, header search, filter, content open and an external reference all worked without errors.
+- Raw search text appeared only in first-party Library requests.
+- Download test fixture:
+  - A dedicated, obviously synthetic material ("SPEC-008 Hosted Download Test" with a tiny plain-text file) was created, published and later archived through the normal Admin UI.
+  - A member found it through Library search and downloaded it with the visible `Descargar …` control. `/api/attachments/{id}` redirected to a signed private-Storage URL and the file content matched exactly.
+  - The same member received 404 for an unpublished attachment.
+  - After archival, the fixture is gone from Library results, its detail page has no content, and its download returns 404.
+  - The download produced zero analytics traffic. The filename appeared only in the first-party Storage request.
+
+## Preference failure
+
+- Aborting the preference save in the browser left Cloud unchanged. After reload the UI did not represent consent, analytics remained unavailable, and retry recovered.
+- The hosted UI currently shows the application's general retryable error screen rather than the intended inline preference error.
+- Disposition: **ACCEPTED FOR SPEC-008 PRIVACY CORRECTNESS; NON-BLOCKING UX REFINEMENT.** It is not a privacy defect.
+
+## Acceptance-criteria status
+
+| AC | Status |
+|---|---|
+| AC-01, AC-02, AC-03, AC-13, AC-16, AC-17, AC-19, AC-20 | LOCAL PASS; PENDING ENABLED-STATE VALIDATION |
+| AC-04 Default OFF | LOCAL PASS; HOSTED ANALYTICS-DISABLED PASS; PENDING ENABLED-STATE VALIDATION |
+| AC-05 Separate Terms decision | HOSTED ANALYTICS-DISABLED PASS |
+| AC-06 Explicit acceptance | CLOUD PASS (persistence); provider initialization PENDING ENABLED-STATE VALIDATION |
+| AC-07 Rejection | CLOUD PASS; HOSTED ANALYTICS-DISABLED PASS |
+| AC-08 Preference management | HOSTED ANALYTICS-DISABLED PASS |
+| AC-09 Revocation | Persistence HOSTED PASS; identity reset after SDK initialization PENDING ENABLED-STATE VALIDATION |
+| AC-10 Re-enablement | Persistence HOSTED PASS; future-only emission PENDING ENABLED-STATE VALIDATION |
+| AC-11 Undecided vs rejected | CLOUD PASS; HOSTED ANALYTICS-DISABLED PASS (fresh identity: row absent, then `false`) |
+| AC-12 Logout isolation | Session separation HOSTED PASS; provider identity PENDING ENABLED-STATE VALIDATION |
+| AC-14 No unnecessary PII | LOCAL PASS; payload inspection PENDING ENABLED-STATE VALIDATION |
+| AC-15 Search privacy | HOSTED ANALYTICS-DISABLED PASS; payload inspection PENDING ENABLED-STATE VALIDATION |
+| AC-18 Environment isolation | LOCAL PASS; Preview no-telemetry PENDING ENABLED-STATE VALIDATION |
+| AC-21 Failure isolation | HOSTED ANALYTICS-DISABLED PASS (provider unconfigured); blocked configured provider PENDING ENABLED-STATE VALIDATION |
+| AC-22 Preference failure | HOSTED ANALYTICS-DISABLED PASS (fail-closed; UX refinement above) |
+| AC-23 – AC-28 | PENDING ENABLED-STATE VALIDATION (require real event data) |
+| AC-29 Existing authorization preserved | CLOUD PASS; HOSTED PASS (preference ownership, Admin surfaces, unpublished/archived attachment denial) |
+| AC-30 Privacy UX | HOSTED ANALYTICS-DISABLED PASS (UX refinement above) |
+| AC-31 Accessibility and responsive | HOSTED SMOKE PASS, including the 390px first-choice prompt |
+| AC-32 Documentation | Reconciled for the analytics-disabled state; final reconciliation at closure |
+
+## Remaining before external activation (§38) — all PENDING LEGAL/PROVIDER GATE
+
+1. Legal/privacy approval for the intended pilot.
+2. DPA and processing safeguards.
+3. PostHog Cloud EU project and ingestion verification.
+4. 12-month retention verification and enforcement.
+5. PostHog provider access-control verification.
+6. Controlled provider-enabled validation.
+7. Actual event and payload inspection.
+8. Consent initialization with the provider configured.
+9. Revocation and identity reset with the provider configured.
+10. Logout identity isolation with the provider configured.
+11. Preview no-telemetry validation.
+12. Blocked-provider failure validation.
 
 ---
 
