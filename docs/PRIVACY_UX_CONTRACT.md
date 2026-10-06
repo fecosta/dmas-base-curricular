@@ -88,7 +88,7 @@ The user controls whether it is enabled.
 
 Privacy choice is presented only after the application can identify the authenticated Base Curricular user.
 
-Analytics must not identify the user or emit optional product events before the user's persisted preference has been resolved.
+Analytics must not activate an event-level identity or emit optional product events before the user's persisted preference has been resolved.
 
 The expected sequence is:
 
@@ -186,7 +186,7 @@ Before an affirmative analytics decision:
 
 ```text
 Optional analytics = OFF
-PostHog identified user = NOT INITIALIZED
+Analytics event identity = NOT ACTIVE
 Optional product events = NOT SENT
 Session Replay = OFF
 ```
@@ -209,8 +209,8 @@ Base Curricular must:
 
 1. persist the affirmative analytics preference;
 2. record the applicable privacy/consent version;
-3. initialize the approved analytics integration;
-4. identify the user using only the approved pseudonymous identifier;
+3. enable the approved direct Capture transport;
+4. use the authenticated UUID only as the event-level pseudonymous identifier;
 5. associate approved organization context;
 6. begin collecting only approved events from that point forward.
 
@@ -223,9 +223,9 @@ User accepts
      ↓
 Persist preference
      ↓
-Initialize analytics
+Enable direct event transport
      ↓
-Identify pseudonymously
+Use event-level UUID only
      ↓
 Future approved events enabled
 ```
@@ -243,7 +243,7 @@ Base Curricular must:
 1. persist the negative analytics preference;
 2. record the applicable privacy/consent version;
 3. keep optional analytics disabled;
-4. ensure no identified PostHog analytics session remains active;
+4. ensure no application analytics identity or in-flight request remains active;
 5. continue normal product operation.
 
 Conceptually:
@@ -341,8 +341,8 @@ the application must:
 
 1. persist the new preference;
 2. update decision/version metadata;
-3. initialize analytics;
-4. identify the user pseudonymously;
+3. enable direct event transport;
+4. use the authenticated UUID on future events only;
 5. collect only future approved events.
 
 No previous user behavior should be reconstructed and submitted as analytics.
@@ -362,7 +362,7 @@ the application must:
 
 1. persist the new preference;
 2. immediately stop future optional event collection;
-3. reset or clear the analytics client identity as appropriate;
+3. clear the application analytics identity and abort in-flight requests where possible;
 4. prevent further optional analytics initialization while the preference remains OFF.
 
 Changing the preference does not automatically delete historical events already processed.
@@ -377,7 +377,7 @@ Requests concerning previously collected personal information are handled throug
 
 When the user signs out:
 
-- the analytics identity must be reset or cleared;
+- the application analytics identity must be cleared;
 - the next authenticated user's identity must never inherit the previous user's analytics identity;
 - the persisted preference remains associated with the user in the authoritative application data store.
 
@@ -391,11 +391,11 @@ For a returning authenticated user:
 
 ### Existing preference = ON
 
-Initialize approved analytics after identity, authorization, organization, and preference resolution.
+Enable direct event transport after identity, authorization, organization, and preference resolution.
 
 ### Existing preference = OFF
 
-Do not initialize identified optional analytics.
+Do not activate optional analytics.
 
 Do not show the initial privacy choice again merely because the user started a new session.
 

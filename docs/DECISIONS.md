@@ -666,6 +666,8 @@ Analytics is OFF by default and stays OFF for `undecided`, `rejected`, revoked a
 
 **Not established.** No hosted validation of enabled analytics. Enabled-state payload shape rests on unit evidence against a production-like environment with a provider double, not observed production traffic. The **External Pilot Analytics Activation Gate (SPEC-008 §38) remains closed**, including the legal review required by `docs/PRIVACY_AND_DATA_COLLECTION.md`, PostHog access restriction, and 12-month retention configuration. `NEXT_PUBLIC_POSTHOG_KEY` is intentionally unset, so analytics is inert in every environment until that gate is satisfied. SPEC-008 must not be moved to `completed/` on the strength of this implementation report.
 
+**2026-10-06 technical correction (SPEC-008).** The earlier SDK/identify integration described above is historical evidence, not the current runtime. The current analytics boundary sends one direct browser Capture API request per validated event, with `$process_person_profile: false`, the authenticated UUID only as event-level `distinct_id`, and generation-owned abort/timeout handling. `posthog-js` and its SDK identity lifecycle were removed. Local mocked tests replace SDK-specific evidence; browser/network retransmission remains possible outside application control. This correction does not validate provider settings, retention/deletion, Legal/Privacy or account security, does not authorize Gate B, and does not open the external pilot gate.
+
 ---
 
 ## Product Coherence OS state

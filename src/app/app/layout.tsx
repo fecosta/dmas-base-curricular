@@ -40,7 +40,6 @@ export default async function ApplicationLayout({ children }: { children: React.
       identity={{
         userId: access.userId,
         organizationId: access.organizationId,
-        userRole: access.role,
       }}
       decision={analyticsDecision}
     />

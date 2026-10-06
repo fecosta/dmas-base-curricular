@@ -136,12 +136,12 @@ Cuando autorizas la analítica del producto, podemos utilizar:
 
 - un identificador interno de usuario;
 - un identificador interno de la organización;
-- tu tipo de acceso dentro de Base Curricular;
 - información sobre determinadas acciones realizadas en la plataforma;
 - identificadores internos del contenido utilizado;
 - y la información técnica mínima necesaria para operar la analítica.
 
 Utilizamos identificadores internos siempre que sea posible para evitar enviar información personal innecesaria.
+Los eventos utilizan el identificador interno de tu cuenta como identificador del evento; no creamos un perfil de persona ni un identificador analítico adicional en tu navegador. El envío se realiza directamente al proveedor solo después de tu aceptación y no registra automáticamente páginas o sesiones.
 
 ### No enviamos intencionalmente para analítica:
 

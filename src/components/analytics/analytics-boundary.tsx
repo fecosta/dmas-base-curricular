@@ -24,7 +24,7 @@ export function AnalyticsBoundary({ identity, decision }: {
   identity: AnalyticsIdentity;
   decision: AnalyticsDecision;
 }) {
-  const { userId, organizationId, userRole } = identity;
+  const { userId, organizationId } = identity;
 
   useEffect(() => {
     if (!analyticsAllowed(decision)) {
@@ -33,11 +33,11 @@ export function AnalyticsBoundary({ identity, decision }: {
       disable();
       return;
     }
-    enable({ userId, organizationId, userRole });
+    enable({ userId, organizationId });
     // Leaving the authenticated shell — including sign-out, which replaces it —
     // must not leave an identity behind for the next user of this browser.
     return () => disable();
-  }, [decision, userId, organizationId, userRole]);
+  }, [decision, userId, organizationId]);
 
   return null;
 }

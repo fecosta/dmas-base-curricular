@@ -1,289 +1,98 @@
-import {
-  isProhibitedProperty,
-  type AnalyticsEvent,
-  type AnalyticsIdentity,
-  type AnalyticsProperties,
-} from "./contract";
-import { analyticsEnvironmentAllowed, postHogOptions, postHogProjectKey, resolveEnvironment } from "./config";
+import { analyticsEvents, contentTypes, filterTypes, type AnalyticsEvent, type AnalyticsIdentity, type AnalyticsProperties } from "./contract";
+import { analyticsEnvironmentAllowed, postHogCaptureUrl, postHogProjectKey } from "./config";
 
-/**
- * The single analytics integration boundary.
- *
- * Every approved event in the application goes through `track`. No component
- * imports the provider, so there is one place where consent, environment,
- * taxonomy and property minimization are enforced, and one place to audit.
- *
- * The boundary is inert until `enable` is called with a resolved pseudonymous
- * identity, which the shell does only after authentication, authorization,
- * organization resolution and an affirmative *persisted* preference. Before
- * that — and after `disable` — every call is a no-op that returns normally.
- *
- * Analytics is non-critical: nothing here throws into product code. A missing
- * configuration, a blocked provider, a failed import or a provider exception
- * all degrade to "no telemetry" while the product continues.
- */
-
-/** The provider surface this boundary uses. Narrow by design. */
-type Provider = {
-  init: (key: string, options: Record<string, unknown>) => void;
-  // The boundary always supplies context, so these are never called bare.
-  identify: (distinctId: string, properties: Record<string, unknown>) => void;
-  capture: (event: string, properties: Record<string, unknown>) => void;
-  reset: () => void;
-  /**
-   * The provider starts opted out by configuration, so capturing requires an
-   * explicit opt-in. That call is the only place consent is translated into
-   * provider state, and it happens after the preference is already persisted.
-   */
-  opt_in_capturing: (options?: { captureEventName?: string | null | false }) => void;
-  opt_out_capturing?: () => void;
-};
-
-type Loader = () => Promise<Provider | null>;
-
-/**
- * Loads the stable browser SDK on demand.
- *
- * Dynamic so the SDK is not in the initial bundle of a product whose users may
- * never enable analytics, and so a blocked or failed load is an ordinary
- * rejected promise rather than a page-breaking import.
- */
-/** True when a candidate actually exposes the methods the boundary calls. */
-function isProvider(candidate: unknown): candidate is Provider {
-  const client = candidate as Partial<Provider> | null;
-  return typeof client?.init === "function"
-    && typeof client.identify === "function"
-    && typeof client.capture === "function"
-    && typeof client.reset === "function"
-    && typeof client.opt_in_capturing === "function";
-}
-
-const loadPostHog: Loader = async () => {
-  try {
-    const imported = await import("posthog-js");
-    /*
-     * Chosen by capability rather than by position. Under CJS interop
-     * `imported.default` can be the module namespace rather than the client
-     * instance, so taking the first truthy candidate yields an object whose
-     * methods are all undefined — analytics would appear wired and silently
-     * collect nothing. The named export and the nested default are the same
-     * singleton; whichever actually carries the methods is the provider.
-     */
-    const candidates = [
-      imported.posthog,
-      (imported as { default?: { default?: unknown } }).default?.default,
-      imported.default,
-    ];
-    return candidates.find(isProvider) ?? null;
-  } catch {
-    return null;
-  }
-};
-
-type State = {
-  identity: AnalyticsIdentity | null;
-  provider: Provider | null;
-  /** In flight or settled initialization, so concurrent events do not race. */
-  starting: Promise<Provider | null> | null;
-  /** Invalidates asynchronous work started for an earlier consent/session. */
-  generation: number;
-};
-
-const state: State = { identity: null, provider: null, starting: null, generation: 0 };
-
-let loader: Loader = loadPostHog;
+type Generation = { identity: { userId: string; organizationId: string }; requests: Set<AbortController> };
+let current: Generation | null = null;
 let environment: NodeJS.ProcessEnv = process.env;
+let dispatch: typeof fetch = (...args) => fetch(...args);
+const uuid = (value: unknown): value is string => typeof value === "string"
+  && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
-/** Test seam. Not used by product code. */
-export function configureAnalyticsForTest(options: { loader?: Loader; env?: NodeJS.ProcessEnv } = {}) {
-  loader = options.loader ?? loadPostHog;
+function retire() {
+  const previous = current;
+  current = null;
+  for (const controller of previous?.requests ?? []) controller.abort();
+}
+
+/** Test-only injection; never used to bypass production eligibility in application code. */
+export function configureAnalyticsForTest(options: { env?: NodeJS.ProcessEnv; fetch?: typeof fetch } = {}) {
+  retire();
   environment = options.env ?? process.env;
-  state.identity = null;
-  state.provider = null;
-  state.starting = null;
-  state.generation += 1;
+  dispatch = options.fetch ?? ((...args) => fetch(...args));
 }
 
-/** True only when the environment allows analytics and consent is in effect. */
 export function analyticsActive() {
-  return state.identity !== null && analyticsEnvironmentAllowed(environment);
+  return current !== null && analyticsEnvironmentAllowed(environment);
 }
 
-/**
- * The approved context attached to every event.
- *
- * Only canonical identifiers and the environment. No name, email,
- * organization name or organization domain is available to this module at all.
- */
-function context(identity: AnalyticsIdentity) {
-  return {
-    user_id: identity.userId,
-    organization_id: identity.organizationId,
-    user_role: identity.userRole,
-    environment: resolveEnvironment(environment),
-  };
-}
-
-async function provider(): Promise<Provider | null> {
-  if (state.provider) return state.provider;
-  if (state.starting) return state.starting;
-
-  const identity = state.identity;
-  if (!identity) return null;
-  const generation = state.generation;
-  const key = postHogProjectKey(environment);
-  if (!key || !analyticsEnvironmentAllowed(environment)) return null;
-
-  const current = () => state.generation === generation && state.identity === identity;
-  const retire = (loaded: Provider) => {
-    try {
-      loaded.reset();
-      loaded.opt_out_capturing?.();
-    } catch {
-      // A stale broken provider must not affect the current session.
-    }
-  };
-
-  state.starting = (async () => {
-    const loaded = await loader();
-    if (!loaded) return null;
-    if (!current()) return null;
-    let initialized = false;
-    try {
-      loaded.init(key, postHogOptions());
-      initialized = true;
-      if (!current()) {
-        retire(loaded);
-        return null;
-      }
-      /*
-       * The SDK is a singleton, so this instance may carry state from an
-       * earlier session in the same browser. Reset first — which also returns
-       * it to its configured opted-out default — then opt in, then identify.
-       * That order is required: the SDK's reset() clears consent, so opting in
-       * beforehand would be silently discarded, and it guarantees no previous
-       * user's identity survives into this one.
-       */
-      loaded.reset();
-      if (!current()) {
-        retire(loaded);
-        return null;
-      }
-      // Keep the SDK's consent state without emitting its non-canonical
-      // `$opt_in` event.
-      loaded.opt_in_capturing({ captureEventName: false });
-      if (!current()) {
-        retire(loaded);
-        return null;
-      }
-      // Pseudonymous identification, with approved context only.
-      loaded.identify(identity.userId, context(identity));
-      if (!current()) {
-        retire(loaded);
-        return null;
-      }
-    } catch {
-      // A provider that cannot initialize simply yields no telemetry.
-      if (initialized && !current()) retire(loaded);
-      return null;
-    }
-    if (!current()) {
-      retire(loaded);
-      return null;
-    }
-    state.provider = loaded;
-    return loaded;
-  })().catch(() => null);
-
-  return state.starting;
-}
-
-/**
- * Turns analytics on for an authenticated user whose affirmative preference is
- * already persisted.
- *
- * Callers must not invoke this on the strength of a click: the preference has
- * to have been stored first. Initialization is lazy — the provider is loaded
- * when the first approved event is tracked — so enabling emits nothing by
- * itself and no historical activity is reconstructed.
- */
 export function enable(identity: AnalyticsIdentity) {
-  if (!analyticsEnvironmentAllowed(environment)) return;
-  if (state.identity
-    && state.identity.userId === identity.userId
-    && state.identity.organizationId === identity.organizationId
-    && state.identity.userRole === identity.userRole) return;
-  if (state.identity && state.identity.userId !== identity.userId) disable();
-  state.generation += 1;
-  state.starting = null;
-  state.identity = identity;
-}
-
-/**
- * Turns analytics off and clears the provider identity.
- *
- * Used for revocation and for sign-out, so a later user of the same browser
- * can never inherit the previous user's analytics identity.
- */
-export function disable() {
-  const current = state.provider;
-  state.generation += 1;
-  state.identity = null;
-  state.provider = null;
-  state.starting = null;
   try {
-    // reset() clears the identity and returns the provider to its configured
-    // default consent, which is opted out — so this fails closed. The explicit
-    // opt-out follows rather than precedes it, because reset() would otherwise
-    // discard it; see the SDK's own warning about ordering.
-    current?.reset();
-    current?.opt_out_capturing?.();
-  } catch {
-    // Resetting a broken provider must not break signing out.
-  }
-}
-
-/**
- * Removes anything outside the approved vocabulary.
- *
- * Defence in depth: the typed event map already constrains callers, but types
- * do not survive a future careless edit and a privacy breach is not a
- * recoverable mistake.
- */
-function approved(properties: Record<string, unknown>) {
-  const safe: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(properties)) {
-    if (isProhibitedProperty(key)) continue;
-    // Only scalars. An object or array could smuggle arbitrary text.
-    if (value !== null && typeof value === "object") continue;
-    safe[key] = value;
-  }
-  return safe;
-}
-
-/**
- * Emits one approved semantic event.
- *
- * A no-op unless analytics is active. Never throws, never returns a value the
- * caller is expected to handle, and never blocks the interaction it describes.
- */
-export function track<Event extends AnalyticsEvent>(
-  event: Event,
-  properties: AnalyticsProperties[Event] = {} as AnalyticsProperties[Event],
-) {
-  const identity = state.identity;
-  if (!identity || !analyticsEnvironmentAllowed(environment)) return;
-  const generation = state.generation;
-
-  const payload = { ...approved(properties as Record<string, unknown>), ...context(identity) };
-  void (async () => {
-    try {
-      const client = await provider();
-      // The preference may have been revoked while the provider was loading.
-      if (!client || state.generation !== generation || state.identity !== identity || state.provider !== client) return;
-      client.capture(event, payload);
-    } catch {
-      // Analytics failure is never product failure.
+    const userId = Object.getOwnPropertyDescriptor(identity, "userId")?.value;
+    const organizationId = Object.getOwnPropertyDescriptor(identity, "organizationId")?.value;
+    if (!analyticsEnvironmentAllowed(environment) || !uuid(userId) || !uuid(organizationId)) {
+      retire();
+      return;
     }
-  })();
+    if (current?.identity.userId === userId && current.identity.organizationId === organizationId) return;
+    retire();
+    current = { identity: { userId, organizationId }, requests: new Set() };
+  } catch { retire(); }
+}
+
+export function disable() { retire(); }
+
+/** Construct only validated, own data properties; never inspect inherited or accessor values. */
+function propertiesFor(event: unknown, input: unknown): Record<string, string | number | boolean> | null {
+  if (typeof event !== "string" || !(analyticsEvents as readonly string[]).includes(event)) return null;
+  if (input === null || typeof input !== "object" || Array.isArray(input)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(input);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const schema: Record<AnalyticsEvent, readonly string[]> = {
+      library_viewed: [], search_performed: ["result_count", "has_results"],
+      filter_applied: ["filter_type"], content_opened: ["content_id", "content_type"],
+      external_reference_opened: ["content_id", "content_type"],
+      content_downloaded: ["attachment_id", "content_id", "content_type"],
+    };
+    const keys = Reflect.ownKeys(input);
+    const allowed = schema[event as AnalyticsEvent];
+    if (keys.length !== allowed.length || keys.some((key) => typeof key !== "string" || !allowed.includes(key))) return null;
+    const data: Record<string, unknown> = Object.create(null);
+    for (const key of allowed) {
+      const field = Object.getOwnPropertyDescriptor(input, key);
+      if (!field || !("value" in field) || !field.enumerable) return null;
+      data[key] = field.value;
+    }
+    if (event === "search_performed" && (!Number.isSafeInteger(data.result_count) || (data.result_count as number) < 0
+      || typeof data.has_results !== "boolean" || data.has_results !== ((data.result_count as number) > 0))) return null;
+    if (event === "filter_applied" && !filterTypes.includes(data.filter_type as typeof filterTypes[number])) return null;
+    if (allowed.includes("content_id") && (!uuid(data.content_id) || !contentTypes.includes(data.content_type as typeof contentTypes[number]))) return null;
+    if (allowed.includes("attachment_id") && !uuid(data.attachment_id)) return null;
+    return { ...data } as Record<string, string | number | boolean>;
+  } catch { return null; }
+}
+
+/** One dispatch per valid event. Telemetry failures never affect the interaction. */
+export function track<Event extends AnalyticsEvent>(event: Event, properties: AnalyticsProperties[Event] = {} as AnalyticsProperties[Event]) {
+  const generation = current;
+  if (!generation || !analyticsEnvironmentAllowed(environment)) return;
+  const approved = propertiesFor(event, properties);
+  const key = postHogProjectKey(environment);
+  if (!approved || !key) return;
+  const controller = new AbortController();
+  generation.requests.add(controller);
+  const timeout = setTimeout(() => { controller.abort(); generation.requests.delete(controller); }, 5000);
+  try {
+    const body = JSON.stringify({ api_key: key, event, distinct_id: generation.identity.userId,
+      timestamp: new Date().toISOString(), properties: { "$process_person_profile": false,
+        organization_id: generation.identity.organizationId, environment: "production", ...approved } });
+    // text/plain is a CORS-simple content type accepted by the Capture endpoint.
+    void Promise.resolve(dispatch(postHogCaptureUrl, { method: "POST", body,
+      headers: { "Content-Type": "text/plain" }, credentials: "omit", referrerPolicy: "no-referrer",
+      cache: "no-store", keepalive: false, signal: controller.signal }))
+      .catch(() => {}).finally(() => { clearTimeout(timeout); generation.requests.delete(controller); });
+  } catch {
+    clearTimeout(timeout);
+    generation.requests.delete(controller);
+  }
 }

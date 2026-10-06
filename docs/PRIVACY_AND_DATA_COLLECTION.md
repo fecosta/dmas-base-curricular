@@ -205,10 +205,9 @@ Approved analytics identity information is limited to:
 
 - an internal pseudonymous user identifier;
 - the canonical organization identifier;
-- the user's Base Curricular role;
 - environment information.
 
-The Supabase Auth UUID may be used as the PostHog `distinct_id`.
+The Supabase Auth UUID is used as the event-level PostHog `distinct_id`, without a Person Profile, browser analytics identity or duplicate `user_id` property.
 
 Base Curricular must not intentionally send the following as analytics identity properties:
 
@@ -426,7 +425,7 @@ OFF
 
 Disabling analytics must stop future optional analytics collection for that user.
 
-The analytics client must reset or clear its identified state as appropriate when analytics is disabled or the user signs out.
+The direct analytics transport must clear its ephemeral application identity and abort in-flight requests where possible when analytics is disabled or the user signs out. Requests already received by the provider cannot be retracted.
 
 Changing the preference does not necessarily delete previously collected analytics events.
 

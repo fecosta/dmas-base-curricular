@@ -3,7 +3,7 @@
  *
  * This module is the only place the approved taxonomy and property vocabulary
  * are defined. It holds no provider code so it can be imported by the client
- * boundary, by instrumentation and by tests without pulling in a browser SDK.
+ * boundary, by instrumentation and by tests without pulling in a provider SDK.
  *
  * Nothing here may grow because an interaction exists. Adding an event or a
  * property requires a defined measurement purpose in the active SPEC.
@@ -46,7 +46,6 @@ export type AnalyticsEnvironment = "production" | "preview" | "development" | "t
 export type AnalyticsIdentity = {
   userId: string;
   organizationId: string;
-  userRole: string;
 };
 
 /** Per-event properties, restricted to the approved vocabulary. */
@@ -65,36 +64,9 @@ export type AnalyticsProperties = {
   content_downloaded: { attachment_id: string; content_id: string; content_type: ContentType };
 };
 
-/**
- * Property names that must never appear in an analytics payload.
- *
- * Checked at the boundary rather than only in review: a future contributor
- * adding a convenient property should hit a failure, not a privacy incident.
- */
-export const prohibitedProperties = [
-  "query", "search_text", "q", "search", "term", "keyword", "keywords",
-  "name", "full_name", "first_name", "last_name", "username",
-  "email", "email_address", "mail",
-  "organization_name", "organisation_name", "organization_domain", "domain",
-  "password", "token", "access_token", "refresh_token", "secret", "credential", "jwt", "api_key",
-  "title", "description", "text", "body", "content", "teaching_note", "notes", "outcome",
-  "filename", "file_name", "original_filename", "attachment_name",
-  "url", "href", "destination", "destination_url", "source_url", "website_url", "link",
-] as const;
-
-/**
- * True when a property name is forbidden by the data-minimization contract.
- * Matching is case-insensitive and ignores separators, so `searchText`,
- * `search-text` and `SEARCH_TEXT` are all caught.
- */
-export function isProhibitedProperty(name: string) {
-  const normalized = name.toLowerCase().replace(/[^a-z]/g, "");
-  return prohibitedProperties.some((forbidden) => forbidden.replace(/_/g, "") === normalized);
-}
-
 /** Every property name an approved payload may legitimately carry. */
 export const approvedProperties = [
-  "organization_id", "user_id", "user_role", "environment",
+  "organization_id", "environment", "$process_person_profile",
   "content_id", "content_type", "filter_type",
   "result_count", "has_results", "attachment_id",
 ] as const;

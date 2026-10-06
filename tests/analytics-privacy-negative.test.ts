@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
-import { analyticsEvents, approvedProperties, isProhibitedProperty } from "@/lib/analytics/contract";
-import { postHogOptions, resolveEnvironment } from "@/lib/analytics/config";
+import { analyticsEvents, approvedProperties } from "@/lib/analytics/contract";
+import { postHogCaptureUrl, resolveEnvironment } from "@/lib/analytics/config";
 
 /*
  * SPEC-008 Phase 5 — proving absence.
@@ -38,7 +38,7 @@ function applicationSources() {
 }
 
 describe("the provider is reachable from one place only", () => {
-  it("is loaded as a runtime value only by the analytics boundary", () => {
+  it("does not import an analytics SDK anywhere in the application", () => {
     const importers = applicationSources().filter((path) => {
       const source = read(path);
       // A type-only import pulls in no provider code and cannot capture
@@ -47,7 +47,7 @@ describe("the provider is reachable from one place only", () => {
       const runtime = source.replace(/import\s+type\s+[^;]*?from\s+["']posthog-js["'];/g, "");
       return /from\s+["']posthog-js["']|import\(\s*["']posthog-js["']\s*\)/.test(runtime);
     });
-    expect(importers).toEqual(["src/lib/analytics/boundary.ts"]);
+    expect(importers).toEqual([]);
   });
 
   it("is never called directly by a product surface", () => {
@@ -86,7 +86,6 @@ describe("no prohibited data category appears in analytics code", () => {
 
     for (const [, body] of calls) {
       for (const [, key] of body.matchAll(/(\w+):/g)) {
-        expect(isProhibitedProperty(key), `${key} is prohibited`).toBe(false);
         expect(approvedProperties as readonly string[], `${key} is not approved`).toContain(key);
       }
     }
@@ -140,7 +139,7 @@ describe("the identity surface cannot carry readable personal information", () =
     const contract = read("src/lib/analytics/contract.ts");
     const identity = /export type AnalyticsIdentity = \{([^}]*)\}/.exec(contract)![1];
     const fields = [...identity.matchAll(/(\w+):/g)].map((match) => match[1]).sort();
-    expect(fields).toEqual(["organizationId", "userId", "userRole"]);
+    expect(fields).toEqual(["organizationId", "userId"]);
   });
 
   it("never reads the email or organization name available in access context", () => {
@@ -160,36 +159,10 @@ describe("the identity surface cannot carry readable personal information", () =
   });
 });
 
-describe("automatic collection is disabled, not merely unconfigured", () => {
-  const options = postHogOptions() as Record<string, unknown>;
-
-  it("disables autocapture, pageviews and pageleave", () => {
-    expect(options.autocapture).toBe(false);
-    expect(options.capture_pageview).toBe(false);
-    expect(options.capture_pageleave).toBe(false);
-  });
-
-  it("disables Session Replay and never configures recording", () => {
-    expect(options.disable_session_recording).toBe(true);
-    const sources = analyticsSources.map(read).join("\n");
-    // No sampling, masking or trigger configuration exists to be switched on.
-    expect(sources).not.toMatch(/session_recording_sample_rate|recordSessions|startSessionRecording/);
-  });
-
-  it("disables surveys, heatmaps and external dependency loading", () => {
-    expect(options.disable_surveys).toBe(true);
-    expect(options.capture_heatmaps).toBe(false);
-    expect(options.disable_external_dependency_loading).toBe(true);
-  });
-
-  it("starts opted out, so initialization alone collects nothing", () => {
-    expect(options.opt_out_capturing_by_default).toBe(true);
-  });
-
-  it("introduces no feature flags or experiments", () => {
-    expect(options.advanced_disable_feature_flags).toBe(true);
-    const sources = analyticsSources.map(read).join("\n");
-    expect(sources).not.toMatch(/isFeatureEnabled|getFeatureFlag|onFeatureFlags/);
+describe("automatic collection is absent", () => {
+  it("has no SDK, identity, replay or background delivery", () => {
+    const boundary = read("src/lib/analytics/boundary.ts");
+    expect(boundary).not.toMatch(/posthog-js|\.identify\(|sendBeacon|localStorage|sessionStorage|serviceWorker|\$identify|\$create_alias/);
   });
 });
 
@@ -213,8 +186,8 @@ describe("the taxonomy cannot quietly grow", () => {
 
   it("keeps the approved property vocabulary aligned with the SPEC", () => {
     expect([...approvedProperties].sort()).toEqual([
-      "attachment_id", "content_id", "content_type", "environment", "filter_type",
-      "has_results", "organization_id", "result_count", "user_id", "user_role",
+      "$process_person_profile", "attachment_id", "content_id", "content_type", "environment", "filter_type",
+      "has_results", "organization_id", "result_count",
     ]);
   });
 });
@@ -230,7 +203,7 @@ describe("environment isolation cannot be satisfied by filtering later", () => {
   it("does not rely on NODE_ENV, which cannot distinguish Preview", () => {
     const config = read("src/lib/analytics/config.ts");
     // NODE_ENV is consulted only to force the test environment inert.
-    const productionCheck = /if \(deployment === "production"\) return "production";/.test(config);
+    const productionCheck = /if \(env\.NEXT_PUBLIC_VERCEL_ENV === "production"\) return "production";/.test(config);
     expect(productionCheck).toBe(true);
     expect(config).not.toMatch(/NODE_ENV === "production"/);
   });
@@ -243,7 +216,7 @@ describe("environment isolation cannot be satisfied by filtering later", () => {
   });
 
   it("targets the approved PostHog Cloud EU host", () => {
-    expect(postHogOptions().api_host).toBe("https://eu.i.posthog.com");
+    expect(postHogCaptureUrl).toBe("https://eu.i.posthog.com/i/v0/e/");
     const sources = analyticsSources.map(read).join("\n");
     expect(sources).not.toMatch(/us\.i\.posthog\.com|app\.posthog\.com/);
   });

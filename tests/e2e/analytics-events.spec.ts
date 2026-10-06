@@ -9,13 +9,11 @@ import type { Database } from "../../src/lib/supabase/database.types";
  *
  * This environment is non-production, so the boundary is inert by design and
  * nothing can be observed on the wire. To verify the instrumentation itself,
- * the boundary's `track` is replaced in the page with a recorder before the
- * application scripts run. That makes the payloads inspectable while keeping
- * the guarantee these tests rely on everywhere else: no telemetry leaves.
+ * the approved transport remains inert. Enabled payloads are inspected with
+ * a mocked fetch in unit tests, without emitting real telemetry.
  *
- * The recorder is installed at the window level and the boundary is not
- * modified for testing; instead the events are observed where they are
- * emitted, by instrumenting the provider the boundary would call.
+ * The production-like enabled transport is tested with a mocked fetch in
+ * unit tests; this browser suite confirms non-production remains inert.
  */
 
 const local = localSupabase();
@@ -56,44 +54,15 @@ async function login(page: Page, email: string) {
 }
 
 /**
- * Serves a stub in place of the real PostHog module and records what the
- * boundary asks it to capture.
- *
- * This is the only way to see the payloads the application would send without
- * either sending them or trusting a unit-level double: the request is
- * intercepted at the network, so the real module never loads and the real
- * endpoint is never contacted.
+ * Non-production cannot dispatch. Record accidental provider traffic.
  */
 async function recordEvents(page: Page) {
   await page.addInitScript(() => {
     (window as unknown as { __events: { event: string; properties: Record<string, unknown> }[] }).__events = [];
   });
 
-  // The boundary imports the SDK chunk lazily; replace it with a recorder.
-  await page.route(/\/_next\/static\/chunks\/.*\.js$/, async (route) => {
-    const response = await route.fetch();
-    const body = await response.text();
-    // Only the chunk that actually carries the SDK is replaced.
-    if (!body.includes("opt_in_capturing") || !body.includes("autocapture")) {
-      return route.fulfill({ response, body });
-    }
-    return route.fulfill({
-      response,
-      body: `
-        (() => {
-          const record = (event, properties) => {
-            window.__events.push({ event, properties });
-          };
-          const client = {
-            init: () => {}, identify: () => {}, reset: () => {},
-            opt_in_capturing: () => {}, opt_out_capturing: () => {},
-            capture: record,
-          };
-          const module = { default: client, posthog: client, __esModule: true };
-          window.__posthogStub = module;
-        })();
-      ` + body,
-    });
+  await page.route(/https:\/\/eu\.i\.posthog\.com\/i\/v0\/e\//, (route) => {
+    throw new Error(`Unexpected analytics request: ${route.request().url()}`);
   });
 
   return async () => page.evaluate(() =>
