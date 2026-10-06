@@ -203,7 +203,8 @@ describe("environment isolation cannot be satisfied by filtering later", () => {
   it("does not rely on NODE_ENV, which cannot distinguish Preview", () => {
     const config = read("src/lib/analytics/config.ts");
     // NODE_ENV is consulted only to force the test environment inert.
-    const productionCheck = /if \(env\.NEXT_PUBLIC_VERCEL_ENV === "production"\) return "production";/.test(config);
+    const productionCheck = /env \? env\.NEXT_PUBLIC_VERCEL_ENV : process\.env\.NEXT_PUBLIC_VERCEL_ENV/.test(config)
+      && /if \(deployment === "production"\) return "production";/.test(config);
     expect(productionCheck).toBe(true);
     expect(config).not.toMatch(/NODE_ENV === "production"/);
   });

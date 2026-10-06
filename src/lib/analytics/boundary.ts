@@ -3,7 +3,7 @@ import { analyticsEnvironmentAllowed, postHogCaptureUrl, postHogProjectKey } fro
 
 type Generation = { identity: { userId: string; organizationId: string }; requests: Set<AbortController> };
 let current: Generation | null = null;
-let environment: NodeJS.ProcessEnv = process.env;
+let environment: NodeJS.ProcessEnv | undefined;
 let dispatch: typeof fetch = (...args) => fetch(...args);
 const uuid = (value: unknown): value is string => typeof value === "string"
   && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
@@ -17,7 +17,7 @@ function retire() {
 /** Test-only injection; never used to bypass production eligibility in application code. */
 export function configureAnalyticsForTest(options: { env?: NodeJS.ProcessEnv; fetch?: typeof fetch } = {}) {
   retire();
-  environment = options.env ?? process.env;
+  environment = options.env;
   dispatch = options.fetch ?? ((...args) => fetch(...args));
 }
 
