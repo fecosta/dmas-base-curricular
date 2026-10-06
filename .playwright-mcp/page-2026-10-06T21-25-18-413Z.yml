@@ -1,0 +1,3 @@
+- generic [active] [ref=f1e1]:
+  - status "Loading PostHog" [ref=f1e3]
+  - textbox [aria-hidden] [ref=f1e5]
