@@ -1113,7 +1113,7 @@ Optional product analytics weakens no existing security boundary. Supabase Auth 
 
 **Analytics failure is never product failure.** Missing configuration, blocked request, HTTP failure, timeout or network failure drops telemetry without application retry, buffering or product failure. Provider availability never affects the stored preference. Logout clears the ephemeral application identity and aborts active requests where possible, so no later user of the same browser inherits it. Browser/network retransmission after one application dispatch cannot be guaranteed away.
 
-**Access to the PostHog project is separate from the Base Curricular `Admin` role** and must be restricted to authorized Democracia+ personnel before external pilot activation. That restriction, the 12-month retention configuration and the required legal review are part of the still-closed External Pilot Analytics Activation Gate.
+**Access to the PostHog project is separate from the Base Curricular `Admin` role** and is restricted to authorized Democracia+ personnel. Provider/account evidence (SPEC-008 §2.3; not repository evidence) records one human Owner with MFA enabled, no pending invitations, raw-IP discard ON, GeoIP PAUSED, autocapture/Web Vitals/heatmaps/Session Replay OFF, no known forwarding/export pipeline, and revocation of the broad WebMCP OAuth grants created during investigation; provider security readiness is PASS. WebMCP is not part of the runtime. A new member, invitation or privileged credential re-opens this review. Retention follows the D-031 MVP query-retention posture and makes no physical-deletion claim. Gate B remains not authorized and the External Pilot Analytics Activation Gate remains closed, including the required Privacy/Legal review.
 
 ## 29. Source basis
 
@@ -1131,4 +1131,4 @@ This security baseline was derived from:
 - D-030 Admin-only initial operational content-management decision — 2026-09-14;
 - revised SPEC-004 Admin Content Management & Publication contract.
 - completed SPEC-009 Admin Organization & User Management security, identity-trust, and audit requirements;
-- SPEC-008 optional product-analytics privacy and security contracts, implemented, Cloud-verified, and hosted-validated with analytics disabled (SPEC-008 §42).
+- SPEC-008 optional product-analytics privacy and security contracts: original implementation Cloud-verified and hosted-validated with analytics disabled (historical record at `b3321fd`, SPEC §42 there); profile-free direct transport committed; provider security readiness PASS; D-031 MVP retention posture.

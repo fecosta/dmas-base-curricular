@@ -1,9 +1,9 @@
 # SPEC-008 — Product Analytics & Pilot Observability
 
-**Status:** ACTIVE — PRODUCT MODEL APPROVED; PROFILE-FREE TRANSPORT IMPLEMENTATION READY; PRIVACY/LEGAL GATES PENDING  
-**Delivery state:** IMPLEMENTATION READY — PROFILE-FREE CAPTURE TRANSPORT VERIFIED  
+**Status:** ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; CONTROLLED ENABLED-STATE VALIDATION PENDING  
+**Delivery state:** PROFILE-FREE DIRECT CAPTURE TRANSPORT IMPLEMENTED — ANALYTICS INERT (`NEXT_PUBLIC_POSTHOG_KEY` UNSET)  
 **External Pilot Analytics Activation Gate:** CLOSED  
-**Gate B — Controlled Enabled-State Validation:** NOT AUTHORIZED
+**Gate B — Controlled Enabled-State Validation:** NOT AUTHORIZED — pending the narrow prerequisites in §20.1, including the Privacy/Legal coverage determination in §12.1
 
 ---
 
@@ -34,78 +34,73 @@ Analytics is observational and opt-in. It must not be interpreted as a census of
 
 ## 2. Current State
 
-The analytics foundation has already been implemented and independently reviewed.
+### 2.1 Current implementation (repository evidence)
 
-Verified implementation includes:
+The profile-free direct transport approved by this specification is implemented on `main` (`807b702`, `e2c4145`, `57b03da`):
 
-- persisted user-owned analytics preference;
-- explicit undecided / rejected / accepted states;
-- analytics default OFF;
-- Terms acceptance separate from analytics consent;
-- no Admin override;
-- no client-side preference mutation;
-- lazy analytics initialization;
-- Production-only environment gating;
-- Preview / Development / Test no-op;
-- autocapture disabled;
-- automatic pageviews disabled;
-- Session Replay disabled;
-- heatmaps disabled;
-- semantic event instrumentation;
+- persisted user-owned analytics preference with explicit undecided / rejected / accepted states;
+- analytics default OFF; Terms acceptance separate from analytics consent; no Admin override; no client-side preference mutation;
+- `src/lib/analytics/boundary.ts` is the single application-controlled dispatcher: one direct browser POST to the PostHog EU Capture API (`/i/v0/e/`) per valid event;
+- `posthog-js` is removed from the runtime and from `package.json`; no SDK initializes;
+- every envelope carries `$process_person_profile: false`;
+- the authenticated Supabase UUID is used only as the event-level `distinct_id`, with no duplicate `user_id` property;
+- no `identify()`, `$identify`, alias, anonymous identity or browser analytics persistence;
+- strict runtime validation of the six-event taxonomy and closed per-event property schemas; invalid input is rejected, never partially forwarded;
+- no SDK or application retry, no queue, batching, buffering, replay or unload flush;
+- generation-owned `AbortController` with timeout; revocation and logout abort in-flight requests where possible;
+- Production-only environment gating; Preview / Development / Test no-op; unknown environment fails closed;
+- autocapture, automatic pageviews, Session Replay and heatmaps are absent from the application;
 - provider failure isolation;
-- logout/session isolation;
-- stale initialization race protection.
+- `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_VERCEL_ENV` are inlined as build-time literals in the client analytics module (`e2c4145`);
+- `npm run test:analytics-build` (`scripts/check-analytics-client-build.mjs`, `57b03da`) is a dedicated regression guard that fails if the client build loses that inlining.
 
-Hosted analytics-disabled validation has passed.
+Production currently has no PostHog project key configured, so analytics is inert in every environment.
 
-Production currently has no PostHog project key configured.
+This is local/repository evidence. Enabled-state behavior has not been observed against the real provider (§20).
 
-### 2.1 Current implementation deviation
+### 2.2 Historical implementation evidence
 
-The existing implementation calls PostHog `identify()` after consent.
+The first SPEC-008 implementation (`913ea86`, `03fdf93`, `dbb40c4`) used the PostHog JS SDK and called `identify()` after consent. That model is superseded and is not the current runtime.
 
-That behavior predates the revised product decision in this specification.
+Its analytics-disabled hosted validation passed with `dbb40c4` in Production and no project key configured. The full record (former §42, "Hosted Validation Record — Analytics Disabled") is preserved in git history at `b3321fd:resources/specs/active/008-product-analytics-pilot-observability.md` and summarized in `docs/DECISIONS.md` G-008. That evidence validates the disabled state, preference persistence and privacy UX; it does not validate the corrected enabled transport.
 
-The approved target model no longer permits:
+### 2.3 Verified PostHog provider state (account evidence)
 
-- normal `identify()` usage;
-- `$identify`;
-- persistent PostHog Person Profiles;
-- aliases;
-- anonymous behavioral history;
-- anonymous-to-identified behavioral linkage;
-- additional persistent device-tracking identities.
+The following is provider/account verification evidence from the provider investigation, not repository runtime evidence. It is recorded as of 2026-10-07 and was not re-verified by the documentation reconciliation that recorded it.
 
-Technical preflight has confirmed that these mechanisms are not required to answer the approved SPEC-008 analytics questions.
-
-The existing implementation therefore requires a bounded transport/identity correction before Gate B.
-
-### 2.2 Verified PostHog account state
-
-Account-level inspection verified:
+Earlier account-level inspection verified:
 
 - Organization: `VeR+`
 - Project: `Default project`
 - Project ID: `289698`
 - Hosting: PostHog Cloud EU
 - Project timezone: UTC
-- Plan: Cloud Free
-- No active paid subscription
-- Session Replay disabled
-- raw client IP discard enabled
-- GeoIP transformation enabled
-- GeoIP is the sole configured transformation
-- zero configured destinations
-- zero legacy destination configurations
-- zero batch exports
-- zero external data sources
+- Plan: Cloud Free; no active paid subscription
+- zero configured destinations, zero legacy destination configurations, zero batch exports, zero external data sources
 - PostHog legal-document register empty
 
 The empty legal-document register does not prove that no DPA, Terms, or external agreement applies.
 
-Effective members, roles, MFA and SSO remain unverified because those account areas require fresh authentication.
+Subsequent provider security verification established:
 
-### 2.3 Verified profile-free technical feasibility
+- raw client IP discard: ON;
+- GeoIP transformation: PAUSED (previously enabled);
+- Web autocapture: OFF;
+- Web Vitals autocapture: OFF;
+- Heatmaps: OFF;
+- Session Replay: OFF;
+- Owner MFA: ENABLED;
+- one human Owner;
+- no pending invitations;
+- no known configured forwarding/export pipeline;
+- no known automated Base Curricular AI processing;
+- the broad PostHog WebMCP OAuth grants created during provider investigation were revoked.
+
+PostHog WebMCP is not required by the Base Curricular runtime and MUST NOT be reconnected merely to reconfirm this evidence.
+
+**Provider security readiness: PASS.**
+
+### 2.4 Verified profile-free technical feasibility
 
 Local, non-ingesting technical verification established that the approved analytics questions can be answered without:
 
@@ -132,7 +127,7 @@ Verified capabilities include:
 
 A stable pseudonymous event identity is therefore technically distinct from a persistent PostHog Person Profile.
 
-### 2.4 Verified transport direction
+### 2.5 Verified transport direction (preflight)
 
 Technical preflight also established that the existing PostHog JS SDK lifecycle is not the preferred transport for the approved contract.
 
@@ -154,7 +149,7 @@ The approved implementation direction is therefore a minimal direct browser Capt
 - strict runtime event/property validation;
 - generation-scoped request cancellation.
 
-Local cross-browser verification confirmed this model is technically viable, subject to the transport semantics defined in this specification.
+Local cross-browser verification confirmed this model is technically viable, subject to the transport semantics defined in this specification. It is now the implemented runtime (§2.1).
 
 ---
 
@@ -162,17 +157,17 @@ Local cross-browser verification confirmed this model is technically viable, sub
 
 The existing analytics implementation was built around a consent-gated PostHog SDK integration, but subsequent provider/account and transport investigation identified processing surfaces that require a narrower contract.
 
-The principal gaps are:
+The original gaps and their current status:
 
-1. normal `identify()` may introduce `$identify`, Person Profiles and identity linkage beyond the minimum measurement need;
-2. the existing SDK introduces unnecessary identity/session/default metadata and retry behavior;
-3. GeoIP is currently enabled despite there being no approved measurement requirement for user geolocation;
-4. provider defaults and generated properties require explicit minimization;
-5. PostHog's one-year event retention/query window does not establish enforceable physical deletion;
-6. the existing 12-month retention requirement therefore remains unverified;
-7. effective PostHog account access/MFA controls remain unverified;
-8. applicable DPA, transfer arrangements and pilot jurisdictions remain unresolved;
-9. controlled enabled-state behavior has not yet been validated.
+1. normal `identify()` may introduce `$identify`, Person Profiles and identity linkage — RESOLVED in the runtime (§2.1);
+2. the SDK introduced unnecessary identity/session/default metadata and retry behavior — RESOLVED; the SDK is removed (§2.1);
+3. GeoIP was enabled without an approved measurement requirement — RESOLVED; GeoIP is PAUSED (§2.3);
+4. provider defaults and generated properties require explicit minimization — RESOLVED in the application envelope; ingested state remains to be observed in Gate B;
+5. PostHog's one-year query retention does not establish enforceable physical deletion — ACCEPTED FOR THE MVP as a known limitation (§9); physical-deletion assurance DEFERRED;
+6. the former 12-month physical-deletion requirement could not be verified — SUPERSEDED for the MVP by §9;
+7. effective PostHog account access/MFA controls were unverified — RESOLVED; provider security readiness PASS (§2.3);
+8. applicable DPA, transfer arrangements and pilot jurisdictions remain unresolved — OPEN, Privacy/Legal authority (§12);
+9. controlled enabled-state behavior has not yet been validated — OPEN (§20).
 
 These gaps do not justify expanding processing or weakening the existing privacy contract.
 
@@ -290,7 +285,7 @@ Base Curricular analytics has no approved requirement for:
 - IP-derived timezone;
 - other IP-derived location enrichment.
 
-GeoIP MUST therefore be disabled before controlled enabled-state validation.
+GeoIP MUST therefore remain disabled. Provider evidence records the GeoIP transformation as PAUSED (§2.3); Gate B verifies that ingested events carry no IP-derived location properties.
 
 The product's content-country filters describe curricular content and MUST NOT be interpreted as authorization to geolocate users.
 
@@ -482,71 +477,64 @@ Provider subprocessors governed by the applicable processing agreement are a sep
 
 ## 9. Retention and Deletion
 
-### 9.1 Retention requirement
+### 9.1 MVP retention posture (approved 2026-10-07)
 
-Optional analytics personal data MUST be deleted within a maximum of 12 months.
+For the MVP/pilot, the Product Owner approved the following posture (`docs/DECISIONS.md` D-031):
 
-This is an enforceable deletion requirement.
+> Base Curricular accepts PostHog's one-year Product Analytics query-retention boundary for the MVP/pilot as a known limitation.
 
-A one-year query/visibility window does NOT satisfy this requirement unless Product and Privacy/Legal explicitly approve weakening the contract.
+This replaces, for the MVP, the former requirement that applicable optional analytics personal data MUST be physically/enforceably deleted within 12 months. Proof of physical deletion is no longer a prerequisite for MVP analytics activation.
 
-No such weakening is currently approved.
+The posture does NOT establish or claim:
 
-### 9.2 Preferred enforcement
+- physical deletion within 12 months;
+- deletion from cold storage;
+- deletion from backups within 12 months;
+- a provider-enforced TTL;
+- an enforceable physical-deletion SLA.
 
-Preferred model:
+PostHog's query-retention boundary limits how long events remain queryable in Product Analytics. It MUST NOT be described as physical deletion in any product, privacy or user-facing document.
 
-**A — Provider-native enforceable deletion**
+Retention MUST NOT be extended beyond the provider's one-year query boundary merely because longer storage is technically available (for example through a paid plan).
 
-PostHog or the applicable contractual arrangement demonstrates that covered analytics personal data is deleted within the required period.
+### 9.2 Deferred long-term requirement
 
-### 9.3 Conditional fallback
+Enforceable physical deletion is DEFERRED, not disproven or abandoned.
 
-If provider-native enforcement cannot satisfy the requirement:
+The previously defined options remain the reference for that reassessment:
 
-**B — Operational deletion**
+- **A — Provider-native enforceable deletion**, demonstrated by PostHog or the applicable contractual arrangement;
+- **B — Operational deletion**, only after technical, security and privacy feasibility is verified, addressing age-based selection, event deletion, any accidental Person Profiles or identifiers, derived datasets, manual exports, backup expiry, asynchronous completion, completion evidence, scheduling margin, retries, failure alerts, accountable ownership, least-privileged credentials, and audit evidence that does not recreate deleted data.
 
-may be considered only after technical, security and privacy feasibility is verified.
+A deletion request accepted by an API is not evidence that deletion completed.
 
-Any operational mechanism MUST address:
+### 9.3 Reassessment triggers
 
-- age-based event selection;
-- event deletion;
-- Person Profiles, if any accidentally exist;
-- anonymous identifiers, if any exist;
-- linked identities, if any exist;
-- derived identifiable datasets;
-- manual exports/copies;
-- recordings, if any unexpectedly exist;
-- backup expiry/deletion behavior;
-- asynchronous completion;
-- completion evidence;
-- scheduling margin;
-- retries;
-- failure alerts;
-- accountable ownership;
-- least-privileged credentials;
-- audit evidence that does not recreate deleted data.
+Retention/deletion assurance MUST be reassessed, and enforceable physical deletion reconsidered, before analytics becomes a materially expanded or long-term production capability, including before:
 
-A deletion request being accepted by an API is not sufficient evidence that deletion completed.
+- making analytics a permanent strategic capability;
+- materially expanding the event taxonomy;
+- collecting more identifying or sensitive properties;
+- introducing Person Profiles or `identify()`;
+- adding anonymous or device identity;
+- enabling exports or destinations;
+- enabling additional PostHog behavioral products;
+- materially changing the provider or processing architecture.
 
-### 9.4 Query-retention interpretation
+No date or usage threshold is set beyond these triggers.
 
-**C — Query-retention interpretation** is NOT approved.
+Most of these changes already require a new Product/Privacy review under this specification; the reassessment is part of that review.
 
-Adopting it would weaken the existing product/privacy contract and requires an explicit:
+### 9.4 Privacy/Legal relationship
 
-`PRODUCT + PRIVACY/LEGAL APPROVAL REQUIRED`
+The former contract stated that adopting a query-retention interpretation required `PRODUCT + PRIVACY/LEGAL APPROVAL REQUIRED`.
 
-decision.
+Product approval is now recorded. Privacy/Legal acknowledgement of the MVP posture is NOT recorded and is not inferred from this specification. It remains a Privacy/Legal item before external MVP activation (§12.2), together with:
 
-### 9.5 Failure to establish deletion
+- whether the user-facing Privacy Notice retention statement (`docs/PRIVACY_NOTICE.md` §14, "12 meses") accurately describes the posture, and any resulting notice/consent version change;
+- applicable retention/deletion obligations and privacy-rights fulfilment under the posture.
 
-If neither provider-native nor operational deletion can demonstrably preserve the 12-month requirement, optional analytics MUST remain disabled.
-
-A paid PostHog feature, different provider or different architecture requires a separate authorized decision.
-
----
+The MVP posture concerns retention/deletion assurance and gate proportionality only. It does not authorize broader collection, identity, or processing.
 
 ## 10. Privacy Rights
 
@@ -583,9 +571,13 @@ Any contradiction between Base Curricular's approved product contract and instit
 
 ## 12. Legal Readiness
 
-Before Gate B, Privacy/Legal must determine whether the controlled validation is covered by the applicable legal arrangements.
+Privacy/Legal authority cannot be waived or inferred by product or engineering documentation. No Privacy/Legal approval is recorded for SPEC-008.
 
-Before external pilot activation, the following must be established:
+### 12.1 Before Gate B (preserved)
+
+Before Gate B, Privacy/Legal must determine whether the bounded controlled validation — controlled participants, bounded duration, PostHog Cloud EU, MVP retention posture — is covered by the applicable legal arrangements.
+
+### 12.2 Before external MVP activation (preserved, Privacy/Legal authority)
 
 - correct controller;
 - correct PostHog processor/contracting entity;
@@ -597,8 +589,12 @@ Before external pilot activation, the following must be established:
 - subprocessors;
 - international processing/transfer safeguards;
 - privacy-rights process;
-- retention/deletion obligations;
+- acknowledgement of the MVP retention posture (§9.4) and Privacy Notice retention wording;
 - institutional Privacy Policy / Terms reconciliation.
+
+### 12.3 Deferred with the long-term retention requirement
+
+- legal sufficiency of enforceable physical deletion, backup treatment and deletion completion evidence (§9.2), until a reassessment trigger (§9.3) applies.
 
 EU Cloud hosting MUST NOT be represented as proof that all processing occurs exclusively within the EU.
 
@@ -631,6 +627,8 @@ Base Curricular application Admin status MUST NOT automatically grant PostHog ac
 Paid provider capabilities such as SSO, SCIM, granular RBAC or advanced audit tooling are optional mechanisms, not requirements by name.
 
 If available Free-plan controls cannot achieve the required security outcome, Gate B remains blocked.
+
+Provider security readiness is recorded as PASS (§2.3): one human Owner with MFA, no pending invitations, investigation-time WebMCP OAuth grants revoked. Any new member, invitation or privileged credential re-opens this section. The browser uses only the publishable `phc_` project token.
 
 ---
 
@@ -931,40 +929,32 @@ Chromium may retransmit an already-issued HTTP request below application control
 
 ### 18.5 Technical readiness decision
 
-Current technical state:
+Technical state at preflight was **IMPLEMENTATION READY — PROFILE-FREE CAPTURE TRANSPORT VERIFIED**.
 
-**IMPLEMENTATION READY — PROFILE-FREE CAPTURE TRANSPORT VERIFIED**
+The transport has since been implemented (§2.1). Current technical state: **PROFILE-FREE IMPLEMENTATION COMPLETE**.
 
 The technical transport decision includes the documented transport-level retransmission caveat.
 
-This technical readiness does not authorize Gate B or external pilot activation.
+This technical state does not authorize Gate B or external pilot activation.
 
 ---
 
 ## 19. Gate A — Legal & Provider Readiness
 
-Gate A covers:
-
-- provider/account evidence;
-- legal readiness;
-- retention/deletion evidence;
-- access/security evidence;
-- privacy-contract reconciliation.
-
 Gate A does not authorize telemetry.
 
-Remaining Gate A requirements include:
+Gate A is reassessed against the MVP contract (§9):
 
-- applicable DPA/agreement evidence;
-- transfer/subprocessor review;
-- pilot jurisdiction determination;
-- enforceable deletion evidence;
-- effective PostHog roster/roles;
-- MFA/access verification;
-- approved GeoIP removal;
-- read-only verification of final provider configuration before Gate B.
-
-The profile-free technical identity model and transport feasibility are no longer open Gate A questions.
+| Gate A item | Status |
+|---|---|
+| Profile-free identity model and transport | CLOSED — implemented (§2.1) |
+| Provider security: roster, roles, MFA, invitations, credentials | PASS (§2.3, §13) |
+| GeoIP removal | PASS — PAUSED (§2.3) |
+| Provider configuration (raw-IP discard, autocapture, heatmaps, Session Replay, destinations) | PASS (§2.3); reconfirmed read-only at Gate B start |
+| Enforceable ≤12-month physical deletion evidence | REMOVED as an MVP prerequisite; DEFERRED (§9.2, §9.3) |
+| Privacy-contract reconciliation | DONE for the MVP posture (D-031) |
+| Privacy/Legal coverage of the bounded controlled validation | PENDING — Privacy/Legal authority (§12.1) |
+| DPA/agreement, transfers/subprocessors, jurisdictions, legal basis, MVP-retention acknowledgement | PENDING — Privacy/Legal authority; required before external activation, not before Gate B unless §12.1 determines otherwise (§12.2) |
 
 ---
 
@@ -982,21 +972,29 @@ until all prerequisites below are satisfied.
 
 ### 20.1 Gate B prerequisites
 
-1. Product decisions recorded in durable project knowledge.
-2. Required Privacy/Legal approval obtained.
-3. Security approval obtained.
-4. Revised implementation conforms to the approved profile-free direct-transport model.
-5. GeoIP is disabled.
-6. Property allowlist is enforced.
-7. Retention/deletion mechanism is evidenced.
-8. Applicable processor/legal arrangement covers the validation.
-9. PostHog roster, MFA and effective access are verified.
-10. Controlled participants are defined.
-11. Validation duration and expected interactions are bounded.
-12. Production containment prevents accidental general pilot collection.
-13. Stop/rollback responsibility is defined.
-14. Validation-data deletion/cleanup is defined.
-15. Intended test UUIDs are verified not to have existing PostHog Person/alias mappings that would invalidate profile-free validation.
+Satisfied:
+
+1. MVP product decisions recorded in durable project knowledge (D-031, §9).
+2. Implementation conforms to the approved profile-free direct-transport model (§2.1).
+3. Property allowlist enforced at runtime (§2.1).
+4. GeoIP disabled — PAUSED (§2.3).
+5. Provider security readiness — PASS (§2.3, §13).
+
+Remaining:
+
+6. Privacy/Legal determination that the bounded controlled validation is covered by the applicable legal arrangements (§12.1).
+7. Controlled participants are defined.
+8. Validation duration and expected interactions are bounded.
+9. Production containment prevents accidental general pilot collection.
+10. Stop/rollback responsibility is defined.
+11. Validation-data handling is defined consistently with the MVP retention posture; proof of physical deletion is not required (§9.1).
+12. Identity cleanliness: the intended validation UUIDs are verified not to have pre-existing PostHog Person/alias mappings that would invalidate profile-free validation. This is a narrow pre-validation check for those participants only, not a general production analytics blocker.
+13. Read-only reconfirmation of the provider configuration in §2.3 at the start of the validation, without reconnecting PostHog WebMCP.
+
+No longer Gate B prerequisites under the MVP contract:
+
+- enforceable retention/deletion mechanism evidence (deferred, §9.2);
+- separate Security approval and roster/MFA verification (satisfied by provider security readiness PASS).
 
 Instructions asking normal users not to opt in are NOT sufficient containment.
 
@@ -1013,7 +1011,7 @@ Once separately authorized, Gate B must verify:
 - no Person Profiles;
 - no anonymous linkage;
 - no GeoIP/location enrichment;
-- no prohibited automatic properties;
+- no automatic collection or prohibited automatic properties;
 - correct stable pseudonymous identity;
 - organization segmentation;
 - returning-user analysis;
@@ -1032,6 +1030,8 @@ Gate B evidence must distinguish:
 - browser/network behavior;
 - provider-ingested state.
 
+Gate B does NOT require proof of physical ≤12-month deletion.
+
 A successful Gate B does NOT authorize external pilot analytics automatically.
 
 ---
@@ -1048,11 +1048,14 @@ Opening it requires, at minimum:
 - applicable legal clearance;
 - pilot-jurisdiction review;
 - DPA/agreement readiness;
-- retention/deletion readiness;
-- privacy notice consistency;
+- Privacy/Legal acknowledgement of the MVP retention posture (§9.4);
+- privacy notice consistency, including the retention statement;
 - security/access readiness;
 - validated provider configuration;
-- no unresolved material privacy deviation.
+- no unresolved material privacy deviation;
+- a deliberate decision to remove Gate B production containment and configure the Production project key.
+
+Enforceable physical deletion is not an MVP external-activation requirement (§9).
 
 ---
 
@@ -1135,9 +1138,12 @@ Logout and user switching do not leak analytics identity.
 
 Blocking or failing PostHog does not break normal product use.
 
-### AC-18 — Retention
+### AC-18 — MVP retention posture
 
-A verified mechanism enforces deletion of applicable optional analytics personal data within 12 months.
+- PostHog's one-year Product Analytics query-retention boundary is documented and acknowledged as the MVP retention posture;
+- no product, privacy or user-facing document claims physical deletion, backup deletion, a provider-enforced TTL or a deletion SLA;
+- enforceable long-term retention/deletion assurance is explicitly deferred;
+- the reassessment triggers in §9.3 are documented.
 
 ### AC-19 — Access controls
 
@@ -1199,7 +1205,7 @@ Engineering may choose reversible technical details necessary to implement the a
 - data minimization;
 - prohibited data;
 - GeoIP prohibition;
-- retention requirement;
+- MVP retention posture and its reassessment triggers;
 - environment isolation;
 - access authority;
 - external activation gates.
@@ -1252,48 +1258,35 @@ Proposed behavior must not be documented as deployed until implementation and va
 
 Existing documentation describing normal `identify()`/SDK identity behavior must be reconciled after implementation.
 
+Status (2026-10-07): the SDK-to-direct-transport implementation and the MVP retention posture are reconciled across these surfaces. SDK/`identify()` statements are retained only as historical evidence. `docs/PRIVACY_NOTICE.md` and the privacy contract version are intentionally unchanged pending Privacy/Legal review (§9.4).
+
 ---
 
 ## 25. Open Blockers
 
-The following remain unresolved and materially block Gate B or external activation.
+### Required before controlled validation (Gate B)
 
-### Implementation
+- Privacy/Legal coverage determination for the bounded validation (§12.1);
+- controlled participants, duration, interactions, production containment, stop/rollback owner, validation-data handling (§20.1);
+- identity cleanliness of the intended validation UUIDs (§20.1 item 12);
+- read-only provider-configuration reconfirmation at validation start.
 
-- existing SDK/`identify()` analytics boundary has not yet been replaced by the approved profile-free direct transport;
-- strict runtime event/property allowlist is not yet the deployed implementation;
-- GeoIP remains enabled in the provider account until an authorized configuration change;
-- intended controlled-validation UUIDs must be checked for pre-existing Person/alias mappings.
+### Required before external MVP activation
 
-These are implementation/configuration tasks under the approved contract, not open product decisions.
+- successful Gate B;
+- Privacy/Legal items in §12.2, including acknowledgement of the MVP retention posture and the Privacy Notice retention wording;
+- the remaining conditions in §21.
 
-### Retention
+### Deferred until long-term or materially expanded analytics
 
-- enforceable ≤12-month deletion mechanism remains unresolved;
-- physical deletion, backup treatment, derived-data treatment and completion evidence remain unresolved.
+- enforceable physical deletion within a defined period;
+- backup, cold-storage and derived-data deletion treatment;
+- deletion completion evidence and operational deletion mechanism (§9.2);
+- legal sufficiency of the long-term retention/deletion posture.
 
-### Security
-
-- effective account roster;
-- roles/privileges;
-- MFA coverage;
-- authentication paths;
-- invitations;
-- privileged credential ownership.
-
-### Privacy / Legal
-
-- applicable DPA/agreement;
-- correct processor/contracting entity;
-- pilot jurisdictions;
-- subprocessors/transfers;
-- privacy-rights operational process;
-- retention/deletion legal sufficiency;
-- institutional legal-document reconciliation.
+Resolved since the previous revision: SDK/`identify()` replacement, runtime allowlist enforcement, GeoIP removal, account roster/roles/MFA/invitations/credential verification.
 
 These blockers do not reopen the approved product direction.
-
-They determine whether the implemented model can proceed to controlled enabled-state validation.
 
 ---
 
@@ -1301,46 +1294,15 @@ They determine whether the implemented model can proceed to controlled enabled-s
 
 Current state:
 
-**ACTIVE — PRODUCT MODEL APPROVED; PROFILE-FREE TRANSPORT IMPLEMENTATION READY; PRIVACY/LEGAL GATES PENDING**
+- **MVP ANALYTICS CONTRACT APPROVED**
+- **PROFILE-FREE IMPLEMENTATION COMPLETE**
+- **PROVIDER SECURITY READY**
+- **CONTROLLED ENABLED-STATE VALIDATION PENDING**
 
-Product direction is approved.
-
-Technical preflight has confirmed:
-
-- profile-free event identity is feasible;
-- `identify()` is unnecessary;
-- Person Profiles are unnecessary;
-- anonymous linkage is unnecessary;
-- device identity is unnecessary;
-- organization segmentation is feasible without Groups;
-- returning-user analysis is feasible;
-- semantic funnels/paths/retention are feasible;
-- direct Capture API transport satisfies the approved application-controlled lifecycle;
-- exactly-once wire delivery is not a product requirement.
-
-The current deployed implementation still uses the older SDK/`identify()` model and therefore requires bounded correction.
-
-Gate B is not authorized.
+Gate B is not authorized. It becomes the next executable engineering/validation step once the Privacy/Legal coverage determination (§12.1) and the operational prerequisites in §20.1 are in place.
 
 External Pilot Analytics Activation Gate is CLOSED.
 
-The next engineering activity is:
+`NEXT_PUBLIC_POSTHOG_KEY` is intentionally unset. No production analytics activation is authorized by this specification revision, and none may be inferred from it.
 
-**Implement the approved profile-free direct Capture API transport and its strict runtime contract.**
-
-The next Privacy/Legal activity is resolution of:
-
-- applicable agreement;
-- jurisdiction;
-- transfer/subprocessor;
-- privacy-rights;
-- retention/deletion requirements.
-
-The next Security activity is verification of:
-
-- PostHog account roster;
-- effective roles;
-- MFA;
-- privileged credential ownership.
-
-No production analytics activation is authorized by this specification revision.
+SPEC-008 remains active and MUST NOT be moved to `completed/` until Gate B passes and independent verification against §22 is complete.

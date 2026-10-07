@@ -765,7 +765,7 @@ SPEC-008 must not duplicate this document as a second privacy UX source of truth
 
 Instead, SPEC-008 should reference this contract and define the engineering work necessary to satisfy it.
 
-Where the current planned SPEC-008 conflicts with this document or the authoritative privacy contract, SPEC-008 must be reconciled before activation.
+Where the active SPEC-008 conflicts with this document or the authoritative privacy contract, SPEC-008 must be reconciled before activation.
 
 ---
 

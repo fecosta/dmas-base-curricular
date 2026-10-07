@@ -528,6 +528,8 @@ This retention period must be configured where supported by the analytics provid
 
 Retention must not be extended merely because longer storage is technically available.
 
+**MVP posture (D-031, 2026-10-07).** For the MVP/pilot, the 12-month initial retention is satisfied by PostHog's one-year Product Analytics query-retention boundary, accepted as a known limitation. This is a query/visibility boundary, not physical deletion: Base Curricular does not claim deletion within 12 months from provider storage, cold storage or backups, a provider-enforced TTL, or a deletion SLA, and must not describe it that way. Enforceable physical deletion is deferred and must be reassessed before analytics is materially expanded or becomes a long-term capability (SPEC-008 §9.3). Privacy/Legal acknowledgement of this posture is pending; this contract's version is unchanged pending that review.
+
 Operational, security, audit, authentication, and organization-management records may follow different retention requirements according to their purpose and applicable obligations.
 
 ---
@@ -720,7 +722,7 @@ At minimum, SPEC-008 must preserve:
 - canonical organization identifier;
 - PostHog Cloud EU;
 - production-only analytics;
-- 12-month initial retention;
+- 12-month initial retention, under the MVP query-retention posture in §25;
 - Session Replay disabled;
 - persistent and revocable preferences;
 - analytics failure isolation;
@@ -750,7 +752,7 @@ Before optional analytics is enabled for the external pilot, verify:
 13. Preview, Development, and Test do not send production telemetry;
 14. analytics failure does not break the product;
 15. PostHog EU destination is verified;
-16. 12-month retention is configured or otherwise operationally enforced;
+16. 12-month retention is in place under the MVP posture in §25 (provider query-retention boundary, without any physical-deletion claim);
 17. PostHog access is restricted;
 18. client bundles contain no privileged analytics or infrastructure secrets;
 19. user-facing privacy copy matches actual behavior;
@@ -793,7 +795,7 @@ For the initial Base Curricular external pilot:
 - No raw search text.
 - No advertising.
 - No individual performance evaluation.
-- 12-month initial retention.
+- 12-month initial retention (MVP: provider query-retention boundary; see §25).
 
 ### Session Replay
 - Disabled.
