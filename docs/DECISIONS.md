@@ -469,7 +469,7 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ### D-031 — MVP analytics accepts PostHog's one-year query-retention boundary
 
-**State:** DECISION (Product Owner) — Privacy/Legal acknowledgement pending  
+**State:** DECISION (Product Owner) — Privacy/Legal acknowledgement pending
 **Date:** 2026-10-07
 
 For the MVP/pilot, Base Curricular accepts PostHog's one-year Product Analytics query-retention boundary as a known limitation.
