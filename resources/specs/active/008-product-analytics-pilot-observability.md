@@ -1,9 +1,9 @@
 # SPEC-008 — Product Analytics & Pilot Observability
 
-**Status:** ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; CONTROLLED ENABLED-STATE VALIDATION PENDING
+**Status:** ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; GATE B AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION
 **Delivery state:** PROFILE-FREE DIRECT CAPTURE TRANSPORT IMPLEMENTED — ANALYTICS INERT (`NEXT_PUBLIC_POSTHOG_KEY` UNSET)
 **External Pilot Analytics Activation Gate:** CLOSED
-**Gate B — Controlled Enabled-State Validation:** NOT AUTHORIZED — pending the narrow prerequisites in §20.1, including the Privacy/Legal coverage determination in §12.1
+**Gate B — Controlled Enabled-State Validation:** AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION
 
 ---
 
@@ -529,7 +529,7 @@ Most of these changes already require a new Product/Privacy review under this sp
 
 The former contract stated that adopting a query-retention interpretation required `PRODUCT + PRIVACY/LEGAL APPROVAL REQUIRED`.
 
-Product approval is now recorded. Privacy/Legal acknowledgement of the MVP posture is NOT recorded and is not inferred from this specification. It remains a Privacy/Legal item before external MVP activation (§12.2), together with:
+Product approval is recorded. Privacy/Legal decision A (2026-10-07) accepts the MVP posture only for bounded controlled Gate B validation. It does not approve external activation. Before external MVP activation, Privacy/Legal reconciliation remains required (§12.2), including:
 
 - whether the user-facing Privacy Notice retention statement (`docs/PRIVACY_NOTICE.md` §14, "12 meses") accurately describes the posture, and any resulting notice/consent version change;
 - applicable retention/deletion obligations and privacy-rights fulfilment under the posture.
@@ -571,11 +571,11 @@ Any contradiction between Base Curricular's approved product contract and instit
 
 ## 12. Legal Readiness
 
-Privacy/Legal authority cannot be waived or inferred by product or engineering documentation. No Privacy/Legal approval is recorded for SPEC-008.
+Privacy/Legal authority cannot be waived or inferred by product or engineering documentation. Decision A authorizes only the bounded controlled Gate B validation described in §20 under the current six-event, profile-free, minimized PostHog Cloud EU model and current provider posture. It accepts the one-year Product Analytics query-retention boundary as a known MVP limitation without a physical-deletion guarantee. It does not authorize external activation or broader processing.
 
 ### 12.1 Before Gate B (preserved)
 
-Before Gate B, Privacy/Legal must determine whether the bounded controlled validation — controlled participants, bounded duration, PostHog Cloud EU, MVP retention posture — is covered by the applicable legal arrangements.
+Privacy/Legal decision A confirms that the bounded controlled validation — controlled participants, one bounded session, PostHog Cloud EU, current provider posture and MVP retention posture — is approved. This determination is limited to Gate B.
 
 ### 12.2 Before external MVP activation (preserved, Privacy/Legal authority)
 
@@ -953,7 +953,7 @@ Gate A is reassessed against the MVP contract (§9):
 | Provider configuration (raw-IP discard, autocapture, heatmaps, Session Replay, destinations) | PASS (§2.3); reconfirmed read-only at Gate B start |
 | Enforceable ≤12-month physical deletion evidence | REMOVED as an MVP prerequisite; DEFERRED (§9.2, §9.3) |
 | Privacy-contract reconciliation | DONE for the MVP posture (D-031) |
-| Privacy/Legal coverage of the bounded controlled validation | PENDING — Privacy/Legal authority (§12.1) |
+| Privacy/Legal coverage of the bounded controlled validation | APPROVED — decision A, controlled Gate B only (§12.1) |
 | DPA/agreement, transfers/subprocessors, jurisdictions, legal basis, MVP-retention acknowledgement | PENDING — Privacy/Legal authority; required before external activation, not before Gate B unless §12.1 determines otherwise (§12.2) |
 
 ---
@@ -964,11 +964,11 @@ Gate B is a bounded controlled validation.
 
 It is NOT general production analytics activation.
 
-Gate B remains:
+Gate B is:
 
-**NOT AUTHORIZED**
+**AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION**
 
-until all prerequisites below are satisfied.
+Authorization is limited to the protocol below. It is not general production analytics activation.
 
 ### 20.1 Gate B prerequisites
 
@@ -980,16 +980,16 @@ Satisfied:
 4. GeoIP disabled — PAUSED (§2.3).
 5. Provider security readiness — PASS (§2.3, §13).
 
-Remaining:
+Authorized protocol:
 
-6. Privacy/Legal determination that the bounded controlled validation is covered by the applicable legal arrangements (§12.1).
-7. Controlled participants are defined.
-8. Validation duration and expected interactions are bounded.
-9. Production containment prevents accidental general pilot collection.
-10. Stop/rollback responsibility is defined.
-11. Validation-data handling is defined consistently with the MVP retention posture; proof of physical deletion is not required (§9.1).
-12. Identity cleanliness: the intended validation UUIDs are verified not to have pre-existing PostHog Person/alias mappings that would invalidate profile-free validation. This is a narrow pre-validation check for those participants only, not a general production analytics blocker.
-13. Read-only reconfirmation of the provider configuration in §2.3 at the start of the validation, without reconnecting PostHog WebMCP.
+6. Privacy/Legal coverage is APPROVED for this bounded validation only (§12.1).
+7. Participants are limited to 1–2 controlled internal test accounts. The actual accounts and canonical Supabase UUIDs MUST be identified immediately before execution; this specification does not name or invent them.
+8. Duration is one bounded validation session using the deterministic sequence in §20.2.
+9. Validation runs against Production because analytics is contractually Production-only. The production publishable project token may be configured only in the separate Gate B execution task. Preview, Development and Test remain no-op. Production containment MUST prevent collection from anyone except the controlled participants; instructions asking other users not to opt in are insufficient.
+10. The person responsible for stopping and rolling back validation MUST be named immediately before execution.
+11. Evidence handling is limited to the minimum required to establish PASS/FAIL, without unnecessary copies of analytics data, and follows the MVP query-retention posture; physical deletion within one year is not promised or required (§9.1).
+12. Immediately before execution, verify that each participant UUID has no pre-existing PostHog Person or alias mapping that would invalidate profile-free validation. This is a narrow check for the selected UUIDs only.
+13. At validation start, reconfirm the provider configuration in §2.3 through a safer authenticated/manual read-only path. Do not reconnect PostHog WebMCP or recreate its revoked broad OAuth grant.
 
 No longer Gate B prerequisites under the MVP contract:
 
@@ -998,31 +998,76 @@ No longer Gate B prerequisites under the MVP contract:
 
 Instructions asking normal users not to opt in are NOT sufficient containment.
 
-### 20.2 Gate B validation
+### 20.2 Executable Gate B protocol
 
-Once separately authorized, Gate B must verify:
+#### Preflight
 
-- zero collection before persisted opt-in;
-- only the six approved application events;
-- actual outgoing payloads;
-- actual ingested properties;
-- no prohibited data;
-- no `$identify`;
-- no Person Profiles;
-- no anonymous linkage;
-- no GeoIP/location enrichment;
-- no automatic collection or prohibited automatic properties;
-- correct stable pseudonymous identity;
-- organization segmentation;
-- returning-user analysis;
-- revocation;
-- re-enablement;
-- logout/session isolation;
-- user-switch isolation;
-- Preview/Development/Test no telemetry;
-- provider failure isolation;
-- no application/SDK retry;
-- duplicate behavior/deduplication where transport-level retransmission is observed.
+Before enabling analytics:
+
+1. verify the deployment and commit under test;
+2. verify the provider project is the intended Base Curricular PostHog Cloud EU project;
+3. read-only verify raw-IP discard ON; GeoIP PAUSED/OFF; autocapture OFF; Web Vitals autocapture OFF; heatmaps OFF; Session Replay OFF; and no unexpected destination/export;
+4. identify the 1–2 controlled participant accounts and canonical Supabase UUIDs;
+5. complete the narrow Person/alias identity-cleanliness check in §20.1 item 12;
+6. name the stop/rollback owner;
+7. capture the pre-validation state without making unnecessary copies of analytics data;
+8. establish production containment for only the controlled participants;
+9. only then configure the production publishable project token for this session.
+
+#### Deterministic validation sequence
+
+1. **Analytics OFF.** With the production project token available and the participant's persisted preference OFF, use the product normally. Confirm zero Base Curricular analytics events are dispatched or received. This distinguishes consent gating from key availability.
+2. **Explicit opt-in.** Enable analytics through the existing privacy UX. Confirm the preference persists and enabling analytics itself emits no unapproved behavioral event.
+3. **Six-event taxonomy.** Using controlled, non-sensitive interactions, exercise at least once: `library_viewed`, `search_performed`, `filter_applied`, `content_opened`, `external_reference_opened`, and `content_downloaded`.
+4. **Payload inspection.** Inspect outgoing and ingested events. Verify each name is approved; `distinct_id` equals the participant's canonical Supabase UUID; `$process_person_profile = false`; `organization_id` is canonical; `environment = production`; only event-specific allowlisted properties exist; and timestamp/required technical envelope fields are expected. Explicitly verify absence of name, email, organization name/domain, raw search query, query-derived fingerprint, private content, teaching notes, original filename, full external URL, referrer, advertising identifiers, persistent device identifier, anonymous analytics identifier, session/window tracking identifier, auth token/header, and unexpected location/GeoIP properties. Distinguish transport/provider technical metadata from application-controlled behavioral properties.
+5. **Identity/profile behavior.** Verify no `$identify`, alias event, Person Profile creation/update for the controlled UUID, or anonymous-to-authenticated behavioral linkage.
+6. **Revocation.** Disable analytics and wait for the preference to persist. Exercise interactions that normally emit approved events. Confirm no new application dispatch and no queued/buffered event appears later. Do not require retraction of an event already received before revocation.
+7. **Session isolation.** Verify logout stops analytics for the old identity. If a second controlled account is available, log in as it and verify the first identity is not reused, preference remains user-owned, and no cross-user attribution occurs. If only one account is available, record the two-account isolation check as pending rather than fabricating evidence.
+8. **Environment isolation.** Combine existing build/test evidence with an appropriate runtime check showing Preview, Development and Test remain no-op. Do not intentionally send events from those environments.
+9. **Provider failure isolation.** Block or otherwise safely make the collector unavailable without modifying provider infrastructure. Confirm normal Base Curricular functionality continues.
+
+### 20.3 PASS criteria
+
+Gate B passes only if evidence establishes:
+
+1. zero telemetry before opt-in;
+2. only the six approved application events;
+3. only approved application-controlled properties;
+4. no prohibited, private or raw-query content;
+5. no `$identify` or alias;
+6. no persistent Person Profile caused by validation;
+7. no anonymous behavioral linkage;
+8. no GeoIP/location enrichment contrary to the contract;
+9. approved pseudonymous UUID identity only;
+10. revocation prevents future application dispatch;
+11. no application retry, queue, buffer or replay;
+12. logout and user switching preserve identity isolation; if a second account is unavailable, the two-account portion is recorded as pending and this criterion is not yet established;
+13. non-production environments remain no-op;
+14. provider failure does not impair the product;
+15. no unexpected automatic behavioral collection appears.
+
+Exactly-once wire delivery is not required; §15.3 remains authoritative for browser/network retransmission.
+
+### 20.4 Failure and rollback
+
+Any privacy-contract violation is Gate B FAIL, including an unexpected event or property, `$identify`, Person Profile creation/update, GeoIP/location enrichment, autocapture, an application-buffered/retried event after completed revocation, or cross-user identity contamination.
+
+On FAIL:
+
+1. stop validation;
+2. remove or disable the production analytics configuration as appropriate;
+3. preserve only the minimum evidence necessary to diagnose the failure;
+4. keep normal product functionality available;
+5. report the exact deviation against this specification;
+6. do not proceed to external activation.
+
+### 20.5 State after execution
+
+A PASS does not open analytics to external users. After PASS, the expected lifecycle is:
+
+**CONTROLLED ENABLED-STATE VALIDATION PASSED — EXTERNAL MVP ANALYTICS ACTIVATION DECISION PENDING**
+
+The next explicit decision is: **Should optional MVP analytics be enabled for consenting production users?** That decision must separately reconcile §21, including the user-facing Privacy Notice.
 
 Gate B evidence must distinguish:
 
@@ -1264,12 +1309,15 @@ Status (2026-10-07): the SDK-to-direct-transport implementation and the MVP rete
 
 ## 25. Open Blockers
 
-### Required before controlled validation (Gate B)
+### Required immediately before controlled validation execution (Gate B)
 
-- Privacy/Legal coverage determination for the bounded validation (§12.1);
-- controlled participants, duration, interactions, production containment, stop/rollback owner, validation-data handling (§20.1);
-- identity cleanliness of the intended validation UUIDs (§20.1 item 12);
-- read-only provider-configuration reconfirmation at validation start.
+- identify the 1–2 controlled internal accounts and canonical UUIDs;
+- establish participant-only production containment;
+- name the stop/rollback owner;
+- complete identity cleanliness for the selected UUIDs;
+- reconfirm provider configuration through the safe read-only path;
+- verify the deployment/commit and intended provider project;
+- configure the Production publishable key only within the execution task.
 
 ### Required before external MVP activation
 
@@ -1297,9 +1345,9 @@ Current state:
 - **MVP ANALYTICS CONTRACT APPROVED**
 - **PROFILE-FREE IMPLEMENTATION COMPLETE**
 - **PROVIDER SECURITY READY**
-- **CONTROLLED ENABLED-STATE VALIDATION PENDING**
+- **GATE B AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION**
 
-Gate B is not authorized. It becomes the next executable engineering/validation step once the Privacy/Legal coverage determination (§12.1) and the operational prerequisites in §20.1 are in place.
+Gate B is authorized only for the controlled protocol in §20. It is the next executable validation step once its immediately-before-execution controls are identified and verified.
 
 External Pilot Analytics Activation Gate is CLOSED.
 

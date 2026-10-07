@@ -30,12 +30,12 @@ Do not move a spec to `completed/` merely because an implementation agent report
 6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — completed
 7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — completed
 8. `SPEC-009` — Admin Organization & User Management — completed
-9. `SPEC-008` — Product Analytics & Pilot Observability — active; MVP contract approved, profile-free implementation complete, provider security ready, controlled enabled-state validation pending
+9. `SPEC-008` — Product Analytics & Pilot Observability — active; MVP contract approved, profile-free implementation complete, provider security ready, Gate B authorized, controlled validation pending execution
 
 `SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md). `SPEC-009` is completed at [`completed/009-admin-organization-user-management.md`](completed/009-admin-organization-user-management.md) after independent implementation review, Cloud migration/security verification, safe hosted validation, and final coherence verification.
 
 `SPEC-001–007, SPEC-009` — completed
-`SPEC-008` — **ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; CONTROLLED ENABLED-STATE VALIDATION PENDING**, **not** closed (current state in the SPEC §2 and §26)
+`SPEC-008` — **ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; GATE B AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION**, **not** closed (current state in the SPEC §2 and §26)
 
 ## Dependency model
 
