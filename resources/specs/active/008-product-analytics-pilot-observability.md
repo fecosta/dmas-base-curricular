@@ -1,1356 +1,505 @@
 # SPEC-008 — Product Analytics & Pilot Observability
 
-**Status:** ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; GATE B AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION
-**Delivery state:** PROFILE-FREE DIRECT CAPTURE TRANSPORT IMPLEMENTED — ANALYTICS INERT (`NEXT_PUBLIC_POSTHOG_KEY` UNSET)
+**Status:** ACTIVE — REVISED CONTRACT (GA4 NAVIGATION ANALYTICS + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING
+**Delivery state:** `main` RUNTIME STILL CONTAINS THE SUPERSEDED POSTHOG DIRECT TRANSPORT, INERT (`NEXT_PUBLIC_POSTHOG_KEY` UNSET); NO GA4 OR ORGANIZATIONAL-METRICS CODE EXISTS
+**Gate P — Privacy/Legal decisions:** PENDING
+**Gate O — Organizational metrics validation:** PENDING
+**Gate G — GA4 controlled validation:** PENDING
 **External Pilot Analytics Activation Gate:** CLOSED
-**Gate B — Controlled Enabled-State Validation:** AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION
+**Former Gate B (PostHog):** SUPERSEDED — NOT EXECUTED; MUST NOT BE EXECUTED
+
+Revision 2026-10-21 (D-032) replaces the PostHog architecture with GA4 for navigation analytics, Supabase for organization-level adoption metrics, and a minimal Admin dashboard. The PostHog design is preserved only as a historical record (§18).
 
 ---
 
 ## 1. Purpose
 
-Introduce optional, privacy-minimized product analytics for Base Curricular so the team can understand:
+The MVP measurement model answers exactly two questions:
 
-- platform adoption;
-- discovery behavior;
-- content interest;
-- returning usage;
-- UX friction.
+1. **Navigation** — how do people navigate and interact with Base Curricular?
+2. **Adoption** — which organizations use the platform, and how frequently?
 
-Analytics exists to improve the product.
+| Question | System | Audience | Where reports live |
+|---|---|---|---|
+| Navigation | Google Analytics 4 (GA4), optional, consent-gated, default OFF | Authorized Democracia+ personnel with GA4 property access | GA4 UI (external; not built into Base Curricular) |
+| Adoption | Supabase (existing authenticated organization model), server-side | Base Curricular Admins only | Minimal Admin dashboard (§7.7) |
 
-It must not become a mechanism for:
+Measurement exists to improve the product and understand organizational adoption. It must not become individual performance evaluation, user ranking, employee monitoring, organization scoring or ranking, sensitive inference, advertising or cross-service tracking (`docs/PRIVACY_AND_DATA_COLLECTION.md` §7).
 
-- individual performance evaluation;
-- user ranking;
-- employee monitoring;
-- sensitive inference;
-- advertising;
-- cross-service tracking.
-
-Analytics is observational and opt-in. It must not be interpreted as a census of all Base Curricular users.
+Out of scope: session replay, heatmaps, autocapture, identity journeys, funnels per person, cohorts of individuals, exports/destinations, data warehouse/ETL, streaming, background workers, new services, new roles.
 
 ---
 
 ## 2. Current State
 
-### 2.1 Current implementation (repository evidence)
+### 2.1 Repository runtime on `main` (`948abae`)
 
-The profile-free direct transport approved by this specification is implemented on `main` (`807b702`, `e2c4145`, `57b03da`):
+The runtime still contains the **superseded** PostHog implementation (§18): `src/lib/analytics/*`, `src/components/analytics/*`, the `analytics_preferences` table and RPC (migration `20261001000100`), the privacy UX (`src/components/privacy/*`) and `scripts/check-analytics-client-build.mjs`. `NEXT_PUBLIC_POSTHOG_KEY` is unset in every environment, so the transport is inert and sends nothing.
 
-- persisted user-owned analytics preference with explicit undecided / rejected / accepted states;
-- analytics default OFF; Terms acceptance separate from analytics consent; no Admin override; no client-side preference mutation;
-- `src/lib/analytics/boundary.ts` is the single application-controlled dispatcher: one direct browser POST to the PostHog EU Capture API (`/i/v0/e/`) per valid event;
-- `posthog-js` is removed from the runtime and from `package.json`; no SDK initializes;
-- every envelope carries `$process_person_profile: false`;
-- the authenticated Supabase UUID is used only as the event-level `distinct_id`, with no duplicate `user_id` property;
-- no `identify()`, `$identify`, alias, anonymous identity or browser analytics persistence;
-- strict runtime validation of the six-event taxonomy and closed per-event property schemas; invalid input is rejected, never partially forwarded;
-- no SDK or application retry, no queue, batching, buffering, replay or unload flush;
-- generation-owned `AbortController` with timeout; revocation and logout abort in-flight requests where possible;
-- Production-only environment gating; Preview / Development / Test no-op; unknown environment fails closed;
-- autocapture, automatic pageviews, Session Replay and heatmaps are absent from the application;
-- provider failure isolation;
-- `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_VERCEL_ENV` are inlined as build-time literals in the client analytics module (`e2c4145`);
-- `npm run test:analytics-build` (`scripts/check-analytics-client-build.mjs`, `57b03da`) is a dedicated regression guard that fails if the client build loses that inlining.
+No GA4 code, no GA4 configuration and no organizational-metrics table, RPC or dashboard exist.
 
-Production currently has no PostHog project key configured, so analytics is inert in every environment.
+### 2.2 Unmerged branch `fix/spec-008-server-verified-analytics`
 
-This is local/repository evidence. Enabled-state behavior has not been observed against the real provider (§20).
+Commit `c8076e1` (unmerged; not on `main`) adds `src/app/api/analytics/authorization/route.ts`, a `GET` route that re-derives live eligibility and the user's own persisted preference server-side before the browser boundary activates, returning `{ enabled: false }` for undecided/rejected/unreadable and no identity unless accepted. Its concept is reusable for GA4 gating (§14.3). Its status is: implemented on a branch, not reviewed for merge, not deployed.
 
-### 2.2 Historical implementation evidence
+### 2.3 Revised contract
 
-The first SPEC-008 implementation (`913ea86`, `03fdf93`, `dbb40c4`) used the PostHog JS SDK and called `identify()` after consent. That model is superseded and is not the current runtime.
-
-Its analytics-disabled hosted validation passed with `dbb40c4` in Production and no project key configured. The full record (former §42, "Hosted Validation Record — Analytics Disabled") is preserved in git history at `b3321fd:resources/specs/active/008-product-analytics-pilot-observability.md` and summarized in `docs/DECISIONS.md` G-008. That evidence validates the disabled state, preference persistence and privacy UX; it does not validate the corrected enabled transport.
-
-### 2.3 Verified PostHog provider state (account evidence)
-
-The following is provider/account verification evidence from the provider investigation, not repository runtime evidence. It is recorded as of 2026-10-07 and was not re-verified by the documentation reconciliation that recorded it.
-
-Earlier account-level inspection verified:
-
-- Organization: `VeR+`
-- Project: `Default project`
-- Project ID: `289698`
-- Hosting: PostHog Cloud EU
-- Project timezone: UTC
-- Plan: Cloud Free; no active paid subscription
-- zero configured destinations, zero legacy destination configurations, zero batch exports, zero external data sources
-- PostHog legal-document register empty
-
-The empty legal-document register does not prove that no DPA, Terms, or external agreement applies.
-
-Subsequent provider security verification established:
-
-- raw client IP discard: ON;
-- GeoIP transformation: PAUSED (previously enabled);
-- Web autocapture: OFF;
-- Web Vitals autocapture: OFF;
-- Heatmaps: OFF;
-- Session Replay: OFF;
-- Owner MFA: ENABLED;
-- one human Owner;
-- no pending invitations;
-- no known configured forwarding/export pipeline;
-- no known automated Base Curricular AI processing;
-- the broad PostHog WebMCP OAuth grants created during provider investigation were revoked.
-
-PostHog WebMCP is not required by the Base Curricular runtime and MUST NOT be reconnected merely to reconfirm this evidence.
-
-**Provider security readiness: PASS.**
-
-### 2.4 Verified profile-free technical feasibility
-
-Local, non-ingesting technical verification established that the approved analytics questions can be answered without:
-
-- `identify()`;
-- Person Profiles;
-- aliases;
-- anonymous-to-identified linkage;
-- persistent device identity;
-- PostHog Groups;
-- native Lifecycle insights;
-- saved Person cohorts.
-
-Verified capabilities include:
-
-- stable Supabase UUID as event-level `distinct_id`;
-- cross-session returning-user analysis;
-- event-level organization segmentation;
-- search interaction analysis;
-- content-interest analysis;
-- funnels;
-- custom-event paths;
-- retention calculations;
-- semantic journeys.
-
-A stable pseudonymous event identity is therefore technically distinct from a persistent PostHog Person Profile.
-
-### 2.5 Verified transport direction (preflight)
-
-Technical preflight also established that the existing PostHog JS SDK lifecycle is not the preferred transport for the approved contract.
-
-A failure experiment demonstrated that SDK/network retry machinery may transmit an event after application-level opt-out/shutdown.
-
-The approved implementation direction is therefore a minimal direct browser Capture API transport with:
-
-- no PostHog JS SDK runtime dependency for event delivery;
-- no SDK initialization;
-- no `identify()`;
-- no queue;
-- no batching;
-- no application retry;
-- no SDK retry;
-- no analytics persistence;
-- no offline event storage;
-- no unload flush;
-- one immediate application-controlled dispatch per approved event;
-- strict runtime event/property validation;
-- generation-scoped request cancellation.
-
-Local cross-browser verification confirmed this model is technically viable, subject to the transport semantics defined in this specification. It is now the implemented runtime (§2.1).
+This document is the revised contract. It is not implemented and authorizes no implementation by itself (§14).
 
 ---
 
-## 3. Problem / Gap
+## 3. Approved Product Decisions
 
-The existing analytics implementation was built around a consent-gated PostHog SDK integration, but subsequent provider/account and transport investigation identified processing surfaces that require a narrower contract.
-
-The original gaps and their current status:
-
-1. normal `identify()` may introduce `$identify`, Person Profiles and identity linkage — RESOLVED in the runtime (§2.1);
-2. the SDK introduced unnecessary identity/session/default metadata and retry behavior — RESOLVED; the SDK is removed (§2.1);
-3. GeoIP was enabled without an approved measurement requirement — RESOLVED; GeoIP is PAUSED (§2.3);
-4. provider defaults and generated properties require explicit minimization — RESOLVED in the application envelope; ingested state remains to be observed in Gate B;
-5. PostHog's one-year query retention does not establish enforceable physical deletion — ACCEPTED FOR THE MVP as a known limitation (§9); physical-deletion assurance DEFERRED;
-6. the former 12-month physical-deletion requirement could not be verified — SUPERSEDED for the MVP by §9;
-7. effective PostHog account access/MFA controls were unverified — RESOLVED; provider security readiness PASS (§2.3);
-8. applicable DPA, transfer arrangements and pilot jurisdictions remain unresolved — OPEN, Privacy/Legal authority (§12);
-9. controlled enabled-state behavior has not yet been validated — OPEN (§20).
-
-These gaps do not justify expanding processing or weakening the existing privacy contract.
+1. GA4 replaces PostHog for general navigation and usage trends (D-032).
+2. Supabase records organization-level adoption metrics using the existing organization/membership model (D-032).
+3. A minimal Admin-only dashboard shows: Organization, Registered users, Active users during selected period, Content opens, Downloads.
+4. GA4 is optional, consent-gated, default OFF, Production-only, and receives no personal identifiers or organization identifiers.
+5. Supabase metrics prefer aggregate counts over individual histories; the minimum per-user marker needed for distinct active users is defined in §7.2.
+6. Internal Supabase metrics are **not** assumed exempt from privacy or consent requirements. Their consent treatment is **REQUIRES PRIVACY/LEGAL APPROVAL** (§7.6).
+7. GA4 and Supabase numbers are different metrics and must never be presented as the same metric (§4.3).
+8. Existing privacy protections are preserved: default OFF; consent separate from Terms; no Admin override of a user's preference; revocability; fail-closed preference handling; no search-term capture; environment isolation; private-file protection; no leak of unpublished content.
 
 ---
 
-## 4. Approved Product Decision
+## 4. Measurement Definitions
 
-The approved Base Curricular analytics model is the smallest processing model capable of answering the defined product questions.
+### 4.1 Navigation (GA4)
 
-### 4.1 Consent model
-
-Analytics MUST remain:
-
-- optional;
-- default OFF;
-- explicit opt-in;
-- controlled by the individual user;
-- separate from Terms acceptance;
-- revocable;
-- non-blocking to normal product use.
-
-No administrator may enable analytics on behalf of another user.
-
-Failure to determine or persist a valid analytics preference MUST fail closed.
-
-Turning analytics OFF stops future optional analytics collection initiated by the application.
-
-Revocation MUST NOT be represented as automatic historical deletion.
-
-Historical deletion is handled through the applicable retention and privacy-rights mechanisms.
-
-### 4.2 Application event taxonomy
-
-Exactly six application analytics events are approved:
-
-- `library_viewed`
-- `search_performed`
-- `filter_applied`
-- `content_opened`
-- `external_reference_opened`
-- `content_downloaded`
-
-No additional application behavioral event may be introduced without a new Product/Privacy review.
-
-### 4.3 Application events vs provider/system events
-
-Application events and provider/system events are separate processing categories.
-
-The six-event taxonomy does NOT implicitly authorize:
-
-- `$identify`;
-- `$opt_in`;
-- `$create_alias`;
-- `$merge_dangerously`;
-- `$set`;
-- `$set_once`;
-- automatic pageviews;
-- automatic pageleave;
-- autocapture events;
-- feature-flag events;
-- additional provider behavioral/system events.
-
-The target minimal model authorizes no normal `$identify` event.
-
-### 4.4 Identity model
-
-Analytics may operate only for authenticated users who have persisted explicit analytics consent.
-
-The approved identity model is:
-
-- stable pseudonymous event identity;
-- based on the authenticated Supabase user UUID;
-- associated directly with approved events;
-- no normal PostHog `identify()`;
-- no persistent PostHog Person Profiles;
-- no aliases;
-- no anonymous behavioral history;
-- no anonymous-to-identified linkage;
-- no additional persistent device-tracking identity.
-
-The Supabase UUID remains personal data for privacy purposes even though it is pseudonymous.
-
-The UUID SHOULD appear once as the event-level `distinct_id`.
-
-The implementation SHOULD NOT duplicate the same UUID into a separate `user_id` analytics property.
-
-PostHog personless ingestion may derive internal analytical identifiers from the supplied `distinct_id`. Such provider-internal analytical keys do not authorize a new browser/device identity or Person Profile.
-
-If implementation evidence later shows that the approved measurement requirements cannot be satisfied under these constraints, implementation MUST return:
-
-`BLOCKED / DECISION REQUIRED`
-
-The implementation MUST NOT silently restore `identify()`, Person Profiles, aliases, device identities or anonymous linkage.
-
-### 4.5 Organization context
-
-`organization_id` may be sent as an event property when needed for approved organization-level analysis.
-
-PostHog Groups are not required.
-
-Organization name and organization domain MUST NOT be sent.
-
-Organization-level analytics MUST NOT be used to circumvent the prohibition on individual performance monitoring.
-
-### 4.6 Location processing
-
-Raw IP storage for analytics MUST remain disabled.
-
-Base Curricular analytics has no approved requirement for:
-
-- user country derived from IP;
-- city;
-- coordinates;
-- geographic subdivision;
-- IP-derived timezone;
-- other IP-derived location enrichment.
-
-GeoIP MUST therefore remain disabled. Provider evidence records the GeoIP transformation as PAUSED (§2.3); Gate B verifies that ingested events carry no IP-derived location properties.
-
-The product's content-country filters describe curricular content and MUST NOT be interpreted as authorization to geolocate users.
-
-Necessary transient network processing of an IP address is distinct from storing the address or enriching analytics with it.
-
-Provider/infrastructure security logging requires separate evidence and purpose limitation.
-
----
-
-## 5. Data Minimization Contract
-
-Analytics MUST use a closed property allowlist.
-
-### 5.1 Prohibited data
-
-Analytics MUST NOT contain:
-
-- raw search queries;
-- normalized search text capable of reconstructing a query;
-- query-derived fingerprints;
-- names;
-- email addresses;
-- organization names;
-- organization domains;
-- private content;
-- teaching notes;
-- original filenames;
-- full external URLs;
-- URL query strings;
-- URL fragments;
-- raw referrer URLs;
-- passwords;
-- authentication tokens;
-- authorization headers;
-- advertising identifiers;
-- raw IP addresses as analytics properties;
-- IP-derived geographic properties;
-- additional persistent device identifiers.
-
-### 5.2 Required properties
-
-The minimum model may require:
-
-- event name;
-- event timestamp;
-- approved pseudonymous `distinct_id`;
-- `organization_id`, when applicable;
-- environment;
-- event-specific canonical identifiers or counts explicitly required by the six-event measurement contract.
-
-`role` SHOULD be omitted unless a concrete approved measurement question requires it.
-
-### 5.3 Approved per-event properties
-
-#### `library_viewed`
-
-No additional event-specific properties.
-
-#### `search_performed`
-
-Allowed:
-
-- `result_count`
-- `has_results`
-
-#### `filter_applied`
-
-Allowed:
-
-- `filter_type`
-
-#### `content_opened`
-
-Allowed:
-
-- `content_id`
-- `content_type`
-
-#### `external_reference_opened`
-
-Allowed:
-
-- `content_id`
-- `content_type`
-
-#### `content_downloaded`
-
-Allowed:
-
-- `attachment_id`
-- `content_id`
-- `content_type`
-
-Unknown or unsupported properties MUST cause the analytics event to be rejected rather than partially forwarded.
-
-### 5.4 Provider-generated properties
-
-Provider defaults are not automatically approved.
-
-Classification:
-
-| Property category | Contract |
+| Candidate | GA4 source |
 |---|---|
-| Browser family | ACCEPTABLE only for a documented UX-friction question |
-| OS family | ACCEPTABLE only when justified |
-| Broad device class | ACCEPTABLE for responsive UX analysis |
-| Exact screen/viewport dimensions | UNNECESSARY |
-| Browser language | UNNECESSARY |
-| User timezone | UNNECESSARY |
-| Full current URL | PROHIBITED |
-| Raw referrer | PROHIBITED |
-| UTM parameters | UNNECESSARY |
-| Advertising identifiers | PROHIBITED |
-| Additional device identifiers | PROHIBITED |
-| Anonymous behavioral IDs | UNNECESSARY |
-| Session/window IDs | UNNECESSARY |
-| SDK name/version | ACCEPTABLE when needed for ingestion diagnostics |
-| Event timestamp | REQUIRED |
-| Approved pseudonymous distinct ID | REQUIRED |
-| Event-scoped technical deduplication metadata | ACCEPTABLE only under §15.4 |
+| Active users | GA4 standard metric derived from consented `page_view`s |
+| Page views | manual `page_view` with sanitised route template (§6.5) |
+| Library and module navigation | `page_view` on `/app/library`, `/app/library/modules/:id`, `/app/library/references/:type/:id` templates |
+| Content opens | `content_opened` (§6.4) |
+| Downloads | `content_downloaded` (§6.4) |
+| Search usage | `search_performed` with no text (§6.4) |
 
-`ACCEPTABLE` does not mean enabled by default.
+GA4 measures only consenting users in Production. It has no organization dimension.
 
-Optional acceptable properties SHOULD be omitted unless a concrete measurement question justifies them.
+### 4.2 Adoption (Supabase)
 
----
+All times and dates are **UTC**. A period is an inclusive range of UTC calendar days `[period_start, period_end]`.
 
-## 6. Search Privacy
-
-Search analytics may indicate that a search occurred and may contain explicitly approved aggregate metadata.
-
-They MUST NOT contain:
-
-- search text;
-- normalized search text;
-- hashes of search text;
-- embeddings derived from search text;
-- fingerprints capable of distinguishing/reconstructing queries;
-- query fragments;
-- URLs containing query values.
-
-Search analytics must measure interaction without recording what the user typed.
-
----
-
-## 7. Auxiliary PostHog Products
-
-The following are OUT OF SCOPE for SPEC-008:
-
-- Session Replay;
-- autocapture;
-- heatmaps;
-- surveys;
-- feature-flag analytics;
-- experiments;
-- error tracking;
-- logs;
-- AI Observability;
-- Replay Vision;
-- PostHog AI analysis of Base Curricular analytics data;
-- workflows/emails.
-
-Their availability in the PostHog account does not authorize their use.
-
-A future requirement for any of these capabilities requires a separate Product/Privacy review.
-
----
-
-## 8. Destinations, Exports and Secondary Use
-
-Current account inspection found no configured analytics destinations, batch exports or external data sources.
-
-The durable contract is:
-
-> Base Curricular analytics data MUST NOT be forwarded to a third-party destination without a new Product/Privacy review and applicable Security approval.
-
-This includes:
-
-- realtime destinations;
-- batch exports;
-- webhooks;
-- integrations;
-- automated forwarding;
-- manual analytics exports subsequently uploaded or shared elsewhere.
-
-Provider subprocessors governed by the applicable processing agreement are a separate legal question and MUST NOT be conflated with customer-configured destinations.
-
----
-
-## 9. Retention and Deletion
-
-### 9.1 MVP retention posture (approved 2026-10-07)
-
-For the MVP/pilot, the Product Owner approved the following posture (`docs/DECISIONS.md` D-031):
-
-> Base Curricular accepts PostHog's one-year Product Analytics query-retention boundary for the MVP/pilot as a known limitation.
-
-This replaces, for the MVP, the former requirement that applicable optional analytics personal data MUST be physically/enforceably deleted within 12 months. Proof of physical deletion is no longer a prerequisite for MVP analytics activation.
-
-The posture does NOT establish or claim:
-
-- physical deletion within 12 months;
-- deletion from cold storage;
-- deletion from backups within 12 months;
-- a provider-enforced TTL;
-- an enforceable physical-deletion SLA.
-
-PostHog's query-retention boundary limits how long events remain queryable in Product Analytics. It MUST NOT be described as physical deletion in any product, privacy or user-facing document.
-
-Retention MUST NOT be extended beyond the provider's one-year query boundary merely because longer storage is technically available (for example through a paid plan).
-
-### 9.2 Deferred long-term requirement
-
-Enforceable physical deletion is DEFERRED, not disproven or abandoned.
-
-The previously defined options remain the reference for that reassessment:
-
-- **A — Provider-native enforceable deletion**, demonstrated by PostHog or the applicable contractual arrangement;
-- **B — Operational deletion**, only after technical, security and privacy feasibility is verified, addressing age-based selection, event deletion, any accidental Person Profiles or identifiers, derived datasets, manual exports, backup expiry, asynchronous completion, completion evidence, scheduling margin, retries, failure alerts, accountable ownership, least-privileged credentials, and audit evidence that does not recreate deleted data.
-
-A deletion request accepted by an API is not evidence that deletion completed.
-
-### 9.3 Reassessment triggers
-
-Retention/deletion assurance MUST be reassessed, and enforceable physical deletion reconsidered, before analytics becomes a materially expanded or long-term production capability, including before:
-
-- making analytics a permanent strategic capability;
-- materially expanding the event taxonomy;
-- collecting more identifying or sensitive properties;
-- introducing Person Profiles or `identify()`;
-- adding anonymous or device identity;
-- enabling exports or destinations;
-- enabling additional PostHog behavioral products;
-- materially changing the provider or processing architecture.
-
-No date or usage threshold is set beyond these triggers.
-
-Most of these changes already require a new Product/Privacy review under this specification; the reassessment is part of that review.
-
-### 9.4 Privacy/Legal relationship
-
-The former contract stated that adopting a query-retention interpretation required `PRODUCT + PRIVACY/LEGAL APPROVAL REQUIRED`.
-
-Product approval is recorded. Privacy/Legal decision A (2026-10-07) accepts the MVP posture only for bounded controlled Gate B validation. It does not approve external activation. Before external MVP activation, Privacy/Legal reconciliation remains required (§12.2), including:
-
-- whether the user-facing Privacy Notice retention statement (`docs/PRIVACY_NOTICE.md` §14, "12 meses") accurately describes the posture, and any resulting notice/consent version change;
-- applicable retention/deletion obligations and privacy-rights fulfilment under the posture.
-
-The MVP posture concerns retention/deletion assurance and gate proportionality only. It does not authorize broader collection, identity, or processing.
-
-## 10. Privacy Rights
-
-The analytics design MUST support applicable privacy-rights operations, including deletion where required.
-
-The operational process must establish:
-
-- responsible owner;
-- request channel;
-- identity verification;
-- provider lookup mechanism;
-- deletion mechanism;
-- completion evidence;
-- applicable response deadlines.
-
-Analytics consent revocation and historical data deletion are separate operations.
-
----
-
-## 11. Controller and Contact
-
-For this product contract:
-
-**Controller:** FVR Ltd  
-**Contact:** hola@democraciamas.com
-
-These MUST NOT be replaced by broader institutional entities solely because another Democracia+ document uses different language.
-
-Any contradiction between Base Curricular's approved product contract and institutional Privacy Policy, Terms, DPA or other legal material is:
-
-`LEGAL RECONCILIATION REQUIRED`
-
----
-
-## 12. Legal Readiness
-
-Privacy/Legal authority cannot be waived or inferred by product or engineering documentation. Decision A authorizes only the bounded controlled Gate B validation described in §20 under the current six-event, profile-free, minimized PostHog Cloud EU model and current provider posture. It accepts the one-year Product Analytics query-retention boundary as a known MVP limitation without a physical-deletion guarantee. It does not authorize external activation or broader processing.
-
-### 12.1 Before Gate B (preserved)
-
-Privacy/Legal decision A confirms that the bounded controlled validation — controlled participants, one bounded session, PostHog Cloud EU, current provider posture and MVP retention posture — is approved. This determination is limited to Gate B.
-
-### 12.2 Before external MVP activation (preserved, Privacy/Legal authority)
-
-- correct controller;
-- correct PostHog processor/contracting entity;
-- executed DPA or legally applicable equivalent;
-- applicable agreement version/effective mechanism;
-- actual pilot jurisdictions;
-- applicable legal basis;
-- applicable consent/storage requirements;
-- subprocessors;
-- international processing/transfer safeguards;
-- privacy-rights process;
-- acknowledgement of the MVP retention posture (§9.4) and Privacy Notice retention wording;
-- institutional Privacy Policy / Terms reconciliation.
-
-### 12.3 Deferred with the long-term retention requirement
-
-- legal sufficiency of enforceable physical deletion, backup treatment and deletion completion evidence (§9.2), until a reassessment trigger (§9.3) applies.
-
-EU Cloud hosting MUST NOT be represented as proof that all processing occurs exclusively within the EU.
-
-The empty PostHog legal-document register is not evidence that no agreement applies.
-
----
-
-## 13. Access and Security
-
-Gate B requires effective access restriction and accountability.
-
-Minimum outcomes:
-
-- named human accounts;
-- no shared human accounts;
-- least privilege;
-- only personnel with a legitimate analytics purpose receive access;
-- bounded administrator access;
-- MFA across human access paths;
-- controlled privileged credentials;
-- named credential owner;
-- secure credential storage;
-- revocation/rotation procedure;
-- accountable offboarding;
-- controlled invitations;
-- restricted validation evidence and exports.
-
-Base Curricular application Admin status MUST NOT automatically grant PostHog access.
-
-Paid provider capabilities such as SSO, SCIM, granular RBAC or advanced audit tooling are optional mechanisms, not requirements by name.
-
-If available Free-plan controls cannot achieve the required security outcome, Gate B remains blocked.
-
-Provider security readiness is recorded as PASS (§2.3): one human Owner with MFA, no pending invitations, investigation-time WebMCP OAuth grants revoked. Any new member, invitation or privileged credential re-opens this section. The browser uses only the publishable `phc_` project token.
-
----
-
-## 14. Environment Isolation
-
-Analytics MUST operate only in the approved Production environment.
-
-Preview, Development and Test MUST remain no-op.
-
-Unknown or missing deployment environment MUST fail closed.
-
-No analytics event may be intentionally sent from Preview, Development or Test.
-
----
-
-## 15. Analytics Transport Contract
-
-### 15.1 Application-controlled dispatch
-
-For each valid analytics event, the application MUST initiate at most one analytics dispatch.
-
-The application MUST NOT implement or enable:
-
-- application-level retries;
-- SDK-managed retries;
-- event queues;
-- request batching;
-- offline event storage;
-- delayed replay;
-- unload flushing;
-- service-worker analytics delivery;
-- behavioral event buffering for later transmission.
-
-Failure to deliver an analytics event is acceptable.
-
-Analytics is optional observational evidence and MUST NOT become a reliable-delivery or transactional system.
-
-Provider/network failure MUST continue to have no effect on normal product use.
-
-### 15.2 Direct transport model
-
-The approved implementation direction is a minimal browser transport to the PostHog EU Capture API.
-
-The transport SHOULD:
-
-- construct the analytics envelope explicitly;
-- use the browser-publishable project token;
-- send the approved pseudonymous UUID as `distinct_id`;
-- send `$process_person_profile: false`;
-- send one approved event at a time;
-- use a strict runtime event/property allowlist;
-- omit credentials/cookies;
-- suppress referrer transmission where supported;
-- avoid SDK initialization and SDK identity state;
-- maintain only ephemeral in-flight request control state.
-
-The application MUST NOT use a personal, management or privileged PostHog API credential in the browser.
-
-### 15.3 Transport-level retransmission
-
-The application-level single-dispatch guarantee does not imply an exactly-once wire-level delivery guarantee.
-
-After the application initiates a single request, the browser, operating system, HTTP implementation, network stack, intermediary, or provider infrastructure MAY internally retransmit or otherwise repeat that request as part of transport recovery.
-
-Local cross-browser verification demonstrated that Chromium may resend an already-dispatched POST under specific transport conditions, including reused-connection failures and HTTP 408 recovery.
-
-Such transport-level retransmission:
-
-- occurs outside the application's behavioral collection logic;
-- MUST NOT be intentionally initiated by application code;
-- MUST NOT be initiated by an analytics SDK retry mechanism;
-- MUST NOT cause previously buffered behavioral events to be replayed;
-- MUST NOT change the event's user identity or semantic payload;
-- MUST NOT be treated as authorization for application-level retry.
-
-The application MUST NOT claim exactly-once network delivery.
-
-### 15.4 Duplicate-tolerant ingestion
-
-Where practical, analytics processing SHOULD tolerate duplicate delivery of the same semantic event.
-
-Any event-level technical identifier introduced for deduplication MUST:
-
-- identify the event, not the user or device;
-- not create an additional persistent behavioral identity;
-- not enable anonymous-to-identified linkage;
-- not expand the approved analytics purpose;
-- be documented as technical ingestion metadata;
-- remain subject to the analytics retention/deletion contract.
-
-Provider-generated or application-generated event UUIDs may be used only if they satisfy these constraints.
-
-The feasibility and necessity of provider-side event deduplication MAY be verified during implementation and Gate B without reopening the product decision.
-
-### 15.5 Failure semantics
-
-For analytics transport failures, including:
-
-- HTTP errors;
-- network failures;
-- timeouts;
-- aborted requests;
-- malformed responses;
-- provider unavailability;
-
-the application MUST fail silently from the product user's perspective and MUST NOT perform an application-controlled retry.
-
-Loss of analytics telemetry is acceptable.
-
-Completeness of analytics data MUST NOT take precedence over:
-
-- consent;
-- identity isolation;
-- data minimization;
-- failure isolation;
-- revocation semantics.
-
-### 15.6 Observable guarantee
-
-The application guarantees:
-
-> At most one application-controlled dispatch per valid analytics event, with no application/SDK retry, queue, batching, behavioral buffering, persistence, or replay.
-
-The application does NOT guarantee:
-
-> Exactly one HTTP request will reach the provider at the wire/network level.
-
-This distinction is part of the approved analytics transport contract.
-
----
-
-## 16. Consent Lifecycle
-
-### 16.1 Before consent
-
-Before persisted opt-in:
-
-- analytics transport MUST remain inert;
-- no optional analytics event may be emitted;
-- no event may be buffered for later transmission.
-
-A rejected preference MUST produce the same analytics transport behavior as an undecided preference:
-
-- no dispatch;
-- no queue;
-- no replay.
-
-### 16.2 After consent
-
-After persisted opt-in:
-
-- only future events may be considered for dispatch;
-- only the approved processing contract may activate;
-- enabling analytics by itself MUST NOT emit an analytics event.
-
-### 16.3 Revocation
-
-When persisted analytics consent is revoked, the application MUST immediately:
-
-1. invalidate the current analytics generation;
-2. clear the active application analytics identity;
-3. reject all future analytics events while consent remains disabled;
-4. abort application-owned in-flight analytics requests where technically possible;
-5. prevent application-controlled retries, replay, queue flushing, or delayed transmission.
-
-Revocation guarantees that the application will not initiate new optional analytics collection after the revocation becomes authoritative.
-
-Revocation cannot:
-
-- retract a request already received by the provider;
-- guarantee cancellation of bytes already handed to the browser/network stack;
-- guarantee that the browser or network stack will not internally retransmit an already-dispatched HTTP request as part of transport recovery.
-
-These limitations MUST NOT be represented as application retries or as permission to initiate additional collection.
-
-Events generated while analytics is disabled MUST never be buffered for later transmission.
-
-### 16.4 Re-enablement
-
-Re-enabling analytics permits only new events generated after the new persisted opt-in state becomes authoritative.
-
-No event generated while analytics was disabled may later be transmitted.
-
-### 16.5 Logout and identity transition
-
-Logout MUST:
-
-- invalidate the current analytics generation;
-- clear the authenticated analytics identity;
-- abort application-owned in-flight requests where technically possible;
-- prevent stale application state from initiating additional dispatches.
-
-A subsequent user session MUST establish its analytics identity exclusively from the newly authenticated user and persisted consent state.
-
-No application-controlled retry, queue, browser analytics persistence, device identifier, or anonymous identifier may bridge User A to User B.
-
-Transport-level retransmission of an already-dispatched User A request does not authorize mutation or reassignment of that request to User B.
-
-User A analytics identity MUST never become User B's identity.
-
----
-
-## 17. Analytics Questions
-
-The approved analytics model should answer product-level questions such as:
-
-- Are consenting users returning to Base Curricular?
-- Which approved content surfaces are being opened?
-- Which modules or content categories receive interest?
-- Are users using search?
-- Are users using filters?
-- Are external references being followed?
-- Are downloadable resources being used?
-- Are there coarse device-related UX problems where specifically approved?
-
-Returning-user analysis means analysis of repeated approved events associated with the same approved pseudonymous `distinct_id` across time.
-
-It does NOT require:
-
-- PostHog Person Profiles;
-- native Lifecycle insights;
-- saved Person cohorts;
-- aliases;
-- persistent device identity.
-
-It must not answer questions such as:
-
-- Which employee is performing best?
-- Which individual searches for a particular sensitive subject?
-- Where is a particular user physically located?
-- What websites did an individual visit before Base Curricular?
-- What does an individual's detailed browsing history reveal?
-
----
-
-## 18. Technical Preflight Result
-
-Engineering completed bounded, non-ingesting technical preflight of the approved profile-free model.
-
-### 18.1 Identity feasibility
-
-Verified:
-
-1. stable Supabase UUID can be used as event-level `distinct_id`;
-2. normal `identify()` is not required;
-3. `$identify` is not required;
-4. persistent Person Profiles are not required;
-5. anonymous behavioral history is not required;
-6. anonymous-to-identified linkage is not required;
-7. persistent device identity is not required;
-8. the six approved application events remain sufficient;
-9. organization segmentation works via ordinary event properties;
-10. returning-user analysis remains possible;
-11. funnels/custom-event paths remain possible;
-12. retention calculations remain possible.
-
-### 18.2 Personless provider semantics
-
-For clean identifiers not already associated with a PostHog Person:
-
-- personless events can retain a stable analytical identity;
-- event properties remain queryable;
-- persistent Person properties are unnecessary;
-- PostHog Groups are unnecessary for current organization segmentation.
-
-Before Gate B, controlled validation identities MUST be verified not to have pre-existing Person/alias mappings that would invalidate the profile-free assumption.
-
-### 18.3 SDK feasibility
-
-The PostHog JS SDK can be configured to reduce identity/default metadata, but local testing found its retry/teardown behavior incompatible with the strongest approved no-buffering lifecycle guarantee.
-
-The SDK is therefore not the preferred runtime transport for the revised SPEC-008 model.
-
-### 18.4 Direct Capture API feasibility
-
-A local cross-browser direct-transport prototype verified:
-
-- undecided → zero dispatches;
-- rejected → zero dispatches;
-- persisted acceptance → future events only;
-- revocation → future events dropped;
-- re-enable → no replay;
-- strict six-event taxonomy;
-- strict property schemas;
-- stable UUID identity;
-- A→B user isolation;
-- same-user later-session identity;
-- no browser analytics persistence;
-- no application retry;
-- no queue;
-- no batching;
-- no unload flush;
-- failure isolation;
-- generation-scoped request ownership;
-- in-flight abort on revocation/logout where possible.
-
-Chromium may retransmit an already-issued HTTP request below application control. Section 15 defines the approved semantics for this limitation.
-
-### 18.5 Technical readiness decision
-
-Technical state at preflight was **IMPLEMENTATION READY — PROFILE-FREE CAPTURE TRANSPORT VERIFIED**.
-
-The transport has since been implemented (§2.1). Current technical state: **PROFILE-FREE IMPLEMENTATION COMPLETE**.
-
-The technical transport decision includes the documented transport-level retransmission caveat.
-
-This technical state does not authorize Gate B or external pilot activation.
-
----
-
-## 19. Gate A — Legal & Provider Readiness
-
-Gate A does not authorize telemetry.
-
-Gate A is reassessed against the MVP contract (§9):
-
-| Gate A item | Status |
+| Metric | Definition |
 |---|---|
-| Profile-free identity model and transport | CLOSED — implemented (§2.1) |
-| Provider security: roster, roles, MFA, invitations, credentials | PASS (§2.3, §13) |
-| GeoIP removal | PASS — PAUSED (§2.3) |
-| Provider configuration (raw-IP discard, autocapture, heatmaps, Session Replay, destinations) | PASS (§2.3); reconfirmed read-only at Gate B start |
-| Enforceable ≤12-month physical deletion evidence | REMOVED as an MVP prerequisite; DEFERRED (§9.2, §9.3) |
-| Privacy-contract reconciliation | DONE for the MVP posture (D-031) |
-| Privacy/Legal coverage of the bounded controlled validation | APPROVED — decision A, controlled Gate B only (§12.1) |
-| DPA/agreement, transfers/subprocessors, jurisdictions, legal basis, MVP-retention acknowledgement | PENDING — Privacy/Legal authority; required before external activation, not before Gate B unless §12.1 determines otherwise (§12.2) |
+| Registered organization | A row in `public.organizations` with `is_active = true` at query time. |
+| Registered users (per organization) | Count of `public.memberships` rows for that organization with `is_active = true` at query time. |
+| Active user | An eligible user (per `private.current_access()`) with ≥1 **qualifying action** on any UTC day in the period. Qualifying action: a successful eligible server render of an authenticated `/app` page, a recorded content open, or a recorded download. Failed, unauthenticated or ineligible requests never qualify. |
+| Active users (per organization) | Count of distinct users with a presence marker (§7.2) for that organization on any day in the period. The organization is the one resolved by `current_access()` at the time of the action. |
+| Active organization | An organization with ≥1 active user in the period. No higher threshold: with small pilot organizations a threshold would hide genuine use; a threshold can be added later without schema change. |
+| Content open | One successful server-side resolution of a **current published** module, material or institution detail (standalone page or Library overlay) for an eligible user. Each resolution counts; no per-user-per-content deduplication, because deduplication would require storing which person opened which content. Prefetches and failed/unpublished/archived resolutions do not count. |
+| Download | One successful authorized signed-URL issuance by `GET /api/attachments/[attachmentId]` (the existing server-authorized reader path) for a `Ready`, reader-visible attachment. Completion of the byte transfer is not observable and is not claimed. |
+
+### 4.3 Cross-source rule
+
+GA4 numbers are opt-in samples from consenting Production users, processed by Google. Supabase numbers are server-side counts across eligible users, subject to the §7.6 decision. They will not reconcile. Any report, deck or UI must label the source, and must not present GA4 "active users" and Supabase "active users" as the same metric.
 
 ---
 
-## 20. Gate B — Controlled Enabled-State Validation
+## 5. Data Categories
 
-Gate B is a bounded controlled validation.
+The authoritative inventory is `docs/PRIVACY_AND_DATA_COLLECTION.md` §5A. Summary:
 
-It is NOT general production analytics activation.
+| Category | Purpose | Recipient | Consent |
+|---|---|---|---|
+| 1. Optional GA4 analytics | Aggregate navigation trends | Google (GA4 property) | Explicit opt-in, default OFF; legal basis/transfer **REQUIRES PRIVACY/LEGAL APPROVAL** |
+| 2. Necessary operational data | Auth, eligibility, roles, membership, security, audit, private file access | Supabase, Vercel (existing) | Not consent-based; legal basis confirmation pending legal review (existing contract) |
+| 3. Organizational usage metrics | Org-level adoption for Admins | Supabase (internal) | **REQUIRES PRIVACY/LEGAL APPROVAL**; per-user-linked recording not activated until approved (§7.6) |
 
-Gate B is:
-
-**AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION**
-
-Authorization is limited to the protocol below. It is not general production analytics activation.
-
-### 20.1 Gate B prerequisites
-
-Satisfied:
-
-1. MVP product decisions recorded in durable project knowledge (D-031, §9).
-2. Implementation conforms to the approved profile-free direct-transport model (§2.1).
-3. Property allowlist enforced at runtime (§2.1).
-4. GeoIP disabled — PAUSED (§2.3).
-5. Provider security readiness — PASS (§2.3, §13).
-
-Authorized protocol:
-
-6. Privacy/Legal coverage is APPROVED for this bounded validation only (§12.1).
-7. Participants are limited to 1–2 controlled internal test accounts. The actual accounts and canonical Supabase UUIDs MUST be identified immediately before execution; this specification does not name or invent them.
-8. Duration is one bounded validation session using the deterministic sequence in §20.2.
-9. Validation runs against Production because analytics is contractually Production-only. The production publishable project token may be configured only in the separate Gate B execution task. Preview, Development and Test remain no-op. Production containment MUST prevent collection from anyone except the controlled participants; instructions asking other users not to opt in are insufficient.
-10. The person responsible for stopping and rolling back validation MUST be named immediately before execution.
-11. Evidence handling is limited to the minimum required to establish PASS/FAIL, without unnecessary copies of analytics data, and follows the MVP query-retention posture; physical deletion within one year is not promised or required (§9.1).
-12. Immediately before execution, verify that each participant UUID has no pre-existing PostHog Person or alias mapping that would invalidate profile-free validation. This is a narrow check for the selected UUIDs only.
-13. At validation start, reconfirm the provider configuration in §2.3 through a safer authenticated/manual read-only path. Do not reconnect PostHog WebMCP or recreate its revoked broad OAuth grant.
-
-No longer Gate B prerequisites under the MVP contract:
-
-- enforceable retention/deletion mechanism evidence (deferred, §9.2);
-- separate Security approval and roster/MFA verification (satisfied by provider security readiness PASS).
-
-Instructions asking normal users not to opt in are NOT sufficient containment.
-
-### 20.2 Executable Gate B protocol
-
-#### Preflight
-
-Before enabling analytics:
-
-1. verify the deployment and commit under test;
-2. verify the provider project is the intended Base Curricular PostHog Cloud EU project;
-3. read-only verify raw-IP discard ON; GeoIP PAUSED/OFF; autocapture OFF; Web Vitals autocapture OFF; heatmaps OFF; Session Replay OFF; and no unexpected destination/export;
-4. identify the 1–2 controlled participant accounts and canonical Supabase UUIDs;
-5. complete the narrow Person/alias identity-cleanliness check in §20.1 item 12;
-6. name the stop/rollback owner;
-7. capture the pre-validation state without making unnecessary copies of analytics data;
-8. establish production containment for only the controlled participants;
-9. only then configure the production publishable project token for this session.
-
-#### Deterministic validation sequence
-
-1. **Analytics OFF.** With the production project token available and the participant's persisted preference OFF, use the product normally. Confirm zero Base Curricular analytics events are dispatched or received. This distinguishes consent gating from key availability.
-2. **Explicit opt-in.** Enable analytics through the existing privacy UX. Confirm the preference persists and enabling analytics itself emits no unapproved behavioral event.
-3. **Six-event taxonomy.** Using controlled, non-sensitive interactions, exercise at least once: `library_viewed`, `search_performed`, `filter_applied`, `content_opened`, `external_reference_opened`, and `content_downloaded`.
-4. **Payload inspection.** Inspect outgoing and ingested events. Verify each name is approved; `distinct_id` equals the participant's canonical Supabase UUID; `$process_person_profile = false`; `organization_id` is canonical; `environment = production`; only event-specific allowlisted properties exist; and timestamp/required technical envelope fields are expected. Explicitly verify absence of name, email, organization name/domain, raw search query, query-derived fingerprint, private content, teaching notes, original filename, full external URL, referrer, advertising identifiers, persistent device identifier, anonymous analytics identifier, session/window tracking identifier, auth token/header, and unexpected location/GeoIP properties. Distinguish transport/provider technical metadata from application-controlled behavioral properties.
-5. **Identity/profile behavior.** Verify no `$identify`, alias event, Person Profile creation/update for the controlled UUID, or anonymous-to-authenticated behavioral linkage.
-6. **Revocation.** Disable analytics and wait for the preference to persist. Exercise interactions that normally emit approved events. Confirm no new application dispatch and no queued/buffered event appears later. Do not require retraction of an event already received before revocation.
-7. **Session isolation.** Verify logout stops analytics for the old identity. If a second controlled account is available, log in as it and verify the first identity is not reused, preference remains user-owned, and no cross-user attribution occurs. If only one account is available, record the two-account isolation check as pending rather than fabricating evidence.
-8. **Environment isolation.** Combine existing build/test evidence with an appropriate runtime check showing Preview, Development and Test remain no-op. Do not intentionally send events from those environments.
-9. **Provider failure isolation.** Block or otherwise safely make the collector unavailable without modifying provider infrastructure. Confirm normal Base Curricular functionality continues.
-
-### 20.3 PASS criteria
-
-Gate B passes only if evidence establishes:
-
-1. zero telemetry before opt-in;
-2. only the six approved application events;
-3. only approved application-controlled properties;
-4. no prohibited, private or raw-query content;
-5. no `$identify` or alias;
-6. no persistent Person Profile caused by validation;
-7. no anonymous behavioral linkage;
-8. no GeoIP/location enrichment contrary to the contract;
-9. approved pseudonymous UUID identity only;
-10. revocation prevents future application dispatch;
-11. no application retry, queue, buffer or replay;
-12. logout and user switching preserve identity isolation; if a second account is unavailable, the two-account portion is recorded as pending and this criterion is not yet established;
-13. non-production environments remain no-op;
-14. provider failure does not impair the product;
-15. no unexpected automatic behavioral collection appears.
-
-Exactly-once wire delivery is not required; §15.3 remains authoritative for browser/network retransmission.
-
-### 20.4 Failure and rollback
-
-Any privacy-contract violation is Gate B FAIL, including an unexpected event or property, `$identify`, Person Profile creation/update, GeoIP/location enrichment, autocapture, an application-buffered/retried event after completed revocation, or cross-user identity contamination.
-
-On FAIL:
-
-1. stop validation;
-2. remove or disable the production analytics configuration as appropriate;
-3. preserve only the minimum evidence necessary to diagnose the failure;
-4. keep normal product functionality available;
-5. report the exact deviation against this specification;
-6. do not proceed to external activation.
-
-### 20.5 State after execution
-
-A PASS does not open analytics to external users. After PASS, the expected lifecycle is:
-
-**CONTROLLED ENABLED-STATE VALIDATION PASSED — EXTERNAL MVP ANALYTICS ACTIVATION DECISION PENDING**
-
-The next explicit decision is: **Should optional MVP analytics be enabled for consenting production users?** That decision must separately reconcile §21, including the user-facing Privacy Notice.
-
-Gate B evidence must distinguish:
-
-- application dispatch;
-- browser/network behavior;
-- provider-ingested state.
-
-Gate B does NOT require proof of physical ≤12-month deletion.
-
-A successful Gate B does NOT authorize external pilot analytics automatically.
+Registered organizations and registered users per organization derive from existing membership data (category 2) and need no new collection.
 
 ---
 
-## 21. External Pilot Analytics Activation Gate
+## 6. GA4 Contract
 
-External pilot activation remains:
+### 6.1 Loading and consent
 
-**CLOSED**
+- `gtag.js` MUST NOT be requested, injected or executed before a persisted `accepted` decision for the **current GA4 consent version** is confirmed server-side (§6.8, §14.3).
+- No Consent Mode "default denied" loading and no cookieless pings: the tag is simply not loaded without consent. Using Consent Mode pings without consent requires **PRIVACY/LEGAL APPROVAL**.
+- Undecided, rejected, unreadable, superseded-version and failed-save states are all OFF.
+- Enabling analytics emits no event by itself. Privacy-choice interactions are never measured.
+- Existing PostHog-era acceptances MUST NOT be treated as GA4 consent. The provider and recipient changed, which is a material change under `docs/PRIVACY_UX_CONTRACT.md` §20; users must be asked again unless Privacy/Legal decides otherwise.
 
-Opening it requires, at minimum:
+### 6.2 Environment
 
-- successful Gate B;
-- applicable legal clearance;
-- pilot-jurisdiction review;
-- DPA/agreement readiness;
-- Privacy/Legal acknowledgement of the MVP retention posture (§9.4);
-- privacy notice consistency, including the retention statement;
-- security/access readiness;
-- validated provider configuration;
-- no unresolved material privacy deviation;
-- a deliberate decision to remove Gate B production containment and configure the Production project key.
+- Measurement ID is read from `NEXT_PUBLIC_GA_MEASUREMENT_ID` (documented here; env files are not changed by this revision).
+- GA4 loads only when `NEXT_PUBLIC_VERCEL_ENV === "production"` and the Measurement ID is present and well-formed (`G-` prefix). Preview, Development, Test, unset or unknown environments are no-op (fail closed). Test runs are forced inert.
 
-Enforceable physical deletion is not an MVP external-activation requirement (§9).
+### 6.3 Identity
+
+- No `user_id`, no Supabase UUID, no email, no name, no organization ID or name, no role is ever sent.
+- GA4 User-ID, User-Provided Data collection and Google Signals are OFF.
+- GA4 sets first-party `_ga` / `_ga_<container>` cookies holding a random client ID. This is a persistent browser identifier, which the superseded PostHog contract avoided. It is accepted only under consent and **REQUIRES PRIVACY/LEGAL APPROVAL**. Proposed `cookie_expires`: 60 days (pending approval; aligned with proposed event retention, §6.9).
+- Logout clears `_ga*` cookies so the next user of the browser does not inherit the client ID (§6.8).
+
+### 6.4 Event taxonomy
+
+Manual events only. Automatic and enhanced measurement are off (§6.6).
+
+| Event | Parameters (closed allowlist) | Why |
+|---|---|---|
+| `page_view` | `page_location` (sanitised, §6.5), `page_title` (= route template), `page_referrer` (sanitised template or empty) | Active users, page views, Library/module navigation |
+| `search_performed` | `has_results` (boolean) | Search usage without query text |
+| `content_opened` | `content_type` (`module` \| `material` \| `institution`) | Content-open trend |
+| `content_downloaded` | `content_type` | Download trend |
+
+Deliberately omitted: `library_viewed` (covered by `page_view`), `filter_applied` and `external_reference_opened` (not MVP candidates), `result_count`, `content_id`, `attachment_id`, filenames, titles, filter values. Adding any event or parameter requires a new Product/Privacy review.
+
+Unknown events or parameters are rejected at runtime, not partially forwarded.
+
+### 6.5 URL, title and referrer sanitisation
+
+Existing reader routes (from `src/app`):
+
+| Route | Sent as |
+|---|---|
+| `/app` | `/app` |
+| `/app/library?q=…&axis=…` | `/app/library` (query string dropped; `q` holds search text) |
+| `/app/library/modules/<uuid>` (page or overlay) | `/app/library/modules/:id` |
+| `/app/library/references/<type>/<uuid>` | `/app/library/references/:type/:id` |
+| `/app/privacidad/aviso`, `/app/privacidad/terminos` | unchanged |
+| Admin routes (`/app/organizations/**`, `/app/users`, `/app/contributions/**`) | template with `:id` placeholders |
+| any unmatched path | `/app/other` |
+
+Rules: origin + template only; no query string, no fragment, no IDs, no slugs; `page_title` is the template, never `document.title` (content titles must not reach GA4); `page_referrer` is the previous template or empty. The existing `Referrer-Policy: no-referrer` header stays.
+
+### 6.6 Property configuration (verified in Gate G)
+
+Facts about Google behavior below are **to verify in Gate G**; this document does not assert them.
+
+- Enhanced measurement: all toggles OFF (page views on history change, scrolls, outbound clicks, site search, video, file downloads, form interactions). History-change page views would send raw `?q=` URLs.
+- Google Signals: OFF. Ads personalization: OFF. No Google Ads, Merchant or other product links. Data sharing settings: all OFF.
+- Granular location and device data collection: OFF where the setting exists.
+- IP handling: GA4 is documented by Google as not logging/storing IP addresses — to verify; no IP is sent as a parameter.
+- User-ID and User-Provided Data: OFF.
+- Event data retention: shortest available (expected 2 months — to verify). Proposed; **REQUIRES PRIVACY/LEGAL APPROVAL**.
+- Property timezone UTC; no audiences built for cross-service use.
+
+### 6.7 Prohibited data
+
+GA4 MUST NOT receive: names, emails, Supabase UUIDs, organization IDs/names/domains, role, search text or anything derived from it, query strings, fragments, content titles, descriptions, teaching notes, filenames, attachment or content IDs, private document names, external URLs, tokens or headers.
+
+### 6.8 Revocation and logout
+
+On revocation (ON → OFF persisted) or logout the application MUST:
+
+1. set `window['ga-disable-<MEASUREMENT_ID>'] = true` and stop all further `gtag` calls;
+2. delete `_ga` and `_ga_<container>` cookies for the site domain;
+3. not reload or re-inject the tag until a new persisted acceptance;
+4. never send events generated while OFF.
+
+Limitation: data already received by Google cannot be retracted by the application; it is subject to GA4 retention and Google's deletion tools (user-deletion by client ID or data-deletion requests), handled through the privacy-rights process (§9).
+
+### 6.9 Retention
+
+GA4 event data: shortest available setting (proposed 2 months; to verify). Aggregated standard reports may persist beyond event-data retention — to verify and disclose. **REQUIRES PRIVACY/LEGAL APPROVAL.**
+
+### 6.10 Access
+
+GA4 property access: named human Google accounts, least privilege (Viewer by default), MFA, no shared accounts, accountable offboarding. Base Curricular Admin does not grant GA4 access.
+
+### 6.11 Failure isolation
+
+Blocked, failing or slow GA4 never affects product use. No application retry, queue or replay.
 
 ---
 
-## 22. Acceptance Criteria
+## 7. Supabase Organizational Metrics Contract
 
-### AC-01 — Default off
+### 7.1 Principles
 
-A user who has not explicitly opted in produces no optional analytics telemetry.
+Server-side recording only. Organization is always derived from `private.current_access()`; no caller-supplied organization, user or count is accepted. No new service, worker, warehouse, ETL, streaming or role.
 
-### AC-02 — Separate consent
+### 7.2 Data model (minimum)
 
-Terms acceptance does not imply analytics consent.
+Two tables in the `private` schema (no grants to `anon`/`authenticated`):
 
-### AC-03 — Six application events
+```text
+private.usage_daily_counts
+  activity_date   date      -- UTC
+  organization_id uuid      references public.organizations(id)
+  metric          text      check (metric in ('content_open', 'download'))
+  count           bigint    not null default 0
+  primary key (activity_date, organization_id, metric)
 
-Only the six approved semantic application events are initiated by the application.
+private.usage_daily_presence
+  activity_date   date      -- UTC
+  organization_id uuid      references public.organizations(id)
+  user_id         uuid      references auth.users(id) on delete cascade
+  primary key (activity_date, organization_id, user_id)
+```
 
-### AC-04 — No normal identification
+`usage_daily_counts` holds no user identifier. `usage_daily_presence` is the minimum needed to count distinct active users over a period: one row per user per organization per UTC day, with no content, route, time-of-day or action type. It is personal data (pseudonymous). Hashing `user_id` adds no protection inside a private table and would break cascade deletion, so it is not used.
 
-The approved implementation does not call normal PostHog `identify()` and does not generate `$identify`.
+Alternative considered: count active users only per day (aggregate, no user ID). Rejected because distinct users across a multi-day period cannot be derived from daily counts. If Privacy/Legal rejects the presence marker, the dashboard falls back to "active users per day (max)" — a weaker metric — and must be labelled as such.
 
-### AC-05 — No persistent Person Profiles
+### 7.3 Recording
 
-The controlled provider state demonstrates that approved analytics does not create persistent PostHog Person Profiles.
+One RPC, `public.record_usage(metric text, subject_id uuid default null)`, `SECURITY DEFINER`, empty `search_path`, executable by `authenticated` only:
 
-### AC-06 — No anonymous linkage
+- resolves user and organization from `private.current_access()`; ineligible ⇒ no-op;
+- `presence`: upserts the day's presence row (`on conflict do nothing`);
+- `content_open`: validates `subject_id` is a current published module/material/institution, increments the counter, writes presence;
+- `download`: validates `subject_id` is a `Ready` reader-visible attachment, increments the counter, writes presence;
+- performs bounded retention purge (§7.5).
 
-No pre-consent or anonymous behavioral history is linked to the authenticated user.
+Callers: the authenticated `/app` server render (presence), the content detail server paths (content open), and `GET /api/attachments/[attachmentId]` after the signed URL is issued (download). Recording failure never blocks the product response.
 
-### AC-07 — Stable pseudonymous identity
+Because the RPC is reachable with the user's own session, a user can inflate their own organization's counts only by the equivalent of repeating real views/downloads. They cannot target another organization, invent content, or read anything. Accepted for the MVP (§16).
 
-Approved events support returning-user analysis through the approved pseudonymous event identity without profiles or linkage.
+### 7.4 Authorization and RLS
 
-### AC-08 — Search privacy
+- Both tables: RLS enabled, no policies, no grants to `anon`/`authenticated`; `service_role` not granted unless a later privacy-rights need is approved.
+- Read path: `public.admin_organization_usage(period_start date, period_end date)`, `SECURITY DEFINER`, calls `private.require_admin_content_access()` (live Admin role). Returns one row per organization only: `organization_id, organization_name, is_active, registered_users, active_users, content_opens, downloads`. It never returns user IDs or per-person rows.
+- Validation: `period_start ≤ period_end ≤ current UTC date`, range ≤ 90 days; otherwise `22023`.
+- Admin role revoked ⇒ `42501` on the next request. Contributors receive `42501`.
 
-No raw query, normalized query, hash, fingerprint or reconstructable search value reaches analytics.
+### 7.5 Retention (proposed; REQUIRES PRIVACY/LEGAL APPROVAL)
 
-### AC-09 — Property minimization
+| Data | Proposed retention | Enforcement |
+|---|---|---|
+| `usage_daily_presence` | 90 days | bounded delete of rows older than 90 days inside `record_usage` |
+| `usage_daily_counts` | 24 months | same purge mechanism |
+| Account deletion | immediate for presence | `on delete cascade` |
 
-Actual outgoing and ingested payloads conform to the approved allowlist.
+No scheduled job is introduced. Limitation: purge runs only when recording runs; during zero traffic, expired rows persist until the next request. `pg_cron` is the upgrade path if Privacy/Legal requires time-exact deletion.
 
-### AC-10 — No raw IP analytics storage
+### 7.6 Consent treatment — REQUIRES PRIVACY/LEGAL APPROVAL
 
-Raw client IP is not retained as an analytics event/property value.
+Unresolved: whether organizational usage metrics (a) are necessary/legitimate-interest processing disclosed in the Privacy Notice, (b) require opt-in under the existing analytics preference, or (c) require a separate opt-in.
 
-Necessary transport-layer handling remains a separate infrastructure-processing question.
+Safe default until Gate P decides:
 
-### AC-11 — No GeoIP
+- `record_usage` and both tables MUST NOT be deployed active; no per-user-linked activity is recorded.
+- Registered organizations and registered users (from existing membership data) MAY be shown to Admins, as they are existing operational/admin data.
+- If (b) or (c) is chosen, only consenting users are counted, and the dashboard must label metrics as "usuarios que aceptaron" counts.
+- Bundling org metrics into the GA4 consent is not recommended: different recipient and purpose.
 
-No user-location enrichment derived from IP is present.
+### 7.7 Admin dashboard
 
-### AC-12 — Auxiliary products excluded
-
-No Session Replay, autocapture, heatmap or other out-of-scope PostHog product processes Base Curricular analytics under SPEC-008.
-
-### AC-13 — No unapproved forwarding
-
-No configured or manual analytics forwarding occurs without the required review.
-
-### AC-14 — Environment isolation
-
-Preview, Development and Test emit no analytics.
-
-### AC-15 — Revocation
-
-Once revocation becomes authoritative:
-
-- no new analytics dispatch is initiated;
-- future events are dropped;
-- application-owned in-flight requests are aborted where technically possible;
-- no application-controlled retry, replay, flush or delayed transmission occurs.
-
-The application does not claim it can retract a request already received by the provider or suppress transport-level retransmission performed internally by the browser/network stack.
-
-### AC-16 — Session isolation
-
-Logout and user switching do not leak analytics identity.
-
-### AC-17 — Failure isolation
-
-Blocking or failing PostHog does not break normal product use.
-
-### AC-18 — MVP retention posture
-
-- PostHog's one-year Product Analytics query-retention boundary is documented and acknowledged as the MVP retention posture;
-- no product, privacy or user-facing document claims physical deletion, backup deletion, a provider-enforced TTL or a deletion SLA;
-- enforceable long-term retention/deletion assurance is explicitly deferred;
-- the reassessment triggers in §9.3 are documented.
-
-### AC-19 — Access controls
-
-Effective PostHog access, MFA and credential handling meet the approved security outcomes.
-
-### AC-20 — Legal readiness
-
-Applicable processor agreement, jurisdiction, transfer and privacy-rights requirements are resolved before external activation.
-
-### AC-21 — Controlled validation
-
-Gate B passes under a separately authorized, bounded protocol before external pilot activation.
-
-### AC-22 — Single application dispatch
-
-Each valid analytics event causes at most one application-controlled transport dispatch.
-
-No application or analytics SDK retry, batching, queueing, persistence, delayed replay or unload flush occurs.
-
-Browser/network-stack retransmission of an already-dispatched request does not constitute an application retry.
-
-### AC-23 — Failure without retry
-
-HTTP errors, network failures, timeouts, aborts, malformed responses and provider failures do not trigger another application-controlled analytics dispatch.
-
-Telemetry loss is acceptable.
-
-### AC-24 — Re-enable without replay
-
-Re-enabling analytics permits collection only for events generated after the new persisted opt-in becomes authoritative.
-
-Events generated while analytics was disabled are never transmitted later.
-
-### AC-25 — Cross-user transport isolation
-
-Logout and user switching invalidate the previous analytics generation.
-
-Application state from User A cannot initiate analytics dispatches using User B's identity, and no application-managed persistent analytics identity links the two users.
-
-### AC-26 — Runtime taxonomy enforcement
-
-Unknown event names, unsupported properties, malformed identifiers, invalid enums/counts, inherited-object tricks, accessors or malformed payload objects are rejected at runtime before dispatch.
-
-TypeScript typing alone is not sufficient enforcement.
-
-### AC-27 — Duplicate-tolerant ingestion
-
-If transport-level retransmission produces duplicate delivery, any deduplication mechanism introduced by the implementation must use event-scoped technical metadata rather than an additional user/device identity and must remain within the approved privacy and retention contract.
+- One Admin page, Spanish copy: **Actividad por organización**, under the existing Admin area (proposed `/app/organizations/actividad`; placement is implementation freedom).
+- Period selector: start/end UTC dates; default the last 30 complete UTC days ending today; max 90 days.
+- Columns: **Organización**, **Usuarios registrados**, **Usuarios activos en el período**, **Aperturas de contenido**, **Descargas**.
+- Summary line: active organizations / registered organizations in the period.
+- Footnote: "Fechas en UTC. Datos internos de Base Curricular; no comparables con Google Analytics."
+- No per-person rows, no drill-down to users, no ranking or scoring labels, no export.
+- Server-rendered; non-Admins receive the existing Admin denial; no data in client preload for non-Admins.
 
 ---
 
-## 23. Implementation Freedom
+## 8. Common Minimization Rules
 
-Engineering may choose reversible technical details necessary to implement the approved contract, provided they do not alter:
-
-- consent semantics;
-- event taxonomy;
-- identity semantics;
-- data minimization;
-- prohibited data;
-- GeoIP prohibition;
-- MVP retention posture and its reassessment triggers;
-- environment isolation;
-- access authority;
-- external activation gates.
-
-The approved implementation direction is the profile-free direct Capture API transport established by technical preflight.
-
-Engineering may choose internal abstractions and validation structure consistent with that model.
-
-Engineering MAY introduce event-scoped technical metadata for deduplication only if it satisfies §15.4.
-
-Engineering MUST NOT introduce:
-
-- `identify()`;
-- Person Profiles;
-- aliases;
-- additional persistent user/device identities;
-- analytics queues;
-- retries;
-- behavioral buffering;
-- broader property collection;
-
-without returning:
-
-`BLOCKED / DECISION REQUIRED`
-
-Implementation convenience must not redefine the contract.
+- Search text never leaves the request that executes the search; no hash, fingerprint or token of it is sent to GA4 or stored in metrics tables.
+- Unpublished, Draft, archived, historical or unauthorized content never appears in GA4 parameters or metric validation success.
+- Private files remain behind private Storage and signed URLs; metrics store no filename or object name.
+- Metrics and GA4 are never authorization sources.
 
 ---
 
-## 24. Knowledge Reconciliation Required
+## 9. Privacy Rights and Controller
 
-Once the revised model is implemented and validated, reconcile the existing project sources of truth rather than creating competing documentation.
-
-Expected reconciliation surfaces include:
-
-- this SPEC;
-- `docs/PRIVACY_AND_DATA_COLLECTION.md`;
-- `docs/PRIVACY_UX_CONTRACT.md`;
-- `docs/PRIVACY_NOTICE.md`;
-- `docs/SECURITY.md`;
-- `docs/ARCHITECTURE.md`;
-- `docs/DECISIONS.md`;
-- relevant repository lifecycle/status indexes.
-
-Historical implementation and validation evidence must be preserved.
-
-Stale statements describing SPEC-008 as merely planned must be corrected.
-
-Proposed behavior must not be documented as deployed until implementation and validation prove it.
-
-Existing documentation describing normal `identify()`/SDK identity behavior must be reconciled after implementation.
-
-Status (2026-10-07): the SDK-to-direct-transport implementation and the MVP retention posture are reconciled across these surfaces. SDK/`identify()` statements are retained only as historical evidence. `docs/PRIVACY_NOTICE.md` and the privacy contract version are intentionally unchanged pending Privacy/Legal review (§9.4).
+Controller: **FVR Ltd**. Contact: **hola@democraciamas.com**. Consent revocation and historical deletion are separate operations. Privacy-rights handling must cover: Supabase presence rows (delete by `user_id`), GA4 (Google user-deletion by client ID where the user can supply it, or property-level deletion request), and the preference row.
 
 ---
 
-## 25. Open Blockers
+## 10. Legal Readiness — REQUIRES PRIVACY/LEGAL APPROVAL
 
-### Required immediately before controlled validation execution (Gate B)
+Gate P must decide, at minimum:
 
-- identify the 1–2 controlled internal accounts and canonical UUIDs;
-- establish participant-only production containment;
-- name the stop/rollback owner;
-- complete identity cleanliness for the selected UUIDs;
-- reconfirm provider configuration through the safe read-only path;
-- verify the deployment/commit and intended provider project;
-- configure the Production publishable key only within the execution task.
+1. GA4 processor terms / DPA acceptance and the contracting Google entity;
+2. international transfer to the US and safeguards;
+3. pilot jurisdictions and applicable legal basis for GA4;
+4. acceptance of the `_ga` persistent client identifier and proposed cookie expiry;
+5. GA4 retention setting and disclosure of aggregate-report persistence;
+6. consent treatment for organizational metrics (§7.6);
+7. retention of presence markers and counts (§7.5);
+8. whether PostHog-era consents must be re-collected (recommended: yes);
+9. Privacy Notice changes and new `privacyNoticeVersion`/`consentVersion`;
+10. disposal of any PostHog data and closing the PostHog project.
 
-### Required before external MVP activation
+Proposed user-facing Spanish changes for `docs/PRIVACY_NOTICE.md` (not applied; **REQUIRES PRIVACY/LEGAL APPROVAL**; apply only together with implementation and a version bump):
 
-- successful Gate B;
-- Privacy/Legal items in §12.2, including acknowledgement of the MVP retention posture and the Privacy Notice retention wording;
-- the remaining conditions in §21.
+- §12 "¿Qué proveedor utilizamos para analítica?": "Utilizamos **Google Analytics 4**, de Google, como proveedor de la analítica opcional del producto, únicamente si la aceptas."
+- §13 "Procesamiento internacional": "La analítica opcional es procesada por Google y puede implicar transferencias a Estados Unidos u otros países."
+- §7: replace the event-identifier sentence with: "Google Analytics utiliza una cookie con un identificador aleatorio en tu navegador. No le enviamos tu identificador de cuenta, tu correo, tu nombre ni tu organización."
+- §14 retention: replace "12 meses" with the approved GA4 retention and the approved organizational-metrics retention.
+- New subsection under §4/§5 describing organization-level usage metrics, per the §7.6 decision.
 
-### Deferred until long-term or materially expanded analytics
-
-- enforceable physical deletion within a defined period;
-- backup, cold-storage and derived-data deletion treatment;
-- deletion completion evidence and operational deletion mechanism (§9.2);
-- legal sufficiency of the long-term retention/deletion posture.
-
-Resolved since the previous revision: SDK/`identify()` replacement, runtime allowlist enforcement, GeoIP removal, account roster/roles/MFA/invitations/credential verification.
-
-These blockers do not reopen the approved product direction.
+`docs/TERMS_OF_USE.md` needs no change: it already refers to the Privacy Notice for the provider and keeps analytics separate from Terms.
 
 ---
 
-## 26. Current Lifecycle State
+## 11. Gates
 
-Current state:
+### 11.1 Gate P — Privacy/Legal decisions — PENDING
 
-- **MVP ANALYTICS CONTRACT APPROVED**
-- **PROFILE-FREE IMPLEMENTATION COMPLETE**
-- **PROVIDER SECURITY READY**
-- **GATE B AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION**
+Passes when every item in §10 has a recorded decision in `docs/DECISIONS.md`.
 
-Gate B is authorized only for the controlled protocol in §20. It is the next executable validation step once its immediately-before-execution controls are identified and verified.
+### 11.2 Gate O — Organizational metrics validation — PENDING
 
-External Pilot Analytics Activation Gate is CLOSED.
+Requires Gate P item 6–7. Evidence: local real-stack pgTAP + Vitest + Playwright for AC-O1…AC-O10; Cloud structural verification of RLS, grants, function hardening; hosted read-only verification of the dashboard with a real Admin and denial for a non-Admin.
 
-`NEXT_PUBLIC_POSTHOG_KEY` is intentionally unset. No production analytics activation is authorized by this specification revision, and none may be inferred from it.
+### 11.3 Gate G — GA4 controlled validation — PENDING
 
-SPEC-008 remains active and MUST NOT be moved to `completed/` until Gate B passes and independent verification against §22 is complete.
+Requires Gate P items 1–5, 8–9. Protocol:
+
+1. read-only verify property settings in §6.6 and record evidence;
+2. controlled Production test with 1–2 named internal accounts, using GA4 DebugView/Realtime and browser network inspection;
+3. verify: no `googletagmanager.com`/`google-analytics.com` request before consent; after consent only §6.4 events with §6.4 parameters; sanitised `page_location`/`page_title`/`page_referrer`; no `uid`/`user_id`, no query strings, no titles; revocation/logout stops requests and removes `_ga*`; Preview no-op; blocked GA4 does not break the product;
+4. name a stop/rollback owner (unset `NEXT_PUBLIC_GA_MEASUREMENT_ID`, redeploy).
+
+Containment: the Measurement ID is configured in Production only during Gate G; production users other than controlled accounts must be prevented from loading the tag (e.g. server-side allowlist during the window). Instructions alone are insufficient.
+
+### 11.4 External Pilot Analytics Activation Gate — CLOSED
+
+Opens only after Gate P, Gate G (for GA4) and/or Gate O (for org metrics) pass, the Privacy Notice is updated and versioned, and a deliberate activation decision is recorded. GA4 and org metrics may be activated independently.
+
+### 11.5 Former Gate B — SUPERSEDED
+
+The PostHog controlled validation authorized under D-031 was never executed. It is superseded by D-032 and must not be executed.
+
+---
+
+## 12. Acceptance Criteria
+
+### GA4
+
+- **AC-G1 Default OFF.** Undecided, rejected and unreadable preference ⇒ zero requests to Google tag/collect hosts (Playwright network assertion).
+- **AC-G2 Separate consent.** Accepting Terms leaves GA4 OFF.
+- **AC-G3 Re-consent.** A preference recorded under a PostHog-era `consent_version` is treated as undecided for GA4 (unless Gate P item 8 records a different decision).
+- **AC-G4 Server-verified load.** The tag loads only after the server confirms a persisted `accepted` decision for the current consent version.
+- **AC-G5 Taxonomy.** Only §6.4 events and parameters are sent; unknown input is rejected (unit test of the wrapper).
+- **AC-G6 Sanitisation.** For each §6.5 route, `page_location` has no query/fragment/ID and `page_title` is the template (unit + Playwright).
+- **AC-G7 No identifiers.** No request contains `uid`, `user_id`, a UUID, email or organization data (Playwright request inspection).
+- **AC-G8 Revocation/logout.** After revocation or logout: no further collect requests; `_ga*` cookies absent.
+- **AC-G9 Environment.** Preview/Development/Test/unknown env ⇒ no tag (unit + E2E in non-production).
+- **AC-G10 Failure isolation.** Blocked Google hosts ⇒ all core journeys pass.
+- **AC-G11 Property settings.** §6.6 settings recorded as verified in Gate G evidence.
+
+### Organizational metrics
+
+- **AC-O1 Server-derived org.** `record_usage` ignores any caller org/user; records under `current_access()` org.
+- **AC-O2 Eligibility.** Unauthenticated/ineligible callers record nothing.
+- **AC-O3 Content open.** Current published content increments once per resolution; Draft, archived, historical or unknown IDs do not.
+- **AC-O4 Download.** Only a successful authorized signed-URL issuance increments; 401/403/404 paths do not.
+- **AC-O5 Presence.** Multiple qualifying actions on one UTC day ⇒ one presence row.
+- **AC-O6 No direct access.** `authenticated`/`anon` cannot select/insert/update/delete either table (`42501`).
+- **AC-O7 Admin read.** Admin gets one row per organization with the five columns; Contributor and revoked Admin get `42501`.
+- **AC-O8 Definitions.** Registered users = active memberships; active users = distinct presence in range; active organization = ≥1 active user (pgTAP fixtures across two orgs and UTC day boundaries).
+- **AC-O9 Period validation.** Inverted, future or >90-day ranges ⇒ `22023`.
+- **AC-O10 Retention purge.** Presence rows older than 90 days and counts older than 24 months are removed by the next `record_usage`.
+- **AC-O11 Not activated before Gate P.** No migration activating `record_usage` callers is deployed to Production before Gate P item 6 is decided.
+- **AC-O12 Dashboard.** Spanish labels per §7.7; no per-person data; UTC footnote; non-Admin denied server-side.
+
+### Common
+
+- **AC-C1 No search text** in GA4 requests or metrics tables.
+- **AC-C2 No unpublished-content leak** via GA4 parameters, metric validation or dashboard.
+- **AC-C3 Documentation.** Privacy Notice, data inventory and decisions match the implemented behavior before activation.
+
+---
+
+## 13. Testing Strategy
+
+- **pgTAP:** tables' RLS/grants; `record_usage` validation and org derivation; `admin_organization_usage` authorization, definitions, period validation, purge.
+- **Vitest:** GA4 wrapper (env gating, consent-version gating, allowlist, sanitiser for every §6.5 route, revocation cookie clearing); dashboard page server authorization; attachment route records only on success.
+- **Playwright:** non-production network assertions (no Google hosts in any state); privacy UX journeys (re-consent for legacy acceptances); dashboard as Admin vs Contributor.
+- **Build guard:** replace `scripts/check-analytics-client-build.mjs` with an equivalent check for the GA4 Measurement ID inlining and absence of PostHog symbols.
+- **Hosted:** Gate G and Gate O protocols (§11). No destructive production mutation.
+
+---
+
+## 14. Implementation Transition (future plan; NOT authorized by this revision)
+
+Implementation requires a separate authorized task per phase.
+
+### 14.1 Code to remove or replace
+
+| Item | Action |
+|---|---|
+| `src/lib/analytics/boundary.ts`, `config.ts` | replace with a GA4 loader/wrapper (Measurement ID, env gate, allowlist, sanitiser, revocation) |
+| `src/lib/analytics/contract.ts` | reduce to the §6.4 taxonomy |
+| `src/lib/analytics/library-signals.ts`, `library-events.ts` | keep only what `search_performed { has_results }` needs; drop the salted query token if no longer needed |
+| `src/components/analytics/*` | `analytics-boundary.tsx` → GA4 loader; `content-opened.tsx`, `download-link.tsx` keep with new params; `external-reference-link.tsx` → plain link; `library-activity.tsx` → page_view/search only |
+| `package.json` `test:analytics-build`, `scripts/check-analytics-client-build.mjs` | replace for GA4 |
+| `.env.example` | replace `NEXT_PUBLIC_POSTHOG_KEY` with `NEXT_PUBLIC_GA_MEASUREMENT_ID` |
+| Vercel env | remove `NEXT_PUBLIC_POSTHOG_KEY` if ever set |
+
+### 14.2 Tests
+
+Update/remove: `tests/analytics-boundary.test.ts`, `analytics-config.test.ts`, `analytics-events.test.tsx`, `analytics-instrumentation.test.ts`, `analytics-privacy-negative.test.ts`, `analytics-provider-contract.test.ts`, `privacy-ux.test.tsx`, `tests/e2e/analytics-boundary.spec.ts`, `tests/e2e/analytics-events.spec.ts`. Add: org-metrics pgTAP, dashboard tests, GA4 wrapper tests (§13). `tests/privacy-documents.test.ts` stays and enforces the Notice version constant.
+
+### 14.3 Reuse
+
+- **Preference storage:** `public.analytics_preferences` and `public.set_analytics_preference` (user-owned, no Admin override, fail-closed) fit GA4 unchanged. Re-consent uses the existing `consent_version` column: bump `consentVersion`/`privacyNoticeVersion` in `src/lib/privacy/contract.ts` and treat older versions as undecided. No migration needed for this.
+- **Privacy UX:** `src/components/privacy/privacy-choice.tsx`, `data-preferences.tsx` reused; copy updated to name GA4 per approved Notice.
+- **Server verification:** the `GET /api/analytics/authorization` concept from unmerged `c8076e1` is reusable as the GA4 load gate, with the response reduced to `{ enabled: boolean }` (GA4 needs no user/org identity). The branch must be reviewed and adapted, not merged as-is.
+
+### 14.4 Database changes (minimal)
+
+One migration: two `private` tables (§7.2), `public.record_usage`, `public.admin_organization_usage`, grants/RLS. No change to existing tables.
+
+### 14.5 Phases
+
+0. **Privacy/Legal decisions** (Gate P).
+1. **Org metrics + Admin dashboard** (registered counts may ship before Gate P; recording only after §7.6 decision) → Gate O.
+2. **GA4 swap** (loader, wrapper, re-consent, Notice update with version bump) → Gate G.
+3. **PostHog removal** (code, tests, env, scripts, PostHog project closure/data disposal per Gate P item 10).
+4. **Activation decision** (External Pilot Analytics Activation Gate) and doc reconciliation.
+
+Phases 2 and 3 may be combined in one change.
+
+---
+
+## 15. Implementation Freedom
+
+Engineering may choose component structure, route placement of the dashboard, SQL shape, and wrapper internals. It may not change: consent semantics, default OFF, event/parameter allowlists, sanitisation rules, metric definitions, authorization, retention values once approved, environment isolation, or gates. A conflicting constraint returns `BLOCKED / DECISION REQUIRED`.
+
+---
+
+## 16. Known Limitations
+
+- GA4 and Supabase numbers never reconcile (§4.3).
+- GA4 relies on a persistent first-party client ID cookie; cookie clearing on logout does not affect data already sent.
+- Already-sent GA4 data cannot be retracted; deletion relies on GA4 retention/deletion tools.
+- Content opens are not deduplicated; reloads and repeated views inflate counts.
+- A user can inflate their own organization's counts by repeating real actions or calling `record_usage` directly with their session.
+- Downloads count authorized URL issuance, not completed transfer.
+- Small organizations: an Admin seeing "1 active user" may infer who it is. Admins already manage memberships; no per-person data is shown.
+- Retention purge is traffic-driven, not time-exact (§7.5).
+- Organization attribution follows the user's organization at the time of action; reassignment does not move history.
+
+---
+
+## 17. Open Questions
+
+1. §7.6 consent treatment for organizational metrics — **REQUIRES PRIVACY/LEGAL APPROVAL**.
+2. §7.5 retention values — **REQUIRES PRIVACY/LEGAL APPROVAL**.
+3. GA4 DPA, transfer, jurisdictions, legal basis, cookie identifier — **REQUIRES PRIVACY/LEGAL APPROVAL**.
+4. Is per-content popularity (which content is opened most) an MVP need? Currently omitted from both systems. **PRODUCT DECISION.**
+5. Should Admin/Democracia+ staff activity be excluded from the dashboard? Currently included under their own organization. **PRODUCT DECISION.**
+6. Disposal of the PostHog project and any data in it. **PRIVACY/LEGAL + PRODUCT.**
+
+---
+
+## 18. Superseded PostHog Design — Historical Record
+
+**SUPERSEDED by D-032 (2026-10-21). Not current or approved behavior.** Kept for rationale and evidence; full text at `948abae:resources/specs/active/008-product-analytics-pilot-observability.md`.
+
+- **Implementation history:** first SDK implementation with `identify()` (`913ea86`, `03fdf93`, `dbb40c4`), hosted-validated with analytics disabled (record at `b3321fd`, §42 there; G-008). Replaced by a profile-free direct Capture API transport (`807b702`, `e2c4145`, `57b03da`): six events (`library_viewed`, `search_performed`, `filter_applied`, `content_opened`, `external_reference_opened`, `content_downloaded`), Supabase UUID as event-level `distinct_id`, `$process_person_profile: false`, no SDK/retry/queue, Production-only, closed property allowlist.
+- **Provider evidence (2026-10-07, account-level, not repository):** PostHog Cloud EU project `289698`, Free plan; raw-IP discard ON, GeoIP PAUSED, autocapture/Web Vitals/heatmaps/Session Replay OFF; one human Owner with MFA; no destinations/exports; investigation-time WebMCP OAuth grants revoked.
+- **Rationale that carries forward:** search text must never reach analytics; URLs/referrers must be sanitised; SDK retry/teardown can transmit after opt-out, so loading must be gated rather than "disabled after load"; revocation cannot retract delivered data; environment isolation must use `NEXT_PUBLIC_VERCEL_ENV`, not `NODE_ENV`.
+- **D-031** (PostHog one-year query-retention boundary) and **Privacy/Legal decision A** (controlled Gate B only) are superseded with this design.
+- **Gate B** was authorized but never executed.
+
+---
+
+## 19. Current Lifecycle State
+
+- Revised contract documented (D-032); not implemented.
+- Gate P, Gate O, Gate G: PENDING.
+- External Pilot Analytics Activation Gate: CLOSED.
+- Former PostHog Gate B: SUPERSEDED, not executed.
+- `main` runtime: superseded PostHog transport present and inert; `NEXT_PUBLIC_POSTHOG_KEY` unset.
+
+No production analytics or organizational-metrics activation is authorized by this revision. SPEC-008 remains active and MUST NOT move to `completed/` until the applicable gates pass and independent verification against §12 is complete.
