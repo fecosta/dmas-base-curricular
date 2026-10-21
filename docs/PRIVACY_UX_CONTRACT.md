@@ -481,6 +481,10 @@ Examples requiring privacy/product review include:
 - individual performance analysis;
 - a materially different analytics provider or processing model.
 
+The change from PostHog to Google Analytics 4 (D-032) is such a change: acceptances recorded under the PostHog-era `consent_version` must not be treated as GA4 consent, and users must be asked again, unless Privacy/Legal explicitly records a different decision (SPEC-008 §6.1, §10). The re-consent decision remains unresolved.
+
+Hard activation prerequisite: GA4 (and any approved per-user-linked organizational-metrics recording) must not be activated before Privacy/Legal approves an updated Privacy Notice (and Terms if affected), `privacyNoticeVersion`/`consentVersion` are updated, and users are informed (SPEC-008 §10.1). The current Notice describes the inert PostHog runtime and is not an adequate notice for GA4 or organizational metrics. Default remains OFF.
+
 The implementation must not independently decide that renewed consent is unnecessary for a material privacy change.
 
 Return:
@@ -509,7 +513,7 @@ The interface must not imply that accepting product analytics also accepts Sessi
 
 Analytics is non-critical functionality.
 
-If PostHog:
+If the analytics provider (Google Analytics 4 under D-032):
 
 - fails to load;
 - is blocked;
@@ -545,7 +549,7 @@ Test
 → analytics no-op
 ```
 
-Non-production environments must never send telemetry to the production PostHog project.
+Non-production environments must never send telemetry to the production analytics property, and must not load the provider tag.
 
 ---
 
@@ -559,7 +563,7 @@ An Admin:
 - may reject analytics;
 - may change their preference.
 
-Being a Base Curricular Admin does not grant access to PostHog.
+Being a Base Curricular Admin does not grant access to the analytics provider (GA4). Admins do see aggregate organization-level usage metrics in the Admin dashboard (SPEC-008 §7.7); that is not access to any individual's analytics data or preference. Admin activity itself is not counted in those adoption metrics (SPEC-008 §4.2).
 
 Analytics administration is a separate authorization concern.
 
@@ -608,7 +612,7 @@ On smaller screens:
 
 # 28. Analytics events and the privacy UX
 
-Privacy-choice actions themselves must not create optional PostHog events before analytics is enabled.
+Privacy-choice actions themselves must not create optional analytics events, and the provider tag must not be loaded, before analytics is enabled.
 
 In particular, Base Curricular must not use optional analytics to record that a user:
 
@@ -699,7 +703,7 @@ Session Replay remains disabled and is not presented as an active preference.
 
 ### PUX-15 — Environment isolation
 
-Preview, Development, and Test send no telemetry to the production PostHog project.
+Preview, Development, and Test send no telemetry to the production analytics property.
 
 ### PUX-16 — Failure isolation
 
@@ -735,7 +739,7 @@ The implementation agent may determine:
 - loading states;
 - exact responsive layout;
 - exact placement within the account/user menu;
-- technical PostHog initialization mechanics.
+- technical analytics-provider loading mechanics (within SPEC-008 §6).
 
 The implementation may not independently change:
 

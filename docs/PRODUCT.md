@@ -345,6 +345,8 @@ These capabilities are outside the current baseline unless explicitly approved l
 
 Optional product analytics exists to support pilot learning and must not become employee monitoring, individual performance evaluation, user or organization scoring, behavioural profiling, advertising infrastructure or generalized surveillance. It is OFF by default, belongs to the authenticated user rather than to their organization or to an Admin, and rejecting it costs no product access. Accepting the Terms of Use does not enable it. Because it is opt-in, analytics observes a subset of usage and must never be reported as a complete census of Base Curricular activity.
 
+The MVP measurement model (D-032, SPEC-008) has two parts: optional Google Analytics 4 for aggregate navigation trends, and Supabase organization-level adoption metrics (registered users, active users in a period, content opens, downloads) shown to Admins in a minimal dashboard with one row per organization and no per-person or per-content data. Per-content popularity is not in the MVP, and Admin activity is excluded from adoption metrics (Admins still count as registered users). Organizational metrics are for understanding adoption, not for ranking or scoring organizations or people, and their consent treatment requires Privacy/Legal approval before per-user-linked activity is recorded. The two sources are different metrics and must not be presented as the same number.
+
 The authoritative privacy contracts are `docs/PRIVACY_AND_DATA_COLLECTION.md`, `docs/PRIVACY_UX_CONTRACT.md`, `docs/PRIVACY_NOTICE.md` and `docs/TERMS_OF_USE.md`.
 
 ## 13. Product principles
@@ -387,7 +389,7 @@ The initial product implementation uses:
 - PostgreSQL full-text search and SQL filters;
 - Vitest and Playwright for testing;
 - Vercel for application hosting;
-- PostHog Cloud EU for optional product analytics.
+- Google Analytics 4 for optional navigation analytics and Supabase for organization-level adoption metrics (D-032; documented, not yet implemented — the superseded PostHog transport remains inert on `main`).
 
 These technical choices implement the product contracts defined here; they do not redefine them.
 

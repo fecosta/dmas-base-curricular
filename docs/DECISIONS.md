@@ -469,8 +469,10 @@ Reactivation of collaborative contribution, review, approval, or related workflo
 
 ### D-031 — MVP analytics accepts PostHog's one-year query-retention boundary
 
-**State:** DECISION (Product Owner + Privacy/Legal for controlled validation only)
+**State:** SUPERSEDED by D-032 (2026-10-21) — historical record only. Formerly: DECISION (Product Owner + Privacy/Legal for controlled validation only)
 **Date:** 2026-10-07
+
+*Superseded: PostHog is no longer the approved analytics provider. The Gate B authorization below was never executed and must not be executed. See D-032.*
 
 For the MVP/pilot, Base Curricular accepts PostHog's one-year Product Analytics query-retention boundary as a known limitation.
 
@@ -488,9 +490,40 @@ This approval does not authorize unrestricted production analytics, external MVP
 
 ---
 
+### D-032 — MVP measurement uses GA4 for navigation and Supabase for organizational adoption
+
+**State:** DECISION (Product Owner) — Privacy/Legal approvals PENDING
+**Date:** 2026-10-21
+
+The MVP measurement model answers two questions: how people navigate Base Curricular (Navigation) and which organizations use it and how often (Adoption).
+
+- **Navigation:** Google Analytics 4, optional, explicit opt-in, default OFF, Production-only, loaded only after server-verified persisted consent. GA4 receives no names, emails, Supabase UUIDs, organization identifiers, search text, query strings, content titles or private document names. Google Signals, ads personalization, User-ID, User-Provided Data, enhanced measurement and data sharing are OFF. Reports stay in the GA4 UI.
+- **Adoption:** Supabase server-side organization-level metrics (registered users, active users in a period, content opens, downloads) derived from the existing organization/membership model, stored as daily aggregate counts plus a minimal per-user-per-day presence marker, readable only by live Admins through a security-definer function returning one row per organization.
+- **Dashboard:** one minimal Admin view with Organization, Registered users, Active users during selected period, Content opens, Downloads.
+
+**Amendment (2026-10-21, review remediation; Product Owner).**
+
+- *Recording boundary.* Usage is recorded only inside trusted server-side operations, after the operation succeeded: authorized resolution of current published content (`content_open`), authorized signed-URL issuance (`download`), authenticated `/app` render (presence). The write function `public.record_usage(target_user_id, metric)` is `SECURITY DEFINER`, revoked from `PUBLIC`/`anon`/`authenticated`, executable only by `service_role`, and called only from one `server-only` recorder module with a dedicated server-only secret key (not the Auth Admin key), taking the user ID solely from the server-verified access context. Organization, eligibility and Admin exclusion are derived in the database from live rows with the `current_access()` predicate; no client-supplied organization is accepted. Rejected: an `authenticated`-executable RPC (forgeable by any signed-in user), recording inside the existing published read RPCs (still session-triggerable; cannot cover Storage signed URLs), reusing the Auth Admin key (contradicts its documented contract). Recording fails open for the user, is not retried, and logs no personal data; a failure is an undercount.
+- *Definitions.* Content open = successful authorized server-side resolution of current published content, not proof of reading. Download = successful authorized signed-URL issuance, not proof of transfer. Periods are whole UTC days, start and end inclusive, max 90 days, default the 30 days ending today.
+- *Admin exclusion.* Actions by a user whose live persisted role is `Admin` are not recorded for adoption metrics (opens, downloads, active users) on any surface; Admins remain in registered users. Chosen over surface-based exclusion because Admin reader-surface activity during the D-030 phase is predominantly content management verification and cannot be told apart from reading.
+- *Scope.* Per-content popularity is not in the MVP: no organization-by-content reporting, no rankings, no individual histories, no content identifier in usage tables. The dashboard shows exactly five columns, one row per active organization (zero usage included), no summary row.
+- *Retention.* All values are PROVISIONAL. No automatic deletion is guaranteed; organizational-metrics deletion is a manual operator-run procedure (SPEC-008 §7.5) whose worst case (window + cadence + delay) Privacy/Legal must approve. Enforceable retention is BLOCKED for activation until approved.
+- *GA4 inventory.* The application allowlist controls only what the application sends; request-inherent and GA4-derived data are inventoried separately and require Privacy/Legal approval (SPEC-008 §6.12).
+- *Notice.* An approved updated Privacy Notice (and Terms if affected), version bump, user communication and re-consent decision are hard prerequisites for GA4 activation and for any approved per-user-linked organizational recording. The current Notice describes the inert PostHog runtime and is not adequate for either.
+
+This supersedes the PostHog architecture of SPEC-008 and D-031. PostHog-era Gate B was never executed and is withdrawn. Existing PostHog-era analytics acceptances must not be treated as GA4 consent unless Privacy/Legal decides otherwise.
+
+Internal organizational metrics are not assumed exempt from privacy or consent requirements. Their legal basis and consent treatment, GA4 processor/DPA/US-transfer/jurisdiction/legal basis, the GA4 cookie identifier, Consent Mode, GA4 provider-derived data, re-consent, Privacy Notice changes, disposal of historical PostHog data, and retention periods (all PROVISIONAL: GA4 event data 2 months, `_ga*` cookies 60 days, presence markers 90 days, aggregate counts 24 months) are **REQUIRES PRIVACY/LEGAL APPROVAL**. Until approved, per-user-linked organizational activity is not recorded.
+
+Preserved unchanged: default OFF; consent separate from Terms; user-owned preference with no Admin override; revocability; fail-closed; no search-term capture; environment isolation; private-file protection; no leak of unpublished content; no individual performance evaluation or ranking.
+
+This decision documents a contract only. It is not implemented, authorizes no implementation by itself, and keeps the External Pilot Analytics Activation Gate closed. See `resources/specs/active/008-product-analytics-pilot-observability.md`.
+
+---
+
 ## Current delivery state
 
-`SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; GATE B AUTHORIZED — CONTROLLED VALIDATION PENDING EXECUTION** (D-031): the original SDK implementation was migrated to Cloud, deployed and validated in Production with the provider unconfigured; the profile-free direct transport replacing it is committed on `main`. Gate B is authorized only for its bounded protocol; the External Pilot Analytics Activation Gate remains closed.
+`SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 
@@ -671,9 +704,9 @@ Hosted destructive mutation/provisioning/role-change/deactivation/audit-append f
 
 ### G-008 — SPEC-008 Product Analytics & Pilot Observability
 
-**State:** ACTIVE — MVP ANALYTICS CONTRACT APPROVED; PROFILE-FREE IMPLEMENTATION COMPLETE; PROVIDER SECURITY READY; CONTROLLED ENABLED-STATE VALIDATION PENDING
+**State:** ACTIVE — REVISED CONTRACT DOCUMENTED (D-032); NOT IMPLEMENTED. The PostHog delivery history below is historical.
 
-*The state, evidence and gate references below through "Not established" record the original SDK implementation and the SPEC revision current at that time (§38/§42 there correspond to the record preserved at `b3321fd`). The current gates are SPEC-008 §19–§21.*
+*The state, evidence and gate references below through "Not established" record the original SDK implementation and the SPEC revision current at that time (§38/§42 there correspond to the record preserved at `b3321fd`). The PostHog gates are superseded by D-032; the current gates are SPEC-008 §11.*
 
 Optional, consent-gated product analytics using PostHog Cloud EU, delivered in five phases on `main` from baseline `f7fcaa9`: preference persistence and RLS (`ca30458`), privacy UX (`21fe830`), the analytics boundary and environment isolation (`913ea86`), semantic event instrumentation (`03fdf93`), and integrated validation plus documentation reconciliation.
 
@@ -693,6 +726,8 @@ Analytics is OFF by default and stays OFF for `undecided`, `rejected`, revoked a
 
 **2026-10-07 MVP contract reconciliation (SPEC-008).** D-031 replaces the ≤12-month physical-deletion prerequisite with PostHog's one-year query-retention boundary as a known MVP limitation, with physical-deletion assurance deferred behind documented reassessment triggers. `e2c4145` inlines the public analytics environment in the client build and `57b03da` adds the `test:analytics-build` regression guard. Provider/account evidence (not repository evidence, not re-verified here) records project `289698` on PostHog Cloud EU with raw-IP discard ON, GeoIP PAUSED, Web and Web Vitals autocapture OFF, Heatmaps OFF, Session Replay OFF, one human Owner with MFA, no pending invitations, no known forwarding/export pipeline or automated AI processing, and investigation-time WebMCP OAuth grants revoked; provider security readiness is PASS. Privacy/Legal decision A authorizes only the bounded controlled Gate B validation under the current minimized model and accepts the one-year query-retention limitation without a physical-deletion guarantee. Gate B execution remains pending; external activation remains closed pending successful Gate B and the remaining Privacy/Legal items in SPEC-008 §12.2.
 
+**2026-10-21 architecture revision (SPEC-008, D-032).** The PostHog architecture recorded above is superseded and its section references (§12.2, §19–§21, §38, §42) point to the historical SPEC text at `948abae` / `b3321fd`. Gate B was never executed. SPEC-008 now documents GA4 for navigation analytics, Supabase organization-level adoption metrics and a minimal Admin dashboard; this is a contract only, with Gate P (Privacy/Legal), Gate O and Gate G pending and the External Pilot Analytics Activation Gate (SPEC-008 §11.4) closed. The PostHog transport remains on `main`, inert, until a separate authorized implementation removes it (SPEC-008 §14).
+
 ---
 
 ## Product Coherence OS state
@@ -703,4 +738,4 @@ Current overall state:
 
 SPEC-001 through SPEC-007 and SPEC-009 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
 
-SPEC-007 — UX/UI Navigation & Interaction Remediation closed as **COHERENCE VERIFIED** under the evidence recorded in G-007. SPEC-009 — Admin Organization & User Management closed as **COHERENCE VERIFIED** under the evidence recorded in G-009 and the Closure Record in `resources/specs/completed/009-admin-organization-user-management.md` §41: implementation, independent review, Cloud migration/security verification, and safe hosted validation are all reconciled; hosted destructive mutation/provisioning flows were intentionally not exercised because production has no designated safe fixture, consistent with the SPEC-004/SPEC-005 validation-split precedent. SPEC-008 — Product Analytics & Pilot Observability is implemented, deployed and validated in Production with analytics disabled under the evidence recorded in G-008, but is **not** coherence verified: the profile-free correction and the D-031 MVP retention posture are reconciled, Gate B is authorized for controlled execution but has not run, and external activation remains separately gated by SPEC-008 §21. The completed SPEC-006 interface-fidelity slice and the SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.
+SPEC-007 — UX/UI Navigation & Interaction Remediation closed as **COHERENCE VERIFIED** under the evidence recorded in G-007. SPEC-009 — Admin Organization & User Management closed as **COHERENCE VERIFIED** under the evidence recorded in G-009 and the Closure Record in `resources/specs/completed/009-admin-organization-user-management.md` §41: implementation, independent review, Cloud migration/security verification, and safe hosted validation are all reconciled; hosted destructive mutation/provisioning flows were intentionally not exercised because production has no designated safe fixture, consistent with the SPEC-004/SPEC-005 validation-split precedent. SPEC-008 — Product Analytics & Pilot Observability is **active and not coherence verified**. Its state has five distinct parts: (1) the *previous PostHog implementation* was delivered, deployed and validated in Production with analytics disabled under the evidence recorded in G-008 (historical); (2) that PostHog transport *remains on `main`, production-disabled and inert* (`NEXT_PUBLIC_POSTHOG_KEY` unset); (3) the *proposed GA4 + Supabase organizational-metrics architecture* (D-032 and its amendment) is a documented contract only — no GA4 or organizational-metrics code exists; (4) *implementation work is pending* and not authorized by the contract (SPEC-008 §14); (5) *privacy and production activation requirements* — Gate P, Gate O, Gate G, the Privacy Notice dependency and enforceable retention (BLOCKED) — are unmet, so the External Pilot Analytics Activation Gate (SPEC-008 §11.4) is closed. The PostHog Gate B never ran and is withdrawn. The completed SPEC-006 interface-fidelity slice and the SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.
