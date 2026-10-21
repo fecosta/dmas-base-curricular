@@ -167,8 +167,8 @@ Organizational metric definitions (SPEC-008 §4.2): **content opens** = successf
 The application's closed event/parameter allowlist controls only what Base Curricular passes to `gtag`; it does not control all data Google receives or processes (SPEC-008 §6.12). With consent ON:
 
 1. **Application-controlled:** event names and explicit parameters (SPEC-008 §6.4), sanitised route templates (§6.5), configuration (Measurement ID, cookie expiry, disable flag), consent gating.
-2. **Exposed by the browser/network when a request is made (inherent, not application-controlled):** IP address, user agent/client hints, HTTP headers incl. referrer subject to browser policy, language, screen/viewport, cookies sent, TLS/transport metadata.
-3. **May be generated, derived or processed by GA4 (documented/possible; to verify):** `_ga` client identifier and `_ga_<container>` session identifiers; automatic parameters (session ID/number, engagement time, engaged-session flag) and automatic events (e.g. `first_visit`, `session_start`, `user_engagement`); device/browser/OS; approximate geolocation from IP; traffic source/medium; aggregated or modelled report data.
+2. **Request-inherent data (inherent to making the request; not application-controlled):** IP address of the client as seen by the destination; necessary transport metadata (e.g. TLS/transport-level metadata, destination host, request timing).
+3. **Potential provider/browser processing (may be read, generated, or transmitted depending on GA4 configuration, browser behavior, and provider processing; requires verification before activation):** user agent/client hints; HTTP headers incl. referrer subject to browser policy; browser language; screen/viewport; cookies set for Google domains, if any; first-party `_ga*` cookies read by the tag; `_ga` client identifier and `_ga_<container>` session identifiers; automatic parameters (session ID/number, engagement time, engaged-session flag) and automatic events (e.g. `first_visit`, `session_start`, `user_engagement`); device/browser/OS; approximate geolocation from IP; traffic source/medium; other browser-derived or provider-generated information; aggregated or modelled report data.
 
 Each item in categories 2 and 3 is **REQUIRES PRIVACY/LEGAL APPROVAL**. Browser inspection in Gate G can observe what is sent, but cannot verify Google-side processing, derivation or retention. GA4 remains disabled until these decisions and the property configuration checks are complete.
 
@@ -536,6 +536,8 @@ Session Replay must not appear as enabled in the initial pilot because it is dis
 
 ## 25. Retention
 
+**SUPERSEDED (historical, D-031).** The statement below was the PostHog-era requirement. It is no longer current.
+
 Initial product analytics event retention is:
 
 **12 months**
@@ -543,6 +545,8 @@ Initial product analytics event retention is:
 This retention period must be configured where supported by the analytics provider and reviewed after the pilot.
 
 Retention must not be extended merely because longer storage is technically available.
+
+Current PROVISIONAL retention is in this section below (D-032) and in SPEC-008 §6.9 and §7.5.
 
 **GA4 and organizational metrics (D-032).** All values below are **PROVISIONAL — REQUIRES PRIVACY/LEGAL APPROVAL**. A retention target is not an enforceable deletion guarantee; no automatic deletion is guaranteed.
 

@@ -228,18 +228,18 @@ The §6.4 allowlist controls only what the **application** passes to `gtag`. It 
 | Configuration | Measurement ID (`NEXT_PUBLIC_GA_MEASUREMENT_ID`), `send_page_view: false`, `cookie_expires`, `ga-disable-*` flag |
 | Consent gating | Tag loaded only after server-verified persisted acceptance, §6.1 |
 
-**2. Data the browser/network necessarily exposes when a request to Google is made** — inherent to making the request; not controlled by the application:
+**2. Request-inherent data** — inherent to making the request; not controlled by the application:
 
-- IP address (network layer);
+- IP address of the client as seen by the destination;
+- necessary transport metadata (e.g. TLS/transport-level metadata, destination host, request timing).
+
+**3. Potential provider/browser processing** — may be read, generated, or transmitted depending on GA4 configuration, browser behavior, and provider processing. Requires verification before activation. **REQUIRES PRIVACY/LEGAL APPROVAL** for each item:
+
 - user agent / client hints;
 - HTTP headers, including `Referer` subject to browser policy (the site sends `Referrer-Policy: no-referrer`, which governs requests leaving Base Curricular pages; to verify for tag requests);
 - browser language;
 - screen and viewport size (read by the tag script);
 - cookies set for Google domains, if any, and first-party `_ga*` cookies read by the tag;
-- TLS and transport metadata.
-
-**3. Data GA4 may generate, derive or process** — documented/possible; **to verify; REQUIRES PRIVACY/LEGAL APPROVAL** for each item:
-
 - client identifier in `_ga` and session identifiers/counters in `_ga_<container>` cookies;
 - provider-generated automatic parameters (e.g. session ID, session number, engagement time, session-engaged flag, first-visit/session-start events, page-load/request sequence counters);
 - automatically collected events that may remain even with enhanced measurement OFF (e.g. `first_visit`, `session_start`, `user_engagement`);
