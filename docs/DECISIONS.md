@@ -534,7 +534,7 @@ This decision documents a contract only. It is not implemented, authorizes no im
 
 **Deferred.** Any hard deletion or archival of institutions; any rewrite of free-text references; any change to Admin management surfaces unless G2 says so.
 
-Tracked in `resources/specs/active/010-platform-readiness-organizational-testing.md` (U2).
+Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U2).
 
 ---
 
@@ -576,7 +576,7 @@ Tracked in the SPEC-010 file above (U5). `resources/specs/planned/011-organizati
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 
-`SPEC-010` — Platform Readiness for Organizational Testing is **ACTIVE — RECONCILED; UNIT-LEVEL GATES OPEN; ONLY U0 AND U1 AUTHORIZED** at `resources/specs/active/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Nothing in it is implemented; gates G1–G6 are open and units U2–U5 are blocked. `SPEC-011` remains planned.
+`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready and gates G1–G6 are open. Nothing in it is implemented or started; U2–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. `SPEC-011` remains planned.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 

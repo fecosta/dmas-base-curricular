@@ -297,7 +297,7 @@ The following should not be treated as current user-facing requirements:
 
 Level and format metadata remain in the content model for potential future use, but do not need to be displayed in the current interface.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034, D-035).** Institutional references will be suppressed from reader surfaces without deleting data; an Admin-selected content origin country, distinct from reach, will be added; and a visible feedback action will open an external form. None is part of the current UX contract. See `docs/DECISIONS.md` and `resources/specs/active/010-platform-readiness-organizational-testing.md`.
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034, D-035).** Institutional references will be suppressed from reader surfaces without deleting data; an Admin-selected content origin country, distinct from reach, will be added; and a visible feedback action will open an external form. None is part of the current UX contract. See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
 
 The completeness indicator present in earlier/static prototype behavior is **superseded** and is not part of the approved product baseline.
 
