@@ -544,9 +544,9 @@ Initial product analytics event retention is:
 
 This retention period must be configured where supported by the analytics provider and reviewed after the pilot.
 
-Retention must not be extended merely because longer storage is technically available.
-
 Current PROVISIONAL retention is in this section below (D-032) and in SPEC-008 §6.9 and §7.5.
+
+Retention must not be extended merely because longer storage is technically available.
 
 **GA4 and organizational metrics (D-032).** All values below are **PROVISIONAL — REQUIRES PRIVACY/LEGAL APPROVAL**. A retention target is not an enforceable deletion guarantee; no automatic deletion is guaranteed.
 
