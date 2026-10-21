@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-09-30
+**Last reconciled:** 2026-10-21
 
 ## Decision register
 
@@ -521,9 +521,62 @@ This decision documents a contract only. It is not implemented, authorizes no im
 
 ---
 
+### D-033 — Institutional references are suppressed from reader surfaces, not removed
+
+**State:** DECISION (Product Owner) — scope gate G2 and data inventory G6 PENDING
+**Date:** 2026-10-21
+
+**Approved future behavior (NOT IMPLEMENTED).** Institutional references are suppressed from reader-facing discovery and display. All institution records, existing relationships, materials, teaching notes, historical provenance and audit events are preserved. Institutions are not archived or hard-deleted. Published revisions are not modified destructively. Canonical organizations, memberships and authorization do not change. Suppression is enforced in the appropriate reader-facing data boundaries, not merely by CSS or hidden UI.
+
+**Current implemented behavior (verified read-only on `main`).** Institutions are reader-visible governed content (D-009) through the Library, search suggestions, module detail, reference pages and published-search results. Instructors and materials carry free-text institution fields that readers see. Which institutions and free-text references exist in Cloud data is to be confirmed by U0.
+
+**Pending decisions.** Gate G2 (exact scope, including institution names embedded in material titles and other free-text metadata, which are not silently rewritten) and G6 (read-only Cloud inventory before any data-dependent operation).
+
+**Deferred.** Any hard deletion or archival of institutions; any rewrite of free-text references; any change to Admin management surfaces unless G2 says so.
+
+Tracked in `resources/specs/active/010-platform-readiness-organizational-testing.md` (U2).
+
+---
+
+### D-034 — Content origin country is an Admin-selected attribute distinct from reach
+
+**State:** DECISION (Product Owner) — type scope and successor semantics gate G3 PENDING
+**Date:** 2026-10-21
+
+**Approved future behavior (NOT IMPLEMENTED).** The Admin explicitly selects a content item's country of origin. It is not inferred from the Admin's organization, email domain, IP address or location, and carries no organization-country dependency. It is distinct from geographic reach. Historical content with unknown provenance is `Sin dato`. Published-revision immutability is respected and the value is preserved across successor revisions. Country metadata creates no organization-specific visibility restriction (D-016 is unchanged). Only Admins can set or change it. Separately, the *reach* selector will be restricted to an approved Latin American set, with legacy values handled non-destructively (G1).
+
+**Current implemented behavior (verified read-only on `main`).** There is no origin-country field. Country is free text (`country_or_scope` on materials and institutions, `country` on instructors) with no value list; the Library `País o alcance` filter lists distinct stored values of materials and institutions. Organizations have no country attribute. Existing Cloud values are to be confirmed by U0.
+
+**Pending decisions.** G1 (approved Latin American list; legacy values) and G3 (eligible content types, permitted value set, successor-revision semantics, relationship to the existing filter) and G6.
+
+**Deferred.** Deriving country from any source other than explicit Admin selection; organization-level country attributes.
+
+Tracked in the SPEC-010 file above (U3, U4).
+
+---
+
+### D-035 — First feedback channel is an external form link
+
+**State:** DECISION (Product Owner) — form URL and privacy governance gates G4 and G5 PENDING
+**Date:** 2026-10-21
+
+**Approved future behavior (NOT IMPLEMENTED).** The first version is a visible feedback action that opens an external JotForm URL. There is no embedded iframe, no modal integration, no custom feedback backend and no new analytics event. Tokens, search queries, private content and user identifiers are not transmitted automatically. The label is Spanish-first and the action is keyboard-accessible and usable on mobile. The action is not enabled until the approved form URL and privacy-governance details exist. Feedback is voluntary and separate from analytics consent.
+
+**Current implemented behavior (verified read-only on `main`).** No feedback action or JotForm reference exists in the application.
+
+**Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008).
+
+**Deferred.** Embedded or modal feedback, to be considered only by a future spec.
+
+Tracked in the SPEC-010 file above (U5). `resources/specs/planned/011-organizational-testing-feedback-program.md` remains planned.
+
+---
+
 ## Current delivery state
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
+
+`SPEC-010` — Platform Readiness for Organizational Testing is **ACTIVE — RECONCILED; UNIT-LEVEL GATES OPEN; ONLY U0 AND U1 AUTHORIZED** at `resources/specs/active/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Nothing in it is implemented; gates G1–G6 are open and units U2–U5 are blocked. `SPEC-011` remains planned.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 
