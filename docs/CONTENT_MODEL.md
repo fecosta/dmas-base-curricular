@@ -193,6 +193,13 @@ Examples include:
 
 Institutions are directly addable governed knowledge objects, not only metadata embedded inside module cards.
 
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034; SPEC-010 gates open).**
+>
+> - *Institution reader suppression:* institutional references will be hidden from reader-facing discovery and display. Institution records, relationships and provenance stay intact; suppression is neither archival nor deletion. Scope of free-text references is undecided (G2).
+> - *Content origin country:* an Admin-selected attribute distinct from geographic reach (`country_or_scope`), `Sin dato` for unknown history, preserved across successor revisions, never inferred from organization, email, IP or location. Eligible content types are undecided (G3).
+>
+> Current behavior: country is free text and institutions are reader-visible. See `docs/DECISIONS.md` D-033/D-034 and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
+
 ## 10. Contribution — inactive current behavior
 
 A **Contribution** represents the collaborative user-submission concept implemented historically by SPEC-003 and retained for possible future governance use.

@@ -31,11 +31,14 @@ Do not move a spec to `completed/` merely because an implementation agent report
 7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — completed
 8. `SPEC-009` — Admin Organization & User Management — completed
 9. `SPEC-008` — Product Analytics & Pilot Observability — active; revised to GA4 + Supabase organizational metrics (D-032), documented, not implemented, Privacy/Legal decisions pending
+10. `SPEC-010` — Platform Readiness for Organizational Testing — planned; reconciled with D-033–D-035; not implemented; activation blocked (gates G1–G6 open)
+11. `SPEC-011` — Organizational Testing & Feedback Program — planned
 
 `SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md). `SPEC-009` is completed at [`completed/009-admin-organization-user-management.md`](completed/009-admin-organization-user-management.md) after independent implementation review, Cloud migration/security verification, safe hosted validation, and final coherence verification.
 
 `SPEC-001–007, SPEC-009` — completed
 `SPEC-008` — **ACTIVE — REVISED CONTRACT (GA4 NAVIGATION ANALYTICS + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING**, **not** closed (current state in the SPEC §2 and §19)
+`SPEC-010` — **PLANNED — RECONCILED; ACTIVATION BLOCKED**, not implemented, not implementation-ready, **not** closed; gates G1–G6 are open (current state in the SPEC §2 and §6). [`planned/010-platform-readiness-organizational-testing.md`](planned/010-platform-readiness-organizational-testing.md)
 
 ## Dependency model
 
@@ -63,9 +66,18 @@ SPEC-007 UX/UI Navigation & Interaction Remediation
           v
 SPEC-009 Admin Organization & User Management
           |
-          v
-SPEC-008 Product Analytics & Pilot Observability (active)
+          +--> SPEC-008 Product Analytics & Pilot Observability (active)
+          |         :
+          |         : coordination only (not a hard dependency):
+          |         : SPEC-010 G5 <-> SPEC-008 Gate P (Privacy/Legal)
+          |         :
+          +--> SPEC-010 Platform Readiness for Organizational Testing (planned)
+                    |
+                    v
+               SPEC-011 Organizational Testing & Feedback Program (planned)
 ```
+
+SPEC-010 follows SPEC-009 and stays planned. It does not activate or expand analytics and does not depend on SPEC-008 implementation, but its gate G5 (Privacy Notice coordination for the feedback form) coordinates with SPEC-008 Gate P (Privacy/Legal). SPEC-011 follows SPEC-010, depends on SPEC-010 readiness for affected features, and stays planned.
 
 SPEC-009 is completed at [`completed/009-admin-organization-user-management.md`](completed/009-admin-organization-user-management.md). Its four implementation commits delivered bounded Admin organization/domain/membership RPCs with a separate append-only access-administration audit, the server-only Auth Admin boundary, the typed Server Action layer, and the Organizations/Users Admin UI. Independent review returned `PUSH READY`, and a subsequent Cloud gate applied migration `20260917000100` to the intended linked project and verified Cloud RPC security, grants, RLS, append-only audit protection, the server-only Auth Admin secret, the deployed commit, and unauthenticated Admin-route denial. Hosted destructive mutation was intentionally not exercised because production has no designated safe test organization or user; that evidence rests on local real-stack validation plus Cloud structural verification. A fresh final coherence review closed SPEC-009 as COHERENCE VERIFIED. SPEC-008 is active. Its previous PostHog implementation (historical; now inert on `main`) was delivered in five committed phases from baseline `f7fcaa9`: analytics-preference persistence with RLS (`ca30458`), the privacy UX surfaces (`21fe830`), the consent-gated analytics boundary with environment isolation (`913ea86`), instrumentation of the six canonical events (`03fdf93`), and integrated validation plus documentation reconciliation. Local evidence covers 575 pgTAP tests on a reset database, 618 unit tests, 104 Playwright journeys, typecheck, lint, database lint and a production build. Migration `20261001000100` has since been applied to Cloud and verified, `dbb40c4` is deployed to Production, and the analytics-disabled hosted validation recorded in the SPEC §42 passed. That SDK-based implementation has since been replaced by the profile-free direct Capture transport (`807b702`, `e2c4145`, `57b03da`); its hosted record is preserved at `b3321fd` (SPEC §42 there). D-031 accepts PostHog's one-year query-retention boundary as a known MVP limitation and defers physical-deletion assurance; provider security readiness is PASS. The 2026-10-21 revision (D-032) supersedes that PostHog architecture: SPEC-008 now documents GA4 navigation analytics, Supabase organizational metrics and a minimal Admin dashboard as a contract only (amended by review remediation: server-only usage recording, PROVISIONAL retention with manual deletion, Privacy Notice prerequisite); no GA4 or organizational-metrics code exists and implementation is pending. The PostHog Gate B was never executed and is withdrawn; Gates P, O and G (SPEC §11) are pending and the External Pilot Analytics Activation Gate (SPEC §11.4) is closed. `NEXT_PUBLIC_POSTHOG_KEY` is intentionally unset, so the superseded transport is inert in every environment. Earlier SPEC section references in this paragraph (§20–§22, §42) point to historical SPEC text (`948abae`, `b3321fd`). Do not move SPEC-008 to `completed/` until the applicable gates pass and independent verification against SPEC §12 is complete.
 
