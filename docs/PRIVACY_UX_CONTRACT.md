@@ -481,7 +481,9 @@ Examples requiring privacy/product review include:
 - individual performance analysis;
 - a materially different analytics provider or processing model.
 
-The change from PostHog to Google Analytics 4 (D-032) is such a change: acceptances recorded under the PostHog-era `consent_version` must not be treated as GA4 consent, and users must be asked again, unless Privacy/Legal records a different decision (SPEC-008 §6.1, §10).
+The change from PostHog to Google Analytics 4 (D-032) is such a change: acceptances recorded under the PostHog-era `consent_version` must not be treated as GA4 consent, and users must be asked again, unless Privacy/Legal explicitly records a different decision (SPEC-008 §6.1, §10). The re-consent decision remains unresolved.
+
+Hard activation prerequisite: GA4 (and any approved per-user-linked organizational-metrics recording) must not be activated before Privacy/Legal approves an updated Privacy Notice (and Terms if affected), `privacyNoticeVersion`/`consentVersion` are updated, and users are informed (SPEC-008 §10.1). The current Notice describes the inert PostHog runtime and is not an adequate notice for GA4 or organizational metrics. Default remains OFF.
 
 The implementation must not independently decide that renewed consent is unnecessary for a material privacy change.
 
@@ -561,7 +563,7 @@ An Admin:
 - may reject analytics;
 - may change their preference.
 
-Being a Base Curricular Admin does not grant access to the analytics provider (GA4). Admins do see aggregate organization-level usage metrics in the Admin dashboard (SPEC-008 §7.7); that is not access to any individual's analytics data or preference.
+Being a Base Curricular Admin does not grant access to the analytics provider (GA4). Admins do see aggregate organization-level usage metrics in the Admin dashboard (SPEC-008 §7.7); that is not access to any individual's analytics data or preference. Admin activity itself is not counted in those adoption metrics (SPEC-008 §4.2).
 
 Analytics administration is a separate authorization concern.
 

@@ -10,6 +10,8 @@
 
 Revision 2026-10-21 (D-032) replaces the PostHog architecture with GA4 for navigation analytics, Supabase for organization-level adoption metrics, and a minimal Admin dashboard. The PostHog design is preserved only as a historical record (§18).
 
+Review remediation 2026-10-21 (D-032 amendment): usage recording moved to a trusted server-only execution boundary (§7.3); GA4 data inventory split into application-controlled, request-inherent and provider-derived data (§6.12); all retention values PROVISIONAL with a manual operator-run deletion procedure and a BLOCKED activation item (§7.5); dashboard reduced to five visible columns with one period convention (§7.7); per-content popularity excluded and Admin activity excluded from adoption metrics (§3); Privacy Notice update made a hard activation prerequisite (§10).
+
 ---
 
 ## 1. Purpose
@@ -58,6 +60,9 @@ This document is the revised contract. It is not implemented and authorizes no i
 6. Internal Supabase metrics are **not** assumed exempt from privacy or consent requirements. Their consent treatment is **REQUIRES PRIVACY/LEGAL APPROVAL** (§7.6).
 7. GA4 and Supabase numbers are different metrics and must never be presented as the same metric (§4.3).
 8. Existing privacy protections are preserved: default OFF; consent separate from Terms; no Admin override of a user's preference; revocability; fail-closed preference handling; no search-term capture; environment isolation; private-file protection; no leak of unpublished content.
+9. **Per-content popularity is not in the MVP.** No organization-by-content reporting, no content rankings, no individual activity histories. The usage tables MUST NOT store a content, material, institution or attachment identifier (§7.2).
+10. **Administrator activity is excluded from adoption metrics** (content opens, downloads, active users). Admins remain counted in registered users. Rule and justification: §4.2.
+11. **Usage recording happens only inside trusted server-side application operations.** Clients have no direct permission to increment any metric (§7.3).
 
 ---
 
@@ -78,27 +83,34 @@ GA4 measures only consenting users in Production. It has no organization dimensi
 
 ### 4.2 Adoption (Supabase)
 
-All times and dates are **UTC**. A period is an inclusive range of UTC calendar days `[period_start, period_end]`.
+**Period convention (applies everywhere in this spec and in the privacy docs).** All times and dates are **UTC**. A period is `[period_start, period_end]`: both dates inclusive, each date meaning the whole UTC day `00:00:00`–`23:59:59.999`. `period_end` may be the current UTC date, in which case that day contains only activity recorded so far. Maximum range: 90 days inclusive (`period_end − period_start ≤ 89`). Default: the 30 UTC days ending on the current UTC date (`[today − 29, today]`).
+
+**Qualifying organizational usage (Admin exclusion rule).** An action counts toward adoption metrics only when it is performed by an eligible user whose **live persisted role at the time of the action is `Contributor`**. Any action by a user whose live role is `Admin` is not recorded for usage metrics, on any surface.
+
+Justification: an Admin-only exclusion by surface (count Admin reader-surface views, exclude only Admin management pages) was considered and rejected. During the D-030 operational phase Admins own governed-content management, and their reader-surface opens and downloads are predominantly checks of content they manage or just published; the system cannot distinguish an Admin "reading" from an Admin "verifying" on the same reader route. Counting them would let the small number of Democracia+ operators inflate adoption figures. The live-role rule is deterministic, testable, needs no surface classification, and uses the same live role that already governs Admin authority. Consequences, accepted: an organization whose only active members are Admins shows **0** active users, opens and downloads; genuine reading by an Admin is not counted; a user demoted from Admin to Contributor is counted from the next action, and a user promoted to Admin stops being counted from the next action (history is not rewritten). Admins **are** included in Registered users.
 
 | Metric | Definition |
 |---|---|
-| Registered organization | A row in `public.organizations` with `is_active = true` at query time. |
-| Registered users (per organization) | Count of `public.memberships` rows for that organization with `is_active = true` at query time. |
-| Active user | An eligible user (per `private.current_access()`) with ≥1 **qualifying action** on any UTC day in the period. Qualifying action: a successful eligible server render of an authenticated `/app` page, a recorded content open, or a recorded download. Failed, unauthenticated or ineligible requests never qualify. |
-| Active users (per organization) | Count of distinct users with a presence marker (§7.2) for that organization on any day in the period. The organization is the one resolved by `current_access()` at the time of the action. |
-| Active organization | An organization with ≥1 active user in the period. No higher threshold: with small pilot organizations a threshold would hide genuine use; a threshold can be added later without schema change. |
-| Content open | One successful server-side resolution of a **current published** module, material or institution detail (standalone page or Library overlay) for an eligible user. Each resolution counts; no per-user-per-content deduplication, because deduplication would require storing which person opened which content. Prefetches and failed/unpublished/archived resolutions do not count. |
-| Download | One successful authorized signed-URL issuance by `GET /api/attachments/[attachmentId]` (the existing server-authorized reader path) for a `Ready`, reader-visible attachment. Completion of the byte transfer is not observable and is not claimed. |
+| Registered organization | A row in `public.organizations` with `is_active = true` at query time. Every registered organization appears in the dashboard, with zero usage if it has none. |
+| Registered users (per organization) | Count of `public.memberships` rows for that organization with `is_active = true` at query time, **including Admins**. |
+| Qualifying action | One of, performed by an eligible `Contributor` (rule above): (a) a successful server render of the authenticated `/app` shell (presence only), (b) a recorded content open, (c) a recorded download. Failed, unauthenticated, ineligible or Admin requests never qualify. |
+| Active users (per organization) | Count of distinct users with a presence marker (§7.2) for that organization on any UTC day in the period. The organization is the one derived from the user's live membership at the time of the action. |
+| Content opens | Count of `content_open` events: one per successful **authorized server-side resolution of current published content** (module, material or institution detail, standalone page or Library overlay). It is **not** proof that anyone read the content. Each resolution counts; there is no per-user-per-content deduplication, because that would require storing who opened what. |
+| Downloads | Count of `download` events: one per successful **authorized signed-URL issuance** by `GET /api/attachments/[attachmentId]` for a `Ready`, reader-visible attachment of current published content. It is **not** proof that the file transfer started or completed. |
+
+These metrics produce no individual browsing history: no table records which content or attachment anyone opened, and no per-content counts exist. The only per-user element is the daily presence marker (§7.2), which records that a user was active on a UTC day for an organization and nothing else.
+
+**What is and is not counted by the Next.js request model.** Recording runs in the server code of the page that resolves the content (not in a layout or link). Default (`auto`) `<Link>` prefetch of a dynamic route only renders down to the nearest `loading.js` boundary (`src/app/app/loading.tsx` exists), so it does not execute the content page and does not count; content links MUST NOT use `prefetch={true}`. A full reload, a direct revisit, `router.refresh()` or any other server re-render of the content page re-resolves the content and **does count again** — stated limitation (§16), consistent with "each resolution counts". Client-initiated beacon or `POST` "record" endpoints are prohibited.
 
 ### 4.3 Cross-source rule
 
-GA4 numbers are opt-in samples from consenting Production users, processed by Google. Supabase numbers are server-side counts across eligible users, subject to the §7.6 decision. They will not reconcile. Any report, deck or UI must label the source, and must not present GA4 "active users" and Supabase "active users" as the same metric.
+GA4 numbers are opt-in samples from consenting Production users, processed by Google, and include Admins who consent. Supabase numbers are server-side counts across eligible Contributors (Admins excluded, §4.2), subject to the §7.6 decision. They will not reconcile. Any report, deck or UI must label the source, and must not present GA4 "active users" and Supabase "active users" as the same metric.
 
 ---
 
 ## 5. Data Categories
 
-The authoritative inventory is `docs/PRIVACY_AND_DATA_COLLECTION.md` §5A. Summary:
+The authoritative inventory is `docs/PRIVACY_AND_DATA_COLLECTION.md` §5A (categories) and §5B (GA4 data inventory, mirroring §6.12 here). Summary:
 
 | Category | Purpose | Recipient | Consent |
 |---|---|---|---|
@@ -129,7 +141,7 @@ Registered organizations and registered users per organization derive from exist
 
 - No `user_id`, no Supabase UUID, no email, no name, no organization ID or name, no role is ever sent.
 - GA4 User-ID, User-Provided Data collection and Google Signals are OFF.
-- GA4 sets first-party `_ga` / `_ga_<container>` cookies holding a random client ID. This is a persistent browser identifier, which the superseded PostHog contract avoided. It is accepted only under consent and **REQUIRES PRIVACY/LEGAL APPROVAL**. Proposed `cookie_expires`: 60 days (pending approval; aligned with proposed event retention, §6.9).
+- GA4 sets first-party `_ga` / `_ga_<container>` cookies holding a random client ID. This is a persistent browser identifier, which the superseded PostHog contract avoided. It is accepted only under consent and **REQUIRES PRIVACY/LEGAL APPROVAL**. `cookie_expires`: 60 days — **PROVISIONAL** (§7.5 table).
 - Logout clears `_ga*` cookies so the next user of the browser does not inherit the client ID (§6.8).
 
 ### 6.4 Event taxonomy
@@ -170,9 +182,9 @@ Facts about Google behavior below are **to verify in Gate G**; this document doe
 - Enhanced measurement: all toggles OFF (page views on history change, scrolls, outbound clicks, site search, video, file downloads, form interactions). History-change page views would send raw `?q=` URLs.
 - Google Signals: OFF. Ads personalization: OFF. No Google Ads, Merchant or other product links. Data sharing settings: all OFF.
 - Granular location and device data collection: OFF where the setting exists.
-- IP handling: GA4 is documented by Google as not logging/storing IP addresses — to verify; no IP is sent as a parameter.
+- IP handling: the application sends no IP parameter, but the browser's request necessarily exposes the IP address to Google at the network layer. Google documents that GA4 does not log or store IP addresses — documented/possible; **to verify; REQUIRES PRIVACY/LEGAL APPROVAL**.
 - User-ID and User-Provided Data: OFF.
-- Event data retention: shortest available (expected 2 months — to verify). Proposed; **REQUIRES PRIVACY/LEGAL APPROVAL**.
+- Event data retention: shortest available (expected 2 months — to verify in the property admin). **PROVISIONAL; REQUIRES PRIVACY/LEGAL APPROVAL**. This setting is provider-controlled: the application cannot enforce it.
 - Property timezone UTC; no audiences built for cross-service use.
 
 ### 6.7 Prohibited data
@@ -192,7 +204,7 @@ Limitation: data already received by Google cannot be retracted by the applicati
 
 ### 6.9 Retention
 
-GA4 event data: shortest available setting (proposed 2 months; to verify). Aggregated standard reports may persist beyond event-data retention — to verify and disclose. **REQUIRES PRIVACY/LEGAL APPROVAL.**
+GA4 event data: shortest available setting (2 months, **PROVISIONAL**; to verify). Retention is configured in the GA4 property and enforced by Google, not by Base Curricular; the value must be verified in the property admin (Gate G) and approved. Aggregated standard reports may persist beyond event-data retention — documented/possible; to verify and disclose. **REQUIRES PRIVACY/LEGAL APPROVAL.** See the consolidated table in §7.5.
 
 ### 6.10 Access
 
@@ -202,17 +214,53 @@ GA4 property access: named human Google accounts, least privilege (Viewer by def
 
 Blocked, failing or slow GA4 never affects product use. No application retry, queue or replay.
 
+### 6.12 GA4 data inventory
+
+The §6.4 allowlist controls only what the **application** passes to `gtag`. It does not control everything Google receives or processes. Three categories apply once the tag loads (consent ON only):
+
+**1. Application-controlled data**
+
+| Item | Control |
+|---|---|
+| Event names | Closed list, §6.4 |
+| Explicit event parameters | Closed list, §6.4 (`page_location`, `page_title`, `page_referrer`, `has_results`, `content_type`) |
+| Route templates | Sanitised, §6.5 |
+| Configuration | Measurement ID (`NEXT_PUBLIC_GA_MEASUREMENT_ID`), `send_page_view: false`, `cookie_expires`, `ga-disable-*` flag |
+| Consent gating | Tag loaded only after server-verified persisted acceptance, §6.1 |
+
+**2. Data the browser/network necessarily exposes when a request to Google is made** — inherent to making the request; not controlled by the application:
+
+- IP address (network layer);
+- user agent / client hints;
+- HTTP headers, including `Referer` subject to browser policy (the site sends `Referrer-Policy: no-referrer`, which governs requests leaving Base Curricular pages; to verify for tag requests);
+- browser language;
+- screen and viewport size (read by the tag script);
+- cookies set for Google domains, if any, and first-party `_ga*` cookies read by the tag;
+- TLS and transport metadata.
+
+**3. Data GA4 may generate, derive or process** — documented/possible; **to verify; REQUIRES PRIVACY/LEGAL APPROVAL** for each item:
+
+- client identifier in `_ga` and session identifiers/counters in `_ga_<container>` cookies;
+- provider-generated automatic parameters (e.g. session ID, session number, engagement time, session-engaged flag, first-visit/session-start events, page-load/request sequence counters);
+- automatically collected events that may remain even with enhanced measurement OFF (e.g. `first_visit`, `session_start`, `user_engagement`);
+- device category, browser, OS and version;
+- approximate geolocation inferred from IP (country/region/city);
+- traffic source/medium/campaign attribution;
+- any aggregated or modelled data Google derives in reports.
+
+Base Curricular does not claim that the allowlist governs categories 2 or 3. Gate G (§11.3) observes what the browser actually sends; it cannot verify Google's server-side processing, derivation or retention, which requires review of Google documentation, the property settings and Privacy/Legal approval. GA4 stays disabled until those decisions and configuration checks are complete.
+
 ---
 
 ## 7. Supabase Organizational Metrics Contract
 
 ### 7.1 Principles
 
-Server-side recording only. Organization is always derived from `private.current_access()`; no caller-supplied organization, user or count is accepted. No new service, worker, warehouse, ETL, streaming or role.
+Recording happens only inside trusted server-side application operations, after the underlying operation succeeded. No client — browser code, a user's own Supabase session, or any HTTP endpoint a client can call to "report" activity — can increment a metric. Organization is always derived in the database from the user's live membership; no client-supplied organization, user, content or count is accepted or stored. No new service, worker, warehouse, ETL, streaming, scheduler or role.
 
 ### 7.2 Data model (minimum)
 
-Two tables in the `private` schema (no grants to `anon`/`authenticated`):
+Two tables in the `private` schema (no grants to any API role, §7.4):
 
 ```text
 private.usage_daily_counts
@@ -229,40 +277,109 @@ private.usage_daily_presence
   primary key (activity_date, organization_id, user_id)
 ```
 
-`usage_daily_counts` holds no user identifier. `usage_daily_presence` is the minimum needed to count distinct active users over a period: one row per user per organization per UTC day, with no content, route, time-of-day or action type. It is personal data (pseudonymous). Hashing `user_id` adds no protection inside a private table and would break cascade deletion, so it is not used.
+Neither table has a content, material, institution, attachment, route or time-of-day column, and none may be added without a new Product/Privacy decision (§3 item 9). `usage_daily_counts` holds no user identifier. `usage_daily_presence` is the minimum needed to count distinct active users over a period: one row per user per organization per UTC day, with no content, route, time-of-day or action type. It is personal data (pseudonymous). Hashing `user_id` adds no protection inside a private table and would break cascade deletion, so it is not used.
 
 Alternative considered: count active users only per day (aggregate, no user ID). Rejected because distinct users across a multi-day period cannot be derived from daily counts. If Privacy/Legal rejects the presence marker, the dashboard falls back to "active users per day (max)" — a weaker metric — and must be labelled as such.
 
 ### 7.3 Recording
 
-One RPC, `public.record_usage(metric text, subject_id uuid default null)`, `SECURITY DEFINER`, empty `search_path`, executable by `authenticated` only:
+#### 7.3.1 Why the user's session cannot be the recording credential
 
-- resolves user and organization from `private.current_access()`; ineligible ⇒ no-op;
-- `presence`: upserts the day's presence row (`on conflict do nothing`);
-- `content_open`: validates `subject_id` is a current published module/material/institution, increments the counter, writes presence;
-- `download`: validates `subject_id` is a `Ready` reader-visible attachment, increments the counter, writes presence;
-- performs bounded retention purge (§7.5).
+The browser holds the user's Supabase access token (SSR session cookie) and the publishable key. Any function executable by `authenticated` is therefore callable directly by the user, with any arguments, without performing the qualifying action. The earlier design (`record_usage` executable by `authenticated`) was rejected for that reason.
 
-Callers: the authenticated `/app` server render (presence), the content detail server paths (content open), and `GET /api/attachments/[attachmentId]` after the signed URL is issued (download). Recording failure never blocks the product response.
+#### 7.3.2 Execution boundary (decision)
 
-Because the RPC is reachable with the user's own session, a user can inflate their own organization's counts only by the equivalent of repeating real views/downloads. They cannot target another organization, invent content, or read anything. Accepted for the MVP (§16).
+| Element | Contract |
+|---|---|
+| Write function | `public.record_usage(target_user_id uuid, metric text)`, `SECURITY DEFINER`, empty `search_path`, owned by `postgres`. `metric ∈ ('presence', 'content_open', 'download')`; anything else ⇒ `22023`. |
+| Grants | `revoke all … from public, anon, authenticated`; `grant execute … to service_role` only. Same precedent as `public.import_published_curriculum(jsonb)` (migration `20260911000100`). `authenticated` calls fail with `42501`. Tables keep no grants to any API role (§7.4). |
+| Organization and eligibility | Derived inside the function from live rows for `target_user_id` using the **same eligibility predicate as `private.current_access()`** (migration `20260910000100`: active membership, active organization, matching organization domain, confirmed non-anonymous, non-deleted, non-banned Auth user). `current_access()` itself reads `auth.uid()`, which is null under the server credential, so the implementation must either factor its predicate into one private helper used by both, or keep an identical predicate with a pgTAP equivalence test, so they cannot diverge. Not eligible ⇒ no-op. Live role `Admin` ⇒ no-op (§4.2). No organization, content or count parameter exists. |
+| Effect | `presence` ⇒ insert presence row (`on conflict do nothing`). `content_open` / `download` ⇒ increment the day's counter and insert presence. No purge (§7.5). |
+| Caller credential | A dedicated server-only Supabase secret key (`sb_secret_*`), e.g. `SUPABASE_USAGE_RECORDER_SECRET_KEY` (name is implementation freedom; not configured by this revision). It is **not** `SUPABASE_AUTH_ADMIN_SECRET_KEY`, whose documented contract is "not used for database access" (`docs/SECURITY.md` §27). |
+| Caller module | One `server-only` module (e.g. `src/lib/usage/recorder.ts`) exposing exactly one function `recordUsage(metric)` that takes the user ID only from the server-verified `getAccess()` context (`src/lib/auth/access.ts`, which validates the session with `auth.getUser()` and live `current_access`). It creates a non-persisting client, calls only `record_usage`, never exports the client, never reads request input for the user ID, and has no other importer path to the browser. |
+| Callers | (1) `/app` layout server render after `requireAccess()` (presence); (2) the module page, Library overlay page and reference page **after** the published read returned data (content open); (3) `GET /api/attachments/[attachmentId]` **after** `createSignedUrl` returned a URL and before the redirect (download). No other caller. No client-initiated record endpoint. |
+
+Justification for using a privileged credential (`AGENTS.md` §6): it is the only option that removes the user's ability to call the write path while keeping the existing stack. Constraints: server-only module behind `import "server-only"`; never a `NEXT_PUBLIC_*` variable; never in the client bundle (build guard asserts absence of the variable name and key prefix, as SPEC-009 does for the Auth Admin key); one narrow function; the database function, not the module, decides eligibility, organization and Admin exclusion; key rotation by revoking the dedicated secret without affecting the Auth Admin key.
+
+Alternatives rejected:
+
+- **`authenticated`-executable RPC** — forgeable (§7.3.1).
+- **Recording as a side effect of the existing published read RPCs** (`get_published_module`, `get_published_reference`) — still triggerable by the user's session, would turn `stable security invoker` reads into volatile writers on every caller (including search/overlay paths), and cannot cover signed-URL issuance, which happens in Storage, not SQL.
+- **Reusing `SUPABASE_AUTH_ADMIN_SECRET_KEY`** — contradicts its documented contract and couples Auth Admin and database blast radius and rotation.
+
+Residual: a compromised server or leaked recorder key can forge counts (and, as a `service_role` key, bypass RLS generally). This is the same trust class as the existing Auth Admin secret and is accepted for the MVP.
+
+#### 7.3.3 Ordering and failure handling
+
+- Recording runs only after the underlying operation succeeded; failed authorization, invalid ID, not found, unpublished, Draft, archived or historical content and signed-URL failure record nothing.
+- Recording must not block or fail the user's content open or download: it runs after the response is produced (Next.js `after()` or equivalent), with a short timeout and no retry, queue or replay. **Fail open for the user.**
+- A recording failure is not counted: the metric is simply missing that event (an undercount, §16). It is logged server-side with the metric name and error code only — no user ID, email, organization, content ID, attachment ID, filename or URL.
+- Admin Draft and management surfaces (`/app/contributions/**`, `/app/organizations/**`, `/app/users`) have no recording calls.
 
 ### 7.4 Authorization and RLS
 
-- Both tables: RLS enabled, no policies, no grants to `anon`/`authenticated`; `service_role` not granted unless a later privacy-rights need is approved.
-- Read path: `public.admin_organization_usage(period_start date, period_end date)`, `SECURITY DEFINER`, calls `private.require_admin_content_access()` (live Admin role). Returns one row per organization only: `organization_id, organization_name, is_active, registered_users, active_users, content_opens, downloads`. It never returns user IDs or per-person rows.
-- Validation: `period_start ≤ period_end ≤ current UTC date`, range ≤ 90 days; otherwise `22023`.
+- Both tables: RLS enabled, no policies, `revoke all` from `public`, `anon`, `authenticated` and `service_role`. Writes happen only inside `record_usage` (definer); reads only inside `admin_organization_usage` (definer). Manual retention deletion (§7.5) is run by the operator as the database owner, not through an API role.
+- Write path: `public.record_usage` — `service_role` execute only (§7.3.2).
+- Read path: `public.admin_organization_usage(period_start date, period_end date)`, `SECURITY DEFINER`, empty `search_path`, executable by `authenticated` only, calls `private.require_admin_content_access()` (live Admin role). Returns one row per **currently active** organization (zero usage included), exactly:
+
+  | Field | Purpose |
+  |---|---|
+  | `organization_id` | Opaque row key for rendering only; not displayed |
+  | `organization_name` | **Organización** |
+  | `registered_users` | **Usuarios registrados** |
+  | `active_users` | **Usuarios activos** |
+  | `content_opens` | **Aperturas de contenido** |
+  | `downloads` | **Descargas** |
+
+  No totals or summary row, no `is_active` field, no user IDs, no per-person or per-content rows.
+- Validation: `period_start ≤ period_end ≤ current UTC date` and `period_end − period_start ≤ 89` (90 days inclusive, §4.2); null or otherwise invalid ⇒ `22023`.
 - Admin role revoked ⇒ `42501` on the next request. Contributors receive `42501`.
 
-### 7.5 Retention (proposed; REQUIRES PRIVACY/LEGAL APPROVAL)
+### 7.5 Retention — ALL VALUES PROVISIONAL; REQUIRES PRIVACY/LEGAL APPROVAL
 
-| Data | Proposed retention | Enforcement |
-|---|---|---|
-| `usage_daily_presence` | 90 days | bounded delete of rows older than 90 days inside `record_usage` |
-| `usage_daily_counts` | 24 months | same purge mechanism |
-| Account deletion | immediate for presence | `on delete cascade` |
+A **retention target** is the approved maximum age. An **enforceable deletion guarantee** exists only where a mechanism actually deletes data on a bounded schedule. This revision guarantees no automatic deletion.
 
-No scheduled job is introduced. Limitation: purge runs only when recording runs; during zero traffic, expired rows persist until the next request. `pg_cron` is the upgrade path if Privacy/Legal requires time-exact deletion.
+| Data | Retention target | Enforcement | Status |
+|---|---|---|---|
+| GA4 event data | 2 months (shortest GA4 setting, to verify) | GA4 property setting, provider-controlled; verify in property admin | PROVISIONAL |
+| GA4 aggregated reports | unknown; may outlive event data | provider-controlled; to verify and disclose | PROVISIONAL |
+| `_ga` / `_ga_<container>` cookies | 60 days (`cookie_expires`) | browser expiry; deleted by the application on revocation/logout (§6.8) | PROVISIONAL |
+| `usage_daily_presence` | 90 days | manual operator-run deletion (below) | PROVISIONAL |
+| `usage_daily_counts` | 24 months | manual operator-run deletion (below) | PROVISIONAL |
+| Presence rows on account deletion | immediate | `on delete cascade` from `auth.users` | PROVISIONAL |
+
+No purge-on-write is used: it would delete nothing when there is no traffic.
+
+**Minimum operational deletion procedure (required before production activation of org-metrics recording):**
+
+1. **Responsible role:** data custodian for organizational metrics — **TO BE ASSIGNED** by Privacy/Legal (expected: project owner or a designated Admin operator with database-owner access).
+2. **Cadence:** at least monthly — **TO BE APPROVED**.
+3. **Operation** (run as the database owner via the Supabase SQL editor or `psql`; illustrative documentation, not a migration):
+
+   ```sql
+   -- illustrative only; windows per approved values
+   begin;
+   delete from private.usage_daily_presence
+     where activity_date < (now() at time zone 'utc')::date - 90;
+   delete from private.usage_daily_counts
+     where activity_date < ((now() at time zone 'utc')::date - interval '24 months')::date;
+   commit;
+   ```
+
+4. **Verification:** read-only counts afterwards, both must be `0`:
+
+   ```sql
+   select count(*) from private.usage_daily_presence
+     where activity_date < (now() at time zone 'utc')::date - 90;
+   select count(*) from private.usage_daily_counts
+     where activity_date < ((now() at time zone 'utc')::date - interval '24 months')::date;
+   ```
+
+   Record date (UTC), operator, rows deleted and verification result in the operations log — location **TO BE DEFINED**. A second person (verifier — **TO BE ASSIGNED**, not the operator) reviews the log entry each cycle.
+5. **Missed run:** the next run deletes everything over the window, so overrun is bounded by the cadence. **Worst-case actual retention = window + cadence + operational delay** (e.g. presence: 90 days + ~31 days + delay). Privacy/Legal must approve that worst case, not only the window.
+6. If Privacy/Legal rejects a manually enforced bounded window, an automated mechanism (e.g. a scheduled database job) requires a separate approved decision; this revision adds no scheduler, worker, cron or migration.
+
+**Activation item R1 — enforceable retention: BLOCKED** until Privacy/Legal approves the values, the worst case, the named custodian/verifier and the log location (or approves an automated alternative).
 
 ### 7.6 Consent treatment — REQUIRES PRIVACY/LEGAL APPROVAL
 
@@ -278,10 +395,19 @@ Safe default until Gate P decides:
 ### 7.7 Admin dashboard
 
 - One Admin page, Spanish copy: **Actividad por organización**, under the existing Admin area (proposed `/app/organizations/actividad`; placement is implementation freedom).
-- Period selector: start/end UTC dates; default the last 30 complete UTC days ending today; max 90 days.
-- Columns: **Organización**, **Usuarios registrados**, **Usuarios activos en el período**, **Aperturas de contenido**, **Descargas**.
-- Summary line: active organizations / registered organizations in the period.
-- Footnote: "Fechas en UTC. Datos internos de Base Curricular; no comparables con Google Analytics."
+- Period selector: start and end UTC dates, both inclusive whole UTC days; default `[today − 29, today]`; max 90 days (§4.2).
+- One row per currently active registered organization, including organizations with zero usage. Exactly five visible columns:
+
+  | Column | Meaning |
+  |---|---|
+  | **Organización** | organization name |
+  | **Usuarios registrados** | current active memberships, Admins included |
+  | **Usuarios activos** | distinct Contributors with qualifying activity in the period |
+  | **Aperturas de contenido** | successful authorized resolutions of current published content in the period |
+  | **Descargas** | successful authorized signed-URL issuances in the period |
+
+- No summary or totals row.
+- Footnote: "Fechas en UTC, días completos, inicio y fin incluidos. Datos internos de Base Curricular; no incluyen la actividad de administradores; no comparables con Google Analytics. Las aperturas y descargas no confirman lectura ni descarga completa."
 - No per-person rows, no drill-down to users, no ranking or scoring labels, no export.
 - Server-rendered; non-Admins receive the existing Admin denial; no data in client preload for non-Admins.
 
@@ -304,28 +430,46 @@ Controller: **FVR Ltd**. Contact: **hola@democraciamas.com**. Consent revocation
 
 ## 10. Legal Readiness — REQUIRES PRIVACY/LEGAL APPROVAL
 
-Gate P must decide, at minimum:
+Gate P must decide, at minimum. This document makes no legal determination on any item.
 
 1. GA4 processor terms / DPA acceptance and the contracting Google entity;
 2. international transfer to the US and safeguards;
 3. pilot jurisdictions and applicable legal basis for GA4;
-4. acceptance of the `_ga` persistent client identifier and proposed cookie expiry;
+4. cookie/identifier processing: the `_ga*` client and session identifiers and the provisional cookie expiry;
 5. GA4 retention setting and disclosure of aggregate-report persistence;
-6. consent treatment for organizational metrics (§7.6);
-7. retention of presence markers and counts (§7.5);
-8. whether PostHog-era consents must be re-collected (recommended: yes);
-9. Privacy Notice changes and new `privacyNoticeVersion`/`consentVersion`;
-10. disposal of any PostHog data and closing the PostHog project.
+6. legal basis for organizational usage metrics, and whether internal usage collection — including the presence marker alone — requires consent (§7.6);
+7. retention values of presence markers and counts, the manual-deletion worst case, custodian, verifier and log location (§7.5, item R1);
+8. re-consent: whether PostHog-era consents must be re-collected (recommended: yes; unresolved);
+9. Privacy Notice (and Terms, if affected) changes, the new `privacyNoticeVersion`/`consentVersion`, and user-facing communication;
+10. disposal of any historical PostHog data and closing the PostHog project;
+11. Consent Mode behavior (whether any cookieless/denied-state ping is permitted; default: none, §6.1);
+12. the category 2 and 3 GA4 data in §6.12 (request-inherent and provider-derived data), including IP handling and approximate geolocation.
 
-Proposed user-facing Spanish changes for `docs/PRIVACY_NOTICE.md` (not applied; **REQUIRES PRIVACY/LEGAL APPROVAL**; apply only together with implementation and a version bump):
+### 10.1 Privacy Notice dependency — hard activation prerequisite
 
-- §12 "¿Qué proveedor utilizamos para analítica?": "Utilizamos **Google Analytics 4**, de Google, como proveedor de la analítica opcional del producto, únicamente si la aceptas."
-- §13 "Procesamiento internacional": "La analítica opcional es procesada por Google y puede implicar transferencias a Estados Unidos u otros países."
-- §7: replace the event-identifier sentence with: "Google Analytics utiliza una cookie con un identificador aleatorio en tu navegador. No le enviamos tu identificador de cuenta, tu correo, tu nombre ni tu organización."
-- §14 retention: replace "12 meses" with the approved GA4 retention and the approved organizational-metrics retention.
-- New subsection under §4/§5 describing organization-level usage metrics, per the §7.6 decision.
+`docs/PRIVACY_NOTICE.md` (version 1.1, `privacyNoticeVersion = "1.1"`) describes the **PostHog** runtime, which is inert. It is **not** an adequate notice for GA4 or for organizational metrics. This revision does not edit it and publishes no new Notice.
 
-`docs/TERMS_OF_USE.md` needs no change: it already refers to the Privacy Notice for the provider and keeps analytics separate from Terms.
+Before GA4 activation, and before any per-user-linked organizational-metrics recording (if approved), all of the following are required:
+
+1. Privacy/Legal approval of an updated Privacy Notice, and of the Terms of Use if affected;
+2. a new Notice version and corresponding `privacyNoticeVersion`/`consentVersion` update;
+3. user-facing communication of the change;
+4. the re-consent decision (§10 item 8). Existing PostHog-era consent **MUST NOT** authorize GA4 unless Privacy/Legal explicitly approves it. Default remains OFF.
+
+**Notice changes required** (statements in the current Notice that would be inaccurate under the new architecture; wording **REQUIRES PRIVACY/LEGAL APPROVAL**, to be applied only with implementation and a version bump):
+
+- §4 "Información opcional sobre el uso del producto": lists filters and external-reference clicks, which GA4 MVP does not measure; does not describe organization-level usage metrics.
+- §5: "si las organizaciones están utilizando Base Curricular" is attributed to optional analytics; under D-032 organizational adoption comes from Supabase metrics whose consent treatment is unresolved.
+- §7: states that an internal user identifier, an internal organization identifier and internal content identifiers are sent, and that no additional analytics identifier is created in the browser — all false under GA4 (no Base Curricular IDs; GA4 sets `_ga*` cookies). Request-inherent and provider-derived data (§6.12) is not described.
+- §12: names PostHog / PostHog Cloud EU as provider.
+- §13: states analytics is processed in the EU region; GA4 may involve transfer to the US.
+- §14: "12 meses" retention; must reflect the approved GA4 and organizational-metrics values.
+- §16: provider list must reflect Google as analytics recipient.
+- §18 rights: must cover deletion of presence markers and GA4 data.
+
+Candidate wording recorded for Privacy/Legal (not applied): §12 "Utilizamos **Google Analytics 4**, de Google, como proveedor de la analítica opcional del producto, únicamente si la aceptas."; §13 "La analítica opcional es procesada por Google y puede implicar transferencias a Estados Unidos u otros países."; §7 "Google Analytics utiliza una cookie con un identificador aleatorio en tu navegador. No le enviamos tu identificador de cuenta, tu correo, tu nombre ni tu organización."
+
+`docs/TERMS_OF_USE.md`: it refers to the Privacy Notice for the provider and keeps analytics separate from Terms; whether it needs changes is part of §10 item 9.
 
 ---
 
@@ -333,26 +477,61 @@ Proposed user-facing Spanish changes for `docs/PRIVACY_NOTICE.md` (not applied; 
 
 ### 11.1 Gate P — Privacy/Legal decisions — PENDING
 
-Passes when every item in §10 has a recorded decision in `docs/DECISIONS.md`.
+Passes when every item in §10 (1–12) has a recorded decision in `docs/DECISIONS.md`. Unresolved, visible here:
+
+| # | Decision | State |
+|---|---|---|
+| P1 | Legal basis for organizational usage metrics | PENDING |
+| P2 | Consent requirement for internal usage collection, incl. whether the presence marker alone needs consent | PENDING |
+| P3 | GA4 processing arrangements (DPA, contracting Google entity) and international transfers | PENDING |
+| P4 | Cookie/identifier processing (`_ga*`) | PENDING |
+| P5 | Consent Mode behavior | PENDING |
+| P6 | Retention values (all PROVISIONAL) and the manual-deletion worst case (§7.5) | PENDING |
+| P7 | Privacy Notice (and Terms) changes and version (§10.1) | PENDING |
+| P8 | Re-consent of PostHog-era acceptances | PENDING |
+| P9 | Disposal of historical PostHog data | PENDING |
+| P10 | GA4 request-inherent and provider-derived data (§6.12) | PENDING |
 
 ### 11.2 Gate O — Organizational metrics validation — PENDING
 
-Requires Gate P item 6–7. Evidence: local real-stack pgTAP + Vitest + Playwright for AC-O1…AC-O10; Cloud structural verification of RLS, grants, function hardening; hosted read-only verification of the dashboard with a real Admin and denial for a non-Admin.
+Requires P1, P2, P6. Evidence: local real-stack pgTAP + Vitest + Playwright for AC-O1…AC-O14; Cloud structural verification of RLS, grants (incl. `record_usage` not executable by `authenticated`/`anon`/`PUBLIC`), function hardening; client-bundle scan for the recorder secret; hosted read-only verification of the dashboard with a real Admin and denial for a non-Admin; one recorded dry run of the §7.5 deletion procedure on a non-production database.
 
 ### 11.3 Gate G — GA4 controlled validation — PENDING
 
-Requires Gate P items 1–5, 8–9. Protocol:
+Requires P3, P4, P5, P6, P7, P8, P10. Protocol:
 
-1. read-only verify property settings in §6.6 and record evidence;
-2. controlled Production test with 1–2 named internal accounts, using GA4 DebugView/Realtime and browser network inspection;
-3. verify: no `googletagmanager.com`/`google-analytics.com` request before consent; after consent only §6.4 events with §6.4 parameters; sanitised `page_location`/`page_title`/`page_referrer`; no `uid`/`user_id`, no query strings, no titles; revocation/logout stops requests and removes `_ga*`; Preview no-op; blocked GA4 does not break the product;
+1. read-only verify property settings in §6.6 (incl. event-data retention) in the GA4 property admin and record evidence;
+2. controlled Production test with 1–2 named internal accounts, in a real browser, using DevTools network/storage inspection plus GA4 DebugView/Realtime;
+3. for each scenario, capture actual requests and storage and **enumerate every parameter observed** in requests to Google domains, flagging any parameter or event not in §6.4 (including provider-generated ones, §6.12 category 3):
+   - **consent OFF** (undecided, rejected): no `gtag.js` request, no request to any Google domain, no `_ga*` cookie, no Google-related local/session storage;
+   - **consent ON**: tag loads only after server confirmation; only expected requests;
+   - **consent revocation**: requests stop; `_ga*` cookies cleared; `ga-disable-*` set;
+   - **logout**: same as revocation;
+   - **page navigation** across every §6.5 route: sanitised `page_location`/`page_title`/`page_referrer`;
+   - **search interactions**: no search text anywhere — parameters, URLs, `page_location`, title, referrer, headers;
+   - **content opens**: only `content_type`; no IDs or titles;
+   - **downloads**: no file names, attachment IDs, object names or signed URLs;
+   - **browser storage and cookies** after each step;
+   - **automatic events**: enhanced measurement off; record any automatic event observed (e.g. `first_visit`, `session_start`, `user_engagement`) as a finding for P10;
+   - Preview no-op; blocked GA4 does not break the product;
 4. name a stop/rollback owner (unset `NEXT_PUBLIC_GA_MEASUREMENT_ID`, redeploy).
+
+Browser traffic inspection cannot verify provider-side processing, derivation or retention. Gate G is **necessary but not sufficient**: that remainder needs Google documentation and property-settings review plus Privacy/Legal approval (P3, P10). Nothing here is validated yet.
 
 Containment: the Measurement ID is configured in Production only during Gate G; production users other than controlled accounts must be prevented from loading the tag (e.g. server-side allowlist during the window). Instructions alone are insufficient.
 
 ### 11.4 External Pilot Analytics Activation Gate — CLOSED
 
-Opens only after Gate P, Gate G (for GA4) and/or Gate O (for org metrics) pass, the Privacy Notice is updated and versioned, and a deliberate activation decision is recorded. GA4 and org metrics may be activated independently.
+Opens only when all of the following hold for the capability being activated (GA4 and org metrics may be activated independently):
+
+| Item | GA4 | Org metrics | State |
+|---|---|---|---|
+| Gate P decisions (§11.1) | required | required | PENDING |
+| Gate G | required | — | PENDING |
+| Gate O | — | required | PENDING |
+| §10.1 Privacy Notice dependency (approved Notice, version bump, communication, re-consent decision) | required | required (if per-user-linked recording approved) | PENDING |
+| R1 enforceable retention (§7.5) | GA4 property setting verified | manual procedure approved, custodian assigned | **BLOCKED** |
+| Recorded activation decision in `docs/DECISIONS.md` | required | required | PENDING |
 
 ### 11.5 Former Gate B — SUPERSEDED
 
@@ -368,28 +547,31 @@ The PostHog controlled validation authorized under D-031 was never executed. It 
 - **AC-G2 Separate consent.** Accepting Terms leaves GA4 OFF.
 - **AC-G3 Re-consent.** A preference recorded under a PostHog-era `consent_version` is treated as undecided for GA4 (unless Gate P item 8 records a different decision).
 - **AC-G4 Server-verified load.** The tag loads only after the server confirms a persisted `accepted` decision for the current consent version.
-- **AC-G5 Taxonomy.** Only §6.4 events and parameters are sent; unknown input is rejected (unit test of the wrapper).
+- **AC-G5 Application taxonomy.** The application's own `gtag` configuration and calls pass only §6.4 event names and parameters; unknown input is rejected before any `gtag` call (unit test of the wrapper). This does not assert what the GA4 library adds on its own (§6.12); that is observed in Gate G.
 - **AC-G6 Sanitisation.** For each §6.5 route, `page_location` has no query/fragment/ID and `page_title` is the template (unit + Playwright).
 - **AC-G7 No identifiers.** No request contains `uid`, `user_id`, a UUID, email or organization data (Playwright request inspection).
 - **AC-G8 Revocation/logout.** After revocation or logout: no further collect requests; `_ga*` cookies absent.
 - **AC-G9 Environment.** Preview/Development/Test/unknown env ⇒ no tag (unit + E2E in non-production).
 - **AC-G10 Failure isolation.** Blocked Google hosts ⇒ all core journeys pass.
 - **AC-G11 Property settings.** §6.6 settings recorded as verified in Gate G evidence.
+- **AC-G12 Observed parameters.** Gate G evidence enumerates every parameter and event observed per §11.3 scenario; any parameter or event not in §6.4 is listed as a finding for P10 rather than silently accepted.
 
 ### Organizational metrics
 
-- **AC-O1 Server-derived org.** `record_usage` ignores any caller org/user; records under `current_access()` org.
-- **AC-O2 Eligibility.** Unauthenticated/ineligible callers record nothing.
-- **AC-O3 Content open.** Current published content increments once per resolution; Draft, archived, historical or unknown IDs do not.
-- **AC-O4 Download.** Only a successful authorized signed-URL issuance increments; 401/403/404 paths do not.
-- **AC-O5 Presence.** Multiple qualifying actions on one UTC day ⇒ one presence row.
-- **AC-O6 No direct access.** `authenticated`/`anon` cannot select/insert/update/delete either table (`42501`).
-- **AC-O7 Admin read.** Admin gets one row per organization with the five columns; Contributor and revoked Admin get `42501`.
-- **AC-O8 Definitions.** Registered users = active memberships; active users = distinct presence in range; active organization = ≥1 active user (pgTAP fixtures across two orgs and UTC day boundaries).
-- **AC-O9 Period validation.** Inverted, future or >90-day ranges ⇒ `22023`.
-- **AC-O10 Retention purge.** Presence rows older than 90 days and counts older than 24 months are removed by the next `record_usage`.
-- **AC-O11 Not activated before Gate P.** No migration activating `record_usage` callers is deployed to Production before Gate P item 6 is decided.
-- **AC-O12 Dashboard.** Spanish labels per §7.7; no per-person data; UTC footnote; non-Admin denied server-side.
+- **AC-O1 No direct write.** An `authenticated` or `anon` client calling `record_usage` receives a permission error (`42501`); direct `select`/`insert`/`update`/`delete` on either table by `anon`, `authenticated` or `service_role` API access is refused (`42501`).
+- **AC-O2 Server-derived org.** `record_usage` has no organization parameter; for a user whose membership is in org A, a recorded event lands under org A only. No route, form or header value can change it (Vitest: the recorder takes the user ID only from `getAccess()`).
+- **AC-O3 Eligibility.** A `target_user_id` with no eligible membership (inactive membership/organization, domain mismatch, unconfirmed/banned/deleted user) records nothing.
+- **AC-O4 Admin exclusion.** A user whose live role is `Admin` records nothing for presence, content open or download; the same user after demotion to `Contributor` records from the next action; Admins are counted in Registered users.
+- **AC-O5 Content open.** A successful resolution of current published content by a Contributor increments `content_open` by one; failed authorization, invalid ID, not found, unpublished, Draft, archived or historical content records nothing; Admin Draft and management pages record nothing.
+- **AC-O6 Download.** Only a successful signed-URL issuance increments `download`; 401/403/404/503 paths and `createSignedUrl` failure record nothing.
+- **AC-O7 Fail open.** A forced recorder failure leaves the content page / download redirect unchanged for the user, increments nothing, and logs no user, organization, content or attachment identifier.
+- **AC-O8 Presence.** Multiple qualifying actions on one UTC day ⇒ one presence row; no table contains a content/attachment identifier (schema assertion).
+- **AC-O9 Admin read.** Admin gets exactly one row per currently active organization (zero-usage orgs included) with exactly the six §7.4 fields; inactive organizations are absent; no summary row; Contributor and revoked Admin get `42501`.
+- **AC-O10 Definitions.** Registered users = active memberships incl. Admins; active users = distinct Contributor presence in range; inclusive start and end UTC days (pgTAP fixtures across two orgs and `23:59`/`00:00` UTC boundaries).
+- **AC-O11 Period validation.** Inverted, future, null or > 90-day ranges ⇒ `22023`; exactly 90 days inclusive accepted.
+- **AC-O12 Recorder secret isolation.** The client bundle contains neither the recorder secret variable name nor an `sb_secret_` value; the recorder module has `server-only` and only the §7.3.2 callers.
+- **AC-O13 Not activated before Gate P.** No `record_usage` caller is active in Production before P1, P2 and P6 are decided and R1 is unblocked.
+- **AC-O14 Dashboard.** Spanish labels and five columns per §7.7; period convention per §4.2; no per-person data; footnote; non-Admin denied server-side.
 
 ### Common
 
@@ -401,10 +583,10 @@ The PostHog controlled validation authorized under D-031 was never executed. It 
 
 ## 13. Testing Strategy
 
-- **pgTAP:** tables' RLS/grants; `record_usage` validation and org derivation; `admin_organization_usage` authorization, definitions, period validation, purge.
-- **Vitest:** GA4 wrapper (env gating, consent-version gating, allowlist, sanitiser for every §6.5 route, revocation cookie clearing); dashboard page server authorization; attachment route records only on success.
+- **pgTAP:** tables' RLS/grants; `record_usage` grants (`service_role` only), eligibility, org derivation and Admin exclusion; `admin_organization_usage` authorization, fields, definitions, period validation. The §7.5 deletion SQL is exercised once against a fixture (documentation check; not a migration).
+- **Vitest:** GA4 wrapper (env gating, consent-version gating, allowlist, sanitiser for every §6.5 route, revocation cookie clearing); recorder module (user ID only from `getAccess()`, fail-open, PII-free logging); content pages and attachment route record only on success; dashboard page server authorization.
 - **Playwright:** non-production network assertions (no Google hosts in any state); privacy UX journeys (re-consent for legacy acceptances); dashboard as Admin vs Contributor.
-- **Build guard:** replace `scripts/check-analytics-client-build.mjs` with an equivalent check for the GA4 Measurement ID inlining and absence of PostHog symbols.
+- **Build guard:** replace `scripts/check-analytics-client-build.mjs` with an equivalent check for the GA4 Measurement ID inlining, absence of PostHog symbols, and absence of the recorder secret.
 - **Hosted:** Gate G and Gate O protocols (§11). No destructive production mutation.
 
 ---
@@ -437,7 +619,7 @@ Update/remove: `tests/analytics-boundary.test.ts`, `analytics-config.test.ts`, `
 
 ### 14.4 Database changes (minimal)
 
-One migration: two `private` tables (§7.2), `public.record_usage`, `public.admin_organization_usage`, grants/RLS. No change to existing tables.
+One migration: two `private` tables (§7.2), the eligibility predicate for `record_usage` (§7.3.2), `public.record_usage` (`service_role` only), `public.admin_organization_usage`, grants/RLS. No change to existing tables. Configuration (not done by this revision): one server-only recorder secret in Vercel Production and `.env.example` placeholder.
 
 ### 14.5 Phases
 
@@ -462,23 +644,25 @@ Engineering may choose component structure, route placement of the dashboard, SQ
 - GA4 and Supabase numbers never reconcile (§4.3).
 - GA4 relies on a persistent first-party client ID cookie; cookie clearing on logout does not affect data already sent.
 - Already-sent GA4 data cannot be retracted; deletion relies on GA4 retention/deletion tools.
-- Content opens are not deduplicated; reloads and repeated views inflate counts.
-- A user can inflate their own organization's counts by repeating real actions or calling `record_usage` directly with their session.
-- Downloads count authorized URL issuance, not completed transfer.
+- Content opens are not deduplicated; reloads, revisits and server re-renders (`router.refresh()`) of a content page count again (§4.2). A user can raise counts only by actually repeating the authorized operation, never by calling the write path (§7.3).
+- Content opens do not prove reading; downloads count authorized signed-URL issuance, not a started or completed transfer.
+- Recording failures are undercounts, not errors shown to users (§7.3.3).
+- Admin activity is excluded (§4.2): organizations whose only active members are Admins show zero usage; genuine Admin reading is not counted.
 - Small organizations: an Admin seeing "1 active user" may infer who it is. Admins already manage memberships; no per-person data is shown.
-- Retention purge is traffic-driven, not time-exact (§7.5).
+- Retention is manually enforced; actual worst-case retention = window + cadence + delay (§7.5). A compromised server or leaked recorder secret can forge counts (§7.3.2).
 - Organization attribution follows the user's organization at the time of action; reassignment does not move history.
 
 ---
 
 ## 17. Open Questions
 
-1. §7.6 consent treatment for organizational metrics — **REQUIRES PRIVACY/LEGAL APPROVAL**.
-2. §7.5 retention values — **REQUIRES PRIVACY/LEGAL APPROVAL**.
-3. GA4 DPA, transfer, jurisdictions, legal basis, cookie identifier — **REQUIRES PRIVACY/LEGAL APPROVAL**.
-4. Is per-content popularity (which content is opened most) an MVP need? Currently omitted from both systems. **PRODUCT DECISION.**
-5. Should Admin/Democracia+ staff activity be excluded from the dashboard? Currently included under their own organization. **PRODUCT DECISION.**
-6. Disposal of the PostHog project and any data in it. **PRIVACY/LEGAL + PRODUCT.**
+1. §7.6 consent treatment and legal basis for organizational metrics — **REQUIRES PRIVACY/LEGAL APPROVAL** (P1, P2).
+2. §7.5 retention values, worst case, custodian, verifier, log location — **REQUIRES PRIVACY/LEGAL APPROVAL** (P6).
+3. GA4 DPA, transfer, jurisdictions, legal basis, cookie identifier, Consent Mode, provider-derived data — **REQUIRES PRIVACY/LEGAL APPROVAL** (P3–P5, P10).
+4. ~~Per-content popularity in the MVP~~ — **CLOSED (Product, 2026-10-21):** not in the MVP (§3 item 9).
+5. ~~Exclusion of Admin activity~~ — **CLOSED (Product, 2026-10-21):** excluded by live role (§4.2).
+6. Disposal of the PostHog project and any data in it. **PRIVACY/LEGAL + PRODUCT** (P9).
+7. Re-consent of PostHog-era acceptances (P8) and Privacy Notice update (P7, §10.1).
 
 ---
 
@@ -496,8 +680,8 @@ Engineering may choose component structure, route placement of the dashboard, SQ
 
 ## 19. Current Lifecycle State
 
-- Revised contract documented (D-032); not implemented.
-- Gate P, Gate O, Gate G: PENDING.
+- Revised contract documented (D-032, amended by review remediation); not implemented. Nothing in it is validated.
+- Gate P, Gate O, Gate G: PENDING. Activation item R1 (enforceable retention): BLOCKED.
 - External Pilot Analytics Activation Gate: CLOSED.
 - Former PostHog Gate B: SUPERSEDED, not executed.
 - `main` runtime: superseded PostHog transport present and inert; `NEXT_PUBLIC_POSTHOG_KEY` unset.

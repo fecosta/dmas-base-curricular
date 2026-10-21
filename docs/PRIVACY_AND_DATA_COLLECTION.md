@@ -153,12 +153,24 @@ Base Curricular distinguishes three categories. Items marked **REQUIRES PRIVACY/
 | | 1. Optional GA4 analytics | 2. Necessary operational data | 3. Organizational usage metrics |
 |---|---|---|---|
 | Purpose | Aggregate navigation and usage trends | Authenticate, authorize, secure, administer, provide requested files | Show Admins which organizations use the platform and how often |
-| Minimum data | Sanitised route templates, page views, `search_performed {has_results}`, `content_opened`/`content_downloaded {content_type}`; GA4 random client-ID cookie; no user/org IDs, no search text, no titles (SPEC-008 §6) | Existing only: Auth identity and email, user UUID, membership, organization, role, statuses, session data, access-administration and lifecycle audit records, private Storage objects and signed-URL access | Daily per-organization counts of content opens and downloads; one presence marker per user per organization per UTC day; registered counts derived from existing memberships (SPEC-008 §7) |
+| Minimum data | Application-controlled: sanitised route templates, `page_view`, `search_performed {has_results}`, `content_opened`/`content_downloaded {content_type}`; no user/org IDs, no search text, no titles. GA4 also receives request-inherent and provider-derived data the application does not control (§5B) (SPEC-008 §6) | Existing only: Auth identity and email, user UUID, membership, organization, role, statuses, session data, access-administration and lifecycle audit records, private Storage objects and signed-URL access | Daily per-organization counts of content opens and downloads; one presence marker per user per organization per UTC day; no content or attachment identifier; registered counts derived from existing memberships. Recorded only server-side after the authorized operation succeeded; Admin activity excluded (SPEC-008 §4.2, §7) |
 | System | Google Analytics 4 (third-party processor) | Supabase, Vercel (existing) | Supabase (internal, `private` schema) |
-| Access | Named Democracia+ personnel with GA4 property access; Admin role does not grant it | Per existing RLS and Admin boundaries | Live Base Curricular Admins only, aggregate per organization; no per-person rows |
-| Retention | Shortest GA4 event-data setting (proposed 2 months, to verify) — **REQUIRES PRIVACY/LEGAL APPROVAL** | Per purpose and applicable obligations (unchanged) | Presence markers 90 days; counts 24 months (proposed) — **REQUIRES PRIVACY/LEGAL APPROVAL** |
-| Consent / legal | Explicit opt-in, default OFF, separate from Terms, revocable; DPA, US transfer, jurisdictions, legal basis and cookie identifier — **REQUIRES PRIVACY/LEGAL APPROVAL** | Not consent-based; legal basis to be confirmed in legal review (§33) | Not assumed exempt. Whether consent is required or necessary/legitimate-interest applies — **REQUIRES PRIVACY/LEGAL APPROVAL**. Until approved, per-user-linked activity is not recorded; registered organization/user counts remain operational/admin data |
-| Status | Not implemented | Implemented | Not implemented |
+| Access | Named Democracia+ personnel with GA4 property access; Admin role does not grant it | Per existing RLS and Admin boundaries | Write: server-only recorder, `service_role` execute only, no client write path. Read: live Base Curricular Admins only, one row per active organization; no per-person rows |
+| Retention | Event data 2 months (shortest GA4 setting, to verify); `_ga*` cookies 60 days — **PROVISIONAL**, provider-/browser-enforced (§25) | Per purpose and applicable obligations (unchanged) | Presence markers 90 days; counts 24 months — **PROVISIONAL**, manual operator-run deletion, no automatic deletion guarantee (§25) |
+| Consent / legal | Explicit opt-in, default OFF, separate from Terms, revocable; DPA, US transfer, jurisdictions, legal basis, cookie identifier, Consent Mode and provider-derived data — **REQUIRES PRIVACY/LEGAL APPROVAL** | Not consent-based; legal basis to be confirmed in legal review (§33) | Not assumed exempt. Legal basis and whether consent is required (including for the presence marker alone) — **REQUIRES PRIVACY/LEGAL APPROVAL**. Until approved, per-user-linked activity is not recorded; registered organization/user counts remain operational/admin data |
+| Status | Not implemented (contract only) | Implemented | Not implemented (contract only) |
+
+Organizational metric definitions (SPEC-008 §4.2): **content opens** = successful authorized server-side resolutions of current published content (not proof of reading); **downloads** = successful authorized signed-URL issuances (not proof of transfer); **active users** = distinct Contributors with a qualifying action in the period; **registered users** = active memberships, Admins included. Actions by a user whose live role is `Admin` are not recorded. Periods are whole UTC days, start and end inclusive, maximum 90 days. Per-content popularity is not in the MVP; no individual browsing history exists.
+
+## 5B. GA4 data inventory (D-032)
+
+The application's closed event/parameter allowlist controls only what Base Curricular passes to `gtag`; it does not control all data Google receives or processes (SPEC-008 §6.12). With consent ON:
+
+1. **Application-controlled:** event names and explicit parameters (SPEC-008 §6.4), sanitised route templates (§6.5), configuration (Measurement ID, cookie expiry, disable flag), consent gating.
+2. **Exposed by the browser/network when a request is made (inherent, not application-controlled):** IP address, user agent/client hints, HTTP headers incl. referrer subject to browser policy, language, screen/viewport, cookies sent, TLS/transport metadata.
+3. **May be generated, derived or processed by GA4 (documented/possible; to verify):** `_ga` client identifier and `_ga_<container>` session identifiers; automatic parameters (session ID/number, engagement time, engaged-session flag) and automatic events (e.g. `first_visit`, `session_start`, `user_engagement`); device/browser/OS; approximate geolocation from IP; traffic source/medium; aggregated or modelled report data.
+
+Each item in categories 2 and 3 is **REQUIRES PRIVACY/LEGAL APPROVAL**. Browser inspection in Gate G can observe what is sent, but cannot verify Google-side processing, derivation or retention. GA4 remains disabled until these decisions and the property configuration checks are complete.
 
 ---
 
@@ -532,7 +544,14 @@ This retention period must be configured where supported by the analytics provid
 
 Retention must not be extended merely because longer storage is technically available.
 
-**GA4 and organizational metrics (D-032).** Proposed: GA4 event data at the shortest available setting (expected 2 months, to verify); Supabase presence markers 90 days; aggregate counts 24 months — **REQUIRES PRIVACY/LEGAL APPROVAL**. The user-facing “12 meses” wording must be reconciled with the approved values before activation.
+**GA4 and organizational metrics (D-032).** All values below are **PROVISIONAL — REQUIRES PRIVACY/LEGAL APPROVAL**. A retention target is not an enforceable deletion guarantee; no automatic deletion is guaranteed.
+
+- GA4 event data: 2 months (shortest GA4 setting, to verify). Configured in and enforced by the GA4 property (provider-controlled); must be verified in the property admin and approved. Aggregated reports may persist longer — to verify and disclose.
+- `_ga*` cookies: 60 days browser expiry; deleted by the application on revocation/logout.
+- Supabase presence markers: 90 days. Aggregate counts: 24 months. Enforced only by a documented, manually executed purge run by a data custodian (**TO BE ASSIGNED**) at a cadence of at least monthly (**TO BE APPROVED**), verified by a read-only zero-count query recorded in an operations log (**TO BE DEFINED**) and reviewed by a second person (SPEC-008 §7.5). Worst-case actual retention = window + cadence + operational delay; Privacy/Legal must approve that worst case. Presence rows are deleted immediately on account deletion (cascade).
+- Enforceable retention is **BLOCKED** for activation until approved. An automated mechanism would require a separate approved decision.
+
+The user-facing “12 meses” wording must be reconciled with the approved values before activation.
 
 **Superseded (historical) — MVP posture (D-031, 2026-10-07).** For the MVP/pilot, the 12-month initial retention is satisfied by PostHog's one-year Product Analytics query-retention boundary, accepted as a known limitation. This is a query/visibility boundary, not physical deletion: Base Curricular does not claim deletion within 12 months from provider storage, cold storage or backups, a provider-enforced TTL, or a deletion SLA, and must not describe it that way. Enforceable physical deletion is deferred and must be reassessed before analytics is materially expanded or becomes a long-term capability (historical SPEC-008 §9.3 at `948abae`). Privacy/Legal decision A accepts this posture only for bounded controlled Gate B validation. External activation and reconciliation of the user-facing “12 meses” wording remain pending; this contract's version is unchanged.
 
@@ -601,7 +620,7 @@ Access to the GA4 property must be limited to authorized Democracia+ personnel w
 
 GA4 access is separate from the Base Curricular `Admin` role. Being a Base Curricular Admin must not automatically grant access to GA4.
 
-Organizational usage metrics (§5A category 3) are visible only to live Base Curricular Admins, aggregated per organization, through the Admin dashboard. Admins see no per-person rows.
+Organizational usage metrics (§5A category 3) are visible only to live Base Curricular Admins, aggregated per organization, through the Admin dashboard (five columns: organization, registered users, active users, content opens, downloads). Admins see no per-person or per-content rows. No client can write these metrics; recording runs only in trusted server code (SPEC-008 §7.3).
 
 **[information to complete: people, teams, or roles authorized to access GA4]**
 
@@ -758,8 +777,8 @@ Before optional analytics is enabled for the external pilot, verify:
 12. Session Replay is disabled;
 13. Preview, Development, and Test do not send production telemetry;
 14. analytics failure does not break the product;
-15. GA4 property settings in SPEC-008 §6.6 are verified;
-16. approved retention is configured (§25);
+15. GA4 property settings in SPEC-008 §6.6 are verified, and observed GA4 requests/storage are enumerated per SPEC-008 §11.3 (necessary, not sufficient: provider-side processing requires separate review, §5B);
+16. approved retention is configured (§25), and the organizational-metrics manual deletion procedure is approved and assigned;
 17. GA4 access is restricted;
 18. client bundles contain no privileged analytics or infrastructure secrets;
 19. user-facing privacy copy matches actual behavior;
@@ -806,7 +825,14 @@ For the initial Base Curricular external pilot:
 
 ### Organizational usage metrics
 - Supabase, internal, Admin-only, aggregate per organization.
+- Server-only recording; Admin activity excluded; no per-content data.
 - Consent treatment REQUIRES PRIVACY/LEGAL APPROVAL; not recorded until approved.
+- Retention PROVISIONAL; manual deletion procedure must be approved before activation.
+
+### Privacy Notice dependency
+- The current Privacy Notice (version 1.1) describes the inert PostHog runtime and is not adequate for GA4 or organizational metrics.
+- Before GA4 activation (and any approved per-user-linked organizational recording): Privacy/Legal approval of an updated Notice (and Terms if affected), a version bump, user-facing communication, and the re-consent decision (SPEC-008 §10.1).
+- PostHog-era consent does not authorize GA4 unless Privacy/Legal explicitly approves. Default remains OFF.
 
 ### Session Replay
 - Disabled.
