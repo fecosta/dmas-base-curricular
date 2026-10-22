@@ -449,7 +449,7 @@ Unauthorized, Draft, historical, or archived representations must not leak throu
 
 A stable identity with Published v1 and Draft v2 must appear to ordinary readers exactly through its authorized current-published representation.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-035; SPEC-010 gates open).** Institutional-reference suppression must be enforced at reader-facing data boundaries, not only in the UI, and must not weaken any boundary above. Origin-country filters must not bypass them. The planned external feedback link must not transmit tokens, search queries, private content or user identifiers. See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-035; SPEC-010 gates G1–G5 open; G6 satisfied).** Institutional-reference suppression must be enforced at reader-facing data boundaries, not only in the UI, and must not weaken any boundary above. Origin-country filters must not bypass them. The planned external feedback link must not transmit tokens, search queries, private content or user identifiers. See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
 
 ---
 
@@ -548,7 +548,8 @@ The following remain intentionally unresolved:
 - login-log retention;
 - account offboarding behavior;
 - future collaborative-contribution security model if that capability is reactivated;
-- future differentiated publication scopes if required.
+- future differentiated publication scopes if required;
+- Cloud default privileges for future `public` tables: SPEC-010 U0 (evidence Q17) observed that the default ACL grants `anon` and `authenticated` all table privileges (`arwdDxtm`) on tables created in the future. Existing tables are unaffected (explicit ACLs and RLS verified). The default-privilege owner role is not recorded in the evidence. This is a separate security follow-up, outside SPEC-010; it needs its own preflight and decision (for example revoking the default ACL by migration) and is not decided here. See `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`.
 
 Administrator workflow-notification routing is no longer a blocker for the active Admin-only governance phase because those notifications are deferred.
 

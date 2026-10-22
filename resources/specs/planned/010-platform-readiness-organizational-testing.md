@@ -4,7 +4,7 @@
 
 **Status:** PLANNED — RECONCILED; ACTIVATION BLOCKED
 
-**Delivery state:** NOT IMPLEMENTED. NOT STARTED. NOT IMPLEMENTATION-READY AS A WHOLE (GATES G1–G6 OPEN; U2–U5 BLOCKED).
+**Delivery state:** NOT IMPLEMENTED. NOT STARTED. NOT IMPLEMENTATION-READY AS A WHOLE (GATES G1–G5 OPEN; G6 SATISFIED; U2–U5 BLOCKED).
 
 **Dependencies:** SPEC-001–007 and SPEC-009 (completed). Does not depend on SPEC-008 implementation and does not activate or expand analytics; gate G5 coordinates with SPEC-008 Gate P (Privacy/Legal).
 
@@ -18,7 +18,7 @@ Prepare the existing platform for phased testing with Latin American partner org
 
 ## 2. Activation status
 
-Activation to `active/` is **BLOCKED**. Under `resources/specs/README.md`, `active/` means implementation-ready and the current authorized delivery slice. This spec is not implementation-ready: gates G1–G6 (§6) are open and block U2–U5. This spec therefore stays in `planned/`.
+Activation to `active/` is **BLOCKED**. Under `resources/specs/README.md`, `active/` means implementation-ready and the current authorized delivery slice. This spec is not implementation-ready: gates G1–G5 (§6) are open and block U2–U5 (G6 is satisfied). This spec therefore stays in `planned/`.
 
 **Product-owner decision (Option A, 2026-10-21):** keep SPEC-010 planned. The lifecycle definitions in `resources/specs/README.md` are not changed.
 
@@ -37,7 +37,7 @@ While planned, no unit is an authorized delivery slice, and nothing here authori
 - **Organizations** have no country attribute. No content-origin country field exists.
 - **Feedback:** no feedback action, JotForm reference, or feedback code exists.
 - **Domain:** `bc.democraciamas.com` is not referenced in application code or configuration. Whether it is served is not verified here (U1).
-- **Cloud data** (which institutions, countries, and legacy values actually exist): not verified; U0 establishes it.
+- **Cloud data** (which institutions, countries, and legacy values actually exist): inventoried read-only by U0 (aggregate counts only); see [`docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`](../../../docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md) and gate G6 in §6. The repository reference inventory/impact map half of U0 is not part of that evidence.
 
 ## 4. Approved decisions
 
@@ -55,7 +55,7 @@ Full text: D-033, D-034, D-035.
 
 | Unit | Scope | Mutation | Blocked by | Status |
 |---|---|---|---|---|
-| **U0** | Read-only Cloud data inventory and repository reference inventory/impact map: institutions and their relationships, free-text institutional references, country values on every content type, legacy reach values, which reader surfaces and data boundaries expose each. Output is a report with aggregate counts, not content or personal data. Satisfies G6. | None. No migration, no Cloud write, no secret or personal data in the report. | — | PREPARATORY (no implementation authority) |
+| **U0** | Read-only Cloud data inventory and repository reference inventory/impact map: institutions and their relationships, free-text institutional references, country values on every content type, legacy reach values, which reader surfaces and data boundaries expose each. Output is a report with aggregate counts, not content or personal data. Satisfies G6. | None. No migration, no Cloud write, no secret or personal data in the report. | — | PREPARATORY (no implementation authority); Cloud inventory COMPLETE and reviewed (G6, §6) |
 | **U1** | Verify `bc.democraciamas.com`, navigation, mobile usability, accessibility and regression behavior. No DNS assumption: if verification shows a DNS or deployment change is needed, stop and request separate authorization. | None to application code unless a defect is found; defects are reported, not fixed. | — | PREPARATORY (no implementation authority) |
 | **U2** | Institutional-reference reader suppression per D1 across the reader data boundaries identified by U0 (RPCs/RLS/routes/suggestions/direct URLs/preload payloads), non-destructively, with documented dry-run and rollback for any data-dependent step. | Yes (schema/data/code) | G2, G6 (U0 complete) | BLOCKED |
 | **U3** | Restrict the *reach* selector to the approved Latin American set, validated on client and server; legacy values handled by an explicit non-destructive rule. | Yes | G1, G6 (U0 complete) | BLOCKED |
@@ -68,7 +68,7 @@ U2–U4 are independent of one another unless a recorded gate resolution says ot
 
 ## 6. Unresolved gates
 
-All gates are OPEN. Resolutions are recorded here (decision, date, decider) before the blocked unit starts.
+G1–G5 are OPEN. G6 is SATISFIED (record below). Resolutions are recorded here (decision, date, decider) before the blocked unit starts.
 
 | Gate | What must be decided | Blocks | Owner |
 |---|---|---|---|
@@ -77,7 +77,25 @@ All gates are OPEN. Resolutions are recorded here (decision, date, decider) befo
 | **G3** | Content types eligible for origin-country metadata and filtering; the permitted value set (D2 does not tie it to the reach list); successor-revision semantics; how the origin filter relates to the existing `País o alcance` filter. | U4 | Not recorded |
 | **G4** | Approved JotForm URL; form owner; fields; retention; privacy requirements (including whether any page context may be passed — D3 permits none by default). | U5 | Not recorded |
 | **G5** | Privacy Notice coordination with SPEC-008 where applicable (e.g. whether the external feedback form requires Notice wording). Feedback is separate from analytics consent. | U5 | Privacy/Legal (per SPEC-008 Gate P); not otherwise recorded |
-| **G6** | Read-only Cloud data inventory completed and reviewed before any data-dependent migration or suppression operation. Satisfied by U0, which is itself read-only. | U2, U3, U4 | Satisfied by completing U0 |
+| **G6** | Read-only Cloud data inventory completed and reviewed before any data-dependent migration or suppression operation. Satisfied by U0, which is itself read-only. | U2, U3, U4 | **SATISFIED** — see record below |
+
+### G6 resolution record
+
+- **Status:** SATISFIED (Cloud data inventory half of U0).
+- **Evidence:** [`docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`](../../../docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md) (Q1–Q17 aggregate inventory of Supabase Cloud project `qcxcgwpfgclyebkxawyh`, with the appended independent review).
+- **Review verdict:** PASS_WITH_NOTES.
+- **Review date:** 2026-10-22, inferred from the report file's modification time; the report body carries no date and the date is not independently verified.
+- **Responsible decision-maker:** Product Owner — explicitly authorized by the user on 2026-10-22. No personal name is recorded: neither the evidence nor the repository establishes one.
+- **Authorization date:** 2026-10-22 (formal closure of G6 explicitly authorized by the user). This is the date G6 is recorded as satisfied, and it is distinct from the review date above.
+- **Provenance limitations (all carried from the evidence and review):**
+  - The reviewer was `review-openai`, a 9Router alias whose underlying model and family are unverified. The family of the inventory executor is unresolved. Opposite-family independence is **not** claimed, and no orchestrator usage checkpoints exist.
+  - The review was user-directed and manual, not run through the review-routing workflow.
+  - The project reference is proven only through the MCP-reported project URL. MCP URL, transaction and per-query receipts are not embedded; they are executor-asserted.
+  - Q12 and Q17 are summarized, not reproduced row by row. Q9 is an approximate lower bound. Q17 chronology: evidence §4 (Limits), written by the inventory executor before review, states Q17 was not reconciled against migration text by a reviewer. The appended independent review (§5) later reports that Q17 matches the migrations. The two statements are sequential, not contradictory: the §4 limitation is the pre-review state and the §5 review supersedes it. The review's receipt is still a summary (see the Q12/Q17 limitation above), and the original evidence text is left unmodified.
+  - Q1–Q7 were re-run via MCP and not diffed against the earlier manual run.
+  - The inventory is a point-in-time snapshot; any data change after the snapshot date is not covered.
+- **Scope of what G6 establishes:** the Cloud data inventory required before data-dependent operations. It does not resolve G1–G5, does not decide G2 scope for free-text institutional fields or search indexes, and does not authorize activation or implementation of U2–U5.
+- **Findings carried forward:** U2–U4 inputs are listed in evidence §4. The default-ACL observation (evidence Q17) is not a SPEC-010 item; it is tracked as a separate security follow-up in [`docs/SECURITY.md`](../../../docs/SECURITY.md) §19.
 
 ## 7. Required semantics
 

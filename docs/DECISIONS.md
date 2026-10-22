@@ -523,14 +523,14 @@ This decision documents a contract only. It is not implemented, authorizes no im
 
 ### D-033 — Institutional references are suppressed from reader surfaces, not removed
 
-**State:** DECISION (Product Owner) — scope gate G2 and data inventory G6 PENDING
+**State:** DECISION (Product Owner) — scope gate G2 PENDING; data inventory gate G6 SATISFIED (2026-10-22)
 **Date:** 2026-10-21
 
 **Approved future behavior (NOT IMPLEMENTED).** Institutional references are suppressed from reader-facing discovery and display. All institution records, existing relationships, materials, teaching notes, historical provenance and audit events are preserved. Institutions are not archived or hard-deleted. Published revisions are not modified destructively. Canonical organizations, memberships and authorization do not change. Suppression is enforced in the appropriate reader-facing data boundaries, not merely by CSS or hidden UI.
 
 **Current implemented behavior (verified read-only on `main`).** Institutions are reader-visible governed content (D-009) through the Library, search suggestions, module detail, reference pages and published-search results. Instructors and materials carry free-text institution fields that readers see. Which institutions and free-text references exist in Cloud data is to be confirmed by U0.
 
-**Pending decisions.** Gate G2 (exact scope, including institution names embedded in material titles and other free-text metadata, which are not silently rewritten) and G6 (read-only Cloud inventory before any data-dependent operation).
+**Pending decisions.** Gate G2 (exact scope, including institution names embedded in material titles and other free-text metadata, which are not silently rewritten). G6 (read-only Cloud inventory before any data-dependent operation) is satisfied by `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`.
 
 **Deferred.** Any hard deletion or archival of institutions; any rewrite of free-text references; any change to Admin management surfaces unless G2 says so.
 
@@ -547,7 +547,7 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 **Current implemented behavior (verified read-only on `main`).** There is no origin-country field. Country is free text (`country_or_scope` on materials and institutions, `country` on instructors) with no value list; the Library `País o alcance` filter lists distinct stored values of materials and institutions. Organizations have no country attribute. Existing Cloud values are to be confirmed by U0.
 
-**Pending decisions.** G1 (approved Latin American list; legacy values) and G3 (eligible content types, permitted value set, successor-revision semantics, relationship to the existing filter) and G6.
+**Pending decisions.** G1 (approved Latin American list; legacy values) and G3 (eligible content types, permitted value set, successor-revision semantics, relationship to the existing filter). G6 is satisfied (see D-033).
 
 **Deferred.** Deriving country from any source other than explicit Admin selection; organization-level country attributes.
 
@@ -576,7 +576,7 @@ Tracked in the SPEC-010 file above (U5). `resources/specs/planned/011-organizati
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 
-`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready and gates G1–G6 are open. Nothing in it is implemented or started; U2–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. `SPEC-011` remains planned.
+`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready and gates G1–G5 are open; G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). Nothing in it is implemented or started; U2–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. `SPEC-011` remains planned.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 
