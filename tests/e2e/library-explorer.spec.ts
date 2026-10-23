@@ -31,6 +31,7 @@ const THEME_A = `Participación ${marker}`;
 const THEME_B = `Evidencia ${marker}`;
 const COUNTRY_A = `Perú ${marker}`;
 const COUNTRY_B = `Chile ${marker}`;
+const THEME_I = `Institucional ${marker}`;
 
 const content = {
   moduleA: randomUUID(), moduleARevision: randomUUID(),
@@ -77,7 +78,10 @@ test.beforeAll(async () => {
   ]));
   assertSuccess(await operator.from("program_topic_revisions").insert({ id: content.topicRevision, program_topic_id: content.topic, revision_number: 1, status: "Published", module_id: content.moduleA, title: `Mapeo de actores ${marker}`, description: "Tema ficticio del Programa.", position: 1, published_at: publishedAt }));
   assertSuccess(await operator.from("material_revisions").insert({ id: content.materialRevision, material_id: content.material, revision_number: 1, status: "Published", title: MATERIAL, material_type: "Manual", description: "Material ficticio para el explorador.", source_or_institution: "Fuente ficticia", country_or_scope: COUNTRY_A, theme: THEME_A, published_at: publishedAt }));
-  assertSuccess(await operator.from("institution_revisions").insert({ id: content.institutionRevision, institution_id: content.institution, revision_number: 1, status: "Published", name: INSTITUTION, institution_type: "Centro de referencia", country_or_scope: COUNTRY_B, description: "Institución ficticia para el explorador.", themes: [THEME_B], published_at: publishedAt }));
+  assertSuccess(await operator.from("institution_revisions").insert({ id: content.institutionRevision, institution_id: content.institution, revision_number: 1, status: "Published", name: INSTITUTION, institution_type: "Centro de referencia", country_or_scope: COUNTRY_B, description: "Institución ficticia para el explorador.", themes: [THEME_I], published_at: publishedAt }));
+
+  // Module A is related to the institution so detail pages have institutional data to hide (D-033).
+  assertSuccess(await operator.from("module_institutions").insert({ module_revision_id: content.moduleARevision, institution_id: content.institution }));
 
   assertSuccess(await operator.from("modules").update({ current_published_revision_id: content.moduleARevision }).eq("id", content.moduleA));
   assertSuccess(await operator.from("modules").update({ current_published_revision_id: content.moduleBRevision }).eq("id", content.moduleB));
@@ -270,14 +274,13 @@ test.describe("Grid and Programa", () => {
     await expect(vista.getByRole("link", { name: "Programa", exact: true })).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("link", { name: `Ver programa: ${MODULE_A}` })).toBeVisible();
 
-    for (const [label, entity, title] of [["Materiales", "material", MATERIAL], ["Instituciones", "institution", INSTITUTION]]) {
-      await tipo.getByRole("link", { name: label, exact: true }).click();
-      await expect.poll(() => applied(page).get("entity")).toBe(entity);
-      expect(applied(page).get("view")).toBe("programa");
-      await expect(vista).toHaveCount(0);
-      await expect(page.getByRole("link", { name: "Programa", exact: true })).toHaveCount(0);
-      await expect(page.getByRole("heading", { name: title })).toBeVisible();
-    }
+    await tipo.getByRole("link", { name: "Materiales", exact: true }).click();
+    await expect.poll(() => applied(page).get("entity")).toBe("material");
+    expect(applied(page).get("view")).toBe("programa");
+    await expect(vista).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Programa", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: MATERIAL })).toBeVisible();
+    await expect(page.getByRole("heading", { name: INSTITUTION })).toHaveCount(0);
 
     // Back to modules: the preserved view=programa restores the module layout.
     await tipo.getByRole("link", { name: "Módulos", exact: true }).click();
@@ -286,7 +289,7 @@ test.describe("Grid and Programa", () => {
 
     // History walks the same states.
     await page.goBack();
-    await expect.poll(() => applied(page).get("entity")).toBe("institution");
+    await expect.poll(() => applied(page).get("entity")).toBe("material");
     await expect(vista).toHaveCount(0);
     await page.goForward();
     await expect.poll(() => applied(page).get("entity")).toBe("module");
@@ -295,13 +298,116 @@ test.describe("Grid and Programa", () => {
 
   test("a stale reference deep link with view=programa renders as a grid without error", async ({ page }) => {
     await signIn(page);
-    for (const [entity, title] of [["material", MATERIAL], ["institution", INSTITUTION]]) {
+    for (const entity of ["material", "reference"]) {
       const response = await page.goto(`/app/library?q=${encodeURIComponent(marker)}&entity=${entity}&view=programa`);
       expect(response?.status()).toBe(200);
       await expect(page.getByRole("group", { name: "Vista" })).toHaveCount(0);
-      await expect(page.getByRole("heading", { name: title })).toBeVisible();
+      await expect(page.getByRole("heading", { name: MATERIAL })).toBeVisible();
       expect(applied(page).get("view")).toBe("programa");
     }
+  });
+
+  /*
+   * SPEC-012 AC-01/AC-02/AC-06 (D-033): institutions are absent from the Library,
+   * and a stale entity=institution reads as the default view.
+   */
+  test("the Library shows no institution, for every Tipo", async ({ page }) => {
+    await signIn(page);
+    const tipo = page.getByRole("group", { name: "Tipo" });
+    const everything = `/app/library?q=${encodeURIComponent(marker)}`;
+
+    for (const entity of ["", "module", "material", "reference"]) {
+      await page.goto(entity ? `${everything}&entity=${entity}` : everything);
+      const main = page.getByRole("main");
+      await expect(page.getByRole("heading", { name: "Biblioteca", level: 1 })).toBeVisible();
+      await expect(main).not.toContainText(INSTITUTION);
+      await expect(main).not.toContainText("Centro de referencia");
+      await expect(main).not.toContainText("Instituciones");
+      await expect(main).not.toContainText(COUNTRY_B);
+      await expect(page.locator("#institutions-title")).toHaveCount(0);
+    }
+    await page.goto(everything);
+    await expect(tipo.getByRole("link")).toHaveText(["Todo", "Módulos", "Materiales"]);
+    await expect(tipo.getByRole("link", { name: "Instituciones" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: MODULE_A })).toBeVisible();
+    await expect(page.getByRole("heading", { name: MATERIAL })).toBeVisible();
+
+    // entity=reference lists materials only.
+    await page.goto(`${everything}&entity=reference`);
+    await expect(page.getByRole("heading", { name: MATERIAL })).toBeVisible();
+    await expect(page.getByRole("heading", { name: MODULE_A })).toHaveCount(0);
+  });
+
+  test("the country and theme options are not derived from institutions", async ({ page }) => {
+    await signIn(page);
+    await page.setViewportSize({ width: WIDE, height: 1000 });
+    await page.goto("/app/library");
+    // Positive control: values from a material and a module are still offered.
+    await expect(page.getByRole("link", { name: COUNTRY_A, exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: THEME_A, exact: true })).toBeVisible();
+    // The panel and its drawer duplicate carry the options; read the whole document.
+    const document = await page.content();
+    for (const value of [COUNTRY_B, THEME_I]) {
+      expect(document, value).not.toContain(value);
+      expect(document, value).not.toContain(new URLSearchParams({ x: value }).toString().slice(2));
+    }
+  });
+
+  test("a legacy entity=institution renders the default view with the other filters applied", async ({ page }) => {
+    await signIn(page);
+    const q = encodeURIComponent(marker);
+    const legacy = [
+      `entity=institution`,
+      `entity=institution&q=${q}`,
+      `entity=institution&q=${q}&axis=${STRATEGY}`,
+      `entity=institution&q=${q}&country=${encodeURIComponent(COUNTRY_A)}`,
+      `entity=institution&q=${q}&theme=${encodeURIComponent(THEME_A)}`,
+      `entity=institution&q=${q}&view=programa`,
+    ];
+    for (const params of legacy) {
+      const response = await page.goto(`/app/library?${params}`);
+      expect(response?.status(), params).toBe(200);
+      const main = page.getByRole("main");
+      await expect(page.getByRole("heading", { name: "Biblioteca", level: 1 }), params).toBeVisible();
+      await expect(main, params).not.toContainText("Tipo: Instituciones");
+      await expect(main, params).not.toContainText("Instituciones");
+      await expect(main, params).not.toContainText(INSTITUTION);
+      await expect(page.getByRole("button", { name: /Quitar Tipo/ }), params).toHaveCount(0);
+      await expect(page.getByRole("link", { name: /Quitar Tipo/ }), params).toHaveCount(0);
+      // Not an institutions-only view: Todo is the active Tipo.
+      await expect(page.getByRole("group", { name: "Tipo" }).getByRole("link", { name: "Todo", exact: true })).toHaveAttribute("aria-current", "page");
+      // Generated links and the header search never re-emit it.
+      for (const href of await page.getByRole("main").locator("a[href^='/app/library?']").evaluateAll((nodes) => nodes.map((n) => n.getAttribute("href")))) {
+        expect(href, params).not.toContain("institution");
+      }
+      await expect(page.locator("form[role=search] input[name=entity]"), params).toHaveCount(0);
+    }
+
+    // The other parameters are preserved and applied.
+    await page.goto(`/app/library?entity=institution&q=${q}&axis=${POLICY}`);
+    await expect(page.getByRole("heading", { name: MODULE_B })).toBeVisible();
+    await expect(page.getByRole("heading", { name: MODULE_A })).toHaveCount(0);
+    await page.goto(`/app/library?entity=institution&q=${q}&view=programa`);
+    await expect(page.getByRole("group", { name: "Vista" }).getByRole("link", { name: "Programa", exact: true })).toHaveAttribute("aria-current", "page");
+  });
+
+  test("the institution detail route is not found and the material page hides the institutional source", async ({ page }) => {
+    await signIn(page);
+    // The route renders the not-found page, with the same status any unknown reference gets.
+    const response = await page.goto(`/app/library/references/institution/${content.institution}`);
+    const unknown = await page.goto(`/app/library/references/material/${randomUUID()}`);
+    expect(response?.status()).toBe(unknown?.status());
+    await page.goto(`/app/library/references/institution/${content.institution}`);
+    await expect(page.getByText("No encontramos esta publicación.")).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(INSTITUTION);
+    await expect(page.locator("body")).not.toContainText("Institución o centro de referencia");
+
+    await page.goto(`/app/library/references/material/${content.material}`);
+    const main = page.getByRole("main");
+    await expect(main).toContainText(MATERIAL);
+    await expect(main).not.toContainText("Fuente o institución");
+    await expect(main).not.toContainText("Fuente ficticia");
+    await expect(main).not.toContainText("Institución o centro de referencia");
   });
 
   test("both views reach the canonical module route", async ({ page }) => {
@@ -458,10 +564,23 @@ test.describe("search suggestions", () => {
 
     await expect(listbox.getByRole("group", { name: "Módulos" })).toBeVisible();
     await expect(listbox.getByRole("group", { name: "Materiales" })).toBeVisible();
-    await expect(listbox.getByRole("group", { name: "Instituciones" })).toBeVisible();
     await expect(listbox.getByRole("option", { name: new RegExp(MODULE_A) })).toBeVisible();
     await expect(listbox.getByRole("option", { name: new RegExp(MATERIAL) })).toBeVisible();
-    await expect(listbox.getByRole("option", { name: new RegExp(INSTITUTION) })).toBeVisible();
+    // SPEC-012 AC-03: no institution group or item, though the query matches one.
+    await expect(listbox.getByRole("group")).toHaveCount(2);
+    await expect(listbox.getByRole("group", { name: "Instituciones" })).toHaveCount(0);
+    await expect(listbox.getByRole("option", { name: new RegExp(INSTITUTION) })).toHaveCount(0);
+    await expect(listbox).not.toContainText(INSTITUTION);
+  });
+
+  test("the suggestions endpoint returns only Módulos and Materiales groups", async ({ page }) => {
+    await signIn(page);
+    const response = await page.request.get(`/api/library/suggestions?q=${encodeURIComponent(`campaña ${marker}`)}`);
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body.groups.map((group: { label: string }) => group.label)).toEqual(["Módulos", "Materiales"]);
+    expect(JSON.stringify(body)).not.toContain(INSTITUTION);
+    expect(JSON.stringify(body)).not.toContain("references/institution");
   });
 
   /*
@@ -754,4 +873,60 @@ test("an empty result set offers a way back rather than a dead end", async ({ pa
   await expect(page.getByText("Ningún resultado con esta combinación")).toBeVisible();
   await page.getByRole("link", { name: "Limpiar filtros" }).click();
   await expect(page).toHaveURL(/\/app\/library$/);
+});
+
+/*
+ * SPEC-012 AC-07 (D-033): an Admin and a non-Admin reader get the same Library,
+ * suggestions and module detail on the same data. Shell navigation differs by
+ * role and sits outside main#contenido.
+ */
+test("Admin and non-Admin readers get identical Library, suggestions and module detail", async ({ browser }) => {
+  const q = encodeURIComponent(marker);
+  const text = async (page: Page, path: string) => {
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(200);
+    // main#contenido: the role query skips the hidden streaming placeholder that shares the id.
+    const main = page.getByRole("main");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    return main.innerText();
+  };
+  const read = async (role: "Contributor" | "Admin") => {
+    const context = await browser.newContext({ baseURL: `http://127.0.0.1:${Number(process.env.E2E_PORT ?? 3000)}` });
+    try {
+      const page = await context.newPage();
+      await signIn(page, role);
+      const library = [
+        await text(page, `/app/library?q=${q}`),
+        await text(page, `/app/library?q=${q}&entity=reference`),
+        await text(page, `/app/library?q=${q}&entity=institution`),
+        await text(page, "/app/library"),
+        await text(page, "/app/library?entity=reference"),
+        await text(page, "/app/library?entity=institution"),
+      ];
+      const suggestions = await (await page.request.get(`/api/library/suggestions?q=${encodeURIComponent(`campaña ${marker}`)}`)).json();
+      const detail = await text(page, `/app/library/modules/${content.moduleA}`);
+      return { library, suggestions, detail };
+    } finally {
+      await context.close();
+    }
+  };
+
+  const admin = await read("Admin");
+  const reader = await read("Contributor");
+
+  expect(admin.library).toEqual(reader.library);
+  expect(admin.suggestions).toEqual(reader.suggestions);
+  expect(admin.detail).toEqual(reader.detail);
+
+  // Negative: the institution fixture is absent for both roles, so parity is not parity of leaks.
+  for (const observed of [admin, reader]) {
+    const everything = JSON.stringify(observed);
+    expect(everything).not.toContain(INSTITUTION);
+    expect(everything).not.toContain("Instituciones");
+    expect(everything).not.toContain("Fuente o institución");
+    expect(everything).not.toContain("references/institution");
+    expect(observed.suggestions.groups.map((group: { label: string }) => group.label)).toEqual(["Módulos", "Materiales"]);
+    expect(observed.library[0]).toContain(MODULE_A);
+    expect(observed.detail).toContain(MODULE_A);
+  }
 });

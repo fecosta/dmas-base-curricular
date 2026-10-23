@@ -35,6 +35,30 @@ describe("curriculum server queries", () => {
     expect(result.themes).toEqual(["Democracia", "Evidencia"]);
   });
 
+  it("filters institution rows out of results, counts and filter options", async () => {
+    const rows = [
+      { entity_type: "module", id: "m", country_or_scope: null, theme: "Clima" },
+      { entity_type: "material", id: "t", country_or_scope: "Perú", theme: "Democracia" },
+      { entity_type: "institution", id: "i", country_or_scope: "País Institucional", theme: "Tema Institucional" },
+    ];
+    rpc.mockResolvedValue({ data: rows, error: null });
+    const result = await getLibrary({});
+    expect(result.results.map((row) => row.entity_type)).toEqual(["module", "material"]);
+    expect(result.countries).toEqual(["Perú"]);
+    expect(result.themes).toEqual(["Clima", "Democracia"]);
+  });
+
+  it("never forwards a legacy institution entity to the RPC", async () => {
+    rpc.mockResolvedValue({ data: [], error: null });
+    // The type forbids it; a stale value can only arrive from a caller that bypassed the types.
+    await getLibrary({ entity: "institution" as never, query: "x" });
+    for (const call of rpc.mock.calls) {
+      expect((call[1] as Record<string, unknown>).entity_filter).toBeUndefined();
+    }
+    await getLibrary({ entity: "reference" });
+    expect(rpc).toHaveBeenCalledWith("search_curriculum", expect.objectContaining({ entity_filter: "reference" }));
+  });
+
   it("fails closed when a curriculum RPC fails", async () => {
     rpc.mockResolvedValue({ data: null, error: { message: "denied" } });
     await expect(getLibrary({})).rejects.toThrow("Curriculum read unavailable");
@@ -57,6 +81,20 @@ describe("curriculum server queries", () => {
   it("rejects manipulated reference types", async () => {
     await expect(getReference("instructor", "36000000-0000-4000-8000-000000000001")).rejects.toThrow("not-found");
     expect(requireAccess).not.toHaveBeenCalled();
+  });
+
+  it("returns not found for an institution reference before any data access", async () => {
+    await expect(getReference("institution", "36000000-0000-4000-8000-000000000001")).rejects.toThrow("not-found");
+    expect(requireAccess).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it("drops institution rows from suggestion rows", async () => {
+    rpc.mockResolvedValue({ data: [
+      { entity_type: "institution", id: "i", title: "Centro", classification: "c", country_or_scope: null, theme: null, description: "d", rank: 1 },
+      { entity_type: "material", id: "t", title: "Guía", classification: "c", country_or_scope: null, theme: null, description: "d", rank: 1 },
+    ], error: null });
+    expect((await getSearchSuggestions("centro")).map((row) => row.id)).toEqual(["t"]);
   });
 
   /*

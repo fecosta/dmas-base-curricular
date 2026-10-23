@@ -169,7 +169,10 @@ test("eligible Contributor explores one published dataset through Grilla and Pro
   await expect(page.getByText("Persona Ficticia", { exact: true })).toBeVisible();
   await expect(page.getByText("Nota docente ficticia", { exact: true })).toBeVisible();
   await expect(page.getByText("Guía ficticia de participación", { exact: true })).toBeVisible();
-  await expect(page.getByText("Centro Ficticio Regional", { exact: true })).toBeVisible();
+  // SPEC-012 AC-04/AC-06: the related institution is seeded and published, yet invisible to readers.
+  await expect(page.getByText("Centro Ficticio Regional")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Instituciones" })).toHaveCount(0);
+  await expect(page.getByText("Organización de prueba")).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("heading", { name: "Programa", exact: true })).toBeVisible();
 });
@@ -180,9 +183,13 @@ test("references are first-class and Admin reader visibility matches Contributor
   await page.goto("/app/library?entity=reference");
   await expect(page.getByText("Política democrática de prueba", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Guía ficticia de participación", { exact: true })).toBeVisible();
-  await expect(page.getByText("Centro Ficticio Regional", { exact: true })).toBeVisible();
+  // SPEC-012 AC-01/AC-06: entity=reference lists materials only; the seeded institution is absent.
+  await expect(page.getByText("Centro Ficticio Regional")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Instituciones" })).toHaveCount(0);
   await page.getByRole("link", { name: "Explorar referencia" }).first().click();
-  await expect(page.getByText(/Material o estudio|Institución o centro de referencia/).first()).toBeVisible();
+  await expect(page.getByText("Material o estudio").first()).toBeVisible();
+  await expect(page.getByText("Institución o centro de referencia")).toHaveCount(0);
+  await expect(page.getByText("Fuente o institución")).toHaveCount(0);
 
   const ordinary = await userClient(page);
   expect((await ordinary.from("module_revisions").select("title")).data).toEqual(expect.arrayContaining([

@@ -117,6 +117,14 @@ test("the header marks the current destination", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Biblioteca", exact: true })).not.toHaveAttribute("aria-current", "page");
 });
 
+test("the footer carries the approved copy without institutional-reference wording", async ({ page }) => {
+  await signIn(page, "Contributor");
+  await page.goto("/app/library");
+  const footer = page.getByRole("contentinfo");
+  await expect(footer).toContainText("Biblioteca curricular compartida de la red Democracia+. Módulos, programas, docentes y materiales en un solo lugar.");
+  await expect(footer).not.toContainText("instituciones de referencia");
+});
+
 test("the D+ application icon is declared and served without a session", async ({ page, request }) => {
   await page.goto("/login");
   const href = await page.locator('head link[rel="icon"]').getAttribute("href");

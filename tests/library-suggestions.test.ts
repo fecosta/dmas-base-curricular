@@ -13,15 +13,16 @@ function row(overrides: Partial<SuggestionRow> & Pick<SuggestionRow, "entity_typ
 
 describe("suggestion families", () => {
   /*
-   * The published search contract returns modules, materials and institutions.
-   * Nothing else is a searchable entity, so nothing else may be suggested.
+   * Reader surfaces suggest modules and materials only (D-033). Institutions
+   * are never a suggestion family.
    */
-  it("covers exactly the published searchable entities", () => {
-    expect(suggestionFamilies.map((family) => family.entity)).toEqual(["module", "material", "institution"]);
+  it("covers exactly the suggested entities", () => {
+    expect(suggestionFamilies.map((family) => family.entity)).toEqual(["module", "material"]);
   });
 
   it("orders curriculum before references", () => {
-    expect(suggestionFamilies.map((family) => family.label)).toEqual(["Módulos", "Materiales", "Instituciones"]);
+    expect(suggestionFamilies.map((family) => family.label)).toEqual(["Módulos", "Materiales"]);
+    expect(suggestionFamilies.map((family) => family.label)).not.toContain("Instituciones");
   });
 });
 
@@ -33,7 +34,15 @@ describe("grouping suggestions", () => {
   ];
 
   it("groups by family in the Explorer's order, whatever order the rows arrive in", () => {
-    expect(groupSuggestions(rows).map((group) => group.entity)).toEqual(["module", "material", "institution"]);
+    expect(groupSuggestions(rows).map((group) => group.entity)).toEqual(["module", "material"]);
+  });
+
+  it("never groups institution rows, even when the rows contain them", () => {
+    const groups = groupSuggestions(rows);
+    expect(groups.map((group) => group.label)).not.toContain("Instituciones");
+    expect(JSON.stringify(groups)).not.toContain("Centro Regional");
+    expect(JSON.stringify(groups)).not.toContain("institution");
+    expect(groupSuggestions([rows[1]])).toEqual([]);
   });
 
   it("drops families with no match rather than showing an empty heading", () => {
@@ -47,17 +56,15 @@ describe("grouping suggestions", () => {
   });
 
   it("sends each suggestion to its existing canonical detail route", () => {
-    const [modules, materials, institutions] = groupSuggestions(rows);
+    const [modules, materials] = groupSuggestions(rows);
     expect(modules.items[0].href).toBe("/app/library/modules/m1");
     expect(materials.items[0].href).toBe("/app/library/references/material/t1");
-    expect(institutions.items[0].href).toBe("/app/library/references/institution/i1");
   });
 
   it("subtitles a suggestion with its classification and scope", () => {
-    const [modules, materials, institutions] = groupSuggestions(rows);
+    const [modules, materials] = groupSuggestions(rows);
     expect(modules.items[0].subtitle).toBe("Estrategia y Campaña · Participación");
     expect(materials.items[0].subtitle).toBe("Manual · Perú");
-    expect(institutions.items[0].subtitle).toBe("Centro de referencia · Regional");
   });
 
   it("omits an absent scope instead of rendering a dangling separator", () => {

@@ -134,8 +134,18 @@ const readerContent = [
   "Materiales y estudios",
   "Manual de campaña",
   "/app/library/references/material/mat-1",
+];
+
+/**
+ * D-033: the data still carries these (types are retained), the reader never sees them.
+ * `Centro Andino` is both the associated institution and the instructor's institution.
+ */
+const hiddenInstitutional = [
   "Instituciones",
   "Centro Andino",
+  "Centro de referencia",
+  "Sin instituciones asociadas.",
+  "module-institutions-title",
   "/app/library/references/institution/inst-1",
 ];
 
@@ -210,6 +220,18 @@ describe("contextual module detail", () => {
     expect(await canonical(), "missing from the canonical page").toContain(content);
   });
 
+  it.each(hiddenInstitutional)("shows no %s in either presentation, although the module data carries it", async (text) => {
+    expect(await contextual(), "present in the overlay").not.toContain(text);
+    vi.resetAllMocks();
+    expect(await canonical(), "present in the canonical page").not.toContain(text);
+  });
+
+  it("shows the instructor subtitle without the instructor's institution", async () => {
+    const html = await contextual();
+    expect(html).toContain("Directora de campaña");
+    expect(html).not.toContain("Directora de campaña · Centro Andino");
+  });
+
   it("names the overlay with a heading rather than nesting a second h1 in the document", async () => {
     const html = await contextual();
     expect(html).not.toContain("<h1");
@@ -226,7 +248,7 @@ describe("contextual module detail", () => {
     expect(html).toContain("Sin temas de Programa");
     expect(html).toContain("Sin perfiles asociados.");
     expect(html).toContain("Sin materiales asociados.");
-    expect(html).toContain("Sin instituciones asociadas.");
+    expect(html).not.toContain("Sin instituciones asociadas.");
     expect(html).not.toContain("Resultados de aprendizaje");
     expect(html).not.toContain("Notas docentes generales");
   });
@@ -243,7 +265,6 @@ describe("contextual module detail", () => {
     ["module-outcomes-title", "Resultados de aprendizaje"],
     ["module-general-notes-title", "Notas docentes generales"],
     ["module-materials-title", "Materiales y estudios"],
-    ["module-institutions-title", "Instituciones"],
   ])("names its %s section after the module and labels it with that heading", async (id, heading) => {
     const html = await contextual();
     expect(named(html, id)).toBe(heading);

@@ -52,14 +52,14 @@ function TeachingNoteBody({ note, moduleId }: { note: TeachingNote; moduleId: st
  *
  * It responds to the width it is given rather than to the viewport (@container,
  * not lg:), because the same markup renders across a page container and inside a
- * 1060px dialog panel. The instructors/materials/institutions column keeps its
+ * 1060px dialog panel. The instructors/materials column keeps its
  * place beside the Programa wherever there is room: in a scrolling overlay,
  * stacking it under a long Programa would bury the reference material the
  * reference itself keeps in view.
  *
  * Its section ids are prefixed `module-` because the overlay shares a document
- * with the Library behind it, which names its own Materiales and Instituciones
- * sections. Two elements answering to one id would leave each section's
+ * with the Library behind it, which names its own Materiales
+ * section. Two elements answering to one id would leave each section's
  * aria-labelledby resolving to whichever came first. A fixed prefix is enough:
  * the two presentations are never on screen together, so they need distinct
  * names from the Library, not from each other.
@@ -148,7 +148,7 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
             ? <div className="mt-5 space-y-5">
                 {curriculumModule.instructors.map((instructor) => <article key={instructor.id}>
                   <h3>{instructor.name}</h3>
-                  <p className="mt-1 text-sm text-white/65">{[instructor.roleOrTitle, instructor.institution, instructor.country].filter(Boolean).join(" · ")}</p>
+                  <p className="mt-1 text-sm text-white/65">{[instructor.roleOrTitle, instructor.country].filter(Boolean).join(" · ")}</p>
                   {instructor.profile && <p className="mt-2 text-sm text-white/80">{instructor.profile}</p>}
                   {instructor.linkedinUrl && <ExternalReferenceLink
                     href={instructor.linkedinUrl}
@@ -175,23 +175,6 @@ export function ModuleDetailBody({ module: curriculumModule }: { module: ModuleD
                   <strong className="mt-1 block text-ink">{material.title}</strong>
                 </Link>)
               : <EmptyNote>Sin materiales asociados.</EmptyNote>}
-          </div>
-        </section>
-
-        <section aria-labelledby="module-institutions-title">
-          <SectionLabel id="module-institutions-title" tone="accent" level="h2">Instituciones</SectionLabel>
-          <div className="mt-4 space-y-3">
-            {curriculumModule.institutions.length
-              ? curriculumModule.institutions.map((institution) => <Link
-                  key={institution.id}
-                  href={`/app/library/references/institution/${institution.id}`}
-                  prefetch={false}
-                  className="block rounded-md border border-hairline bg-surface p-4 no-underline shadow-card hover:border-hairline-strong hover:no-underline"
-                >
-                  <span className="eyebrow">{institution.institutionType}</span>
-                  <strong className="mt-1 block text-ink">{institution.name}</strong>
-                </Link>)
-              : <EmptyNote>Sin instituciones asociadas.</EmptyNote>}
           </div>
         </section>
       </aside>

@@ -94,6 +94,21 @@ describe("suggestion responses", () => {
     });
   });
 
+  it("shows only Módulos and Materiales groups when the data contains institution rows", async () => {
+    getSearchSuggestions.mockResolvedValue([
+      { entity_type: "institution", id: "i1", title: "Centro Ficticio Regional", classification: "Centro", country_or_scope: "Regional", theme: null },
+      { entity_type: "material", id: "t1", title: "Guía", classification: "Manual", country_or_scope: "Perú", theme: null },
+      { entity_type: "module", id: "m1", title: "Campaña", classification: "Eje", country_or_scope: null, theme: null },
+    ]);
+
+    const body = await (await GET(request("centro"))).json();
+
+    expect(body.groups.map((group: { label: string }) => group.label)).toEqual(["Módulos", "Materiales"]);
+    expect(JSON.stringify(body)).not.toContain("Centro Ficticio Regional");
+    expect(JSON.stringify(body)).not.toContain("Instituciones");
+    expect(JSON.stringify(body)).not.toContain("references/institution");
+  });
+
   it("answers a query too short to be worth a search without running one", async () => {
     const body = await (await GET(request("d"))).json();
 

@@ -32,7 +32,8 @@ describe("reading Library URL state", () => {
     expect(readEntity({ entity: "module" })).toBe("module");
     expect(readEntity({ entity: "reference" })).toBe("reference");
     expect(readEntity({ entity: "material" })).toBe("material");
-    expect(readEntity({ entity: "institution" })).toBe("institution");
+    // D-033: a legacy institution value normalizes to the default view.
+    expect(readEntity({ entity: "institution" })).toBeUndefined();
     expect(readEntity({ entity: "instructor" })).toBeUndefined();
     expect(readEntity({})).toBeUndefined();
   });
@@ -48,14 +49,14 @@ describe("reading Library URL state", () => {
     expect(supportsProgram(undefined)).toBe(true);
     expect(supportsProgram("module")).toBe(true);
     expect(supportsProgram("material")).toBe(false);
-    expect(supportsProgram("institution")).toBe(false);
     expect(supportsProgram("reference")).toBe(false);
   });
 
   it("renders a reference surface as Grilla even when the URL still asks for Programa", () => {
     expect(readView({ entity: "module", view: "programa" })).toBe("programa");
     expect(readView({ entity: "material", view: "programa" })).toBe("grilla");
-    expect(readView({ entity: "institution", view: "programa" })).toBe("grilla");
+    // A legacy institution value is ignored, so it reads as Todo and keeps Programa.
+    expect(readView({ entity: "institution", view: "programa" })).toBe("programa");
     expect(readView({ entity: "reference", view: "programa" })).toBe("grilla");
     // An entity outside the contract reads as Todo, which can present Programa.
     expect(readView({ entity: "otro", view: "programa" })).toBe("programa");
@@ -64,7 +65,14 @@ describe("reading Library URL state", () => {
   it("points each result family at its existing canonical route", () => {
     expect(entityHref("module", "abc")).toBe("/app/library/modules/abc");
     expect(entityHref("material", "abc")).toBe("/app/library/references/material/abc");
-    expect(entityHref("institution", "abc")).toBe("/app/library/references/institution/abc");
+  });
+
+  it("does not describe or link a legacy institution entity", () => {
+    expect(appliedFilters({ entity: "institution" }, axes)).toEqual([]);
+    expect(appliedFilters({ entity: "institution", q: "x" }, axes).map((filter) => filter.param)).toEqual(["q"]);
+    const [search] = appliedFilters({ entity: "institution", q: "x", country: "Perú" }, axes);
+    expect(search.href).not.toContain("institution");
+    expect(clearFiltersHref({ entity: "institution", view: "programa" })).toBe("/app/library?view=programa");
   });
 });
 

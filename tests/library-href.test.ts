@@ -38,6 +38,21 @@ describe("library URL construction", () => {
     expect(libraryHref({ role: "Admin", q: "x" })).toBe("/app/library?q=x");
   });
 
+  it("never re-emits a legacy entity=institution, preserving every other parameter", () => {
+    const query = { entity: "institution", q: "x", axis: "axis-1", country: "Perú", theme: "Clima", view: "programa" };
+    for (const overrides of [{}, { axis: "axis-2" }, { view: "grilla" }, { q: "" }, { entity: "" }]) {
+      const href = libraryHref(query, overrides);
+      expect(href, JSON.stringify(overrides)).not.toContain("institution");
+      expect(new URLSearchParams(href.split("?")[1]).has("entity"), JSON.stringify(overrides)).toBe(false);
+    }
+    const params = new URLSearchParams(libraryHref(query, { axis: "axis-2" }).split("?")[1]);
+    expect([...params.keys()].sort()).toEqual(["axis", "country", "q", "theme", "view"]);
+    expect(libraryHref({ entity: "institution" })).toBe("/app/library");
+    // Valid entities are still written, including by explicit override.
+    expect(libraryHref({ entity: "reference" })).toBe("/app/library?entity=reference");
+    expect(libraryHref({}, { entity: "material" })).toBe("/app/library?entity=material");
+  });
+
   it("reads only single-valued parameters", () => {
     expect(paramValue({ q: "uno" }, "q")).toBe("uno");
     expect(paramValue({ q: ["uno", "dos"] }, "q")).toBe("");

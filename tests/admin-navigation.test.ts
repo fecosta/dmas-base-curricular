@@ -92,6 +92,14 @@ describe("role-aware application navigation", () => {
     expect(await shell("Contributor")).toContain("Biblioteca curricular compartida de la red Democracia+.");
   });
 
+  it("carries the approved footer copy and no institutional-reference wording", async () => {
+    for (const role of ["Contributor", "Admin"] as const) {
+      const text = (await shell(role)).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+      expect(text).toContain("Módulos, programas, docentes y materiales en un solo lugar.");
+      expect(text).not.toContain("instituciones de referencia");
+    }
+  });
+
   /*
    * The responsive shell renders an inline destination row and a compact
    * navigation sheet. Neither may become a second place where authorization is

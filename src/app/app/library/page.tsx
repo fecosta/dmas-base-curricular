@@ -40,7 +40,6 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
   });
   const modules = library.results.filter((item) => item.entity_type === "module");
   const materials = library.results.filter((item) => item.entity_type === "material");
-  const institutions = library.results.filter((item) => item.entity_type === "institution");
   const toneFor = axisToneResolver(library.axes);
   const showingEverything = !entity;
   const filters = appliedFilters(query, library.axes);
@@ -65,7 +64,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
     title: string,
     id: string,
     items: SearchResult[],
-    kind: "material" | "institution",
+    kind: "material",
     label: string,
   ) => {
     const limited = showingEverything ? items.slice(0, PREVIEW) : items;
@@ -145,7 +144,6 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                 { label: "Todo", href: libraryHref(query, { entity: "" }), active: !entity },
                 { label: "Módulos", href: libraryHref(query, { entity: "module" }), active: entity === "module" },
                 { label: "Materiales", href: libraryHref(query, { entity: "material" }), active: entity === "material" },
-                { label: "Instituciones", href: libraryHref(query, { entity: "institution" }), active: entity === "institution" },
               ]}
             />
             {supportsProgram(entity) && <SegmentedLinks
@@ -177,7 +175,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
               action={<ButtonLink href={clearFiltersHref(query)} variant="secondary">Limpiar filtros</ButtonLink>}
             />
           : <>
-              {entity !== "material" && entity !== "institution" && entity !== "reference" && <section aria-labelledby="modules-title" className="mt-8">
+              {entity !== "material" && entity !== "reference" && <section aria-labelledby="modules-title" className="mt-8">
                 <SectionHeader title="Módulos" id="modules-title" meta={resultCount(modules.length)} />
                 {modules.length === 0
                   ? <EmptyState
@@ -211,8 +209,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Prom
                       </div>}
               </section>}
 
-              {entity !== "module" && entity !== "institution" && referenceSection("Materiales y estudios", "materials-title", materials, "material", "materiales")}
-              {entity !== "module" && entity !== "material" && referenceSection("Instituciones", "institutions-title", institutions, "institution", "instituciones")}
+              {entity !== "module" && referenceSection("Materiales y estudios", "materials-title", materials, "material", "materiales")}
             </>}
       </div>
     </Container>

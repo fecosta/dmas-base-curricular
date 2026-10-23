@@ -63,7 +63,7 @@ export type ReferenceDetail = {
 
 export type LibraryFilters = {
   query?: string;
-  entity?: "module" | "reference" | "material" | "institution";
+  entity?: "module" | "reference" | "material";
   axis?: string;
   country?: string;
   theme?: string;
@@ -76,12 +76,23 @@ function clean(value?: string) {
   return trimmed ? trimmed.slice(0, 160) : undefined;
 }
 
+/**
+ * Reader surfaces do not present institutions (D-033). `search_curriculum` still
+ * returns them, so they are dropped here before anything is counted or derived.
+ */
+function withoutInstitutions<T extends { entity_type: string }>(rows: readonly T[]) {
+  return rows.filter((row) => row.entity_type !== "institution");
+}
+
+const rpcEntities = ["module", "reference", "material"] as const;
+
 export async function getLibrary(filters: LibraryFilters) {
   await requireAccess();
   const supabase = await createClient();
   const args = {
     search_query: clean(filters.query),
-    entity_filter: filters.entity,
+    // A legacy `institution` value is never forwarded to the RPC.
+    entity_filter: rpcEntities.find((entity) => entity === filters.entity),
     axis_filter: uuidPattern.test(filters.axis ?? "") ? filters.axis : undefined,
     country_filter: clean(filters.country),
     theme_filter: clean(filters.theme),
@@ -92,10 +103,10 @@ export async function getLibrary(filters: LibraryFilters) {
     supabase.rpc("search_curriculum", {}),
   ]);
   if (axes.error || results.error || available.error) throw new Error("Curriculum read unavailable");
-  const all = available.data as SearchResult[];
+  const all = withoutInstitutions(available.data as SearchResult[]);
   return {
     axes: axes.data,
-    results: results.data as SearchResult[],
+    results: withoutInstitutions(results.data as SearchResult[]),
     countries: [...new Set(all.map((item) => item.country_or_scope).filter((value): value is string => !!value))].sort(),
     themes: [...new Set(all.flatMap((item) => item.theme?.split(",").map((value) => value.trim()) ?? []).filter(Boolean))].sort(),
   };
@@ -118,7 +129,7 @@ export async function getSearchSuggestions(query: string): Promise<SuggestionRow
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("search_curriculum", { search_query: search });
   if (error) throw new Error("Curriculum read unavailable");
-  return (data as SearchResult[]).map((row) => ({
+  return withoutInstitutions(data as SearchResult[]).map((row) => ({
     entity_type: row.entity_type,
     id: row.id,
     title: row.title,
@@ -182,7 +193,7 @@ export async function getModule(id: string) {
 }
 
 export async function getReference(type: string, id: string) {
-  if (!uuidPattern.test(id) || !["material", "institution"].includes(type)) notFound();
+  if (!uuidPattern.test(id) || type !== "material") notFound();
   await requireAccess();
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("get_published_reference", { reference_type: type, target_id: id });

@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { paramValue, type LibraryQuery } from "@/lib/curriculum/library-href";
+import { isRetiredParam, paramValue, type LibraryQuery } from "@/lib/curriculum/library-href";
 import { filterTypes, type FilterType } from "./contract";
 
 /**
@@ -49,6 +49,9 @@ export function librarySignals(query: LibraryQuery): LibrarySignals {
       // search from another, far too little to attack the preimage usefully.
       ? createHash("sha256").update(`${salt}:${search}`).digest("hex").slice(0, 12)
       : null,
-    appliedFilters: filterTypes.filter((filter) => paramValue(query, filterParams[filter]).trim() !== ""),
+    appliedFilters: filterTypes.filter((filter) => {
+      const value = paramValue(query, filterParams[filter]);
+      return value.trim() !== "" && !isRetiredParam(filterParams[filter], value);
+    }),
   };
 }

@@ -79,6 +79,15 @@ describe("ShellSearch", () => {
     expect(html).toContain('type="hidden" name="view" value="programa"');
   });
 
+  it("does not carry a legacy entity=institution, but still carries the other filters", () => {
+    const html = render("/app/library", "?entity=institution&country=Per%C3%BA&view=programa");
+    expect(html).not.toContain('name="entity"');
+    expect(html).not.toContain("institution");
+    expect(html).toContain('type="hidden" name="country" value="Perú"');
+    expect(html).toContain('type="hidden" name="view" value="programa"');
+    expect(render("/app/library", "?entity=reference")).toContain('type="hidden" name="entity" value="reference"');
+  });
+
   it("does not carry the query itself as hidden state", () => {
     expect(render("/app/library", "?q=datos")).not.toContain('type="hidden" name="q"');
   });

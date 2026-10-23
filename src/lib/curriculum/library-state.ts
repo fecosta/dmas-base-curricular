@@ -8,8 +8,12 @@ import { libraryHref, paramValue, type LibraryParam, type LibraryQuery } from ".
  * Nothing here holds state — the URL remains the applied-filter contract.
  */
 
-/** Entity values the published search contract accepts. `reference` covers both reference families. */
-export const libraryEntities = ["module", "reference", "material", "institution"] as const;
+/**
+ * Entity values the Library accepts. `reference` represents materials.
+ * `institution` is deliberately absent (D-033): a stale `entity=institution`
+ * reads as no entity, which is the default Library view.
+ */
+export const libraryEntities = ["module", "reference", "material"] as const;
 export type LibraryEntity = (typeof libraryEntities)[number];
 
 export type LibraryView = "grilla" | "programa";
@@ -25,7 +29,6 @@ const entityLabels: Record<LibraryEntity, string> = {
   module: "Módulos",
   reference: "Referencias",
   material: "Materiales",
-  institution: "Instituciones",
 };
 
 export function readEntity(query: LibraryQuery): LibraryEntity | undefined {
@@ -55,7 +58,7 @@ export function readView(query: LibraryQuery): LibraryView {
  * cards, Programa rows and search suggestions all keep one destination, and a
  * copied link is the link the reader was on.
  */
-export function entityHref(entityType: "module" | "material" | "institution", id: string) {
+export function entityHref(entityType: "module" | "material", id: string) {
   return entityType === "module"
     ? `/app/library/modules/${id}`
     : `/app/library/references/${entityType}/${id}`;

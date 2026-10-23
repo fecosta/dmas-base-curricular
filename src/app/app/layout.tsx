@@ -63,8 +63,8 @@ export default async function ApplicationLayout({ children }: { children: React.
       <Container width="wide" className="py-12">
         <span className="text-xl font-black tracking-[-0.03em] text-accent">DEMOCRACIA+</span>
         <p className="mt-3 max-w-md text-body text-white/70">
-          Biblioteca curricular compartida de la red Democracia+. Módulos, programas, docentes e
-          instituciones de referencia en un solo lugar.
+          Biblioteca curricular compartida de la red Democracia+. Módulos, programas, docentes y
+          materiales en un solo lugar.
         </p>
       </Container>
       <div className="border-t border-white/10">

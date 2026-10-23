@@ -15,7 +15,6 @@ import { entityHref } from "./library-state";
 export const suggestionFamilies = [
   { entity: "module", label: "Módulos" },
   { entity: "material", label: "Materiales" },
-  { entity: "institution", label: "Instituciones" },
 ] as const;
 
 export type SuggestionEntity = (typeof suggestionFamilies)[number]["entity"];

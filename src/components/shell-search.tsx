@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SearchInput } from "@/components/ui/search-input";
 import { SuggestionPopover, suggestionItems, useSuggestions } from "@/components/search-suggestions";
-import { libraryParams } from "@/lib/curriculum/library-href";
+import { isRetiredParam, libraryParams } from "@/lib/curriculum/library-href";
 import { minSuggestionQuery } from "@/lib/curriculum/suggestions";
 import { isLibrarySearchPath } from "@/lib/ui/nav";
 import { cn } from "@/components/ui/cn";
@@ -42,7 +42,7 @@ function LibrarySearchForm({ className }: { className?: string }) {
   const carried = libraryParams
     .filter((param) => param !== "q")
     .map((param) => [param, params.get(param) ?? ""] as const)
-    .filter(([, value]) => value !== "");
+    .filter(([param, value]) => value !== "" && !isRetiredParam(param, value));
 
   // Transient interaction state only. The URL stays the applied-filter contract:
   // nothing here is durable, and none of it survives the navigation it causes.

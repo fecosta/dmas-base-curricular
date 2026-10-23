@@ -46,12 +46,11 @@ export function ModuleCard({ item, tone }: { item: SearchResult; tone: Tone }) {
 }
 
 /**
- * Materials and institutions keep their own semantics rather than collapsing
- * into one generic reference: the type and the country/scope a reader filters by
- * are what distinguishes them, and both stay on the card.
+ * A material card: the type and the country/scope a reader filters by are what
+ * distinguishes one material from another, and both stay on the card.
  */
-export function ReferenceCard({ item, kind }: { item: SearchResult; kind: "material" | "institution" }) {
-  const tone: Tone = kind === "material" ? "warning" : "accent";
+export function ReferenceCard({ item, kind }: { item: SearchResult; kind: "material" }) {
+  const tone: Tone = "warning";
   return <Card as="article" accent={tone} className={cn(shell, "gap-2")}>
     <Kicker tone={tone}>{item.classification}</Kicker>
     <h3 className="text-base leading-snug">{item.title}</h3>

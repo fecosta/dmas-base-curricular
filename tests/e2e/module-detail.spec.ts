@@ -214,7 +214,12 @@ test.describe("opening a module from the Library", () => {
     await expect(detail(page).getByText(DURATION)).toBeVisible();
     await expect(detail(page).getByText(INSTRUCTOR)).toBeVisible();
     await expect(detail(page).getByRole("link", { name: MATERIAL })).toBeVisible();
-    await expect(detail(page).getByRole("link", { name: INSTITUTION })).toBeVisible();
+    // SPEC-012 AC-04/AC-06: no institutional section, name, or instructor institution.
+    await expect(detail(page).getByText(INSTITUTION)).toHaveCount(0);
+    await expect(detail(page).getByRole("heading", { name: "Instituciones" })).toHaveCount(0);
+    await expect(detail(page)).not.toContainText("Organización ficticia");
+    await expect(detail(page)).not.toContainText("Sin instituciones asociadas.");
+    await expect(detail(page).locator("a[href*='references/institution']")).toHaveCount(0);
 
     // One overlay, above the sticky shell, with the page behind it inert and
     // locked. Nothing of the Library stays reachable while it is open.
@@ -259,28 +264,30 @@ test.describe("opening a module from the Library", () => {
 
   /*
    * Both surfaces are in one document while the overlay is up, and the Library
-   * names sections of its own called "Materiales y estudios" and
-   * "Instituciones". Opened without an entity filter so the Library renders
-   * those sections, which is the only arrangement where the two can collide.
+   * names a section of its own called "Materiales y estudios". Opened without an
+   * entity filter so the Library renders that section, which is the only
+   * arrangement where the two can collide. Institutions are no longer a section
+   * of either surface (D-033).
    */
   test("does not reuse the Library's section ids for the module's own sections", async ({ page }) => {
     await signIn(page);
     await page.goto(`/app/library?q=${encodeURIComponent(marker)}`);
     await expect(page.locator("#materials-title")).toHaveCount(1);
-    await expect(page.locator("#institutions-title")).toHaveCount(1);
+    await expect(page.locator("#institutions-title")).toHaveCount(0);
 
     await moduleCard(page).click();
     await expect(detail(page)).toBeVisible();
 
     // One element per id: the Library keeps its names, the module has its own.
-    for (const id of ["materials-title", "institutions-title", "module-materials-title", "module-institutions-title"]) {
+    for (const id of ["materials-title", "module-materials-title"]) {
       await expect(page.locator(`#${id}`), `#${id} is not unique in the document`).toHaveCount(1);
+    }
+    for (const id of ["institutions-title", "module-institutions-title"]) {
+      await expect(page.locator(`#${id}`), `#${id} must not exist`).toHaveCount(0);
     }
     // The module's sections are the ones inside the overlay.
     await expect(detail(page).locator("#module-materials-title")).toHaveCount(1);
-    await expect(detail(page).locator("#module-institutions-title")).toHaveCount(1);
     await expect(detail(page).locator("#materials-title")).toHaveCount(0);
-    await expect(detail(page).locator("#institutions-title")).toHaveCount(0);
 
     // Each labelled section still resolves to its own heading, which is what
     // the ids exist for.
@@ -293,7 +300,6 @@ test.describe("opening a module from the Library", () => {
       "module-program-title": "Programa",
       "module-outcomes-title": "Resultados de aprendizaje",
       "module-materials-title": "Materiales y estudios",
-      "module-institutions-title": "Instituciones",
     });
   });
 
@@ -391,7 +397,12 @@ test.describe("reaching the canonical route directly", () => {
     await expect(page.getByText(OUTCOME)).toBeVisible();
     await expect(page.getByText(INSTRUCTOR)).toBeVisible();
     await expect(page.getByRole("link", { name: MATERIAL })).toBeVisible();
-    await expect(page.getByRole("link", { name: INSTITUTION })).toBeVisible();
+    // SPEC-012 AC-04/AC-06: no institutional section, name, or instructor institution.
+    await expect(page.getByText(INSTITUTION)).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Instituciones" })).toHaveCount(0);
+    await expect(page.getByRole("main")).not.toContainText("Organización ficticia");
+    await expect(page.getByRole("main")).not.toContainText("Sin instituciones asociadas.");
+    await expect(page.locator("a[href*='references/institution']")).toHaveCount(0);
 
     // The page scrolls as a page; nothing has locked it.
     expect(await documentOverflow(page)).not.toBe("hidden");

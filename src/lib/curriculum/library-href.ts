@@ -12,6 +12,14 @@ export function paramValue(query: LibraryQuery, key: string) {
 }
 
 /**
+ * Legacy parameter values the Library ignores (D-033). `entity=institution` is
+ * normalized to the default view by never being read, re-emitted or counted.
+ */
+export function isRetiredParam(key: string, value: string) {
+  return key === "entity" && value === "institution";
+}
+
+/**
  * Rebuilds the library URL, preserving every filter the reader already applied
  * and overriding only the named ones. Both segmented controls (EJE and VISTA)
  * navigate through this, which is what keeps filters intact when either changes.
@@ -21,7 +29,7 @@ export function libraryHref(query: LibraryQuery, overrides: Partial<Record<Libra
   const params = new URLSearchParams();
   for (const key of libraryParams) {
     const next = key in overrides ? overrides[key] ?? "" : paramValue(query, key);
-    if (next) params.set(key, next);
+    if (next && !isRetiredParam(key, next)) params.set(key, next);
   }
   const search = params.toString();
   return search ? `/app/library?${search}` : "/app/library";

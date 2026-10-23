@@ -74,6 +74,12 @@ describe("filter signals", () => {
     expect(appliedFilters).toEqual([...filterTypes]);
   });
 
+  it("does not count a legacy entity=institution as an applied entity filter", () => {
+    expect(librarySignals({ entity: "institution" }).appliedFilters).toEqual([]);
+    expect(librarySignals({ entity: "institution", country: "Chile" }).appliedFilters).toEqual(["country"]);
+    expect(librarySignals({ entity: "reference" }).appliedFilters).toEqual(["entity"]);
+  });
+
   it("reports nothing when no filter is applied", () => {
     expect(librarySignals({}).appliedFilters).toEqual([]);
     expect(librarySignals({ axis: "", theme: "   " }).appliedFilters).toEqual([]);
