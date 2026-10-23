@@ -393,11 +393,9 @@ test.describe("Grid and Programa", () => {
 
   test("the institution detail route is not found and the material page hides the institutional source", async ({ page }) => {
     await signIn(page);
-    // The route renders the not-found page, with the same status any unknown reference gets.
+    // AC-04: a literal HTTP 404, not a streamed 200 carrying the not-found page.
     const response = await page.goto(`/app/library/references/institution/${content.institution}`);
-    const unknown = await page.goto(`/app/library/references/material/${randomUUID()}`);
-    expect(response?.status()).toBe(unknown?.status());
-    await page.goto(`/app/library/references/institution/${content.institution}`);
+    expect(response?.status()).toBe(404);
     await expect(page.getByText("No encontramos esta publicación.")).toBeVisible();
     await expect(page.locator("body")).not.toContainText(INSTITUTION);
     await expect(page.locator("body")).not.toContainText("Institución o centro de referencia");
