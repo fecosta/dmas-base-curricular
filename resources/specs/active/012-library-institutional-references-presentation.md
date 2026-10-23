@@ -121,7 +121,7 @@ Paths and line numbers verified at `main` `70224b7`. Re-verify before editing.
 - `tests/e2e/module-detail.spec.ts` (`:217`, `:270-296` `institutions-title` / `module-institutions-title` ids and labels, `:394` institution link).
 - `tests/e2e/auth.spec.ts` (`:172` and `:183` assert `Centro Ficticio Regional`; `:185` asserts `Material o estudio|Institución o centro de referencia`).
 
-**Must NOT change:** `tests/analytics-boundary.test.ts`, `tests/analytics-events.test.tsx`; Admin management tests (`tests/admin-*.test.*`, `tests/archive-eligibility-ui.test.ts`, `tests/contribution-*.test.ts`); anything under `supabase/`; `src/lib/contributions/**`; `src/app/app/contributions/**`.
+**Must NOT change:** `tests/analytics-boundary.test.ts`, `tests/analytics-events.test.tsx`; Admin management tests (`tests/admin-*.test.*`, `tests/archive-eligibility-ui.test.ts`, `tests/contribution-*.test.ts`), except that `tests/admin-navigation.test.ts` is extended only for the SPEC-012 footer assertion (§9 Vitest — extend), with no other change to it; anything under `supabase/`; `src/lib/contributions/**`; `src/app/app/contributions/**`.
 
 ## 10. Acceptance criteria
 
