@@ -2,7 +2,9 @@
 
 **Status:** HISTORICAL RECORD — SUPERSEDED 2026-10-23. **Not a requirement and not a blocker.** Nothing in the abandoned design was approved, implemented or sequenced, and nothing was run against Cloud.
 
-**Referenced by:** `resources/specs/planned/010-platform-readiness-organizational-testing.md` (§3, §5.1, §6, AC-01) and `docs/DECISIONS.md` D-033.
+**Referenced by:** `resources/specs/active/012-library-institutional-references-presentation.md` (§12), `resources/specs/planned/010-platform-readiness-organizational-testing.md` (§3, §6) and `docs/DECISIONS.md` D-033.
+
+**Note (2026-10-23):** U2 is now owned by SPEC-012 (split out of SPEC-010). The copy inventory (§3) and the code/test lists (§4) below are carried into SPEC-012 (§5, §9, §12), which governs; this file remains a historical record and its line references date from `cf0a4d3`.
 
 **Why this file still exists.** Other documents link to it, and it keeps the reader-facing copy inventory (§3) and the list of reader code surfaces and tests (§4) that U2 uses. The authoritative G2 contract is the G2 resolution record in SPEC-010 §6 and D-033, not this file.
 

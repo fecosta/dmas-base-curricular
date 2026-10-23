@@ -193,7 +193,7 @@ Examples include:
 
 Institutions are directly addable governed knowledge objects, not only metadata embedded inside module cards.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034; SPEC-010 gates G1, G3–G5 open; G2 product scope resolved 2026-10-23 as a presentation-layer change, not yet formally recorded satisfied; G6 satisfied).**
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034; SPEC-010 gates G1, G3–G5 open; G2 satisfied 2026-10-23 and its unit U2 owned by SPEC-012, ACTIVE, not implemented; G6 satisfied).**
 >
 > - *Institution reader suppression:* institutional references will not appear in the user-facing Library experience (presentation layer only, decided 2026-10-23). Institution records, relationships, revisions, history and provenance stay intact and unchanged; this is neither archival nor deletion, and no schema, authorization or RLS change is involved. Institutions, instructor `institution` and material `source_or_institution` are not displayed to readers (Admin Library views included); Admin management surfaces keep full institution management; free text is not rewritten. Legacy `entity=institution` filters are normalized to the default Library view and `reference` means materials. The data may remain readable through existing APIs by users who already have access (accepted MVP residual exposure, `docs/SECURITY.md`).
 > - *Content origin country:* an Admin-selected attribute distinct from geographic reach (`country_or_scope`), `Sin dato` for unknown history, preserved across successor revisions, never inferred from organization, email, IP or location. Eligible content types are undecided (G3).

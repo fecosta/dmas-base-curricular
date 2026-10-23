@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-10-21
+**Last reconciled:** 2026-10-23
 
 ## Decision register
 
@@ -523,8 +523,8 @@ This decision documents a contract only. It is not implemented, authorizes no im
 
 ### D-033 — Institutional references are suppressed from reader surfaces, not removed
 
-**State:** DECISION (Product Owner) — G2 product scope RESOLVED as a presentation-layer change (2026-10-23, superseding the 2026-10-22 data-boundary scope); G2 not yet formally recorded SATISFIED and U2 not activated; data inventory gate G6 SATISFIED (2026-10-22)
-**Date:** 2026-10-21 (G2 scope revised 2026-10-23)
+**State:** DECISION (Product Owner) — G2 product scope resolved as a presentation-layer change (2026-10-23, superseding the 2026-10-22 data-boundary scope); G2 SATISFIED (Product Owner, 2026-10-23); U2 split out of SPEC-010 and owned by SPEC-012 (ACTIVE, not implemented); data inventory gate G6 SATISFIED (2026-10-22)
+**Date:** 2026-10-21 (G2 scope revised 2026-10-23; G2 recorded satisfied and SPEC-012 activated 2026-10-23)
 
 **Approved future behavior (NOT IMPLEMENTED).** Institutional references do not appear in the user-facing Library experience. All institution records, existing relationships, materials, teaching notes, historical provenance and audit events are preserved. Institutions are not archived or hard-deleted. Published revisions are not modified destructively. Canonical organizations, memberships and authorization do not change.
 
@@ -544,15 +544,15 @@ This decision documents a contract only. It is not implemented, authorizes no im
 - **D-B — kept.** Legacy `entity=institution` is ignored and normalized to the default Library view.
 - **D-C — kept.** `reference` remains a valid entity value and represents materials.
 - **D-D — kept, unchanged because nothing server-side changes.** The archived-content and lifecycle-history views keep their existing permissions and behavior.
-- **D-E — kept.** Generic institutional-reference terminology is removed from reader-facing interface text only; Admin management surfaces and technical documentation are unaffected. Replacement Spanish wording is a U2 implementation detail needing Spanish copy review. After U2 is implemented and verified, product documents that describe institutions as reader-visible are reconciled.
+- **D-E — kept.** Generic institutional-reference terminology is removed from reader-facing interface text only; Admin management surfaces and technical documentation are unaffected. The footer replacement copy was approved by the Product Owner on 2026-10-23: "Módulos, programas, docentes y materiales en un solo lugar." (the prefix sentence "Biblioteca curricular compartida de la red Democracia+." stays). After SPEC-012 is implemented and verified, product documents that describe institutions as reader-visible are reconciled.
 
 **Historical rationale.** A data-boundary approach was evaluated in the G2 design preflight (Alt 2: column-level privileges on the two base tables, a dedicated Admin RPC, a rewrite of the reader RLS policies, and a staged deployment). It was judged disproportionate for the MVP and was dropped by the 2026-10-23 decision. It is a historical record, not an active requirement or blocker (`docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md`).
 
-**Pending decisions.** None for G2 product scope, and no technical-design or authorization blocker remains. Before U2 can start: an explicit activation request under the `resources/specs/README.md` Completion rule (including whether to activate the whole spec or split U2), and Spanish copy review of the replacement wording at implementation time. G6 (read-only Cloud inventory) is satisfied by `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`; U2 has no data-dependent operation to gate.
+**Pending decisions / follow-ups.** None for G2 product scope. SPEC-012 was activated on 2026-10-23 (Product Owner; U2 split out of SPEC-010; active alongside SPEC-008, which it does not touch); implementation has not started. Reader data types are retained (presentation-only change). Privacy/Legal follow-up: `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias", rendered at `/app/privacidad/terminos` as versioned legal text) is excluded from SPEC-012 and needs Privacy/Legal review of whether a versioned Terms update is required; `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` are not edited here. After SPEC-012 is implemented and verified: reconcile `docs/PRODUCT.md` and `docs/CONTENT_MODEL.md` (and the D-033 current-behavior text). G6 is satisfied by `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`; U2 has no data-dependent operation.
 
 **Deferred.** Any hard deletion or archival of institutions; any rewrite of free-text references (editorial cleanup is a separate future activity); any change to Admin management surfaces; any API/data-boundary suppression of institutional data (would need a new decision).
 
-Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U2).
+Tracked in `resources/specs/active/012-library-institutional-references-presentation.md` (SPEC-012, split from SPEC-010 U2).
 
 ---
 
@@ -569,7 +569,7 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 **Deferred.** Deriving country from any source other than explicit Admin selection; organization-level country attributes.
 
-Tracked in the SPEC-010 file above (U3, U4).
+Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U3, U4).
 
 ---
 
@@ -586,7 +586,7 @@ Tracked in the SPEC-010 file above (U3, U4).
 
 **Deferred.** Embedded or modal feedback, to be considered only by a future spec.
 
-Tracked in the SPEC-010 file above (U5). `resources/specs/planned/011-organizational-testing-feedback-program.md` remains planned.
+Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U5). `resources/specs/planned/011-organizational-testing-feedback-program.md` remains planned.
 
 ---
 
@@ -594,7 +594,9 @@ Tracked in the SPEC-010 file above (U5). `resources/specs/planned/011-organizati
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 
-`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready: G1, G3–G5 are open; G2 product scope was resolved on 2026-10-23 as a presentation-layer change (no technical-design or authorization blocker remains; G2 is not yet formally recorded SATISFIED and U2 is defined but not activated); G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). Nothing in it is implemented or started; U3–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. `SPEC-011` remains planned.
+`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready: G1, G3–G5 are open; G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). On 2026-10-23 U2 was split out into SPEC-012 and G2 was recorded satisfied. Nothing in SPEC-010 is implemented or started; U3–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. SPEC-010 cannot close until SPEC-012 is verified complete. `SPEC-011` remains planned.
+
+`SPEC-012` — Library Institutional References Presentation is **ACTIVE — IMPLEMENTATION-READY; NOT IMPLEMENTED** at `resources/specs/active/012-library-institutional-references-presentation.md` (D-033). Activated 2026-10-23 by Product Owner decision as the U2 split from SPEC-010, alongside SPEC-008: it is a code-and-tests-only presentation change that touches no analytics, consent, privacy-notice, authorization or database behavior. `docs/TERMS_OF_USE.md` is excluded and carries a Privacy/Legal follow-up.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 

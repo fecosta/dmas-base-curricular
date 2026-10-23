@@ -449,7 +449,7 @@ Unauthorized, Draft, historical, or archived representations must not leak throu
 
 A stable identity with Published v1 and Draft v2 must appear to ordinary readers exactly through its authorized current-published representation.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-035; SPEC-010 gates G1, G3–G5 open; G2 product scope resolved 2026-10-23 as a presentation-layer change, not yet formally recorded satisfied; G6 satisfied).**
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-035; SPEC-010 gates G1, G3–G5 open; G2 satisfied 2026-10-23 and its unit U2 owned by SPEC-012, ACTIVE, not implemented; G6 satisfied).**
 >
 > - **Existing controls remain mandatory and unchanged.** Authentication, eligibility, roles, RLS, grants, private Storage and every boundary above stay as they are; G2 weakens none of them, adds no access path and changes no schema, policy, grant or function.
 > - **Accepted MVP residual exposure (decided 2026-10-23).** The reader interface will not display institutional references. The institution tables (`institutions`, `institution_revisions`, `module_institutions`), the instructor `institution` field and the material `source_or_institution` field remain readable through existing APIs, RPCs and Data API reads by users who already have the appropriate access. This is a documented accepted residual risk, not a new boundary and not a security control; hiding it in the interface does not make it confidential. It supersedes the earlier (2026-10-22) requirement of data-boundary suppression, which is not an active requirement. Any future need to restrict that data at the API level requires a new decision.
