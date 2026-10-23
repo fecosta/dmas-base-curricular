@@ -193,9 +193,9 @@ Examples include:
 
 Institutions are directly addable governed knowledge objects, not only metadata embedded inside module cards.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034; SPEC-010 gates G1–G5 open; G6 satisfied).**
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034; SPEC-010 gates G1, G3–G5 open; G2 product scope and product decisions D-A to D-E approved, technical security design pending; G6 satisfied).**
 >
-> - *Institution reader suppression:* institutional references will be hidden from reader-facing discovery and display. Institution records, relationships and provenance stay intact; suppression is neither archival nor deletion. Scope of free-text references is undecided (G2).
+> - *Institution reader suppression:* institutional references will be hidden from reader-facing discovery and display. Institution records, relationships and provenance stay intact; suppression is neither archival nor deletion. Approved G2 product scope (Product Owner, 2026-10-22): institution records and relationships, instructor `institution` and material `source_or_institution` are suppressed from reader-facing surfaces (Admin Library views included), while Admin management surfaces keep full institution management; free text is not rewritten. Legacy `entity=institution` filters are ignored and normalized to the default Library view, `reference` means materials only, and Admin access to the two protected fields uses a dedicated Admin RPC (G2 product decisions D-A to D-E). The technical mechanism is pending.
 > - *Content origin country:* an Admin-selected attribute distinct from geographic reach (`country_or_scope`), `Sin dato` for unknown history, preserved across successor revisions, never inferred from organization, email, IP or location. Eligible content types are undecided (G3).
 >
 > Current behavior: country is free text and institutions are reader-visible. See `docs/DECISIONS.md` D-033/D-034 and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.

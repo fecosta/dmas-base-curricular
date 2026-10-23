@@ -523,16 +523,28 @@ This decision documents a contract only. It is not implemented, authorizes no im
 
 ### D-033 — Institutional references are suppressed from reader surfaces, not removed
 
-**State:** DECISION (Product Owner) — scope gate G2 PENDING; data inventory gate G6 SATISFIED (2026-10-22)
+**State:** DECISION (Product Owner) — scope gate G2 PARTIALLY RESOLVED (product scope and G2 product decisions D-A to D-E approved 2026-10-22; technical security design pending); data inventory gate G6 SATISFIED (2026-10-22)
 **Date:** 2026-10-21
 
 **Approved future behavior (NOT IMPLEMENTED).** Institutional references are suppressed from reader-facing discovery and display. All institution records, existing relationships, materials, teaching notes, historical provenance and audit events are preserved. Institutions are not archived or hard-deleted. Published revisions are not modified destructively. Canonical organizations, memberships and authorization do not change. Suppression is enforced in the appropriate reader-facing data boundaries, not merely by CSS or hidden UI.
 
 **Current implemented behavior (verified read-only on `main`).** Institutions are reader-visible governed content (D-009) through the Library, search suggestions, module detail, reference pages and published-search results. Instructors and materials carry free-text institution fields that readers see. Which institutions and free-text references exist in Cloud data is to be confirmed by U0.
 
-**Pending decisions.** Gate G2 (exact scope, including institution names embedded in material titles and other free-text metadata, which are not silently rewritten). G6 (read-only Cloud inventory before any data-dependent operation) is satisfied by `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`.
+**G2 product scope (Product Owner, 2026-10-22; APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED).** Institution records are suppressed from all reader-facing Library, search, suggestion, filter, detail, API and preload surfaces; legacy institution entity filters (e.g. stale `?entity=institution` URLs) are ignored and normalized to the default Library view, without errors, empty institution sections or visible institutional filter chips, and institution detail routes return 404. Institution relationships are suppressed in reader-facing module responses while database relationships are preserved. Instructor `institution` and material `source_or_institution` are suppressed from reader-facing display, search and direct data access. Admin and non-Admin users share the same Library experience (Admin Library views also suppress); Admin management surfaces keep full institution management. Institutional records, revisions, relationships, audit events and provenance are preserved; publication, successor-revision and archival rules and analytics contracts (the `institution` content type, no new events) are unchanged. Free text is not rewritten (editorial cleanup is a separate future activity); `source_url` is unchanged. Full record: SPEC-010 §6.
 
-**Deferred.** Any hard deletion or archival of institutions; any rewrite of free-text references; any change to Admin management surfaces unless G2 says so.
+**G2 product decisions D-A to D-E (Product Owner, 2026-10-22; APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED).** These are sub-decisions of gate G2, recorded under this D-033 entry; they are **not** separate entries of this register and carry no register number (do not confuse them with D-030 to D-035). Full text: SPEC-010 §6.
+
+- **D-A.** Admin access to instructor `institution` and material `source_or_institution` uses a dedicated, authorization-checked Admin RPC; direct PostgREST column access may be restricted.
+- **D-B.** Legacy institution entity filters (`entity=institution`, including stale URLs) are ignored and normalized to the default Library view: no error, no empty institutions section, no `Tipo: Instituciones` chip.
+- **D-C.** `reference` remains a valid entity value and represents materials only.
+- **D-D.** The archived-content and lifecycle-history views are administrative management surfaces: they keep their existing permissions and behavior and are not subject to the Library Admin-parity suppression rule.
+- **D-E.** Generic institutional-reference terminology is removed from reader-facing interface text only; Admin management surfaces and technical documentation are unaffected. Replacement Spanish wording is not decided (U2 implementation detail needing Spanish copy review). After U2 is implemented and verified, product documents that describe institutions as reader-visible are reconciled.
+
+These decisions approve product behavior only. They do not approve any technical mechanism, deployment sequence, Admin RPC grant posture or RLS predicate.
+
+**Pending decisions.** The G2 technical authorization mechanism and the remaining open technical items (design preflight: `docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md`, not an approval; items O-1, O-6, O-8 to O-13 in the SPEC-010 G2 record). No product decision is pending for G2. G6 (read-only Cloud inventory before any data-dependent operation) is satisfied by `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`.
+
+**Deferred.** Any hard deletion or archival of institutions; any rewrite of free-text references (editorial cleanup is a separate future activity); any change to Admin management surfaces (G2 keeps full institution management there).
 
 Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U2).
 
@@ -576,7 +588,7 @@ Tracked in the SPEC-010 file above (U5). `resources/specs/planned/011-organizati
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 
-`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready and gates G1–G5 are open; G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). Nothing in it is implemented or started; U2–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. `SPEC-011` remains planned.
+`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready: G1, G3–G5 are open; G2 product scope and product decisions D-A to D-E are approved (2026-10-22) but its technical security design is pending, so G2 is only partially resolved; G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). Nothing in it is implemented or started; U2–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. `SPEC-011` remains planned.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 

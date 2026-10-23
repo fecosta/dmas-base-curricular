@@ -31,14 +31,14 @@ Do not move a spec to `completed/` merely because an implementation agent report
 7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — completed
 8. `SPEC-009` — Admin Organization & User Management — completed
 9. `SPEC-008` — Product Analytics & Pilot Observability — active; revised to GA4 + Supabase organizational metrics (D-032), documented, not implemented, Privacy/Legal decisions pending
-10. `SPEC-010` — Platform Readiness for Organizational Testing — planned; reconciled with D-033–D-035; not implemented; activation blocked (gates G1–G5 open; G6 satisfied)
+10. `SPEC-010` — Platform Readiness for Organizational Testing — planned; reconciled with D-033–D-035; not implemented; activation blocked (G1, G3–G5 open; G2 product scope and product decisions D-A to D-E approved, technical security design pending; G6 satisfied)
 11. `SPEC-011` — Organizational Testing & Feedback Program — planned
 
 `SPEC-006` is completed at [`completed/006-explorer-ux-ui-fidelity.md`](completed/006-explorer-ux-ui-fidelity.md). `SPEC-007` is completed at [`completed/007-ux-ui-navigation-interaction-remediation.md`](completed/007-ux-ui-navigation-interaction-remediation.md). `SPEC-009` is completed at [`completed/009-admin-organization-user-management.md`](completed/009-admin-organization-user-management.md) after independent implementation review, Cloud migration/security verification, safe hosted validation, and final coherence verification.
 
 `SPEC-001–007, SPEC-009` — completed
 `SPEC-008` — **ACTIVE — REVISED CONTRACT (GA4 NAVIGATION ANALYTICS + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING**, **not** closed (current state in the SPEC §2 and §19)
-`SPEC-010` — **PLANNED — RECONCILED; ACTIVATION BLOCKED**, not implemented, not implementation-ready, **not** closed; gates G1–G5 are open and G6 is satisfied (current state in the SPEC §2 and §6). [`planned/010-platform-readiness-organizational-testing.md`](planned/010-platform-readiness-organizational-testing.md)
+`SPEC-010` — **PLANNED — RECONCILED; ACTIVATION BLOCKED**, not implemented, not implementation-ready, **not** closed; gates G1, G3–G5 are open, G2 product scope and product decisions D-A to D-E are approved with the technical security design pending, and G6 is satisfied (current state in the SPEC §2 and §6). [`planned/010-platform-readiness-organizational-testing.md`](planned/010-platform-readiness-organizational-testing.md)
 
 ## Dependency model
 

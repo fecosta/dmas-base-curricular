@@ -449,7 +449,7 @@ Unauthorized, Draft, historical, or archived representations must not leak throu
 
 A stable identity with Published v1 and Draft v2 must appear to ordinary readers exactly through its authorized current-published representation.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-035; SPEC-010 gates G1–G5 open; G6 satisfied).** Institutional-reference suppression must be enforced at reader-facing data boundaries, not only in the UI, and must not weaken any boundary above. Origin-country filters must not bypass them. The planned external feedback link must not transmit tokens, search queries, private content or user identifiers. See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-035; SPEC-010 gates G1, G3–G5 open; G2 product scope and product decisions D-A to D-E approved, technical security design pending; G6 satisfied).** Institutional-reference suppression must be enforced at reader-facing data boundaries, not only in the UI, and must not weaken any boundary above. The approved G2 scope includes direct Data API reads of institution tables and the instructor `institution` and material `source_or_institution` columns by non-Admin users; Admin access to those two columns is to use a dedicated, authorization-checked Admin RPC and direct column access may be restricted (D-A); the enforcing mechanism, its grants and deployment sequence are not yet designed or approved. Origin-country filters must not bypass them. The planned external feedback link must not transmit tokens, search queries, private content or user identifiers. See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
 
 ---
 
