@@ -297,7 +297,7 @@ The following should not be treated as current user-facing requirements:
 
 Level and format metadata remain in the content model for potential future use, but do not need to be displayed in the current interface.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034, D-035).** Institutional references will be suppressed from reader surfaces without deleting data; an Admin-selected content origin country, distinct from reach, will be added; and a visible feedback action will open an external form. None is part of the current UX contract. See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034, D-035).** Institutional references will no longer appear in the user-facing Library experience (a presentation-layer change decided 2026-10-23: no institution entities, filters, suggestions, results, detail pages, instructor `institution` or material `source_or_institution` in the reader interface; legacy `entity=institution` URLs fall back to the default Library view; `reference` means materials). No data is deleted and authentication, authorization, roles and RLS are unchanged; institution data may remain readable through existing APIs by users who already have access (accepted MVP residual exposure, `docs/SECURITY.md`). An Admin-selected content origin country, distinct from reach, will be added, and a visible feedback action will open an external form. None is part of the current UX contract. See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
 
 The completeness indicator present in earlier/static prototype behavior is **superseded** and is not part of the approved product baseline.
 
