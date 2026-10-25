@@ -2,7 +2,7 @@
 
 **Status:** HISTORICAL RECORD — SUPERSEDED 2026-10-23. **Not a requirement and not a blocker.** Nothing in the abandoned design was approved, implemented or sequenced, and nothing was run against Cloud.
 
-**Referenced by:** `resources/specs/active/012-library-institutional-references-presentation.md` (§12), `resources/specs/planned/010-platform-readiness-organizational-testing.md` (§3, §6) and `docs/DECISIONS.md` D-033.
+**Referenced by:** `resources/specs/completed/012-library-institutional-references-presentation.md` (§12), `resources/specs/planned/010-platform-readiness-organizational-testing.md` (§3, §6) and `docs/DECISIONS.md` D-033.
 
 **Note (2026-10-23):** U2 is now owned by SPEC-012 (split out of SPEC-010). The copy inventory (§3) and the code/test lists (§4) below are carried into SPEC-012 (§5, §9, §12), which governs; this file remains a historical record and its line references date from `cf0a4d3`.
 
@@ -50,7 +50,7 @@ Replacement wording is **not** decided: it is a U2 implementation detail needing
 
 **Not copy about institutional references (out of scope):** `Correo institucional` and `dominio institucional` (identity and organization domains: `src/app/app/page.tsx:34`, `src/app/login/**`, `src/app/app/users/page.tsx:55`, `src/app/app/organizations/**`); `Referencia del error:` in error pages.
 
-**Product documents.** `docs/PRODUCT.md` (lines 19, 51, 66, 78, 92) and `docs/CONTENT_MODEL.md` describe the current implemented product, where institutions are still reader-visible, and are already covered by their approved-future-behavior banners. After U2 is implemented and verified, reconcile them with the verified behavior.
+**Product documents.** `docs/PRODUCT.md` (lines 19, 51, 66, 78, 92) and `docs/CONTENT_MODEL.md` described the implemented product at the time this preflight was written, where institutions were still reader-visible. Those documents were reconciled with the verified SPEC-012 behavior on 2026-10-25; the historical statement is preserved here as context.
 
 ## 4. Reader code surfaces and tests affected by U2
 

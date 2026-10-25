@@ -523,12 +523,14 @@ This decision documents a contract only. It is not implemented, authorizes no im
 
 ### D-033 — Institutional references are suppressed from reader surfaces, not removed
 
-**State:** DECISION (Product Owner) — G2 product scope resolved as a presentation-layer change (2026-10-23, superseding the 2026-10-22 data-boundary scope); G2 SATISFIED (Product Owner, 2026-10-23); U2 split out of SPEC-010 and owned by SPEC-012 (ACTIVE, not implemented); data inventory gate G6 SATISFIED (2026-10-22)
-**Date:** 2026-10-21 (G2 scope revised 2026-10-23; G2 recorded satisfied and SPEC-012 activated 2026-10-23)
+**State:** DECISION (Product Owner) — G2 product scope resolved as a presentation-layer change (2026-10-23, superseding the 2026-10-22 data-boundary scope); G2 SATISFIED (Product Owner, 2026-10-23); U2 split out of SPEC-010 and owned by SPEC-012 (COMPLETED 2026-10-25, accepted with baseline exception per D-036); data inventory gate G6 SATISFIED (2026-10-22); product documents reconciled 2026-10-25
+**Date:** 2026-10-21 (G2 scope revised 2026-10-23; G2 recorded satisfied and SPEC-012 activated 2026-10-23; SPEC-012 completed 2026-10-25)
 
 **Approved future behavior (NOT IMPLEMENTED).** Institutional references do not appear in the user-facing Library experience. All institution records, existing relationships, materials, teaching notes, historical provenance and audit events are preserved. Institutions are not archived or hard-deleted. Published revisions are not modified destructively. Canonical organizations, memberships and authorization do not change.
 
 **Current implemented behavior (verified read-only on `main`).** Institutions are reader-visible governed content (D-009) through the Library, search suggestions, module detail, reference pages and published-search results. Instructors and materials carry free-text institution fields that readers see. Which institutions and free-text references exist in Cloud data was inventoried by U0 (G6).
+
+**Reconciliation 2026-10-25 (after SPEC-012 implementation).** Institutional references no longer appear in the reader-facing Library experience. Institution records, relationships, revisions, history and provenance remain intact; institutions are neither archived nor deleted. Admin management surfaces keep full institution management. The change is presentation-only: no schema, authorization, RLS, grant, function or analytics change. Institution data may remain readable through existing APIs/RPCs/Data API by users who already have access (accepted MVP residual exposure, `docs/SECURITY.md`).
 
 **Revised G2 scope — presentation layer (Product Owner, 2026-10-23; APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED).** G2 is a change to what the reader interface displays. It replaces the 2026-10-22 requirement that suppression be enforced at API/data boundaries, which is **superseded** and is not an active requirement.
 
@@ -548,11 +550,11 @@ This decision documents a contract only. It is not implemented, authorizes no im
 
 **Historical rationale.** A data-boundary approach was evaluated in the G2 design preflight (Alt 2: column-level privileges on the two base tables, a dedicated Admin RPC, a rewrite of the reader RLS policies, and a staged deployment). It was judged disproportionate for the MVP and was dropped by the 2026-10-23 decision. It is a historical record, not an active requirement or blocker (`docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md`).
 
-**Pending decisions / follow-ups.** None for G2 product scope. SPEC-012 was activated on 2026-10-23 (Product Owner; U2 split out of SPEC-010; active alongside SPEC-008, which it does not touch); implementation has not started. Reader data types are retained (presentation-only change). Privacy/Legal follow-up: `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias", rendered at `/app/privacidad/terminos` as versioned legal text) is excluded from SPEC-012 and needs Privacy/Legal review of whether a versioned Terms update is required; `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` are not edited here. After SPEC-012 is implemented and verified: reconcile `docs/PRODUCT.md` and `docs/CONTENT_MODEL.md` (and the D-033 current-behavior text). G6 is satisfied by `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`; U2 has no data-dependent operation.
+**Pending decisions / follow-ups.** None for G2 product scope. SPEC-012 was activated on 2026-10-23 and completed 2026-10-25 (Product Owner; U2 split out of SPEC-010; accepted with baseline exception per D-036). Reader data types are retained (presentation-only change). Privacy/Legal follow-up: `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias", rendered at `/app/privacidad/terminos` as versioned legal text) is excluded from SPEC-012 and needs Privacy/Legal review of whether a versioned Terms update is required; `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` are not edited here. `docs/PRODUCT.md`, `docs/CONTENT_MODEL.md`, `docs/SECURITY.md` and the D-033 current-behavior text were reconciled 2026-10-25. G6 is satisfied by `docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`; U2 has no data-dependent operation.
 
 **Deferred.** Any hard deletion or archival of institutions; any rewrite of free-text references (editorial cleanup is a separate future activity); any change to Admin management surfaces; any API/data-boundary suppression of institutional data (would need a new decision).
 
-Tracked in `resources/specs/active/012-library-institutional-references-presentation.md` (SPEC-012, split from SPEC-010 U2).
+Tracked in `resources/specs/completed/012-library-institutional-references-presentation.md` (SPEC-012, split from SPEC-010 U2; completed 2026-10-25).
 
 ---
 
@@ -590,13 +592,47 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 ---
 
+### D-036 — SPEC-012 closes with a baseline Playwright exception
+
+**State:** DECISION (Product Owner) — SPEC-012 COMPLETED, ACCEPTED WITH BASELINE EXCEPTION (AC-12)
+**Date:** 2026-10-25
+**Decider:** Product Owner, communicated by the user. No personal name is recorded: the repository does not establish one.
+
+**Decision.** SPEC-012 AC-12 is **ACCEPTED WITH BASELINE EXCEPTION**. The seven Playwright failures reproduced on both baseline `f16db10` and implementation `38d1c9c` are explicitly accepted as pre-existing. The failing tests must **never** be described as passing.
+
+The seven failures are:
+
+| # | Test file | Test name | Baseline `f16db10` | Head `38d1c9c` |
+|---|---|---|---|---|
+| 1 | `tests/e2e/archival-governance.spec.ts` | archived management pages through the full three-part keyset without skipping or duplicating | :216 | :216 |
+| 2 | `tests/e2e/contributions.spec.ts` | Admins publish new and successor versions while non-Admins remain readers | :62 | :62 |
+| 3 | `tests/e2e/library-explorer.spec.ts` | modal overlay contract › Filtros: background inert and locked, scrim dismisses, focus returns | :418 | :522 |
+| 4 | `tests/e2e/module-detail.spec.ts` | opening a module from the Library › keeps the canonical URL and presents the module over the Library it was opened from | :193 | :193 |
+| 5 | `tests/e2e/module-detail.spec.ts` | detail presentation › is a centred, viewport-constrained panel on a wide desktop | :435 | :446 |
+| 6 | `tests/e2e/module-detail.spec.ts` | detail presentation › is full-screen at 768px | :456 | :467 |
+| 7 | `tests/e2e/module-detail.spec.ts` | detail presentation › is full-screen at 390px | :456 | :467 |
+
+Evidence: `/tmp/opencode/base-all.log` (baseline `f16db10`, 81 tests: 74 passed, 7 failed), `/tmp/opencode/ac12-head.log` + `/tmp/opencode/rest-head.log` (implementation `38d1c9c`, 26 + 62 tests: 24 + 57 passed, 2 + 5 failed). Failures 1–2 are the AC-12 named regression specs (`contributions.spec.ts`, `archival-governance.spec.ts`). Failures 3 and 4–7 are overlay/presentation failures of the same class already recorded as pre-existing test debt in G-007 (SPEC-007). Root causes are not investigated here.
+
+This acceptance covers **only** these seven failures, **only** AC-12's regression gate, and creates **no waiver** for any new or other failure.
+
+**Unchanged boundaries.** SPEC-008 analytics/consent boundaries remain active and unchanged. Authentication, eligibility, roles, RLS, grants, private Storage and every security boundary remain unchanged. The accepted institutional-reference residual exposure remains the current state.
+
+**Production-mode follow-up (not a product decision).** A production-mode Playwright authentication issue is recorded separately. Under `E2E_PRODUCTION=1` (`npm run test:e2e:production`, plain HTTP loopback), the AC-07 parity test fails because `/api/library/suggestions` returns no `groups` (`/tmp/opencode/ac07.log`, `/tmp/opencode/ac07b.log`). The unverified hypothesis is that production-mode `Secure` cookies are not kept over HTTP loopback. This does not change any product or security contract and the production-mode run is not part of the accepted validation evidence. See the completed SPEC-012 §17.4 and G-012.
+
+**Privacy/Legal follow-up.** `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias", rendered at `/app/privacidad/terminos`) remains excluded from implementation scope and needs Privacy/Legal review of whether a versioned Terms update is required. `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` are not edited by this closure.
+
+Tracked in `resources/specs/completed/012-library-institutional-references-presentation.md` (SPEC-012) and this register entry.
+
+---
+
 ## Current delivery state
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 
-`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready: G1, G3–G5 are open; G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). On 2026-10-23 U2 was split out into SPEC-012 and G2 was recorded satisfied. Nothing in SPEC-010 is implemented or started; U3–U5 are blocked. U0/U1 are preparatory, mutation-free activities that are not activation. SPEC-010 cannot close until SPEC-012 is verified complete. `SPEC-011` remains planned.
+`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready: G1, G3–G5 are open; G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). On 2026-10-23 U2 was split out into SPEC-012 and G2 was recorded satisfied. SPEC-012 is now COMPLETED (accepted with baseline exception, D-036), satisfying the SPEC-012 dependency; nothing else in SPEC-010 is implemented or started. U3–U5 remain blocked. U0/U1 are preparatory, mutation-free activities that are not activation. SPEC-010 cannot close until U0, U1, U3, U4 and U5 are each implemented/verified or explicitly removed by a recorded decision. `SPEC-011` remains planned.
 
-`SPEC-012` — Library Institutional References Presentation is **ACTIVE — IMPLEMENTATION-READY; NOT IMPLEMENTED** at `resources/specs/active/012-library-institutional-references-presentation.md` (D-033). Activated 2026-10-23 by Product Owner decision as the U2 split from SPEC-010, alongside SPEC-008: it is a code-and-tests-only presentation change that touches no analytics, consent, privacy-notice, authorization or database behavior. `docs/TERMS_OF_USE.md` is excluded and carries a Privacy/Legal follow-up.
+`SPEC-012` — Library Institutional References Presentation is **COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)** at `resources/specs/completed/012-library-institutional-references-presentation.md` (D-033, D-036). Implemented 2026-10-25 in commits `2f29601`, `5d22a5e`, `38d1c9c`: a code-and-tests-only presentation change that touches no analytics, consent, privacy-notice, authorization or database behavior. Seven pre-existing Playwright failures are accepted as a baseline exception (D-036) and are not represented as passing. `docs/TERMS_OF_USE.md` is excluded and carries a Privacy/Legal follow-up.
 
 `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer is completed at `resources/specs/completed/006-explorer-ux-ui-fidelity.md`.
 
@@ -772,6 +808,43 @@ The map below reflects the final AC-01–AC-27 closure review, combining impleme
 | AC-27 — Automated tests | Focused pgTAP (165), full Vitest (429), typecheck/lint, targeted dev/prod Playwright, independent review `PUSH READY` | PASS |
 
 Hosted destructive mutation/provisioning/role-change/deactivation/audit-append flows were intentionally not exercised in production (no designated safe fixture; see above). No criterion above required that evidence to reach PASS: each is independently established by local real-stack tests plus Cloud structural verification, consistent with the SPEC-004/SPEC-005 validation-split precedent.
+
+---
+
+### G-012 — SPEC-012 Library Institutional References Presentation
+
+**State:** COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)
+
+SPEC-012 is completed at `resources/specs/completed/012-library-institutional-references-presentation.md`. It delivers the SPEC-010 U2 presentation-layer removal of institutional references from the reader-facing Library. Implementation commits: `2f29601` (suppress institutional references from Library reader surfaces), `5d22a5e` (return a literal 404 for the institution reference route), `38d1c9c` (footer-assertion test freeze).
+
+The change set is limited to `src/` and `tests/`. It touches no file under `supabase/`, `src/lib/contributions/` or `src/app/app/contributions/`. It adds no migration, RLS policy, grant, `SECURITY DEFINER` function or Storage rule. Authentication, eligibility, roles, RLS, grants, private Storage, analytics, consent and Admin management surfaces are unchanged. Institution records, relationships, revisions, history, audit events and provenance are preserved; institutions are neither archived nor deleted. Free text is not rewritten.
+
+Local validation run by the closure task: `npm run lint` pass; `npm run typecheck` pass; `npm test` (`vitest run`) 604 passed, 1 skipped; `npm run build` pass. Diff inspection confirms the bounded scope.
+
+Playwright validation evidence is read from `/tmp/opencode` logs, not independently re-run by this documentation task:
+
+- Baseline `f16db10` full 8-spec AC-12 + targeted suite, dev mode: 81 tests, 74 passed, 7 failed (`base-all.log`).
+- Implementation `38d1c9c` targeted AC-12 suite, dev mode: 26 tests, 24 passed, 2 failed (`ac12-head.log`).
+- Implementation `38d1c9c` remaining targeted specs, dev mode: 62 tests, 57 passed, 5 failed (`rest-head.log`).
+- AC-07 Admin/non-Admin parity, dev mode: pass (`ac07dev.log`).
+
+The same seven failures reproduce on baseline and implementation:
+
+1. `tests/e2e/archival-governance.spec.ts:216` — archived management pages through the full three-part keyset without skipping or duplicating;
+2. `tests/e2e/contributions.spec.ts:62` — Admins publish new and successor versions while non-Admins remain readers;
+3. `tests/e2e/library-explorer.spec.ts:418` baseline / `:522` head — modal overlay contract › Filtros: background inert and locked, scrim dismisses, focus returns;
+4. `tests/e2e/module-detail.spec.ts:193` — opening a module from the Library › keeps the canonical URL and presents the module over the Library it was opened from;
+5. `tests/e2e/module-detail.spec.ts:435` baseline / `:446` head — detail presentation › is a centred, viewport-constrained panel on a wide desktop;
+6. `tests/e2e/module-detail.spec.ts:456` baseline / `:467` head — detail presentation › is full-screen at 768px;
+7. `tests/e2e/module-detail.spec.ts:456` baseline / `:467` head — detail presentation › is full-screen at 390px.
+
+These seven failures are accepted as pre-existing by Product Owner decision 2026-10-25 (D-036). They are never described as passing. Failures 1–2 are the AC-12 named regression specs; failures 3 and 4–7 are overlay/presentation failures of the same class already recorded as pre-existing test debt in G-007 (SPEC-007). Root causes are not investigated here.
+
+**Production-mode follow-up (not part of accepted validation).** Under `E2E_PRODUCTION=1` (`npm run test:e2e:production`, plain HTTP loopback at `127.0.0.1`), the AC-07 parity test fails because `/api/library/suggestions` returns no `groups` (`/tmp/opencode/ac07.log`, `/tmp/opencode/ac07b.log`). The unverified hypothesis is that production-mode `Secure` cookies are not kept over HTTP loopback. The same test passes in dev mode. This is recorded as a technical follow-up in the completed SPEC-012 §17.4 and D-036; it does not change any product or security contract.
+
+**Privacy/Legal follow-up.** `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias") remains excluded from implementation scope and needs Privacy/Legal review of whether a versioned Terms update is required. `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` remain untouched.
+
+SPEC-010's SPEC-012 dependency is satisfied; SPEC-010 remains planned with G1, G3–G5 open and U3–U5 blocked.
 
 ---
 

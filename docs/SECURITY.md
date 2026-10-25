@@ -449,11 +449,11 @@ Unauthorized, Draft, historical, or archived representations must not leak throu
 
 A stable identity with Published v1 and Draft v2 must appear to ordinary readers exactly through its authorized current-published representation.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-035; SPEC-010 gates G1, G3–G5 open; G2 satisfied 2026-10-23 and its unit U2 owned by SPEC-012, ACTIVE, not implemented; G6 satisfied).**
+> **CURRENT IMPLEMENTED BEHAVIOR (D-033, D-036) — PRESENTATION-ONLY SUPPRESSION; NO AUTH/RLS CHANGE.**
 >
-> - **Existing controls remain mandatory and unchanged.** Authentication, eligibility, roles, RLS, grants, private Storage and every boundary above stay as they are; G2 weakens none of them, adds no access path and changes no schema, policy, grant or function.
-> - **Accepted MVP residual exposure (decided 2026-10-23).** The reader interface will not display institutional references. The institution tables (`institutions`, `institution_revisions`, `module_institutions`), the instructor `institution` field and the material `source_or_institution` field remain readable through existing APIs, RPCs and Data API reads by users who already have the appropriate access. This is a documented accepted residual risk, not a new boundary and not a security control; hiding it in the interface does not make it confidential. It supersedes the earlier (2026-10-22) requirement of data-boundary suppression, which is not an active requirement. Any future need to restrict that data at the API level requires a new decision.
-> - **Unchanged.** Origin-country filters must not bypass any boundary above. The planned external feedback link must not transmit tokens, search queries, private content or user identifiers.
+> - **Existing controls remain mandatory and unchanged.** Authentication, eligibility, roles, RLS, grants, private Storage and every boundary above stay as they are; the institutional-reference suppression weakens none of them, adds no access path and changes no schema, policy, grant or function.
+> - **Accepted MVP residual exposure (current state, decided 2026-10-23, implemented 2026-10-25).** The reader interface does not display institutional references. The institution tables (`institutions`, `institution_revisions`, `module_institutions`), the instructor `institution` field and the material `source_or_institution` field remain readable through existing APIs, RPCs and Data API reads by users who already have the appropriate access. This is a documented accepted residual risk, not a new boundary and not a security control; hiding it in the interface does not make it confidential. It supersedes the earlier (2026-10-22) requirement of data-boundary suppression, which is not an active requirement. Any future need to restrict that data at the API level requires a new decision.
+> - **Unchanged.** Origin-country filters (not implemented) must not bypass any boundary above. The planned external feedback link must not transmit tokens, search queries, private content or user identifiers.
 >
 > See `docs/DECISIONS.md` and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
 

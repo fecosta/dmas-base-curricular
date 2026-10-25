@@ -193,12 +193,12 @@ Examples include:
 
 Institutions are directly addable governed knowledge objects, not only metadata embedded inside module cards.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034; SPEC-010 gates G1, G3–G5 open; G2 satisfied 2026-10-23 and its unit U2 owned by SPEC-012, ACTIVE, not implemented; G6 satisfied).**
+> **CURRENT IMPLEMENTED BEHAVIOR (D-033, D-036) — INSTITUTIONAL REFERENCES SUPPRESSED IN READER INTERFACE; DATA MODEL UNCHANGED.**
 >
-> - *Institution reader suppression:* institutional references will not appear in the user-facing Library experience (presentation layer only, decided 2026-10-23). Institution records, relationships, revisions, history and provenance stay intact and unchanged; this is neither archival nor deletion, and no schema, authorization or RLS change is involved. Institutions, instructor `institution` and material `source_or_institution` are not displayed to readers (Admin Library views included); Admin management surfaces keep full institution management; free text is not rewritten. Legacy `entity=institution` filters are normalized to the default Library view and `reference` means materials. The data may remain readable through existing APIs by users who already have access (accepted MVP residual exposure, `docs/SECURITY.md`).
-> - *Content origin country:* an Admin-selected attribute distinct from geographic reach (`country_or_scope`), `Sin dato` for unknown history, preserved across successor revisions, never inferred from organization, email, IP or location. Eligible content types are undecided (G3).
+> - *Institution reader suppression:* institutional references no longer appear in the user-facing Library experience (presentation layer only, implemented 2026-10-25). Institution records, relationships, revisions, history and provenance stay intact and unchanged; this is neither archival nor deletion, and no schema, authorization or RLS change is involved. Institutions, instructor `institution` and material `source_or_institution` are not displayed to readers (Admin Library views included); Admin management surfaces keep full institution management; free text is not rewritten. Legacy `entity=institution` filters are normalized to the default Library view and `reference` means materials. The data may remain readable through existing APIs/RPCs/Data API by users who already have access (accepted MVP residual exposure, `docs/SECURITY.md`).
+> - *Content origin country (NOT IMPLEMENTED):* an Admin-selected attribute distinct from geographic reach (`country_or_scope`), `Sin dato` for unknown history, preserved across successor revisions, never inferred from organization, email, IP or location. Eligible content types are undecided (G3).
 >
-> Current behavior: country is free text and institutions are reader-visible. See `docs/DECISIONS.md` D-033/D-034 and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
+> Current behavior: country is free text. Institutions remain in the content model and Admin management but are no longer reader-visible. See `docs/DECISIONS.md` D-033/D-034/D-036 and `resources/specs/planned/010-platform-readiness-organizational-testing.md`.
 
 ## 10. Contribution — inactive current behavior
 

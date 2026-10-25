@@ -4,13 +4,13 @@
 
 **Status:** PLANNED — RECONCILED; ACTIVATION BLOCKED
 
-**Delivery state:** NOT IMPLEMENTED. NOT STARTED. NOT IMPLEMENTATION-READY AS A WHOLE (GATES G1, G3, G4, G5 OPEN; U3–U5 BLOCKED). U2 WAS SPLIT OUT ON 2026-10-23 AND IS OWNED BY SPEC-012 (ACTIVE; G2 SATISFIED). G6 SATISFIED.
+**Delivery state:** NOT IMPLEMENTED. NOT STARTED. NOT IMPLEMENTATION-READY AS A WHOLE (GATES G1, G3, G4, G5 OPEN; U3–U5 BLOCKED). U2 WAS SPLIT OUT ON 2026-10-23, OWNED BY SPEC-012, AND IS NOW COMPLETED (ACCEPTED WITH BASELINE EXCEPTION PER D-036; G2 SATISFIED). G6 SATISFIED.
 
-**Dependencies:** SPEC-001–007 and SPEC-009 (completed). Does not depend on SPEC-008 implementation and does not activate or expand analytics; gate G5 coordinates with SPEC-008 Gate P (Privacy/Legal). U2 is owned by [`SPEC-012`](../active/012-library-institutional-references-presentation.md) (active, split out 2026-10-23).
+**Dependencies:** SPEC-001–007 and SPEC-009 (completed); SPEC-012 (completed, accepted with baseline exception, D-036). Does not depend on SPEC-008 implementation and does not activate or expand analytics; gate G5 coordinates with SPEC-008 Gate P (Privacy/Legal). U2 is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (completed 2026-10-25).
 
 **Repository location:** `resources/specs/planned/010-platform-readiness-organizational-testing.md`
 
-**Decisions:** D-033, D-034, D-035 in [`docs/DECISIONS.md`](../../../docs/DECISIONS.md). D-033 (institutional references) is implemented through SPEC-012.
+**Decisions:** D-033, D-034, D-035, D-036 in [`docs/DECISIONS.md`](../../../docs/DECISIONS.md). D-033 (institutional references) is implemented through SPEC-012 and closed under D-036.
 
 ## 1. Purpose
 
@@ -18,7 +18,7 @@ Prepare the existing platform for phased testing with Latin American partner org
 
 ## 2. Activation status
 
-Activation of this spec as a whole to `active/` is **BLOCKED**. Under `resources/specs/README.md`, `active/` means implementation-ready and the current authorized delivery slice. This spec is not implementation-ready as a whole: gates G1, G3, G4 and G5 (§6) are open and block U3–U5. **U2 was split out on 2026-10-23** (Product Owner decision) into [`SPEC-012`](../active/012-library-institutional-references-presentation.md), which is ACTIVE and is the single owner of the U2 definition (G2 is SATISFIED, §6). G6 is satisfied. This spec therefore stays in `planned/`.
+Activation of this spec as a whole to `active/` is **BLOCKED**. Under `resources/specs/README.md`, `active/` means implementation-ready and the current authorized delivery slice. This spec is not implementation-ready as a whole: gates G1, G3, G4 and G5 (§6) are open and block U3–U5. **U2 was split out on 2026-10-23** (Product Owner decision) into [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), which is now **COMPLETED** (accepted with baseline exception, D-036) and is the single owner of the U2 definition (G2 is SATISFIED, §6). G6 is satisfied. This spec therefore stays in `planned/`.
 
 **Product-owner decision (Option A, 2026-10-21):** keep SPEC-010 planned. The lifecycle definitions in `resources/specs/README.md` are not changed.
 
@@ -26,13 +26,13 @@ Activation of this spec as a whole to `active/` is **BLOCKED**. Under `resources
 
 - Every gate that blocks a unit intended for the active slice is resolved and recorded in §6 (decision, date, decider), and that unit's open specification items are written into this spec.
 - A separate preflight and an explicit activation, per `resources/specs/README.md` Completion rule item 6.
-- The whole-spec-or-split question for U2 is decided: **split** (SPEC-012). A later activation of the remaining units (U3–U5, and U0/U1 if formalized) is decided at that time.
+- The whole-spec-or-split question for U2 is decided: **split** (SPEC-012, now completed). A later activation of the remaining units (U3–U5, and U0/U1 if formalized) is decided at that time.
 
-While this spec is planned, none of its remaining units (U3–U5) is an authorized delivery slice, and nothing here authorizes their implementation. U2 is authorized only by [`SPEC-012`](../active/012-library-institutional-references-presentation.md), not by this spec. U0 and U1 are permitted preparatory work only because they mutate nothing (§5). **Completion condition:** this spec cannot move to `completed/` until SPEC-012 is verified complete **and** U0, U1, U3, U4 and U5 have each been implemented/verified against §8 (or explicitly removed by a recorded decision).
+While this spec is planned, none of its remaining units (U3–U5) is an authorized delivery slice, and nothing here authorizes their implementation. U2 is authorized only by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), not by this spec. U0 and U1 are permitted preparatory work only because they mutate nothing (§5). **Completion condition:** this spec cannot move to `completed/` until U0, U1, U3, U4 and U5 have each been implemented/verified against §8 (or explicitly removed by a recorded decision). The SPEC-012 dependency is satisfied.
 
 ## 3. Current implemented behavior (verified read-only on `main`; U0 confirms Cloud data)
 
-- **Institutions** are an implemented governed content type (`institutions`, `institution_revisions`, `module_institutions`; D-009) and are reader-visible when published. Reader surfaces that currently render them: Library `Instituciones` tab (`Tipo` control) and results section, search suggestions (`/api/library/suggestions`), module detail `Instituciones` section (page and overlay), and `/app/library/references/institution/[id]`. Instructors carry a free-text `institution` field (shown in the module detail instructor subtitle) and materials carry free-text `source_or_institution` (shown on the material reference page as `Fuente o institución`). Generic reader-facing copy that mentions "instituciones de referencia" (`src/app/app/layout.tsx:66-67`, the authenticated shell footer) is terminology, not an exposure of institution records; G2 decision D-E nevertheless brings the reader-facing wording into U2 scope (copy inventory: `docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md` §3, historical record). The `search_curriculum` RPC returns institution rows when no entity is given and for `entity=reference`, and the Library `País o alcance` and `Tema` options are derived in application code (`getLibrary` in `src/lib/curriculum/queries.ts`) from the unfiltered RPC result, so they currently include institution values. (Current-state detail and the verified file list for U2 now live in [`SPEC-012`](../active/012-library-institutional-references-presentation.md) §3 and §5; this bullet is kept as the SPEC-010 baseline and is not a requirement.)
+- **Institutions** are an implemented governed content type (`institutions`, `institution_revisions`, `module_institutions`; D-009). They were reader-visible before SPEC-012; after SPEC-012 they remain in the data model and Admin management but are no longer displayed on reader surfaces. Reader-facing suppression covers: the Library `Instituciones` tab (`Tipo` control) and results section, search suggestions (`/api/library/suggestions`), module detail `Instituciones` section (page and overlay), the institution detail route, the instructor subtitle `institution` value, and material `source_or_institution` displayed as `Fuente o institución`. Generic reader-facing copy that mentioned "instituciones de referencia" (`src/app/app/layout.tsx:66-67`, the authenticated shell footer) was replaced by SPEC-012. The `search_curriculum` RPC still returns institution rows, but the Library filters them in application code before results, counts and filter options are derived. (Current-state detail and the verified file list for U2 live in [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) §3 and §5; this bullet is kept as the SPEC-010 baseline and is not a requirement.)
 - **Country** is stored as free-text `country_or_scope` on material and institution revisions and free-text `country` on instructor revisions (no value list; the application validates length only). The Library filter `País o alcance` lists the distinct `country_or_scope` values of current results and filters by exact normalized match; modules have no country and are excluded when it is applied. Reach and origin are not separate fields today.
 - **Organizations** have no country attribute. No content-origin country field exists.
 - **Feedback:** no feedback action, JotForm reference, or feedback code exists.
@@ -45,7 +45,7 @@ Full text: D-033, D-034, D-035.
 
 **D1 — Institutional references (D-033).** Institutional references do not appear in the user-facing Library experience. Preserve all institution records, existing relationships, materials, teaching notes, historical provenance and audit events. Do not archive or hard-delete institutions. Do not modify published revisions destructively. Do not change canonical organizations, memberships or authorization.
 
-**D1 scope.** Owned by [`SPEC-012`](../active/012-library-institutional-references-presentation.md) (§4, §5, §6, §11): presentation-layer removal of institutional references from the reader-facing Library (decisions D-B to D-E of G2), retaining all data and data types, with the accepted MVP residual exposure. Nothing server-side or data-related changes. This spec does not duplicate those requirements.
+**D1 scope.** Owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (§4, §5, §6, §11): presentation-layer removal of institutional references from the reader-facing Library (decisions D-B to D-E of G2), retaining all data and data types, with the accepted MVP residual exposure. Nothing server-side or data-related changes. This spec does not duplicate those requirements.
 
 G2 decisions D-A to D-E are sub-decisions of gate G2 recorded in the G2 record (§6) and in D-033; they are not entries of the `docs/DECISIONS.md` register and must not be confused with register IDs such as D-030 to D-035. D-A (Admin RPC for the two fields) is superseded.
 
@@ -61,7 +61,7 @@ G2 decisions D-A to D-E are sub-decisions of gate G2 recorded in the G2 record (
 |---|---|---|---|---|
 | **U0** | Read-only Cloud data inventory and repository reference inventory/impact map: institutions and their relationships, free-text institutional references, country values on every content type, legacy reach values, which reader surfaces and data boundaries expose each. Output is a report with aggregate counts, not content or personal data. Satisfies G6. | None. No migration, no Cloud write, no secret or personal data in the report. | — | PREPARATORY (no implementation authority); Cloud inventory COMPLETE and reviewed (G6, §6) |
 | **U1** | Verify `bc.democraciamas.com`, navigation, mobile usability, accessibility and regression behavior. No DNS assumption: if verification shows a DNS or deployment change is needed, stop and request separate authorization. | None to application code unless a defect is found; defects are reported, not fixed. | — | PREPARATORY (no implementation authority) |
-| **U2** | Remove institution entities and institutional wording from the user-facing Library experience, in the presentation layer only. | Code only (`src/`, `tests/`). No schema, migration, RLS, grant or function change. | — (G2 SATISFIED; G6 not applicable) | **SPLIT OUT — owned by SPEC-012 (ACTIVE)** |
+| **U2** | Remove institution entities and institutional wording from the user-facing Library experience, in the presentation layer only. | Code only (`src/`, `tests/`). No schema, migration, RLS, grant or function change. | — (G2 SATISFIED; G6 not applicable) | **COMPLETED — owned by SPEC-012 (accepted with baseline exception, D-036)** |
 | **U3** | Restrict the *reach* selector to the approved Latin American set, validated on client and server; legacy values handled by an explicit non-destructive rule. | Yes | G1, G6 (U0 complete) | BLOCKED |
 | **U4** | Content-origin country: schema and provenance, Admin selection, filter, display, `Sin dato` for unknown history, successor-revision carry-over. Includes the relationship to the existing `País o alcance` filter. | Yes | G3, G6 (U0 complete) | BLOCKED |
 | **U5** | Visible Spanish-first feedback action opening the approved external JotForm URL. | Code only | G4, G5 | BLOCKED |
@@ -70,13 +70,13 @@ U0 and U1 are preparatory, read-only/verification activities only. Executing the
 
 U3 and U4 are independent of one another unless a recorded gate resolution says otherwise. Any data-dependent migration of U3 or U4 requires G6, satisfied by a completed U0 report; U2 (SPEC-012) has no data-dependent operation.
 
-### 5.1 U2 — split out to SPEC-012
+### 5.1 U2 — split out to SPEC-012 (COMPLETED)
 
-U2 (Library presentation change) is owned by [`SPEC-012`](../active/012-library-institutional-references-presentation.md), which holds the purpose, approved behavior, affected surfaces, implementation notes, non-goals, authorization invariants, acceptance criteria and test inventory. Institutional data types are retained; only reader-facing presentation and application-layer filtering change. Nothing is duplicated here; if this section and SPEC-012 ever differ, SPEC-012 governs U2.
+U2 (Library presentation change) is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), which holds the purpose, approved behavior, affected surfaces, implementation notes, non-goals, authorization invariants, acceptance criteria, test inventory and closure record. Institutional data types are retained; only reader-facing presentation and application-layer filtering change. Nothing is duplicated here; if this section and SPEC-012 ever differ, SPEC-012 governs U2. U2 is completed and accepted with a baseline Playwright exception (D-036).
 
 ## 6. Gates
 
-G1, G3, G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record below) and its unit U2 is owned by [`SPEC-012`](../active/012-library-institutional-references-presentation.md) (ACTIVE). G6 is SATISFIED (record below). Resolutions are recorded here (decision, date, decider) before the blocked unit starts.
+G1, G3, G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record below) and its unit U2 is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (COMPLETED 2026-10-25, accepted with baseline exception per D-036). G6 is SATISFIED (record below). Resolutions are recorded here (decision, date, decider) before the blocked unit starts.
 
 | Gate | What must be decided | Blocks | Owner |
 |---|---|---|---|
@@ -89,8 +89,8 @@ G1, G3, G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record b
 
 ### G2 resolution record
 
-- **Status:** SATISFIED (2026-10-23).
-- **Decision dates and decider:** 2026-10-22 (original scope and decisions D-A to D-E), 2026-10-23 (simplification to a presentation-layer change, which supersedes the 2026-10-22 data-boundary requirement) and 2026-10-23 (formal recording of G2 as SATISFIED, split of U2 into SPEC-012, and activation). Product Owner, communicated by the user. No personal name is recorded: the repository does not establish one.
+- **Status:** SATISFIED (2026-10-23); U2 completed 2026-10-25 (accepted with baseline exception, D-036).
+- **Decision dates and decider:** 2026-10-22 (original scope and decisions D-A to D-E), 2026-10-23 (simplification to a presentation-layer change, which supersedes the 2026-10-22 data-boundary requirement), 2026-10-23 (formal recording of G2 as SATISFIED, split of U2 into SPEC-012, and activation), and 2026-10-25 (SPEC-012 closure with baseline exception). Product Owner, communicated by the user. No personal name is recorded: the repository does not establish one.
 - **Label note:** "D-A" to "D-E" are sub-decisions of gate G2. They are **not** entries of the `docs/DECISIONS.md` register and carry no register number; their durable record is this section plus D-033. Do not confuse them with register IDs such as D-030 to D-035.
 
 **(a) Product decisions resolved (APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED).**
@@ -104,7 +104,7 @@ G1, G3, G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record b
 - **D-D — kept, unchanged because nothing server-side changes.** The archived-content and lifecycle-history views keep their existing permissions and behavior.
 - **D-E — kept.** Generic institutional-reference terminology (for example "instituciones de referencia") is removed from reader-facing interface text only; Admin management surfaces and technical documentation are unaffected. The footer replacement copy was approved by the Product Owner on 2026-10-23 ("Módulos, programas, docentes y materiales en un solo lugar.").
 
-**(b) Activation record.** Activated and owned by [`SPEC-012`](../active/012-library-institutional-references-presentation.md) on 2026-10-23: U2 split out of this spec, SPEC-012 ACTIVE alongside SPEC-008, `docs/TERMS_OF_USE.md` excluded from implementation with a Privacy/Legal follow-up. Spanish copy review of the footer is satisfied by the approved copy. After SPEC-012 is implemented and verified, `docs/PRODUCT.md` and `docs/CONTENT_MODEL.md` are reconciled.
+**(b) Activation record.** Activated and owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) on 2026-10-23; completed 2026-10-25 (accepted with baseline exception, D-036): U2 split out of this spec, SPEC-012 ACTIVE alongside SPEC-008, `docs/TERMS_OF_USE.md` excluded from implementation with a Privacy/Legal follow-up. Spanish copy review of the footer is satisfied by the approved copy. `docs/PRODUCT.md`, `docs/CONTENT_MODEL.md`, `docs/SECURITY.md` and `docs/DECISIONS.md` (D-033) were reconciled 2026-10-25.
 
 **(c) Authorization or governance blockers.** None introduced. U2 changes no authentication, authorization, role, RLS or grant behavior and adds no access path. The technical items that existed only for the abandoned data-boundary design (enforcement mechanism, Admin RLS preservation, staged deployment, grant posture, Admin RPC contract, database dry-run/rollback; labelled O-1, O-6, O-8 to O-13 in earlier drafts) are withdrawn, and O-2 to O-5 and O-7 are resolved by the decisions above. The abandoned design is kept as a historical record in [`docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md`](../../../docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md); it is not an active requirement or a blocker.
 
@@ -137,9 +137,9 @@ Origin and reach filters must never bypass publication, membership, Storage or R
 
 ## 8. Acceptance criteria
 
-Criteria apply when the corresponding unit is activated and implemented. U2's criteria are owned by [`SPEC-012`](../active/012-library-institutional-references-presentation.md) (SPEC-012 AC-01 to AC-13). **Roll-up:** this spec is not complete until SPEC-012 is verified complete and the criteria below are met for U0, U1 and U3–U5.
+Criteria apply when the corresponding unit is activated and implemented. U2's criteria are owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (SPEC-012 AC-01 to AC-13; AC-12 accepted with baseline exception, D-036). **Roll-up:** this spec is not complete until the criteria below are met for U0, U1 and U3–U5. The SPEC-012 dependency is satisfied.
 
-- **AC-01 (U2) — owned by SPEC-012.** See [`SPEC-012`](../active/012-library-institutional-references-presentation.md) §10 (SPEC-012 AC-01 to AC-08). Not duplicated here.
+- **AC-01 (U2) — owned by SPEC-012.** See [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) §10 and §17 (SPEC-012 AC-01 to AC-13; AC-12 baseline exception). Not duplicated here.
 - **AC-02 (U0, U3, U4; U2 owned by SPEC-012 AC-09):** Institution records, relationships, materials, teaching notes, provenance and audit events are intact; institutions are neither archived nor deleted; published revisions are not destructively modified; canonical organizations, memberships and authorization are unchanged. A U0 inventory precedes any data-dependent operation (U3, U4); any such operation has a documented dry-run and rollback.
 - **AC-03 (U3):** The reach selector offers exactly the G1-approved set; the server rejects unsupported new values; existing values follow an explicit non-destructive rule.
 - **AC-04 (U4):** Origin country is Admin-selected, never inferred, distinct from reach, `Sin dato` for unknown history, preserved across successor revisions, Admin-mutation-only, creates no organization-specific visibility restriction, and is displayed and filtered consistently for the G3-approved types.
@@ -148,13 +148,13 @@ Criteria apply when the corresponding unit is activated and implemented. U2's cr
 - **AC-07 (U5):** A visible feedback action with a Spanish-first label opens the approved external URL, works with keyboard and on mobile, and is not enabled until G4 and G5 are resolved. No iframe, modal integration or custom backend.
 - **AC-08 (U5):** The feedback action transmits no tokens, search queries, private content or user identifiers, appends no context parameters, and adds no analytics events.
 - **AC-09 (all; U2 owned by SPEC-012 AC-11):** Existing consent/revocation behavior and SPEC-008 gates are unchanged; analytics is neither activated nor expanded.
-- **AC-10 (U1 and regression for every unit; U2 owned by SPEC-012 AC-12):** Existing upload, viewing, downloading, publication and archival regressions pass; the deployed domain is verified without assuming DNS changes.
-- **AC-11 (governance):** This spec is not activated as a whole until the activation conditions in §2 are met; no gated unit (U3–U5) starts before its gates are resolved in §6. U2 is activated and governed by [`SPEC-012`](../active/012-library-institutional-references-presentation.md) (SPEC-012 AC-13). U0/U1 execution is preparatory and is not activation. This spec is not completed until SPEC-012 is verified complete and the remaining units pass independent verification.
+- **AC-10 (U1 and regression for every unit; U2 owned by SPEC-012 AC-12):** Existing upload, viewing, downloading, publication and archival regressions pass, subject to the SPEC-012 AC-12 baseline exception recorded in D-036; the deployed domain is verified without assuming DNS changes.
+- **AC-11 (governance):** This spec is not activated as a whole until the activation conditions in §2 are met; no gated unit (U3–U5) starts before its gates are resolved in §6. U2 is completed and governed by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (SPEC-012 AC-13; accepted with baseline exception, D-036). U0/U1 execution is preparatory and is not activation. This spec is not completed until the remaining units pass independent verification.
 
 ## 9. Out of scope
 
 - Archiving or deleting institutions, organizations, users, memberships, content, attachments, audit history or analytics data.
-- Rewriting institution names in material titles or free text (editorial cleanup is a separate future activity). U2-specific out-of-scope items (Admin management surfaces, archived/lifecycle-history views, technical documentation wording, API/data-level suppression, `docs/TERMS_OF_USE.md`, generic "referencia(s)" wording) are owned by [`SPEC-012`](../active/012-library-institutional-references-presentation.md) §14.
+- Rewriting institution names in material titles or free text (editorial cleanup is a separate future activity). U2-specific out-of-scope items (Admin management surfaces, archived/lifecycle-history views, technical documentation wording, API/data-level suppression, `docs/TERMS_OF_USE.md`, generic "referencia(s)" wording) are owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) §14.
 - Embedded or modal feedback, a custom feedback backend, ticketing, public feedback board or notification engine.
 - Changing publication/archival authorization or reviving Contributor authoring.
 - New analytics events, session replay, or enabling any analytics provider.
@@ -162,8 +162,8 @@ Criteria apply when the corresponding unit is activated and implemented. U2's cr
 
 ## 10. Validation and documentation
 
-Use unit/integration tests, browser journeys and independent review per unit; add database checks only for units that change the database (U3, U4). U2 is validated as specified in [`SPEC-012`](../active/012-library-institutional-references-presentation.md) §10 (existing lint, typecheck, Vitest, build and targeted Playwright specs; no database check applies). Verify data-affecting changes on safe local/test fixtures, never on real production records. Reconcile `docs/` only when a unit's behavior is actually verified; until then the durable docs mark it as approved future behavior, not implemented. Do not push, merge or deploy without explicit authorization.
+Use unit/integration tests, browser journeys and independent review per unit; add database checks only for units that change the database (U3, U4). U2 is validated and closed as specified in [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) §10 and §17 (existing lint, typecheck, Vitest, build and targeted Playwright specs; no database check applies; AC-12 accepted with baseline exception, D-036). Verify data-affecting changes on safe local/test fixtures, never on real production records. Reconcile `docs/` when a unit's behavior is verified; U2 reconciliation was performed 2026-10-25. Do not push, merge or deploy without explicit authorization.
 
 ## 11. Implementation freedom
 
-Within an activated unit: component structure and application-layer mechanics consistent with the approved stack (U2 freedom is in [`SPEC-012`](../active/012-library-institutional-references-presentation.md) §15). Not allowed: reinterpreting approved gate decisions, redefining country semantics, erasing provenance, inferring origin country, expanding data collection or analytics, altering permissions, or reinterpreting suppression as archival or deletion.
+Within an activated unit: component structure and application-layer mechanics consistent with the approved stack (U2 freedom is in [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) §15). Not allowed: reinterpreting approved gate decisions, redefining country semantics, erasing provenance, inferring origin country, expanding data collection or analytics, altering permissions, or reinterpreting suppression as archival or deletion.

@@ -48,7 +48,7 @@ The curriculum is initially organized around two axes:
 
 Modules belong to one of these axes and may be associated with themes and supporting knowledge objects.
 
-The product also distinguishes **References**, including institutions and materials/studies, as a complementary exploration surface.
+The product also distinguishes **References**, meaning materials/studies, as a complementary exploration surface. Institution records remain in the content model and are managed by Admins, but are not presented in the reader-facing Library.
 
 ## 4. Core product capabilities
 
@@ -63,7 +63,7 @@ The Library provides two module views:
 
 These are alternative ways of exploring the same content, not different learning paths. Applied search, filters and the chosen view are carried in the URL, so a narrowed Library can be reloaded and shared.
 
-`Programa` presents curricular module structure, so it applies only to module-capable surfaces (`Todo`, `Módulos`). Reference surfaces (`Materiales`, `Instituciones`) render as a grid and do not offer the view choice; a chosen `Programa` view carried in the URL is kept and applies again when the reader returns to a module-capable surface.
+`Programa` presents curricular module structure, so it applies only to module-capable surfaces (`Todo`, `Módulos`). Reference surfaces (`Materiales`) render as a grid and do not offer the view choice; a chosen `Programa` view carried in the URL is kept and applies again when the reader returns to a module-capable surface.
 
 ### 4.2 View module context
 
@@ -75,8 +75,9 @@ A module may aggregate:
 - learning outcomes;
 - instructors or expert profiles;
 - teaching notes;
-- related institutions;
 - related materials and studies.
+
+Institution relationships remain in the data model but are not displayed in the reader-facing module detail.
 
 ### 4.3 Govern curriculum content
 
@@ -297,7 +298,9 @@ The following should not be treated as current user-facing requirements:
 
 Level and format metadata remain in the content model for potential future use, but do not need to be displayed in the current interface.
 
-> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-033, D-034, D-035).** Institutional references will no longer appear in the user-facing Library experience (a presentation-layer change decided 2026-10-23: no institution entities, filters, suggestions, results, detail pages, instructor `institution` or material `source_or_institution` in the reader interface; legacy `entity=institution` URLs fall back to the default Library view; `reference` means materials). No data is deleted and authentication, authorization, roles and RLS are unchanged; institution data may remain readable through existing APIs by users who already have access (accepted MVP residual exposure, `docs/SECURITY.md`). An Admin-selected content origin country, distinct from reach, will be added, and a visible feedback action will open an external form. None is part of the current UX contract. The institutional-reference change is owned by the active SPEC-012 (`resources/specs/active/012-library-institutional-references-presentation.md`; activated 2026-10-23, not implemented: institutions remain reader-visible until it is implemented and verified); the other items are tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md`. See `docs/DECISIONS.md`.
+> **CURRENT IMPLEMENTED BEHAVIOR (D-033, D-036) — INSTITUTIONAL REFERENCES SUPPRESSED IN READER INTERFACE.** Institutional references no longer appear in the user-facing Library experience: no institution entities, filters, suggestions, results, detail pages, instructor `institution` or material `source_or_institution` in the reader interface; legacy `entity=institution` URLs fall back to the default Library view; `reference` means materials. Institution records, relationships, revisions, history and provenance are preserved; institutions are neither archived nor deleted. No data is deleted and authentication, authorization, roles and RLS are unchanged; institution data may remain readable through existing APIs/RPCs/Data API by users who already have access (accepted MVP residual exposure, `docs/SECURITY.md`).
+>
+> **APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED (D-034, D-035).** An Admin-selected content origin country, distinct from reach, will be added, and a visible feedback action will open an external form. Neither is part of the current UX contract. Both are tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md`. `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias") remains excluded and needs a Privacy/Legal review of whether a versioned Terms update is required. See `docs/DECISIONS.md`.
 
 The completeness indicator present in earlier/static prototype behavior is **superseded** and is not part of the approved product baseline.
 
