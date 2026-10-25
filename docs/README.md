@@ -67,4 +67,4 @@ Historical artifacts may be archived if useful, but they must not remain listed 
 | `GOVERNANCE.md` | Governance core confirmed |
 | `SECURITY.md` | Product security baseline confirmed |
 | `ARCHITECTURE.md` | Initial stack and architecture confirmed |
-| `DECISIONS.md` | Reconciled decision register (D-033–D-036; D-033 implemented and reconciled 2026-10-25; D-034–D-035 approved future behavior, not implemented) |
+| `DECISIONS.md` | Reconciled decision register (D-033–D-036; D-033 implemented 2026-10-23, reconciled 2026-10-25; D-034–D-035 approved future behavior, not implemented) |
