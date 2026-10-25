@@ -93,7 +93,7 @@ G1, G3, G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record b
 - **Decision dates and decider:** 2026-10-22 (original scope and decisions D-A to D-E), 2026-10-23 (simplification to a presentation-layer change, which supersedes the 2026-10-22 data-boundary requirement), 2026-10-23 (formal recording of G2 as SATISFIED, split of U2 into SPEC-012, and activation), and 2026-10-25 (SPEC-012 closure with baseline exception). Product Owner, communicated by the user. No personal name is recorded: the repository does not establish one.
 - **Label note:** "D-A" to "D-E" are sub-decisions of gate G2. They are **not** entries of the `docs/DECISIONS.md` register and carry no register number; their durable record is this section plus D-033. Do not confuse them with register IDs such as D-030 to D-035.
 
-**(a) Product decisions resolved (APPROVED FUTURE BEHAVIOR — NOT IMPLEMENTED).**
+**(a) Product decisions resolved (IMPLEMENTED VIA SPEC-012; CLOSED 2026-10-25 WITH BASELINE EXCEPTION D-036).**
 
 - Institution entities, navigation, filters, suggestions and search results are removed from the user-facing Library; instructor `institution` and material `source_or_institution` are not displayed; the institution detail route returns 404. Admin and non-Admin users get the same Library. Admin management surfaces keep full institution management. Data types are retained.
 - Institutional data may remain accessible through existing APIs to users who already have access. This residual exposure is accepted for the MVP (`docs/SECURITY.md`). Existing authentication, authorization, roles and RLS stay intact; nothing is weakened and no access path is added.

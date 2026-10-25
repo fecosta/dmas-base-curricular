@@ -4,7 +4,7 @@
 
 **Status:** COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)
 
-**Delivery state:** IMPLEMENTED AND DOCUMENTATION-CLOSED 2026-10-25. Implementation commits: `2f29601` (feat: suppress institutional references from Library reader surfaces), `5d22a5e` (fix: return a literal 404 for the institution reference route), `38d1c9c` (docs/test: except the footer assertion in SPEC-012 admin test freeze). CODE AND TESTS ONLY (`src/`, `tests/`); NO DATABASE, MIGRATION, RLS, GRANT, FUNCTION OR CLOUD CHANGE.
+**Delivery state:** IMPLEMENTED 2026-10-23; DOCUMENTATION-CLOSED 2026-10-25. Implementation commits: `2f29601` (feat: suppress institutional references from Library reader surfaces) and `5d22a5e` (fix: return a literal 404 for the institution reference route); the change set is limited to `src/` and `tests/`. Commit `38d1c9c` is a spec-text docs commit recording the footer-assertion exception in the SPEC-012 admin test freeze; it touches only the SPEC-012 file. NO DATABASE, MIGRATION, RLS, GRANT, FUNCTION OR CLOUD CHANGE.
 
 **Dependencies:** SPEC-001–007 and SPEC-009 (completed); D-033 and D-036 in [`docs/DECISIONS.md`](../../../docs/DECISIONS.md). Does not depend on SPEC-008 implementation; coexists with SPEC-008 (§2). Independent of SPEC-010 gates G1, G3, G4, G5 and of SPEC-010 units U3–U5. Gate G2 is SATISFIED (§13). Gate G6 is not applicable: this spec has no data-dependent operation.
 
@@ -199,7 +199,7 @@ The historical copy inventory table is [`docs/SPEC-010-G2-SECURITY-DESIGN-PREFLI
 - Rewriting institution names in material titles or free text (separate future editorial cleanup).
 - Embedded or modal feedback, origin-country metadata, reach-selector changes (SPEC-010 U3–U5).
 - New analytics events, consent changes, enabling any analytics provider.
-- Post-implementation reconciliation of `docs/PRODUCT.md` and `docs/CONTENT_MODEL.md`: a documentation follow-up after SPEC-012 is verified, not part of this spec's code. Until then the durable docs describe this behavior as approved future behavior, not implemented.
+- Post-implementation reconciliation of `docs/PRODUCT.md` and `docs/CONTENT_MODEL.md`: a documentation follow-up after SPEC-012 is verified, not part of this spec's code. Reconciled 2026-10-25.
 
 ## 15. Implementation freedom
 
@@ -218,11 +218,11 @@ Per §10. No database check applies (nothing under `supabase/` changes). Do not 
 | AC-01 — Library hides institutions | PASS | `tests/e2e/library-explorer.spec.ts` (:314, :341), Vitest `tests/curriculum-queries.test.ts`, `tests/library-state.test.ts` |
 | AC-02 — Legacy `entity=institution` normalized | PASS | `tests/e2e/library-explorer.spec.ts` (:356), Vitest `tests/library-href.test.ts`, `tests/library-state.test.ts` |
 | AC-03 — Suggestions only modules/materials | PASS | `tests/e2e/library-explorer.spec.ts` (:574), `tests/library-suggestions-route.test.ts`, `tests/library-suggestions.test.ts` |
-| AC-04 — Detail hides institutions, route 404 | PASS | `tests/e2e/library-explorer.spec.ts` (:394), `tests/e2e/module-detail.spec.ts`, `tests/module-detail-overlay.test.tsx`; route handler `src/app/app/library/references/institution/[id]/route.ts` |
+| AC-04 — Detail hides institutions, route 404 | PASS | `tests/e2e/library-explorer.spec.ts` (:394), `tests/e2e/module-detail.spec.ts` (:385 "renders the complete standalone page with no prior Library navigation"), `tests/module-detail-overlay.test.tsx`; route handler `src/app/app/library/references/institution/[id]/route.ts`. `tests/e2e/module-detail.spec.ts:193` is one of the seven baseline-excepted failures (D-036); its failure point is the layout/overflow assertion, not an institution assertion. |
 | AC-05 — Footer copy updated | PASS | `tests/e2e/shell.spec.ts` (:120), Vitest `tests/admin-navigation.test.ts` |
 | AC-06 — Seeded institutions invisible | PASS | Negative assertions in AC-01–AC-04 journeys; no institution fixture name appears in reader output |
 | AC-07 — Admin/non-Admin parity | PASS (dev mode) | `tests/e2e/library-explorer.spec.ts` (:881) passes in dev mode (`/tmp/opencode/ac07dev.log`); production-mode run is NOT part of accepted validation (see §17.4) |
-| AC-08 — Admin management intact | PASS | Diff touches no Admin management file; existing Admin tests pass unchanged |
+| AC-08 — Admin management intact | PASS | Diff touches no Admin management file; Admin Vitest tests pass (full suite 604 passed, 1 skipped; `tests/admin-navigation.test.ts` extended only for the footer assertion as §9 permits); `tests/e2e/content-management.spec.ts` passes in `ac12-head.log`; `tests/e2e/contributions.spec.ts:62` is one of the seven baseline-excepted failures (D-036) and is not claimed as passing. |
 | AC-09 — Preservation | PASS | `git diff --stat f16db10..38d1c9c` contains no `supabase/`, seed or data file; no migration |
 | AC-10 — No new access path | PASS | No new route, endpoint, grant or policy in diff; auth/RLS files unchanged |
 | AC-11 — Analytics and consent unchanged | PASS | `tests/analytics-boundary.test.ts` and `tests/analytics-events.test.tsx` untouched; full Vitest suite passes (604 passed, 1 skipped) |
@@ -243,7 +243,7 @@ The same seven Playwright journeys fail on baseline `f16db10` and on implementat
 | 6 | `tests/e2e/module-detail.spec.ts` | detail presentation › is full-screen at 768px | :456 | :467 |
 | 7 | `tests/e2e/module-detail.spec.ts` | detail presentation › is full-screen at 390px | :456 | :467 |
 
-Failures 1–2 are the AC-12 named regression specs (`contributions.spec.ts`, `archival-governance.spec.ts`). Failure 3 and failures 4–7 are overlay/presentation failures of the same class already recorded as pre-existing test debt in G-007 (SPEC-007). Root causes are **not investigated here**.
+Failures 1–2 are the AC-12 named regression specs and are of the archival/Admin-form class already recorded as pre-existing test debt in G-007 (SPEC-007). Failures 3–7 were reproduced on baseline `f16db10` and had no earlier repository record. Root causes are **not investigated here**.
 
 This acceptance covers **only** these seven failures, **only** AC-12's regression gate, and creates **no waiver** for any new or other failure.
 

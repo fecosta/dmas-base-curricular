@@ -30,7 +30,7 @@ Do not move a spec to `completed/` merely because an implementation agent report
 6. `SPEC-006` — Explorer UX/UI Fidelity & Interaction Layer — completed
 7. `SPEC-007` — UX/UI Navigation & Interaction Remediation — completed
 8. `SPEC-009` — Admin Organization & User Management — completed
-9. `SPEC-012` — Library Institutional References Presentation — completed; split from SPEC-010 U2 (2026-10-23); implemented 2026-10-25; accepted with baseline exception (D-036); coexisted with SPEC-008
+9. `SPEC-012` — Library Institutional References Presentation — completed; split from SPEC-010 U2 (2026-10-23); implemented 2026-10-23; closed 2026-10-25; accepted with baseline exception (D-036); coexisted with SPEC-008
 10. `SPEC-008` — Product Analytics & Pilot Observability — active; revised to GA4 + Supabase organizational metrics (D-032), documented, not implemented, Privacy/Legal decisions pending
 11. `SPEC-010` — Platform Readiness for Organizational Testing — planned; reconciled with D-033–D-036; not implemented; activation as a whole blocked (G1, G3–G5 open; U3–U5 blocked; G6 satisfied); U2 completed via SPEC-012 (G2 satisfied)
 12. `SPEC-011` — Organizational Testing & Feedback Program — planned
