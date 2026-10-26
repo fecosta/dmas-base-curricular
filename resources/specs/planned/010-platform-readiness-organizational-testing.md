@@ -4,13 +4,13 @@
 
 **Status:** PLANNED — RECONCILED; ACTIVATION BLOCKED
 
-**Delivery state:** NOT IMPLEMENTED. NOT STARTED. NOT IMPLEMENTATION-READY AS A WHOLE (GATES G1, G3, G4, G5 OPEN; U3–U5 BLOCKED). U2 WAS SPLIT OUT ON 2026-10-23, OWNED BY SPEC-012, AND IS NOW COMPLETED (ACCEPTED WITH BASELINE EXCEPTION PER D-036; G2 SATISFIED). G6 SATISFIED.
+**Delivery state:** NOT IMPLEMENTED. NOT STARTED. NOT IMPLEMENTATION-READY AS A WHOLE (G4, G5 OPEN; G1 AND G3 DECIDED 2026-10-26 BUT NOT YET SATISFIED; U3–U5 BLOCKED). U2 WAS SPLIT OUT ON 2026-10-23, OWNED BY SPEC-012, AND IS NOW COMPLETED (ACCEPTED WITH BASELINE EXCEPTION PER D-036; G2 SATISFIED). G6 SATISFIED.
 
-**Dependencies:** SPEC-001–007 and SPEC-009 (completed); SPEC-012 (completed, accepted with baseline exception, D-036). Does not depend on SPEC-008 implementation and does not activate or expand analytics; gate G5 coordinates with SPEC-008 Gate P (Privacy/Legal). U2 is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (completed 2026-10-25).
+**Dependencies:** SPEC-001–007 and SPEC-009 (completed); SPEC-012 (completed, accepted with baseline exception, D-036); [`SPEC-013`](../planned/013-material-reach-country-restriction.md) (planned, U3 contract written, activation pending Product Owner confirmation C1-C3). Does not depend on SPEC-008 implementation and does not activate or expand analytics; gate G5 coordinates with SPEC-008 Gate P (Privacy/Legal). U2 is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (completed 2026-10-25). U3 is owned by [`SPEC-013`](../planned/013-material-reach-country-restriction.md).
 
 **Repository location:** `resources/specs/planned/010-platform-readiness-organizational-testing.md`
 
-**Decisions:** D-033, D-034, D-035, D-036 in [`docs/DECISIONS.md`](../../../docs/DECISIONS.md). D-033 (institutional references) is implemented through SPEC-012 and closed under D-036.
+**Decisions:** D-033, D-034, D-035, D-036 in [`docs/DECISIONS.md`](../../../docs/DECISIONS.md). D-033 (institutional references) is implemented through SPEC-012 and closed under D-036. G1 and G3 product decisions were approved on 2026-10-26 and are recorded in §4 and §6.
 
 ## 1. Purpose
 
@@ -18,17 +18,17 @@ Prepare the existing platform for phased testing with Latin American partner org
 
 ## 2. Activation status
 
-Activation of this spec as a whole to `active/` is **BLOCKED**. Under `resources/specs/README.md`, `active/` means implementation-ready and the current authorized delivery slice. This spec is not implementation-ready as a whole: gates G1, G3, G4 and G5 (§6) are open and block U3–U5. **U2 was split out on 2026-10-23** (Product Owner decision) into [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), which is now **COMPLETED** (accepted with baseline exception, D-036) and is the single owner of the U2 definition (G2 is SATISFIED, §6). G6 is satisfied. This spec therefore stays in `planned/`.
+Activation of this spec as a whole to `active/` is **BLOCKED**. Under `resources/specs/README.md`, `active/` means implementation-ready and the current authorized delivery slice. This spec is not implementation-ready as a whole: gates G4 and G5 (§6) remain open and block U5; gates G1 and G3 were decided on 2026-10-26 but are not yet satisfied and still block U3 and U4 (see §6 records and [`SPEC-013`](../planned/013-material-reach-country-restriction.md)). **U2 was split out on 2026-10-23** (Product Owner decision) into [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), which is now **COMPLETED** (accepted with baseline exception, D-036) and is the single owner of the U2 definition (G2 is SATISFIED, §6). G6 is satisfied. This spec therefore stays in `planned/`.
 
 **Product-owner decision (Option A, 2026-10-21):** keep SPEC-010 planned. The lifecycle definitions in `resources/specs/README.md` are not changed.
 
 **Minimum conditions for a later activation request:**
 
-- Every gate that blocks a unit intended for the active slice is resolved and recorded in §6 (decision, date, decider), and that unit's open specification items are written into this spec.
+- Every gate that blocks a unit intended for the active slice is resolved and recorded in §6 (decision, date, decider), and that unit's open specification items are written into this spec or into a split spec.
 - A separate preflight and an explicit activation, per `resources/specs/README.md` Completion rule item 6.
-- The whole-spec-or-split question for U2 is decided: **split** (SPEC-012, now completed). A later activation of the remaining units (U3–U5, and U0/U1 if formalized) is decided at that time.
+- The whole-spec-or-split question for U2 is decided: **split** (SPEC-012, now completed). The split question for U3 is decided: **split** into [`SPEC-013`](../planned/013-material-reach-country-restriction.md) (contract written, activation pending Product Owner confirmation C1-C3). A later activation of the remaining units (U0, U1, U4, U5) is decided at that time.
 
-While this spec is planned, none of its remaining units (U3–U5) is an authorized delivery slice, and nothing here authorizes their implementation. U2 is authorized only by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), not by this spec. U0 and U1 are permitted preparatory work only because they mutate nothing (§5). **Completion condition:** this spec cannot move to `completed/` until U0, U1, U3, U4 and U5 have each been implemented/verified against §8 (or explicitly removed by a recorded decision). The SPEC-012 dependency is satisfied.
+While this spec is planned, none of its remaining units (U3–U5) is an authorized delivery slice, and nothing here authorizes their implementation. U2 is authorized only by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), not by this spec. U3 is authorized only by [`SPEC-013`](../planned/013-material-reach-country-restriction.md), not by this spec, and only after Product Owner confirmation of C1-C3 and an explicit activation commit. U0 and U1 are permitted preparatory work only because they mutate nothing (§5). **Completion condition:** this spec cannot move to `completed/` until U0, U1, U3, U4 and U5 have each been implemented/verified against §8 (or explicitly removed by a recorded decision). The SPEC-012 dependency is satisfied; the SPEC-013 dependency is satisfied only when SPEC-013 is completed.
 
 ## 3. Current implemented behavior (verified read-only on `main`; U0 confirms Cloud data)
 
@@ -37,7 +37,8 @@ While this spec is planned, none of its remaining units (U3–U5) is an authoriz
 - **Organizations** have no country attribute. No content-origin country field exists.
 - **Feedback:** no feedback action, JotForm reference, or feedback code exists.
 - **Domain:** `bc.democraciamas.com` is not referenced in application code or configuration. Whether it is served is not verified here (U1).
-- **Cloud data** (which institutions, countries, and legacy values actually exist): inventoried read-only by U0 (aggregate counts only); see [`docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`](../../../docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md) and gate G6 in §6. The repository reference inventory/impact map half of U0 is not part of that evidence.
+- **Cloud data** (which institutions, countries, and legacy values actually exist): inventoried read-only by U0 (aggregate counts only); see [`docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md`](../../../docs/SPEC-010-G6-CLOUD-INVENTORY-EVIDENCE.md) and gate G6 in §6. The repository reference inventory/impact map half of U0 was completed by the 2026-10-26 preflight (verified surfaces: `material_revisions.country_or_scope` and `institution_revisions.country_or_scope` columns, `search_curriculum`, the `create_contribution` / `update_contribution` / `create_successor_draft` / `publish_content_draft` RPC payload whitelists, `private.validate_submission`, the material/institution/instructor form inputs, `src/lib/contributions/validation.ts`, `src/app/app/contributions/actions.ts`, `src/lib/curriculum/queries.ts` `getLibrary`, and the analytics `country` filter type). The Cloud inventory half remains the authoritative G6 evidence.
+- **Domain verification (U1 partial).** As of the 2026-10-26 preflight: `bc.democraciamas.com` resolves to Vercel, HTTPS returns 200 with HSTS, HTTP returns 308 to HTTPS, `/app` unauthenticated redirects to `/login`, `/api/library/suggestions` returns 401, and `/login` is Spanish-first (`lang=es`) with Google and Email OTP options. NOT verified: Vercel project/alias binding, deployed commit, Google OAuth redirect configuration, authenticated flows, mobile usability, accessibility.
 
 ## 4. Approved decisions
 
@@ -49,9 +50,13 @@ Full text: D-033, D-034, D-035.
 
 G2 decisions D-A to D-E are sub-decisions of gate G2 recorded in the G2 record (§6) and in D-033; they are not entries of the `docs/DECISIONS.md` register and must not be confused with register IDs such as D-030 to D-035. D-A (Admin RPC for the two fields) is superseded.
 
-**D2 — Content origin country (D-034).** The Admin explicitly selects the content's country of origin. It is not inferred from the Admin's organization, email domain, IP or location, and has no organization-country dependency. It is distinct from geographic reach. Historical content with unknown provenance is `Sin dato`. Published-revision immutability is respected and provenance is preserved across successor revisions. Country metadata creates no organization-specific visibility restriction. Mutation is Admin-only. Eligible content types and successor-revision semantics must be specified before U4 (G3).
+**D2 — Content origin country (D-034).** The Admin explicitly selects the content's country of origin. It is not inferred from the Admin's organization, email domain, IP or location, and has no organization-country dependency. It is distinct from geographic reach. Historical content with unknown provenance is `Sin dato`. Published-revision immutability is respected and provenance is preserved across successor revisions. Country metadata creates no organization-specific visibility restriction. Mutation is Admin-only.
+
+**D2a — G3 semantics decided 2026-10-26.** For v1, origin country applies to materials only. It is an explicit Admin selection. It uses worldwide country values (concrete list pending U4-a decision). Historical unknown origin = `Sin dato`. It is exposed as a separate `País de origen` filter. The existing reach label `País o alcance` is kept. Origin is never inferred from organizations or users. U4 is owned by SPEC-010; U4-a and U4-b must be resolved before U4 activates.
 
 **D3 — External feedback form (D-035).** The first version is a visible feedback action that opens an external JotForm URL. No embedded iframe, no modal integration, no custom feedback backend, no new analytics events, and no automatic transmission of tokens, search queries, private content or user identifiers. Spanish-first label; accessible keyboard and mobile behavior. The approved form URL and privacy-governance details are prerequisites for enabling the action. An embedded experience may be considered in a future spec.
+
+**D4 — Geographic reach (G1) decided 2026-10-26.** The material reach selector offers a controlled list of Latin American countries, stored as canonical Spanish country names. Existing legacy values are preserved with NO destructive migration. Unchanged legacy values may carry over into successor Drafts. New or modified unsupported values are rejected. Regional and multi-country selections are excluded in v1. The concrete list and scoping confirmations (C1-C3) are proposed in [`SPEC-013`](../planned/013-material-reach-country-restriction.md) §5 and await Product Owner confirmation. U3 is owned by [`SPEC-013`](../planned/013-material-reach-country-restriction.md).
 
 **Other stakeholder intent retained.** `bc.democraciamas.com` is the approved public subdomain (no DNS or deployment change presumed). The *reach* country selector offers only an approved Latin American set. Analytics opt-in, default-off behavior and revocation are unchanged.
 
@@ -60,29 +65,33 @@ G2 decisions D-A to D-E are sub-decisions of gate G2 recorded in the G2 record (
 | Unit | Scope | Mutation | Blocked by | Status |
 |---|---|---|---|---|
 | **U0** | Read-only Cloud data inventory and repository reference inventory/impact map: institutions and their relationships, free-text institutional references, country values on every content type, legacy reach values, which reader surfaces and data boundaries expose each. Output is a report with aggregate counts, not content or personal data. Satisfies G6. | None. No migration, no Cloud write, no secret or personal data in the report. | — | PREPARATORY (no implementation authority); Cloud inventory COMPLETE and reviewed (G6, §6) |
-| **U1** | Verify `bc.democraciamas.com`, navigation, mobile usability, accessibility and regression behavior. No DNS assumption: if verification shows a DNS or deployment change is needed, stop and request separate authorization. | None to application code unless a defect is found; defects are reported, not fixed. | — | PREPARATORY (no implementation authority) |
+| **U1** | Verify `bc.democraciamas.com`, navigation, mobile usability, accessibility and regression behavior. No DNS assumption: if verification shows a DNS or deployment change is needed, stop and request separate authorization. | None to application code unless a defect is found; defects are reported, not fixed. | — | PREPARATORY (no implementation authority); partial result recorded in §3 |
 | **U2** | Remove institution entities and institutional wording from the user-facing Library experience, in the presentation layer only. | Code only (`src/`, `tests/`). No schema, migration, RLS, grant or function change. | — (G2 SATISFIED; G6 not applicable) | **COMPLETED — owned by SPEC-012 (accepted with baseline exception, D-036)** |
-| **U3** | Restrict the *reach* selector to the approved Latin American set, validated on client and server; legacy values handled by an explicit non-destructive rule. | Yes | G1, G6 (U0 complete) | BLOCKED |
-| **U4** | Content-origin country: schema and provenance, Admin selection, filter, display, `Sin dato` for unknown history, successor-revision carry-over. Includes the relationship to the existing `País o alcance` filter. | Yes | G3, G6 (U0 complete) | BLOCKED |
+| **U3** | Restrict the material *reach* selector to the approved Latin American set, enforced at the database boundary; legacy values handled by an explicit non-destructive rule. | Yes (schema migration + app) | G1, G6 (U0 complete), C1-C3 confirmation | **BLOCKED — owned by SPEC-013 (contract written; activation pending Product Owner confirmation C1-C3)** |
+| **U4** | Content-origin country: schema and provenance, Admin selection, filter, display, `Sin dato` for unknown history, successor-revision carry-over. Includes the relationship to the existing `País o alcance` filter. | Yes | G3 (semantics decided), G6 (U0 complete), U4-a/U4-b, U3 completion | **BLOCKED — G3 semantics recorded; pending U4-a/U4-b and U3 completion** |
 | **U5** | Visible Spanish-first feedback action opening the approved external JotForm URL. | Code only | G4, G5 | BLOCKED |
 
 U0 and U1 are preparatory, read-only/verification activities only. Executing them is not SPEC activation, does not authorize implementation of any gated unit (U3–U5), and does not by itself resolve any gate, except that a completed, reviewed U0 report is the evidence for G6. They are permitted while the spec is planned only because they mutate nothing. If U1 finds a defect, report it; do not fix it under this spec.
 
-U3 and U4 are independent of one another unless a recorded gate resolution says otherwise. Any data-dependent migration of U3 or U4 requires G6, satisfied by a completed U0 report; U2 (SPEC-012) has no data-dependent operation.
+U3 and U4 may be activated independently once their own gates and implementation contracts are complete, but U3 precedes U4 because they share surfaces (the material form and the reader filter `País o alcance`). Any data-dependent migration of U3 or U4 requires G6, satisfied by a completed U0 report; U2 (SPEC-012) has no data-dependent operation.
 
 ### 5.1 U2 — split out to SPEC-012 (COMPLETED)
 
 U2 (Library presentation change) is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md), which holds the purpose, approved behavior, affected surfaces, implementation notes, non-goals, authorization invariants, acceptance criteria, test inventory and closure record. Institutional data types are retained; only reader-facing presentation and application-layer filtering change. Nothing is duplicated here; if this section and SPEC-012 ever differ, SPEC-012 governs U2. U2 is completed and accepted with a baseline Playwright exception (D-036).
 
+### 5.2 U3 — split out to SPEC-013 (PLANNED; ACTIVATION PENDING)
+
+U3 (material reach country restriction) is owned by [`SPEC-013`](../planned/013-material-reach-country-restriction.md), which holds the purpose, activation conditions, verified current behavior, approved G1 policy, proposed country list and flagged ambiguities, scoping confirmations C1-C3, technical contract R-1 to R-7, affected surfaces, non-goals, acceptance criteria, validation commands, authorization/analytics invariants and activation record. Nothing is duplicated here; if this section and SPEC-013 ever differ, SPEC-013 governs U3. U3 is not activated and may not be implemented until the Product Owner confirms C1-C3 and a separate activation commit is made.
+
 ## 6. Gates
 
-G1, G3, G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record below) and its unit U2 is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (COMPLETED 2026-10-25, accepted with baseline exception per D-036). G6 is SATISFIED (record below). Resolutions are recorded here (decision, date, decider) before the blocked unit starts.
+G1 and G3 are **DECIDED 2026-10-26 but NOT YET SATISFIED** (see records below). G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record below) and its unit U2 is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (COMPLETED 2026-10-25, accepted with baseline exception per D-036). G6 is SATISFIED (record below). Resolutions are recorded here (decision, date, decider) before the blocked unit starts.
 
 | Gate | What must be decided | Blocks | Owner |
 |---|---|---|---|
-| **G1** | Approved Latin American country list (including territories and edge cases) and the rule for legacy non-conforming `country_or_scope` values (non-destructive). | U3 | Not recorded |
+| **G1** | Approved Latin American country list (including territories and edge cases) and the rule for legacy non-conforming `country_or_scope` values (non-destructive). | U3 (SPEC-013) | Product Owner. **DECIDED 2026-10-26; NOT SATISFIED** pending confirmation of C1-C3 (see record below) |
 | **G2** | Exact scope of institutional-reference suppression: which reader surfaces; whether instructor `institution`, material `source_or_institution`, and institution names in free text are in scope; how Admin management surfaces are treated. | U2 (SPEC-012) | Product Owner. **SATISFIED** (2026-10-23); see record below |
-| **G3** | Content types eligible for origin-country metadata and filtering; the permitted value set (D2 does not tie it to the reach list); successor-revision semantics; how the origin filter relates to the existing `País o alcance` filter. | U4 | Not recorded |
+| **G3** | Content types eligible for origin-country metadata and filtering; the permitted value set (D2 does not tie it to the reach list); successor-revision semantics; how the origin filter relates to the existing `País o alcance` filter. | U4 | Product Owner. **DECIDED 2026-10-26; NOT SATISFIED** pending U4-a/U4-b and U3 completion (see record below) |
 | **G4** | Approved JotForm URL; form owner; fields; retention; privacy requirements (including whether any page context may be passed — D3 permits none by default). | U5 | Not recorded |
 | **G5** | Privacy Notice coordination with SPEC-008 where applicable (e.g. whether the external feedback form requires Notice wording). Feedback is separate from analytics consent. | U5 | Privacy/Legal (per SPEC-008 Gate P); not otherwise recorded |
 | **G6** | Read-only Cloud data inventory completed and reviewed before any data-dependent migration or suppression operation. Satisfied by U0, which is itself read-only. | U3, U4 | **SATISFIED** — see record below |
@@ -109,7 +118,41 @@ G1, G3, G4 and G5 are OPEN. G2 is SATISFIED (Product Owner, 2026-10-23; record b
 **(c) Authorization or governance blockers.** None introduced. U2 changes no authentication, authorization, role, RLS or grant behavior and adds no access path. The technical items that existed only for the abandoned data-boundary design (enforcement mechanism, Admin RLS preservation, staged deployment, grant posture, Admin RPC contract, database dry-run/rollback; labelled O-1, O-6, O-8 to O-13 in earlier drafts) are withdrawn, and O-2 to O-5 and O-7 are resolved by the decisions above. The abandoned design is kept as a historical record in [`docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md`](../../../docs/SPEC-010-G2-SECURITY-DESIGN-PREFLIGHT.md); it is not an active requirement or a blocker.
 
 - **Relation to the G6 record:** the G6 record below predates this decision and is left unaltered. G6 stays SATISFIED; U2 has no data-dependent operation, so G6 has nothing to gate for it (it still applies to U3 and U4).
-- **What this record does not do:** it does not resolve G1, G3, G4 or G5, does not alter the G6 record, does not activate this spec (which stays planned), and does not authorize implementation of U3–U5.
+- **What this record does not do:** it does not resolve G4 or G5, does not satisfy G1 or G3 (both were decided later, on 2026-10-26, and are recorded in their own §6 records), does not alter the G6 record, does not activate this spec (which stays planned), and does not authorize implementation of U3–U5.
+
+### G1 resolution record
+
+- **Status:** DECIDED 2026-10-26; **NOT SATISFIED** pending Product Owner confirmation of C1-C3.
+- **Decision date and decider:** 2026-10-26. Product Owner, communicated by the user. No personal name is recorded: the repository does not establish one.
+- **Product decisions resolved.**
+  - Reach is a controlled list of Latin American countries, stored as canonical Spanish country names.
+  - Existing legacy `country_or_scope` values are preserved with NO destructive migration.
+  - Unchanged legacy values may carry over into successor Drafts.
+  - New or modified unsupported values are rejected.
+  - Regional and multi-country selections are excluded in v1.
+- **Proposed concrete list and confirmations.** The proposed v1 list (20 canonical Spanish names) and the flagged ambiguities (Puerto Rico, Belice/Guyana/Surinam/Guayana Francesa, Haití, España/Portugal, regional/multi-country values) live in [`SPEC-013`](../planned/013-material-reach-country-restriction.md) §5. Scoping confirmations C1-C3 also live there. The list and confirmations are **proposed** and await Product Owner confirmation; until then, U3 is not activated and SPEC-013 stays planned.
+- **Owner.** U3 is owned by [`SPEC-013`](../planned/013-material-reach-country-restriction.md). SPEC-010 keeps a pointer only.
+- **What this record does not do:** it does not confirm the concrete list, it does not activate U3 or SPEC-013, it does not authorize implementation, it does not resolve G3/G4/G5, it does not change institution or instructor country fields, and it does not alter SPEC-012 or SPEC-008.
+
+### G3 resolution record
+
+- **Status:** DECIDED 2026-10-26; **NOT SATISFIED** for U4 activation because U4-a and U4-b remain open and U3 must complete first.
+- **Decision date and decider:** 2026-10-26. Product Owner, communicated by the user. No personal name is recorded: the repository does not establish one.
+- **Product decisions resolved.**
+  - Content origin country applies to materials only for v1.
+  - It is an explicit Admin selection.
+  - It uses worldwide country values.
+  - Historical unknown origin = `Sin dato`.
+  - It is exposed as a separate `País de origen` filter.
+  - The existing reach label `País o alcance` is kept.
+  - Published-revision immutability and successor provenance are preserved.
+  - Origin is never inferred from organizations, users, email domains, IP addresses or locations.
+- **Open items before U4 activation (U4-a, U4-b).**
+  - **U4-a:** The concrete worldwide value list. Recommendation: canonical Spanish names of ISO 3166-1 countries and territories. Product Owner to confirm.
+  - **U4-b:** Whether new/successor materials must carry an origin selection at publication or may be saved as `Sin dato`. Recommendation: required for new materials; legacy `Sin dato` may carry over unchanged. Product Owner to confirm.
+- **Dependencies.** U4 may be activated independently once U4-a/U4-b are resolved and U3 is complete, because U3 and U4 share surfaces (material form, reader `País o alcance` filter). U3 must complete first.
+- **Owner.** U4 remains owned by SPEC-010 until a future split decision.
+- **What this record does not do:** it does not decide the U4-a/U4-b value list or requirement, it does not activate U4, it does not authorize implementation, it does not resolve G1/G4/G5, it does not change the reach field or SPEC-013 scope, and it does not alter SPEC-012 or SPEC-008.
 
 ### G6 resolution record
 
@@ -137,19 +180,21 @@ Origin and reach filters must never bypass publication, membership, Storage or R
 
 ## 8. Acceptance criteria
 
-Criteria apply when the corresponding unit is activated and implemented. U2's criteria are owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (SPEC-012 AC-01 to AC-13; AC-12 accepted with baseline exception, D-036). **Roll-up:** this spec is not complete until the criteria below are met for U0, U1 and U3–U5. The SPEC-012 dependency is satisfied.
+Criteria apply when the corresponding unit is activated and implemented. U2's criteria are owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (SPEC-012 AC-01 to AC-13; AC-12 accepted with baseline exception, D-036). U3's criteria are owned by [`SPEC-013`](../planned/013-material-reach-country-restriction.md) (SPEC-013 AC-01 to AC-13). **Roll-up:** this spec is not complete until the criteria below are met for U0, U1 and U4–U5, and the SPEC-013 criteria are met for U3. The SPEC-012 dependency is satisfied; the SPEC-013 dependency is satisfied only when SPEC-013 is completed.
 
 - **AC-01 (U2) — owned by SPEC-012.** See [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) §10 and §17 (SPEC-012 AC-01 to AC-13; AC-12 baseline exception). Not duplicated here.
 - **AC-02 (U0, U3, U4; U2 owned by SPEC-012 AC-09):** Institution records, relationships, materials, teaching notes, provenance and audit events are intact; institutions are neither archived nor deleted; published revisions are not destructively modified; canonical organizations, memberships and authorization are unchanged. A U0 inventory precedes any data-dependent operation (U3, U4); any such operation has a documented dry-run and rollback.
-- **AC-03 (U3):** The reach selector offers exactly the G1-approved set; the server rejects unsupported new values; existing values follow an explicit non-destructive rule.
-- **AC-04 (U4):** Origin country is Admin-selected, never inferred, distinct from reach, `Sin dato` for unknown history, preserved across successor revisions, Admin-mutation-only, creates no organization-specific visibility restriction, and is displayed and filtered consistently for the G3-approved types.
+- **AC-03 (U3) — owned by SPEC-013.** See [`SPEC-013`](../planned/013-material-reach-country-restriction.md) §9 (SPEC-013 AC-01 to AC-13; AC-12 baseline-findings rule). Not duplicated here.
+- **AC-04 (U4):** Origin country is Admin-selected, never inferred, distinct from reach, `Sin dato` for unknown history, preserved across successor revisions, Admin-mutation-only, creates no organization-specific visibility restriction, and is displayed and filtered consistently for the G3-approved types (materials, for v1).
 - **AC-05 (U3, U4):** Search combined with reach, origin and other filters behaves correctly; `Sin dato` and zero-result states are understandable.
 - **AC-06 (U3, U4; U2 owned by SPEC-012 AC-10):** No unpublished, archived, historical or private content leaks through country filters or query endpoints; Admin permissions are unchanged.
 - **AC-07 (U5):** A visible feedback action with a Spanish-first label opens the approved external URL, works with keyboard and on mobile, and is not enabled until G4 and G5 are resolved. No iframe, modal integration or custom backend.
 - **AC-08 (U5):** The feedback action transmits no tokens, search queries, private content or user identifiers, appends no context parameters, and adds no analytics events.
 - **AC-09 (all; U2 owned by SPEC-012 AC-11):** Existing consent/revocation behavior and SPEC-008 gates are unchanged; analytics is neither activated nor expanded.
-- **AC-10 (U1 and regression for every unit; U2 owned by SPEC-012 AC-12):** Existing upload, viewing, downloading, publication and archival regressions pass, subject to the SPEC-012 AC-12 baseline exception recorded in D-036; the deployed domain is verified without assuming DNS changes.
-- **AC-11 (governance):** This spec is not activated as a whole until the activation conditions in §2 are met; no gated unit (U3–U5) starts before its gates are resolved in §6. U2 is completed and governed by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (SPEC-012 AC-13; accepted with baseline exception, D-036). U0/U1 execution is preparatory and is not activation. This spec is not completed until the remaining units pass independent verification.
+- **AC-10 (U1 and regression for every unit; U2 owned by SPEC-012 AC-12; U3 owned by SPEC-013 AC-12):** Existing upload, viewing, downloading, publication and archival regressions pass, subject to the SPEC-012 AC-12 baseline exception recorded in D-036 and the SPEC-013 AC-12 baseline-findings rule; the deployed domain is verified without assuming DNS changes.
+- **AC-11 (governance):** This spec is not activated as a whole until the activation conditions in §2 are met; no gated unit (U3–U5) starts before its gates are resolved in §6. U2 is completed and governed by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (SPEC-012 AC-13; accepted with baseline exception, D-036). U3 is governed by [`SPEC-013`](../planned/013-material-reach-country-restriction.md) (SPEC-013 AC-13). U0/U1 execution is preparatory and is not activation. This spec is not completed until the remaining units pass independent verification.
+
+**Baseline-findings rule for U3 and later units.** The seven Playwright failures recorded in D-036 / SPEC-012 §17.2 are KNOWN BASELINE FINDINGS, not an exception automatically accepted for any future unit. The implementer must first re-run the named specs on the base commit for the unit and record which of the seven reproduce; after the change, report each before/after. Any failure outside those seven, or any of the seven failing at a different assertion, is a regression. Accepting remaining baseline failures for closure of U3, U4 or U5 requires a NEW explicit Product Owner decision at closure time; they must never be described as passing.
 
 ## 9. Out of scope
 
