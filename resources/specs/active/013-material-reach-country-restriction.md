@@ -105,14 +105,16 @@ Confirmed by the Product Owner on 2026-10-26:
 
 ### R-1 Allowed new/changed values
 
-A new or changed value on a material Draft may be NULL/blank, or exactly one of the approved canonical strings confirmed by C1.
+A new or changed value on a material Draft may be NULL/blank, or exactly one of the approved canonical strings confirmed by C1. Blank is defined as NULL or a value where `btrim(value) = ''` (whitespace-only); blank is always accepted. A forged blank/whitespace value may be stored as-is or normalized to NULL/blank at implementer discretion.
 
 ### R-2 Legacy carry-over
 
-A value that is unchanged is accepted even if it is not on the approved list. "Unchanged" is defined mechanism-neutrally as byte-equal:
+A value that is unchanged is accepted even if it is not on the approved list. "Unchanged" is defined mechanism-neutrally as `IS NOT DISTINCT FROM` the row's value at the time of the write:
 
-- (a) on UPDATE of a Draft row, byte-equal to `OLD.country_or_scope` of that same row; or
-- (b) on INSERT of a Draft row, byte-equal to the `country_or_scope` of the same material's current published revision (the value `create_successor_draft` copies from).
+- (a) on UPDATE of a Draft row, the submitted value is not distinct from `OLD.country_or_scope` of that same row; or
+- (b) on INSERT of a Draft row, the submitted value is not distinct from the `country_or_scope` of the same material's current published revision (the value `create_successor_draft` copies from).
+
+Carry-over comparisons must be NULL-safe because blank may be represented as NULL or as whitespace-only text; `IS NOT DISTINCT FROM` satisfies this. If an Admin changes a carried-over legacy value on a Draft and later attempts to restore it, the restore is rejected because the stored value is no longer unchanged; the extra "valor existente" form option is offered only while the stored Draft value is off-list.
 
 A first-revision Draft (no current published revision for that material) has no carry-over: its value must be blank or on-list. Switching to a different legacy value is rejected.
 
@@ -146,7 +148,7 @@ No backfill, no row rewrite, no `VALIDATE`d `CHECK` over existing rows, no data 
 
 - A shared client-safe constant holds the approved list (suggest `src/lib/curriculum/reach-countries.ts`).
 - The material form control for `País o alcance` becomes a select with a blank option plus the 20 confirmed values.
-- When editing a Draft whose stored value is off-list, that value must be offered as an extra, clearly labelled "valor existente" option so the Admin can save unchanged without losing it.
+- When editing a Draft whose stored value is off-list, that value must be offered as an extra, clearly labelled "valor existente" option so the Admin can save unchanged without losing it. The option is shown only while the stored value is off-list; once the value is changed to an approved option (or cleared), the legacy option is no longer offered.
 - Rejected submissions keep entered values (existing `submittedValues` behavior).
 - `saveContribution` maps SQLSTATE `23514` from the reach rule to a specific Spanish message, e.g. "El alcance debe ser un país de la lista aprobada.".
 - Spanish-first UI; keep the label `País o alcance`.
@@ -194,7 +196,7 @@ Criteria apply once SPEC-013 is activated and implemented.
 - **AC-03 — Legacy unchanged carry-over.** pgTAP proves that updating a Draft whose stored value is legacy, without changing the value, succeeds; and that `create_successor_draft` copies the predecessor's legacy value unchanged.
 - **AC-04 — Publish preserves legacy value.** pgTAP proves that publishing an unchanged-legacy Draft succeeds and the resulting published revision keeps the legacy value exactly.
 - **AC-05 — Published revision immutability.** pgTAP proves that `preserve_published_revision`/`protect_contribution_revision` still block direct mutation of published rows.
-- **AC-06 — Blank allowed.** pgTAP proves that NULL/blank is accepted on create and update.
+- **AC-06 — Blank allowed.** pgTAP proves that NULL/blank is accepted on create and update, and that clearing a stored legacy value to NULL/blank succeeds on update (C3).
 - **AC-07 — Non-Admin still denied.** pgTAP proves that a non-Admin receives `42501` on the Admin write RPCs and that no new access path is created.
 - **AC-08 — No backfill/row change.** pgTAP asserts that existing legacy rows remain byte-identical after the migration, or equivalent evidence for a migration that adds no data-dependent operation.
 - **AC-09 — App form and error mapping.** Vitest proves the constant contents, the form select options (including the legacy-value option), and that `saveContribution` maps the `23514` reach error to the specific Spanish message.

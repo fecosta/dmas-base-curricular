@@ -846,7 +846,7 @@ These seven failures are accepted as pre-existing by Product Owner decision 2026
 
 **Privacy/Legal follow-up.** `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias") remains excluded from implementation scope and needs Privacy/Legal review of whether a versioned Terms update is required. `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` remain untouched.
 
-SPEC-010's SPEC-012 dependency is satisfied; SPEC-013 is planned and owns U3. SPEC-010 remains planned: G1 and G3 are decided but not yet satisfied, G4 and G5 remain open, and U3–U5 remain blocked.
+SPEC-010's SPEC-012 dependency is satisfied; SPEC-013 is active and owns U3 (not implemented). SPEC-010 remains planned: G1 is satisfied and G3 is satisfied as a product decision; G4 and G5 remain open; U4 is inactive pending its own implementation contract and U3 completion; U5 remains blocked.
 
 ---
 
