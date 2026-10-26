@@ -560,22 +560,22 @@ Tracked in `resources/specs/completed/012-library-institutional-references-prese
 
 ### D-034 — Content origin country is an Admin-selected attribute distinct from reach
 
-**State:** DECISION (Product Owner) — G3 semantics decided 2026-10-26; G1 reach policy decided and confirmed 2026-10-26; G1 satisfied as product decision with C1-C3 confirmed; G3 satisfied as product decision; U3 owned by SPEC-013 (active, implementation-ready, not implemented); U4-a/U4-b resolved as product decisions; U4 pending only its own implementation contract and U3 completion
-**Date:** 2026-10-21 (G1 and G3 product decisions recorded 2026-10-26; C1-C3 and U4-a/U4-b confirmed 2026-10-26)
+**State:** DECISION (Product Owner) — G3 semantics decided 2026-10-26; G1 reach policy decided and confirmed 2026-10-26; G1 satisfied as product decision with C1-C3 confirmed; G3 satisfied as product decision; U3 completed via SPEC-013 (accepted with baseline exception, D-037); U4-a/U4-b resolved as product decisions; U4 pending only its own implementation contract
+**Date:** 2026-10-21 (G1 and G3 product decisions recorded 2026-10-26; C1-C3 and U4-a/U4-b confirmed 2026-10-26; SPEC-013 U3 closed 2026-10-26)
 
-**Approved future behavior (NOT IMPLEMENTED).** The Admin explicitly selects a content item's country of origin. It is not inferred from the Admin's organization, email domain, IP address or location, and carries no organization-country dependency. It is distinct from geographic reach. Historical content with unknown provenance is `Sin dato`. Published-revision immutability is respected and the value is preserved across successor revisions. Country metadata creates no organization-specific visibility restriction (D-016 is unchanged). Only Admins can set or change it. Separately, the *reach* selector will be restricted to an approved Latin American set, with legacy values handled non-destructively (G1).
+**Approved future behavior (NOT IMPLEMENTED: origin and feedback only; reach is now implemented).** The Admin explicitly selects a content item's country of origin. It is not inferred from the Admin's organization, email domain, IP address or location, and carries no organization-country dependency. It is distinct from geographic reach. Historical content with unknown provenance is `Sin dato`. Published-revision immutability is respected and the value is preserved across successor revisions. Country metadata creates no organization-specific visibility restriction (D-016 is unchanged). Only Admins can set or change it. The *reach* selector has been restricted to an approved Latin American set by SPEC-013, with legacy values handled non-destructively (G1).
 
 **G3 semantics decided 2026-10-26; U4-a and U4-b resolved as product decisions.** For v1, origin country applies to materials only. It is an explicit Admin selection. It uses ISO 3166-1 worldwide countries and territories, with canonical Spanish display names (U4-a resolved). Historical unknown origin is `Sin dato`. It is exposed as a separate `País de origen` filter. The existing reach label `País o alcance` is kept. Origin is never inferred from organizations or users. Published-revision immutability and successor provenance are preserved. An explicit origin-country selection is required for newly created materials; `Sin dato` is preserved for existing materials with unknown origin (U4-b resolved).
 
-**G1 reach policy decided and confirmed 2026-10-26.** The material reach selector offers a controlled list of Latin American countries, stored as canonical Spanish country names. Existing legacy values are preserved with NO destructive migration. Unchanged legacy values may carry over into successor Drafts. New or modified unsupported values are rejected. Regional and multi-country selections are excluded in v1. The concrete list and scoping confirmations (C1-C3) are confirmed in `resources/specs/active/013-material-reach-country-restriction.md` §5.
+**G1 reach policy decided and confirmed 2026-10-26.** The material reach selector offers a controlled list of Latin American countries, stored as canonical Spanish country names. Existing legacy values are preserved with NO destructive migration. Unchanged legacy values may carry over into successor Drafts. New or modified unsupported values are rejected. Regional and multi-country selections are excluded in v1. The concrete list and scoping confirmations (C1-C3) are confirmed in `resources/specs/completed/013-material-reach-country-restriction.md` §5.
 
-**Current implemented behavior (verified read-only on `main`).** There is no origin-country field. Country is free text (`country_or_scope` on materials and institutions, `country` on instructors) with no value list; the Library `País o alcance` filter lists distinct stored values of materials and institutions. Organizations have no country attribute. Existing Cloud values are inventoried by U0 (G6 satisfied).
+**Current implemented behavior (verified on `main`).** Material *reach* (`country_or_scope` on material revisions) is enforced at the database boundary by `private.enforce_material_reach_country` on Draft rows and the Draft → Published transition; the Admin form presents a select of the 20 approved canonical Spanish country names plus a blank option, and offers a stored off-list value as a labelled "valor existente" option only while it remains stored. Institution `country_or_scope` and instructor `country` remain free text and unchanged. There is no origin-country field. Organizations have no country attribute. Existing Cloud values were inventoried by U0 (G6 satisfied).
 
-**Pending decisions.** G1 is confirmed. G3: the U4 implementation contract (concrete ISO value list as a constant/contract, required-field enforcement, successor handling and `País de origen` filter mechanics) remains to be written; U4 is otherwise decided. G4 and G5 remain open. G6 is satisfied (see D-033).
+**Pending decisions.** G1 is confirmed and U3 is completed. G3: the U4 implementation contract (concrete ISO value list as a constant/contract, required-field enforcement, successor handling and `País de origen` filter mechanics) remains to be written; U4 is otherwise decided. G4 and G5 remain open. G6 is satisfied (see D-033).
 
 **Deferred.** Deriving country from any source other than explicit Admin selection; organization-level country attributes.
 
-Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U4, U5) and `resources/specs/active/013-material-reach-country-restriction.md` (U3).
+Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U4, U5) and `resources/specs/completed/013-material-reach-country-restriction.md` (U3).
 
 ---
 
@@ -630,11 +630,49 @@ Tracked in `resources/specs/completed/012-library-institutional-references-prese
 
 ---
 
+### D-037 — SPEC-013 closes with a limited baseline exception
+
+**State:** DECISION (Product Owner) — SPEC-013 COMPLETED, ACCEPTED WITH BASELINE EXCEPTION (AC-12)
+**Date:** 2026-10-26
+**Decider:** Product Owner, communicated by the user. No personal name is recorded: the repository does not establish one.
+
+**Decision.** SPEC-013 AC-12 is **ACCEPTED WITH A LIMITED BASELINE EXCEPTION**. The six Playwright failures reproduced on both baseline `a247d09` and implementation `5387f19` are explicitly accepted as pre-existing. The failing tests must **never** be described as passing. This exception does not classify the failures as passing, does not authorize new regressions, does not authorize Cloud migration apply or production deployment, and does not waive any security, authorization or data-integrity acceptance criterion.
+
+The six failures are:
+
+| # | Test file | Test name | Baseline `a247d09` | Head `5387f19` |
+|---|---|---|---|---|
+| 1 | `tests/e2e/contributions.spec.ts` | Admins publish new and successor versions while non-Admins remain readers | :62 (observed line varies; also intermittently :204 under `--repeat-each=6`) | :62 (observed line varies; also intermittently :204 under `--repeat-each=6`) |
+| 2 | `tests/e2e/library-explorer.spec.ts` | modal overlay contract › Filtros: background inert and locked, scrim dismisses, focus returns | :522 | :542 |
+| 3 | `tests/e2e/module-detail.spec.ts` | opening a module from the Library › keeps the canonical URL and presents the module over the Library it was opened from | :193 | :229 |
+| 4 | `tests/e2e/module-detail.spec.ts` | detail presentation › is a centred, viewport-constrained panel on a wide desktop | :446 | :463 |
+| 5 | `tests/e2e/module-detail.spec.ts` | detail presentation › is full-screen at 768px | :467 | :478 |
+| 6 | `tests/e2e/module-detail.spec.ts` | detail presentation › is full-screen at 390px | :467 | :478 |
+
+Evidence:
+- Baseline `a247d09` full targeted suite, dev mode: 79 tests, 73 passed, 6 failed (`/tmp/opencode/r1/base-suite.log`).
+- Implementation `5387f19` full targeted suite, dev mode: 80 tests, 74 passed, 6 failed (`/tmp/opencode/r1/head-suite.log`). The extra pass is the new AC-10 journey in `tests/e2e/material-reach-country.spec.ts`.
+- Repeat-each=6 contributions flake evidence: baseline 1/6 at :204 (`/tmp/opencode/r1/base-rep6.log`), head 2/6 at :204 (`/tmp/opencode/r1/head-rep6.log`), both with `--timeout=180000`.
+
+D-036 failure #1 (`tests/e2e/archival-governance.spec.ts:216`, archived management pages through the full three-part keyset) **passed** in the SPEC-013 runs on both trees; it is **not** part of this exception and must not be described as accepted or as always-passing. Its root cause was not investigated here.
+
+This acceptance covers **only** these six failures, **only** SPEC-013 AC-12's baseline-findings gate, and creates **no waiver** for any new or other failure, for any different assertion, or for any security, authorization or data-integrity criterion.
+
+**Unchanged boundaries.** SPEC-008 analytics/consent boundaries remain active and unchanged. Authentication, eligibility, roles, RLS, grants, private Storage and every security boundary remain unchanged. The accepted institutional-reference residual exposure remains the current state.
+
+**What this decision does not do.** It does not authorize `npx supabase db push`, Cloud migration apply, Vercel production deployment, U4/U5 implementation, or any change to SPEC-008 or SPEC-012. The migration has been applied only to the local development database.
+
+Tracked in `resources/specs/completed/013-material-reach-country-restriction.md` (SPEC-013) and this register entry.
+
+---
+
 ## Current delivery state
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 
-`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033, D-034, D-035). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready. On 2026-10-26 G1 was satisfied (C1-C3 confirmed) and G3 was satisfied as a product decision (U4-a/U4-b resolved); G4 and G5 remain open. G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). On 2026-10-23 U2 was split out into SPEC-012 and G2 was recorded satisfied. SPEC-012 is now COMPLETED (accepted with baseline exception, D-036), satisfying the SPEC-012 dependency. On 2026-10-26 U3 was split out into `resources/specs/active/013-material-reach-country-restriction.md` (SPEC-013, active, C1-C3 confirmed; not implemented). Nothing in SPEC-010 is implemented or started. U3 is owned by active SPEC-013; U4 is blocked only on its own implementation contract and U3 completion; U5 remains blocked. U0/U1 are preparatory, mutation-free activities that are not activation. SPEC-010 cannot close until U0, U1, U3, U4 and U5 are each implemented/verified or explicitly removed by a recorded decision. `SPEC-011` remains planned.
+`SPEC-013` — Material Reach Country Restriction is **COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)** at `resources/specs/completed/013-material-reach-country-restriction.md` (D-034, D-037). Implemented 2026-10-26 in commits `e501f00` (database boundary: `supabase/migrations/20261026000100_material_reach_country.sql`, `supabase/tests/material_reach_country.test.sql`) and `5387f19` (test cleanup). The implementation restricts material Draft `country_or_scope` to the confirmed 20-country Latin American set, preserves legacy values non-destructively, leaves institution/instructor country fields unchanged, adds no new grants/policies/RPC parameters, and maps the database rejection to a specific Spanish message in the Admin form. Cloud migration apply and production deployment are not authorized by this closure.
+
+`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033–D-037). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready. On 2026-10-26 G1 was satisfied (C1-C3 confirmed) and G3 was satisfied as a product decision (U4-a/U4-b resolved); G4 and G5 remain open. G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). On 2026-10-23 U2 was split out into SPEC-012 and G2 was recorded satisfied. SPEC-012 is now COMPLETED (accepted with baseline exception, D-036), satisfying the SPEC-012 dependency. On 2026-10-26 U3 was split out into `resources/specs/completed/013-material-reach-country-restriction.md`, implemented and closed 2026-10-26 as COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (D-037), satisfying the SPEC-013 dependency. Nothing else in SPEC-010 is implemented or started. U4 is blocked only on its own implementation contract; U5 remains blocked. U0/U1 are preparatory, mutation-free activities that are not activation. SPEC-010 cannot close until U0, U1, U4 and U5 are each implemented/verified or explicitly removed by a recorded decision. `SPEC-011` remains planned.
 
 `SPEC-012` — Library Institutional References Presentation is **COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)** at `resources/specs/completed/012-library-institutional-references-presentation.md` (D-033, D-036). Implemented 2026-10-23 in commits `2f29601` (feat: suppress institutional references from Library reader surfaces) and `5d22a5e` (fix: return a literal 404 for the institution reference route): a code-and-tests-only presentation change limited to `src/` and `tests/`, touching no analytics contract, event or consent, privacy-notice, authorization or database behavior (`src/lib/analytics/library-signals.ts` was modified as authorized by SPEC-012 §5 so that a legacy `entity=institution` is no longer counted as an applied filter). Commit `38d1c9c` is a spec-text docs commit recording the footer-assertion exception in the SPEC-012 admin test freeze; it touches only the SPEC-012 file. Seven pre-existing Playwright failures are accepted as a baseline exception (D-036) and are not represented as passing. `docs/TERMS_OF_USE.md` is excluded and carries a Privacy/Legal follow-up.
 
@@ -846,7 +884,7 @@ These seven failures are accepted as pre-existing by Product Owner decision 2026
 
 **Privacy/Legal follow-up.** `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias") remains excluded from implementation scope and needs Privacy/Legal review of whether a versioned Terms update is required. `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` remain untouched.
 
-SPEC-010's SPEC-012 dependency is satisfied; SPEC-013 is active and owns U3 (not implemented). SPEC-010 remains planned: G1 is satisfied and G3 is satisfied as a product decision; G4 and G5 remain open; U4 is inactive pending its own implementation contract and U3 completion; U5 remains blocked.
+SPEC-010's SPEC-012 dependency is satisfied; SPEC-013 is completed and owns U3 (accepted with baseline exception, D-037). SPEC-010 remains planned: G1 is satisfied and U3 is completed, and G3 is satisfied as a product decision; G4 and G5 remain open; U4 is inactive pending its own implementation contract; U5 remains blocked.
 
 ---
 
@@ -878,12 +916,50 @@ Analytics is OFF by default and stays OFF for `undecided`, `rejected`, revoked a
 
 ---
 
+### G-013 — SPEC-013 Material Reach Country Restriction
+
+**State:** COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)
+
+SPEC-013 is completed at `resources/specs/completed/013-material-reach-country-restriction.md`. It delivers the SPEC-010 U3 material reach country restriction: material Draft `country_or_scope` is restricted to the confirmed 20-country Latin American set at the database boundary, legacy values are preserved non-destructively, and the Admin form exposes the approved list with a legacy-value option. Implementation commits are `e501f00` (database boundary and Admin form) and `5387f19` (test cleanup). The change set touches `supabase/migrations/20261026000100_material_reach_country.sql`, `supabase/tests/material_reach_country.test.sql`, `src/lib/curriculum/reach-countries.ts`, `src/app/app/contributions/contribution-form.tsx`, `src/app/app/contributions/actions.ts`, and `tests/e2e/material-reach-country.spec.ts`; it adds no new grant, policy, route or public RPC and does not change analytics, authorization, RLS, institution/instructor country fields, or the `country` filter type.
+
+Local validation run by the closure task: `npm run lint` pass; `npm run typecheck` pass; `npm test` 610 passed, 1 skipped; `npm run test:db` 616 passed; `npm run db:lint` clean; `git diff --check` clean. Diff inspection confirms the bounded scope.
+
+Playwright validation evidence is read from `/tmp/opencode/r1` logs, not independently re-run by this documentation task:
+
+- Baseline `a247d09` full targeted SPEC-013 suite, dev mode: 79 tests, 73 passed, 6 failed (`/tmp/opencode/r1/base-suite.log`).
+- Implementation `5387f19` full targeted SPEC-013 suite, dev mode: 80 tests, 74 passed, 6 failed (`/tmp/opencode/r1/head-suite.log`). The extra pass is the new AC-10 journey in `tests/e2e/material-reach-country.spec.ts`.
+- Repeat-each=6 contributions flake evidence: baseline 1/6 at `:204` (`/tmp/opencode/r1/base-rep6.log`), head 2/6 at `:204` (`/tmp/opencode/r1/head-rep6.log`), both with `--timeout=180000`.
+
+The same six failures reproduce on baseline and implementation:
+
+1. `tests/e2e/contributions.spec.ts:62` — Admins publish new and successor versions while non-Admins remain readers (observed failing line varies with the default 30s timeout; also intermittently at `:204` on both trees — description concatenation / hydration race flake).
+2. `tests/e2e/library-explorer.spec.ts:522` — modal overlay contract › Filtros: background inert and locked, scrim dismisses, focus returns (fails at `:542` on both).
+3. `tests/e2e/module-detail.spec.ts:193` — opening a module from the Library › keeps the canonical URL and presents the module over the Library it was opened from (fails at `:229` on both).
+4. `tests/e2e/module-detail.spec.ts:446` — detail presentation › is a centred, viewport-constrained panel on a wide desktop (fails at `:463` on both).
+5. `tests/e2e/module-detail.spec.ts:467` — detail presentation › is full-screen at 768px (fails at `:478` on both).
+6. `tests/e2e/module-detail.spec.ts:467` — detail presentation › is full-screen at 390px (fails at `:478` on both).
+
+These six failures are accepted as pre-existing by Product Owner decision 2026-10-26 (D-037). They are never described as passing. D-036 failure #1 (`tests/e2e/archival-governance.spec.ts:216`) passed in the SPEC-013 runs and is not covered by this exception. Root causes are not investigated here.
+
+**Remaining test-isolation technical debt (recorded, not fixed).**
+
+1. The pgTAP suite (`npm run test:db`) only passes reliably on a freshly reset database. Running certain Playwright specs (archival, archival-governance, content-management, library-explorer, module-detail, and residual reach-spec assertions such as `audit_history_archival` lines 94, 117–119) leaves state that breaks later `audit_history_archival` and `curriculum_library_rls` pgTAP runs. This reproduces on baseline `a247d09` as well as on implementation `5387f19`.
+2. Local Supabase Storage after `supabase db reset` lacks the unique index `(name, bucket_id)` required for E2E attachment upserts, producing `42P10`; the index was applied manually in the local environment for the SPEC-013 runs.
+3. `tests/e2e/contributions.spec.ts` has a hydration-race flake at `:204` and depends on an empty database for its strict-mode "Crear contenido" duplicate-link assertion.
+4. The six accepted Playwright failures above need their own root-cause work; the exception does not authorize leaving them unfixed indefinitely.
+
+These items are not implementation defects of SPEC-013 and are not fixed by this closure.
+
+**What this closure does not do.** It does not authorize Cloud migration apply, Vercel production deployment, U4/U5 implementation, or any change to SPEC-008 or SPEC-012. The migration has been applied only to the local development database.
+
+---
+
 ## Product Coherence OS state
 
 Current overall state:
 
-**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-007, SPEC-009**
+**COHERENCE VERIFIED — SPEC-001 THROUGH SPEC-007, SPEC-009, SPEC-013**
 
-SPEC-001 through SPEC-007 and SPEC-009 are completed with implementation, independent verification, and their applicable Cloud/deployment/acceptance gates reconciled. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
+SPEC-001 through SPEC-007, SPEC-009 and SPEC-013 are completed with implementation, independent verification, and their applicable local Cloud/deployment/acceptance gates reconciled. SPEC-013 closed as **COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)** under the evidence recorded in G-013 and the Closure Record in `resources/specs/completed/013-material-reach-country-restriction.md` §12: implementation, local real-stack tests, and documentation reconciliation are reconciled; Cloud apply and production deployment are separate authorizations and are not executed. SPEC-006 closed as **COHERENCE VERIFIED**: product intent, specification, implementation, authorization/security boundaries, validation, UX reference, and durable documentation are reconciled under the evidence recorded in G-006. Personal Itinerary remains an approved but separately delivered capability.
 
-SPEC-007 — UX/UI Navigation & Interaction Remediation closed as **COHERENCE VERIFIED** under the evidence recorded in G-007. SPEC-009 — Admin Organization & User Management closed as **COHERENCE VERIFIED** under the evidence recorded in G-009 and the Closure Record in `resources/specs/completed/009-admin-organization-user-management.md` §41: implementation, independent review, Cloud migration/security verification, and safe hosted validation are all reconciled; hosted destructive mutation/provisioning flows were intentionally not exercised because production has no designated safe fixture, consistent with the SPEC-004/SPEC-005 validation-split precedent. SPEC-008 — Product Analytics & Pilot Observability is **active and not coherence verified**. Its state has five distinct parts: (1) the *previous PostHog implementation* was delivered, deployed and validated in Production with analytics disabled under the evidence recorded in G-008 (historical); (2) that PostHog transport *remains on `main`, production-disabled and inert* (`NEXT_PUBLIC_POSTHOG_KEY` unset); (3) the *proposed GA4 + Supabase organizational-metrics architecture* (D-032 and its amendment) is a documented contract only — no GA4 or organizational-metrics code exists; (4) *implementation work is pending* and not authorized by the contract (SPEC-008 §14); (5) *privacy and production activation requirements* — Gate P, Gate O, Gate G, the Privacy Notice dependency and enforceable retention (BLOCKED) — are unmet, so the External Pilot Analytics Activation Gate (SPEC-008 §11.4) is closed. The PostHog Gate B never ran and is withdrawn. The completed SPEC-006 interface-fidelity slice and the SPEC-007 remediation do not reopen the contracts reconciled above, and no Guide capability was delivered.
+SPEC-007 — UX/UI Navigation & Interaction Remediation closed as **COHERENCE VERIFIED** under the evidence recorded in G-007. SPEC-009 — Admin Organization & User Management closed as **COHERENCE VERIFIED** under the evidence recorded in G-009 and the Closure Record in `resources/specs/completed/009-admin-organization-user-management.md` §41: implementation, independent review, Cloud migration/security verification, and safe hosted validation are all reconciled; hosted destructive mutation/provisioning flows were intentionally not exercised because production has no designated safe fixture, consistent with the SPEC-004/SPEC-005 validation-split precedent. SPEC-013 — Material Reach Country Restriction closed as **COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)** under the evidence recorded in G-013 and the Closure Record in `resources/specs/completed/013-material-reach-country-restriction.md` §12: implementation, local real-stack tests, and documentation reconciliation are reconciled; Cloud apply and production deployment are separate authorizations and are not executed. SPEC-008 — Product Analytics & Pilot Observability is **active and not coherence verified**. Its state has five distinct parts: (1) the *previous PostHog implementation* was delivered, deployed and validated in Production with analytics disabled under the evidence recorded in G-008 (historical); (2) that PostHog transport *remains on `main`, production-disabled and inert* (`NEXT_PUBLIC_POSTHOG_KEY` unset); (3) the *proposed GA4 + Supabase organizational-metrics architecture* (D-032 and its amendment) is a documented contract only — no GA4 or organizational-metrics code exists; (4) *implementation work is pending* and not authorized by the contract (SPEC-008 §14); (5) *privacy and production activation requirements* — Gate P, Gate O, Gate G, the Privacy Notice dependency and enforceable retention (BLOCKED) — are unmet, so the External Pilot Analytics Activation Gate (SPEC-008 §11.4) is closed. The PostHog Gate B never ran and is withdrawn. The completed SPEC-006 interface-fidelity slice, the SPEC-007 remediation and the SPEC-013 reach restriction do not reopen the contracts reconciled above, and no Guide capability was delivered.

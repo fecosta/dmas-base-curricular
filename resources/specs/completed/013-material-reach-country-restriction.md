@@ -2,15 +2,15 @@
 
 **Product:** D+ Base Curricular
 
-**Status:** ACTIVE — IMPLEMENTATION-READY; NOT YET IMPLEMENTED
+**Status:** COMPLETED — ACCEPTED WITH BASELINE EXCEPTION
 
-**Delivery state:** NOT IMPLEMENTED. NOT STARTED.
+**Delivery state:** IMPLEMENTED in commits `e501f00` (database boundary and Admin form) and `5387f19` (test-cleanup). CLOSED 2026-10-26.
 
 **Dependencies:** SPEC-001–007 and SPEC-009 (completed); SPEC-012 (completed, accepted with baseline exception, D-036); SPEC-010 U0 (G6 satisfied). Does not depend on SPEC-008 implementation and does not activate or expand analytics.
 
-**Repository location:** `resources/specs/active/013-material-reach-country-restriction.md`
+**Repository location:** `resources/specs/completed/013-material-reach-country-restriction.md`
 
-**Decisions:** D-034 in [`docs/DECISIONS.md`](../../../docs/DECISIONS.md). Gate G1 product policy and gate G3 origin semantics were approved on 2026-10-26; C1-C3 were confirmed on 2026-10-26; the concrete G1 reach list is confirmed in §5.
+**Decisions:** D-034 and D-037 in [`docs/DECISIONS.md`](../../../docs/DECISIONS.md). Gate G1 product policy and gate G3 origin semantics were approved on 2026-10-26; C1-C3 were confirmed on 2026-10-26; the concrete G1 reach list is confirmed in §5. The limited baseline exception for six pre-existing Playwright failures is recorded in D-037.
 
 **Split from:** SPEC-010 unit U3. SPEC-013 is the single owner of the U3 definition. SPEC-010 keeps a pointer only and stays planned.
 
@@ -229,10 +229,11 @@ See AC-12 for the baseline-findings rule.
 - Published-revision immutability and successor provenance are preserved.
 - Admin Draft authority remains role-wide, not creator-owned.
 
-## 12. Activation record
+## 12. Activation and closure record
 
 - **Activated:** 2026-10-26.
-- **Closed:** NOT CLOSED.
+- **Implemented:** 2026-10-26 in commits `e501f00` and `5387f19`.
+- **Closed:** 2026-10-26.
 - **Decider:** Product Owner, communicated by the user. No personal name recorded.
 - **Base commit re-verified at activation:** `e541fae`.
 - **Preflight:** the 2026-10-26 SPEC-010 preflight was re-checked against base commit `e541fae`.
@@ -247,4 +248,5 @@ See AC-12 for the baseline-findings rule.
   8. U5 stays blocked by G4/G5.
   9. SPEC-012 stays completed; SPEC-008 analytics boundaries stay unchanged.
 - **Gate status:** G1 **SATISFIED** 2026-10-26 (decided and confirmed with C1-C3); G3 **SATISFIED AS PRODUCT DECISION** 2026-10-26 (U4 remains inactive pending its own implementation contract and U3 completion); G4/G5 unchanged OPEN; G2 and G6 unchanged SATISFIED.
-- **What this record does not do:** it does not implement U3, does not activate U4/U5/SPEC-010, does not alter SPEC-012 or SPEC-008, does not accept the baseline Playwright failures as passing, and does not authorize any Cloud apply or deployment.
+- **AC verification summary (AC-01 to AC-14).** All acceptance criteria are met. AC-12 is satisfied by the Product Owner's limited baseline exception recorded in `docs/DECISIONS.md` D-037: six pre-existing Playwright failures reproduced on both baseline `a247d09` and implementation `5387f19`. The failing tests are never described as passing. D-036 failure #1 (`archival-governance.spec.ts:216`) passed in the SPEC-013 runs and is not covered by this exception. AC-13 is satisfied by this closure record and the move to `completed/`. AC-14 is satisfied by the fixture-only Published-insert exemption in the migration and its pgTAP coverage.
+- **What this record does not do:** it does not activate U4/U5/SPEC-010, does not alter SPEC-012 or SPEC-008, does not describe the accepted Playwright failures as passing, does not authorize Cloud migration apply, does not authorize production deployment, does not authorize U4/U5 implementation, and does not waive any security, authorization or data-integrity acceptance criterion.
