@@ -56,7 +56,11 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-  assertSuccess(await operator.from("materials").update({ archived_at: new Date().toISOString() }).eq("id", legacy.material));
+  // Archive every material this journey created: the directly inserted legacy one and the one published through the UI.
+  const created = await operator.from("material_revisions").select("material_id").eq("title", NEW_TITLE);
+  assertSuccess(created);
+  const ids = [legacy.material, ...created.data!.map((revision) => revision.material_id)];
+  assertSuccess(await operator.from("materials").update({ archived_at: new Date().toISOString() }).in("id", ids));
   // Users that authored content stay, as in the other content journeys: attribution is immutable.
 });
 
