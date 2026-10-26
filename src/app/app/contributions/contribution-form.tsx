@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
 import { RelationshipPicker } from "./relationship-picker";
 import { FormSection, WIDE_FIELD } from "./panels";
+import { isLegacyReach, REACH_COUNTRIES } from "@/lib/curriculum/reach-countries";
 
 const initialState: ContributionActionState = {};
 
@@ -78,6 +79,10 @@ export function ContributionForm({ type, options, detail, readOnly = false }: {
     if (!state.error) return;
     if (document.activeElement === document.body) actionsRef.current?.querySelector("button")?.focus();
   }, [state]);
+
+  const reach = value(state, detail, "country_or_scope");
+  /** The stored Draft value, not the entered one: the "valor existente" option exists only while the stored value is off-list. */
+  const storedReach = value({}, detail, "country_or_scope");
 
   return <form action={action} className="space-y-4">
     <input type="hidden" name="content_type" value={type} />
@@ -207,7 +212,13 @@ export function ContributionForm({ type, options, detail, readOnly = false }: {
           <Field label="Enlace de fuente (HTTPS)"><input name="source_url" type="url" defaultValue={value(state, detail, "source_url")} /></Field>
         </FormSection>
         <FormSection step="03" title="Alcance y tema" description="Cómo se encuentra este material en los filtros de la biblioteca.">
-          <Field label="País o alcance"><input name="country_or_scope" maxLength={160} defaultValue={value(state, detail, "country_or_scope")} /></Field>
+          <Field label="País o alcance">
+            <select name="country_or_scope" defaultValue={reach}>
+              <option value="">Sin especificar</option>
+              {isLegacyReach(storedReach) && <option value={storedReach}>{storedReach} (valor existente)</option>}
+              {REACH_COUNTRIES.map((country) => <option key={country} value={country}>{country}</option>)}
+            </select>
+          </Field>
           <Field label="Tema"><input name="theme" maxLength={160} defaultValue={value(state, detail, "theme")} /></Field>
         </FormSection>
       </>}

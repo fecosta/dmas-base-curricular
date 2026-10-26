@@ -29,6 +29,7 @@ import ContributionsPage from "@/app/app/contributions/page";
 import ContributionDetailPage from "@/app/app/contributions/[type]/[revisionId]/page";
 import NewContributionPage from "@/app/app/contributions/new/page";
 import NewContributionTypePage from "@/app/app/contributions/new/[type]/page";
+import { REACH_COUNTRIES } from "@/lib/curriculum/reach-countries";
 import { contributionTypes, type ContributionType } from "@/lib/contributions/types";
 
 /*
@@ -197,6 +198,25 @@ describe("form contract", () => {
       }
     });
   }
+
+  it("renders the material reach as a select of exactly the 20 approved countries plus a blank option", () => {
+    const html = renderToStaticMarkup(<ContributionForm type="material" options={options} />);
+    expect(control(html, "country_or_scope")).toMatch(/^<select/);
+    const select = html.match(/<select[^>]*name="country_or_scope"[^>]*>(.*?)<\/select>/)?.[1] ?? "";
+    const values = [...select.matchAll(/<option value="([^"]*)"/g)].map((match) => match[1]);
+    expect(values).toEqual(["", ...REACH_COUNTRIES]);
+    expect(select).not.toContain("valor existente");
+  });
+
+  it("offers a stored off-list reach as a labelled legacy option only while it is stored", () => {
+    const legacy = renderToStaticMarkup(<ContributionForm type="material" options={options}
+      detail={detail({ fields: { title: "Estudio", material_type: "Informe", country_or_scope: "Latinoamérica" } }) as never} />);
+    expect(legacy).toContain('<option value="Latinoamérica" selected="">Latinoamérica (valor existente)</option>');
+    const approved = renderToStaticMarkup(<ContributionForm type="material" options={options}
+      detail={detail({ fields: { title: "Estudio", material_type: "Informe", country_or_scope: "Perú" } }) as never} />);
+    expect(approved).not.toContain("valor existente");
+    expect(approved).toContain('<option value="Perú" selected="">Perú</option>');
+  });
 
   it("carries the revision id only when editing an existing Draft", () => {
     const create = renderToStaticMarkup(<ContributionForm type="material" options={options} />);

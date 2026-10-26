@@ -83,7 +83,9 @@ export async function saveContribution(state: ContributionActionState, form: For
   if (result.error) {
     return rejected(result.error.code === "42501"
       ? "Tu permiso de administración cambió. Vuelve a ingresar antes de continuar."
-      : "No pudimos guardar el borrador. Verifica que siga editable e inténtalo nuevamente.");
+      : result.error.code === "23514" && /material reach must be an approved country/i.test(result.error.message)
+        ? "El alcance debe ser un país de la lista aprobada."
+        : "No pudimos guardar el borrador. Verifica que siga editable e inténtalo nuevamente.");
   }
   if (!result.data || typeof result.data !== "object" || Array.isArray(result.data)) return rejected("No pudimos guardar el borrador.");
   const savedRevisionId = String(result.data.revision_id ?? "");

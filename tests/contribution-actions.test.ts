@@ -36,6 +36,28 @@ describe("Admin content-management Server Actions", () => {
     });
   });
 
+  it("maps the material reach rejection to a specific Spanish message and keeps the entered values", async () => {
+    rpc.mockResolvedValue({ data: null, error: { code: "23514", message: "material reach must be an approved country" } });
+    const data = new FormData();
+    data.set("content_type", "material");
+    data.set("title", "Guía");
+    data.set("material_type", "Informe");
+    data.set("country_or_scope", "Latinoamérica");
+    const result = await saveContribution({}, data);
+    expect(result.error).toBe("El alcance debe ser un país de la lista aprobada.");
+    expect(result.submitted?.country_or_scope).toEqual(["Latinoamérica"]);
+  });
+
+  it("keeps the generic save error for any other check violation", async () => {
+    rpc.mockResolvedValue({ data: null, error: { code: "23514", message: "payload exceeds bounds" } });
+    const data = new FormData();
+    data.set("content_type", "material");
+    data.set("title", "Guía");
+    data.set("material_type", "Informe");
+    const result = await saveContribution({}, data);
+    expect(result.error).toContain("No pudimos guardar el borrador.");
+  });
+
   it("publishes through the authoritative RPC and revalidates Admin and reader surfaces", async () => {
     rpc.mockResolvedValue({ data: { revision_id: "31000000-0000-4000-8000-000000000001" }, error: null });
     const data = new FormData();

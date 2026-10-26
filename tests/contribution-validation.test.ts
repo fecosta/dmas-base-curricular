@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { contributionPayload, ContributionValidationError } from "@/lib/contributions/validation";
 import { safeAttachmentFilename } from "@/lib/contributions/attachments";
+import { isLegacyReach, REACH_COUNTRIES } from "@/lib/curriculum/reach-countries";
 
 function form(values: Record<string, string | string[]>) {
   const result = new FormData();
@@ -29,6 +30,26 @@ describe("contribution form validation", () => {
     expect(() => contributionPayload("material", form({ title: "Sin tipo" }))).toThrowError(
       new ContributionValidationError("Completa los campos obligatorios."),
     );
+  });
+
+  it("passes the material reach through unchanged: the database is the only reach authority", () => {
+    expect(contributionPayload("material", form({ title: "Guía", material_type: "Informe", country_or_scope: " Perú " })))
+      .toMatchObject({ country_or_scope: "Perú" });
+    expect(contributionPayload("material", form({ title: "Guía", material_type: "Informe", country_or_scope: "Latinoamérica" })))
+      .toMatchObject({ country_or_scope: "Latinoamérica" });
+  });
+
+  it("keeps exactly the 20 approved reach names, canonical and in order", () => {
+    expect([...REACH_COUNTRIES]).toEqual([
+      "Argentina", "Bolivia", "Brasil", "Chile", "Colombia", "Costa Rica", "Cuba", "Ecuador",
+      "El Salvador", "Guatemala", "Haití", "Honduras", "México", "Nicaragua", "Panamá", "Paraguay",
+      "Perú", "República Dominicana", "Uruguay", "Venezuela",
+    ]);
+    for (const excluded of ["Puerto Rico", "Belice", "España", "Portugal", "Latinoamérica", "peru"]) {
+      expect(isLegacyReach(excluded)).toBe(true);
+    }
+    expect(isLegacyReach("Perú")).toBe(false);
+    expect(isLegacyReach("  ")).toBe(false);
   });
 
   it("rejects non-HTTPS links", () => {
