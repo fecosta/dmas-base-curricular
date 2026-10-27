@@ -85,6 +85,31 @@ where id = '30000000-0000-4000-8000-000000000001';
 update public.teaching_notes set current_published_revision_id = '34100000-0000-4000-8000-000000000001'
 where id = '34000000-0000-4000-8000-000000000001';
 
+-- Unrelated residual published data (as left by E2E runs on a populated local DB).
+-- Fixture-specific assertions below are scoped to this file's fixed UUIDs and must
+-- hold with this data present; its text deliberately matches the search probes.
+insert into public.modules (id) values ('3e000000-0000-4000-8000-000000000001');
+insert into public.module_revisions
+  (id, module_id, revision_number, status, axis_id, title, theme, description, learning_outcomes, published_at)
+values ('3e100000-0000-4000-8000-000000000001', '3e000000-0000-4000-8000-000000000001', 1, 'Published',
+  'a1000000-0000-4000-8000-000000000002', 'Residual política secreto histórica archivado', 'Democracia', 'Residual.', '{}', now());
+update public.modules set current_published_revision_id = '3e100000-0000-4000-8000-000000000001'
+where id = '3e000000-0000-4000-8000-000000000001';
+insert into public.materials (id) values ('3e500000-0000-4000-8000-000000000001');
+insert into public.material_revisions
+  (id, material_id, revision_number, status, title, material_type, country_or_scope, theme, published_at)
+values ('3e510000-0000-4000-8000-000000000001', '3e500000-0000-4000-8000-000000000001', 1, 'Published',
+  'Residual política histórica', 'Informe', 'Perú', 'Democracia', now());
+update public.materials set current_published_revision_id = '3e510000-0000-4000-8000-000000000001'
+where id = '3e500000-0000-4000-8000-000000000001';
+insert into public.institutions (id) values ('3e600000-0000-4000-8000-000000000001');
+insert into public.institution_revisions
+  (id, institution_id, revision_number, status, name, institution_type, themes, published_at)
+values ('3e610000-0000-4000-8000-000000000001', '3e600000-0000-4000-8000-000000000001', 1, 'Published',
+  'Residual institución', 'Centro', array['Democracia'], now());
+update public.institutions set current_published_revision_id = '3e610000-0000-4000-8000-000000000001'
+where id = '3e600000-0000-4000-8000-000000000001';
+
 select is((select count(*) from public.module_revisions where module_id = '30000000-0000-4000-8000-000000000001'), 3::bigint, 'published, historical, and future draft revisions coexist');
 select is((select current_published_revision_id from public.modules where id = '30000000-0000-4000-8000-000000000001'), '31000000-0000-4000-8000-000000000002'::uuid, 'stable identity resolves one current published revision');
 select throws_ok(
@@ -163,16 +188,16 @@ select is(jsonb_array_length(public.get_published_module('30000000-0000-4000-800
 select is((select count(*) from public.module_instructors where module_revision_id = '31000000-0000-4000-8000-000000000002'), 1::bigint, 'direct relationship read resolves only visible fixture targets');
 select is((select count(*) from public.module_instructors where module_revision_id = '31000000-0000-4000-8000-000000000001'), 0::bigint, 'historical revision relationship is hidden');
 select is((select count(*) from public.module_instructors where module_revision_id = '31000000-0000-4000-8000-000000000003'), 0::bigint, 'draft revision relationship is hidden');
-select is((select count(*) from public.search_curriculum('politica') where entity_type = 'module'), 1::bigint, 'accentless query finds accented Spanish module text');
-select is((select count(*) from public.search_curriculum('política') where entity_type = 'module'), 1::bigint, 'accented query finds accented Spanish module text');
-select is((select count(*) from public.search_curriculum('secreto')), 0::bigint, 'search excludes draft text');
-select is((select count(*) from public.search_curriculum('historica')), 0::bigint, 'search excludes non-current revision text');
-select is((select count(*) from public.search_curriculum('archivado')), 0::bigint, 'search excludes archived content');
+select is((select count(*) from public.search_curriculum('politica') where entity_type = 'module' and id = '30000000-0000-4000-8000-000000000001'), 1::bigint, 'accentless query finds accented Spanish module text');
+select is((select count(*) from public.search_curriculum('política') where entity_type = 'module' and id = '30000000-0000-4000-8000-000000000001'), 1::bigint, 'accented query finds accented Spanish module text');
+select is((select count(*) from public.search_curriculum('secreto') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004')), 0::bigint, 'search excludes draft text');
+select is((select count(*) from public.search_curriculum('historica') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004')), 0::bigint, 'search excludes non-current revision text');
+select is((select count(*) from public.search_curriculum('archivado') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004')), 0::bigint, 'search excludes archived content');
 select is((select count(*) from public.list_published_modules(axis_filter => 'a1000000-0000-4000-8000-000000000001') where id = '30000000-0000-4000-8000-000000000001'), 1::bigint, 'axis filter uses persisted module axis');
-select is((select count(*) from public.list_published_modules(axis_filter => 'a1000000-0000-4000-8000-000000000002')), 0::bigint, 'different persisted axis filters module out');
-select is((select count(*) from public.list_published_modules(theme_filter => 'democracia')), 1::bigint, 'module theme filter uses persisted theme');
-select is((select count(*) from public.search_curriculum(entity_filter => 'material', country_filter => 'peru')), 1::bigint, 'material country filter is accent insensitive');
-select is((select count(*) from public.search_curriculum(entity_filter => 'institution', theme_filter => 'democracia')), 1::bigint, 'institution theme filter uses persisted themes');
+select is((select count(*) from public.list_published_modules(axis_filter => 'a1000000-0000-4000-8000-000000000002') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002')), 0::bigint, 'different persisted axis filters module out');
+select is((select count(*) from public.list_published_modules(theme_filter => 'democracia') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002')), 1::bigint, 'module theme filter uses persisted theme');
+select is((select count(*) from public.search_curriculum(entity_filter => 'material', country_filter => 'peru') where id = '35000000-0000-4000-8000-000000000001'), 1::bigint, 'material country filter is accent insensitive');
+select is((select count(*) from public.search_curriculum(entity_filter => 'institution', theme_filter => 'democracia') where id = '36000000-0000-4000-8000-000000000001'), 1::bigint, 'institution theme filter uses persisted themes');
 select is((select count(*) from public.search_curriculum(entity_filter => 'reference') where id in ('35000000-0000-4000-8000-000000000001', '36000000-0000-4000-8000-000000000001')), 2::bigint, 'fixture materials and institutions are first-class references');
 select is(public.get_published_reference('material', '35000000-0000-4000-8000-000000000001')->>'title', 'Guía de participación', 'reference detail resolves a published material');
 select is(public.get_published_reference('institution', '36000000-0000-4000-8000-000000000001')->>'title', 'Centro Democrático Ficticio', 'reference detail resolves a published institution');
