@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(71);
+select plan(74);
 
 select is((select count(*) from public.axes), 2::bigint, 'the two approved axes are persisted');
 
@@ -102,6 +102,28 @@ values ('3e510000-0000-4000-8000-000000000001', '3e500000-0000-4000-8000-0000000
   'Residual política histórica', 'Informe', 'Perú', 'Democracia', now());
 update public.materials set current_published_revision_id = '3e510000-0000-4000-8000-000000000001'
 where id = '3e500000-0000-4000-8000-000000000001';
+insert into public.modules (id) values ('3e000000-0000-4000-8000-000000000002');
+insert into public.module_revisions
+  (id, module_id, revision_number, status, axis_id, title, theme, description, learning_outcomes, published_at)
+values
+  ('3e100000-0000-4000-8000-000000000002', '3e000000-0000-4000-8000-000000000002', 1, 'Published',
+   'a1000000-0000-4000-8000-000000000001', 'Decoy historica', 'Democracia', 'Texto historica no actual.', '{}', now()),
+  ('3e100000-0000-4000-8000-000000000003', '3e000000-0000-4000-8000-000000000002', 2, 'Published',
+   'a1000000-0000-4000-8000-000000000001', 'Decoy vigente', 'Democracia', 'Texto visible vigente.', '{}', now());
+update public.modules set current_published_revision_id = '3e100000-0000-4000-8000-000000000003'
+where id = '3e000000-0000-4000-8000-000000000002';
+insert into public.modules (id) values ('3e000000-0000-4000-8000-000000000003');
+insert into public.module_revisions
+  (id, module_id, revision_number, status, axis_id, title, theme, description, learning_outcomes, published_at)
+values ('3e100000-0000-4000-8000-000000000004', '3e000000-0000-4000-8000-000000000003', 1, 'Draft',
+  'a1000000-0000-4000-8000-000000000002', 'Decoy secreto', 'Privado', 'Texto secreto.', '{}', null);
+insert into public.modules (id) values ('3e000000-0000-4000-8000-000000000004');
+insert into public.module_revisions
+  (id, module_id, revision_number, status, axis_id, title, theme, description, learning_outcomes, published_at)
+values ('3e100000-0000-4000-8000-000000000005', '3e000000-0000-4000-8000-000000000004', 1, 'Published',
+  'a1000000-0000-4000-8000-000000000002', 'Decoy archivado', 'Archivo', 'Texto archivado.', '{}', now());
+update public.modules set current_published_revision_id = '3e100000-0000-4000-8000-000000000005', archived_at = now()
+where id = '3e000000-0000-4000-8000-000000000004';
 insert into public.institutions (id) values ('3e600000-0000-4000-8000-000000000001');
 insert into public.institution_revisions
   (id, institution_id, revision_number, status, name, institution_type, themes, published_at)
@@ -192,7 +214,10 @@ select is((select count(*) from public.search_curriculum('politica') where entit
 select is((select count(*) from public.search_curriculum('política') where entity_type = 'module' and id = '30000000-0000-4000-8000-000000000001'), 1::bigint, 'accented query finds accented Spanish module text');
 select is((select count(*) from public.search_curriculum('secreto') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004')), 0::bigint, 'search excludes draft text');
 select is((select count(*) from public.search_curriculum('historica') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004')), 0::bigint, 'search excludes non-current revision text');
-select is((select count(*) from public.search_curriculum('archivado') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004')), 0::bigint, 'search excludes archived content');
+select is((select count(*) from public.search_curriculum('archivado') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002', '31000000-0000-4000-8000-000000000001', '31000000-0000-4000-8000-000000000003', '31000000-0000-4000-8000-000000000004', '3e000000-0000-4000-8000-000000000004', '3e100000-0000-4000-8000-000000000005')), 0::bigint, 'search excludes archived content');
+select is((select count(*) from public.search_curriculum('historica') where id in ('3e000000-0000-4000-8000-000000000002', '3e100000-0000-4000-8000-000000000002')), 0::bigint, 'search excludes unrelated historical revision text');
+select is((select count(*) from public.search_curriculum('secreto') where id in ('3e000000-0000-4000-8000-000000000003', '3e100000-0000-4000-8000-000000000004')), 0::bigint, 'search excludes unrelated draft text');
+select is((select count(*) from public.search_curriculum('vigente') where id = '3e000000-0000-4000-8000-000000000002'), 1::bigint, 'search finds unrelated current published text');
 select is((select count(*) from public.list_published_modules(axis_filter => 'a1000000-0000-4000-8000-000000000001') where id = '30000000-0000-4000-8000-000000000001'), 1::bigint, 'axis filter uses persisted module axis');
 select is((select count(*) from public.list_published_modules(axis_filter => 'a1000000-0000-4000-8000-000000000002') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002')), 0::bigint, 'different persisted axis filters module out');
 select is((select count(*) from public.list_published_modules(theme_filter => 'democracia') where id in ('30000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000002')), 1::bigint, 'module theme filter uses persisted theme');

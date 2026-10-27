@@ -84,10 +84,27 @@ test("Non-Admin readers have no contribution management or mutation path", async
   await readerContext.close();
 });
 
-// The header action must be unique whether the management list is empty (the empty state adds a
-// second "Crear contenido" link) or not. The first check runs against whatever state the database
-// is in (empty on a fresh reset, populated otherwise); the second runs after this test seeds its own
-// Draft, so the list is guaranteed non-empty and the journey does not depend on other tests' data.
+// This scenario requires a freshly reset local database. It intentionally fails rather than skips
+// when existing managed content makes the empty state impossible to observe.
+test("An Admin reaches the creation form from a fresh empty management list", async ({ browser }) => {
+  const admin = await provision("Admin");
+  const adminContext = await browser.newContext();
+  const adminPage = await adminContext.newPage();
+
+  await login(adminPage, admin.email);
+  await adminPage.goto(`/app/contributions?empty-list-check=${randomUUID()}`);
+  await expect(adminPage.getByRole("heading", { name: "Administrar contenido" })).toBeVisible();
+  await expect(adminPage.getByRole("heading", { name: "Todavía no hay contenido administrable" }))
+    .toBeVisible({ timeout: 5_000 })
+    .catch(() => { throw new Error("empty-list scenario requires a freshly reset local database (npm run db:reset)"); });
+  await expect(createContentAction(adminPage)).toHaveCount(1);
+  await expect(adminPage.getByRole("main").getByRole("link", { name: "Crear contenido" })).toHaveCount(2);
+
+  await adminContext.close();
+});
+
+// The populated-state journey seeds its own Draft, so it remains independent of the empty-list
+// prerequisite and passes on any database state.
 test("An Admin reaches the creation form from a non-empty management list through one unambiguous action", async ({ browser }) => {
   const marker = randomUUID().slice(0, 8);
   const admin = await provision("Admin");
