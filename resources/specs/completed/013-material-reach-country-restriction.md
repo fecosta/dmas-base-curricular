@@ -255,7 +255,7 @@ See AC-12 for the baseline-findings rule.
 
 This section is separate from the 2026-10-26 implementation and closure record in §12. It does not reopen SPEC-013, does not change the closure classification or the D-037 exception scope, and does not alter any acceptance criterion.
 
-**Status:** ACTIVATED — STRUCTURALLY VERIFIED. Authenticated application behavior is not yet verified.
+**Status:** ACTIVATED — PRODUCTION VERIFIED WITH EVIDENCE LIMITATIONS. Structural verification, authenticated read-only smoke verification, and Product Owner-confirmed database enforcement testing are recorded below.
 
 ### 13.1 Production activation (2026-10-27)
 
@@ -264,7 +264,7 @@ This section is separate from the 2026-10-26 implementation and closure record i
 - **Vercel production:** commit `9f3dc46`, state READY, served at `bc.democraciamas.com`.
 - Cloud apply and deployment were separate steps; neither was authorized by the closure in §12 or by D-037.
 
-### 13.2 Post-migration verification (read-only, 2026-10-27)
+### 13.2 Structural verification (read-only, 2026-10-27)
 
 Verdict: **PASS_WITH_NOTES**. Structural verification only; no SQL writes, test records, migration changes or deployments were made during verification.
 
@@ -278,14 +278,24 @@ Verdict: **PASS_WITH_NOTES**. Structural verification only; no SQL writes, test 
 - **Security advisors:** no finding attributable to this migration. Pre-existing items only: INFO `rls_enabled_no_policy` on `access_administration_events` and `curriculum_lifecycle_events`; WARN `SECURITY DEFINER` functions executable by `anon`/`authenticated` (the earlier specs' public RPCs and Supabase-managed `public.rls_auto_enable()`); WARN leaked-password protection disabled. No prior advisor snapshot was available for a count diff.
 - **Logs:** the Supabase Postgres log shows only the migration statements, with no error-severity entries in the checked window; Vercel reported no runtime errors (low traffic in the checked window, so weak evidence).
 
-### 13.3 Not verified / pending operational checks
+### 13.3 Authenticated read-only smoke verification (2026-10-27)
 
-- **Pending:** authenticated Admin material-form inspection (the `País o alcance` select exposing the approved 20-country list).
-- **Pending:** authenticated Contributor library and detail-page inspection (published materials still browsable and readable).
-- **Not tested:** live trigger rejection or acceptance of an off-list or approved value in production (would require a write; no production test record was created).
-- **Not tested:** production UI behavior under real authenticated sessions.
-- These checks are recorded as pending and must not be described as passed until performed with an authorized session. No authentication bypass or manufactured session is permitted to perform them.
+Authenticated production smoke verification passed for the following read-only surfaces:
 
-### 13.4 Unchanged
+- Admin content-management page.
+- Material library.
+- Published material detail page.
+
+**TC-013-01 — Approved country dropdown: PASS.** The authenticated Admin form visually confirmed all 20 approved countries with correct Spanish spelling and accents, `Sin especificar` available, and no additional countries or regional values. Selection and clearing were confirmed. No production record was created. Screenshot evidence is available for this check.
+
+### 13.4 Product Owner-confirmed database enforcement testing
+
+**TC-013-02 — Production database trigger enforcement: PASS, Product Owner-confirmed.** The Product Owner confirmed the production enforcement test passed. SQL execution output, individual assertion results, and rollback evidence were not supplied to this record; this task does not independently certify those missing artifacts.
+
+### 13.5 Evidence limitations
+
+The structural verification above is read-only evidence. TC-013-01 has screenshot evidence. TC-013-02 is recorded only as Product Owner-confirmed; its SQL output, assertion-level results, and rollback evidence remain unavailable. No additional production mutation was performed by this task.
+
+### 13.6 Unchanged
 
 D-037 and its six accepted baseline Playwright failures are unchanged and are never described as passing. SPEC-010 U4 and U5 remain inactive.
