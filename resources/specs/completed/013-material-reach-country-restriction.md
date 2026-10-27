@@ -4,7 +4,7 @@
 
 **Status:** COMPLETED — ACCEPTED WITH BASELINE EXCEPTION
 
-**Delivery state:** IMPLEMENTED in commits `e501f00` (database boundary and Admin form) and `5387f19` (test-cleanup). CLOSED 2026-10-26. The migration is applied only to the local development database; it is not applied to Supabase Cloud and the change is not deployed to production (separate, unauthorized steps, D-037).
+**Delivery state:** IMPLEMENTED in commits `e501f00` (database boundary and Admin form) and `5387f19` (test-cleanup). CLOSED 2026-10-26. At closure the migration was applied only to the local development database; Cloud apply and production deployment were separate steps not authorized by the closure (D-037). **Production activation:** ACTIVATED — STRUCTURALLY VERIFIED (migration applied to Supabase Cloud on 2026-10-27; see §Production activation record). Authenticated application behavior is not yet verified.
 
 **Dependencies:** SPEC-001–007 and SPEC-009 (completed); SPEC-012 (completed, accepted with baseline exception, D-036); SPEC-010 U0 (G6 satisfied). Does not depend on SPEC-008 implementation and does not activate or expand analytics.
 
@@ -249,4 +249,43 @@ See AC-12 for the baseline-findings rule.
   9. SPEC-012 stays completed; SPEC-008 analytics boundaries stay unchanged.
 - **Gate status:** G1 **SATISFIED** 2026-10-26 (decided and confirmed with C1-C3); G3 **SATISFIED AS PRODUCT DECISION** 2026-10-26 (U4 remains inactive pending its own implementation contract and U3 completion; U3 was completed 2026-10-26 by SPEC-013); G4/G5 unchanged OPEN; G2 and G6 unchanged SATISFIED.
 - **AC verification summary (AC-01 to AC-14).** All acceptance criteria are met. AC-12 is satisfied by the Product Owner's limited baseline exception recorded in `docs/DECISIONS.md` D-037: six pre-existing Playwright failures reproduced on both baseline `a247d09` and implementation `5387f19`. The Playwright head evidence was produced against `e501f00` with the test-cleanup change in `tests/e2e/material-reach-country.spec.ts` present in the working tree before it was committed as `5387f19` (2026-10-26 19:03); that commit changes only that cleanup spec, so the conclusions are unaffected. The failing tests are never described as passing. D-036 failure #1 (`archival-governance.spec.ts:216`) passed in the SPEC-013 runs and is not covered by this exception. AC-13 is satisfied by this closure record and the move to `completed/`. AC-14 is satisfied by the fixture-only Published-insert exemption in the migration and its pgTAP coverage.
-- **What this record does not do:** it does not activate U4/U5/SPEC-010, does not alter SPEC-012 or SPEC-008, does not describe the accepted Playwright failures as passing, does not authorize Cloud migration apply, does not authorize production deployment, does not authorize U4/U5 implementation, and does not waive any security, authorization or data-integrity acceptance criterion.
+- **What this closure record does not do (as written at closure on 2026-10-26; the later production activation is recorded in §13):** it does not activate U4/U5/SPEC-010, does not alter SPEC-012 or SPEC-008, does not describe the accepted Playwright failures as passing, does not authorize Cloud migration apply, does not authorize production deployment, does not authorize U4/U5 implementation, and does not waive any security, authorization or data-integrity acceptance criterion.
+
+## 13. Production activation record
+
+This section is separate from the 2026-10-26 implementation and closure record in §12. It does not reopen SPEC-013, does not change the closure classification or the D-037 exception scope, and does not alter any acceptance criterion.
+
+**Status:** ACTIVATED — STRUCTURALLY VERIFIED. Authenticated application behavior is not yet verified.
+
+### 13.1 Production activation (2026-10-27)
+
+- **Supabase Cloud project:** `qcxcgwpfgclyebkxawyh`.
+- **Migration:** `20261026000100_material_reach_country.sql`, applied successfully on 2026-10-27. All 13 migrations are synchronized between the repository and the remote migration history.
+- **Vercel production:** commit `9f3dc46`, state READY, served at `bc.democraciamas.com`.
+- Cloud apply and deployment were separate steps; neither was authorized by the closure in §12 or by D-037.
+
+### 13.2 Post-migration verification (read-only, 2026-10-27)
+
+Verdict: **PASS_WITH_NOTES**. Structural verification only; no SQL writes, test records, migration changes or deployments were made during verification.
+
+- **Trigger:** `material_revisions_reach_country` exists on `public.material_revisions`, enabled, before insert or update, row-level, calling `private.enforce_material_reach_country()`.
+- **Function:** `private.enforce_material_reach_country()` exists, is `SECURITY INVOKER` (not `SECURITY DEFINER`), with `search_path=""`; its body matches the migration file.
+- **Function privileges:** execute is held by the owner `postgres` only; `anon`, `authenticated` and `service_role` cannot execute it, matching the migration's `revoke`.
+- **RLS and grants:** RLS remains enabled on `material_revisions`; its two SELECT policies are unchanged; `anon` and PUBLIC hold no table privileges; `authenticated` holds SELECT only (unchanged pattern); no column-level ACLs.
+- **Existing protections:** `preserve_published_material_revision` and `protect_material_contribution` remain enabled.
+- **Data counts:** 39 material revisions, all Published, zero Drafts (unchanged from the preflight); 38 materials, all with a current published revision; no row carries a non-blank `country_or_scope`. The migration rewrote no data.
+- **Production serving:** the production domain is aliased to the READY `9f3dc46` deployment; `/`, `/login`, `/app`, `/app/library` and `/app/contributions/new` returned HTTP 200 unauthenticated (loading shell only).
+- **Security advisors:** no finding attributable to this migration. Pre-existing items only: INFO `rls_enabled_no_policy` on `access_administration_events` and `curriculum_lifecycle_events`; WARN `SECURITY DEFINER` functions executable by `anon`/`authenticated` (the earlier specs' public RPCs and Supabase-managed `public.rls_auto_enable()`); WARN leaked-password protection disabled. No prior advisor snapshot was available for a count diff.
+- **Logs:** the Supabase Postgres log shows only the migration statements, with no error-severity entries in the checked window; Vercel reported no runtime errors (low traffic in the checked window, so weak evidence).
+
+### 13.3 Not verified / pending operational checks
+
+- **Pending:** authenticated Admin material-form inspection (the `País o alcance` select exposing the approved 20-country list).
+- **Pending:** authenticated Contributor library and detail-page inspection (published materials still browsable and readable).
+- **Not tested:** live trigger rejection or acceptance of an off-list or approved value in production (would require a write; no production test record was created).
+- **Not tested:** production UI behavior under real authenticated sessions.
+- These checks are recorded as pending and must not be described as passed until performed with an authorized session. No authentication bypass or manufactured session is permitted to perform them.
+
+### 13.4 Unchanged
+
+D-037 and its six accepted baseline Playwright failures are unchanged and are never described as passing. SPEC-010 U4 and U5 remain inactive.
