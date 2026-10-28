@@ -59,16 +59,14 @@ test.beforeAll(async () => {
   assertSuccess(await operator.from("organization_domains").insert({ domain, organization_id: organizationId }));
 });
 
-test("Admins publish new and successor versions while non-Admins remain readers", async ({ browser }) => {
-  const marker = randomUUID().slice(0, 8);
-  const adminA = await provision("Admin");
-  const adminB = await provision("Admin");
+/** The page-header action; the empty state renders a second "Crear contenido" link inside the list region. */
+function createContentAction(page: Page) {
+  return page.getByRole("main").locator("header").getByRole("link", { name: "Crear contenido" });
+}
+
+test("Non-Admin readers have no contribution management or mutation path", async ({ browser }) => {
   const reader = await provision("Contributor");
-  const adminAContext = await browser.newContext();
-  const adminBContext = await browser.newContext();
   const readerContext = await browser.newContext();
-  const adminAPage = await adminAContext.newPage();
-  const adminBPage = await adminBContext.newPage();
   const readerPage = await readerContext.newPage();
 
   await login(readerPage, reader.email);
@@ -83,10 +81,80 @@ test("Admins publish new and successor versions while non-Admins remain readers"
   expect((await readerClient.rpc("reserve_attachment", { requested_type: "material", requested_revision_id: randomUUID(), requested_filename: "ataque.pdf", requested_mime_type: "application/pdf", requested_size_bytes: 20 })).error).not.toBeNull();
   expect(await readerPage.evaluate(async () => (await fetch(`/api/contributions/material/${crypto.randomUUID()}/attachments/${crypto.randomUUID()}`, { method: "DELETE" })).status)).toBe(403);
 
+  await readerContext.close();
+});
+
+// This scenario requires a clean local database (`npm run db:reset`): the empty state only renders
+// while no managed content exists. It provisions its own Admin and creates no content, so it can be
+// repeated until another test seeds a Draft. `EmptyState` renders its title as a paragraph, not a heading.
+test("An Admin reaches the creation form from a fresh empty management list", async ({ browser }) => {
+  const admin = await provision("Admin");
+  const adminContext = await browser.newContext();
+  const adminPage = await adminContext.newPage();
+
+  await login(adminPage, admin.email);
+  await adminPage.goto(`/app/contributions?empty-list-check=${randomUUID()}`);
+  await expect(adminPage.getByRole("heading", { name: "Administrar contenido" })).toBeVisible();
+  await expect(
+    adminPage.getByText("Todavía no hay contenido administrable", { exact: true }),
+    "empty-list scenario requires a clean local database with no managed content (npm run db:reset)",
+  ).toBeVisible({ timeout: 5_000 });
+  await expect(adminPage.getByText("Todavía no hay contenido administrable", { exact: true })).toHaveCount(1);
+  await expect(createContentAction(adminPage)).toHaveCount(1);
+  await expect(adminPage.getByRole("main").getByRole("link", { name: "Crear contenido" })).toHaveCount(2);
+
+  await adminContext.close();
+});
+
+// The populated-state journey seeds its own Draft, so it remains independent of the empty-list
+// prerequisite and passes on any database state.
+test("An Admin reaches the creation form from a non-empty management list through one unambiguous action", async ({ browser }) => {
+  const marker = randomUUID().slice(0, 8);
+  const admin = await provision("Admin");
+  const adminContext = await browser.newContext();
+  const adminPage = await adminContext.newPage();
+
+  await login(adminPage, admin.email);
+  await adminPage.goto("/app/contributions");
+  await expect(adminPage.getByRole("heading", { name: "Administrar contenido" })).toBeVisible();
+  await expect(createContentAction(adminPage)).toHaveCount(1);
+  const seeded = await (await userClient(adminContext)).rpc("create_contribution", { requested_type: "material", payload: { title: `Material sembrado ${marker}`, material_type: "Informe" } });
+  assertSuccess(seeded);
+
+  await adminPage.reload();
+  await expect(adminPage.getByText(`Material sembrado ${marker}`)).toBeVisible();
+  await expect(adminPage.getByText("Todavía no hay contenido administrable", { exact: true })).toHaveCount(0);
+  await expect(createContentAction(adminPage)).toHaveCount(1);
+  await createContentAction(adminPage).click();
+  await expect(adminPage.getByRole("heading", { name: "Crear contenido" })).toBeVisible();
+  await adminPage.getByRole("link", { name: "Material o estudio" }).click();
+  await expect(adminPage).toHaveURL(/\/app\/contributions\/new\/material$/);
+
+  await adminContext.close();
+});
+
+// Storage-dependent journey: three browser contexts, three OTP logins and four attachment uploads.
+// Passing runs of this journey in dev mode took 37.6-48.8s (SPEC-013 evidence), above the 30s default.
+test("Admins publish new and successor versions while non-Admins remain readers", async ({ browser }) => {
+  test.setTimeout(90_000);
+  const marker = randomUUID().slice(0, 8);
+  const adminA = await provision("Admin");
+  const adminB = await provision("Admin");
+  const reader = await provision("Contributor");
+  const adminAContext = await browser.newContext();
+  const adminBContext = await browser.newContext();
+  const readerContext = await browser.newContext();
+  const adminAPage = await adminAContext.newPage();
+  const adminBPage = await adminBContext.newPage();
+  const readerPage = await readerContext.newPage();
+
+  await login(readerPage, reader.email);
+  const readerClient = await userClient(readerContext);
+
   await login(adminAPage, adminA.email);
   await adminAPage.getByRole("link", { name: "Administrar contenido" }).click();
   await expect(adminAPage.getByRole("heading", { name: "Administrar contenido" })).toBeVisible();
-  await adminAPage.getByRole("link", { name: "Crear contenido" }).click();
+  await createContentAction(adminAPage).click();
   await adminAPage.getByRole("link", { name: "Material o estudio" }).click();
   await adminAPage.getByLabel("Título *").fill(`Material vigente ${marker}`);
   await adminAPage.getByLabel("Tipo de material *").fill("Informe");

@@ -18,6 +18,44 @@ insert into public.memberships(user_id, organization_id, role, is_active) values
   ('b2000000-0000-4000-8000-000000000003', 'b1000000-0000-4000-8000-000000000001', 'Contributor', true),
   ('b2000000-0000-4000-8000-000000000004', 'b1000000-0000-4000-8000-000000000001', 'Admin', true);
 
+-- Unrelated residual data (as left by E2E runs on a populated local DB). The
+-- assertions below are scoped to this file's own fixed UUIDs and must hold with
+-- this data present: a Draft-only module, a module with Published v1 and Draft v2,
+-- archived identities, and lifecycle events from another organization.
+insert into public.organizations(id, name, is_active)
+values ('e1000000-0000-4000-8000-000000000001', 'Red residual', true);
+insert into auth.users(id, email, email_confirmed_at)
+values ('e2000000-0000-4000-8000-000000000001', 'admin@residual.test', now());
+insert into public.memberships(user_id, organization_id, role, is_active)
+values ('e2000000-0000-4000-8000-000000000001', 'e1000000-0000-4000-8000-000000000001', 'Admin', true);
+insert into public.modules(id) values
+  ('e3000000-0000-4000-8000-000000000001'),
+  ('e3000000-0000-4000-8000-000000000002'),
+  ('e3000000-0000-4000-8000-000000000003');
+insert into public.module_revisions(id, module_id, revision_number, status, axis_id, title, description, published_at) values
+  ('e3100000-0000-4000-8000-000000000001', 'e3000000-0000-4000-8000-000000000001', 1, 'Draft',
+   'a1000000-0000-4000-8000-000000000001', 'Residual sólo borrador', 'Residual.', null),
+  ('e3100000-0000-4000-8000-000000000002', 'e3000000-0000-4000-8000-000000000002', 1, 'Published',
+   'a1000000-0000-4000-8000-000000000001', 'Residual vigente', 'Residual.', now()),
+  ('e3100000-0000-4000-8000-000000000003', 'e3000000-0000-4000-8000-000000000002', 2, 'Draft',
+   'a1000000-0000-4000-8000-000000000001', 'Residual sucesor', 'Residual.', null),
+  ('e3100000-0000-4000-8000-000000000004', 'e3000000-0000-4000-8000-000000000003', 1, 'Published',
+   'a1000000-0000-4000-8000-000000000001', 'Residual archivado', 'Residual.', now());
+update public.modules set current_published_revision_id = 'e3100000-0000-4000-8000-000000000002'
+where id = 'e3000000-0000-4000-8000-000000000002';
+update public.modules set current_published_revision_id = 'e3100000-0000-4000-8000-000000000004',
+  archived_at = '2026-01-01T00:00:00Z', archived_by = 'e2000000-0000-4000-8000-000000000001'
+where id = 'e3000000-0000-4000-8000-000000000003';
+insert into public.materials(id) values ('e6000000-0000-4000-8000-000000000001');
+insert into public.material_revisions(id, material_id, revision_number, status, title, material_type, published_at)
+values ('e6100000-0000-4000-8000-000000000001', 'e6000000-0000-4000-8000-000000000001', 1, 'Published', 'Residual material', 'Informe', now());
+update public.materials set current_published_revision_id = 'e6100000-0000-4000-8000-000000000001',
+  archived_at = '2026-09-16T10:00:00Z', archived_by = 'e2000000-0000-4000-8000-000000000001'
+where id = 'e6000000-0000-4000-8000-000000000001';
+insert into public.curriculum_lifecycle_events(content_type, content_id, revision_id, actor_user_id, actor_organization_id, action)
+values ('material', 'e6000000-0000-4000-8000-000000000001', 'e6100000-0000-4000-8000-000000000001',
+  'e2000000-0000-4000-8000-000000000001', 'e1000000-0000-4000-8000-000000000001', 'content_archived');
+
 -- One complete current-published graph covers every reverse dependency edge.
 insert into public.modules(id, created_by) values
   ('b3000000-0000-4000-8000-000000000001', 'b2000000-0000-4000-8000-000000000001'),
@@ -37,7 +75,9 @@ insert into public.module_revisions(
    'a1000000-0000-4000-8000-000000000001', 'Módulo histórico', 'Relación histórica.',
    'b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-000000000001', now());
 update public.modules identity set current_published_revision_id = revision.id
-from public.module_revisions revision where revision.module_id = identity.id;
+from public.module_revisions revision
+where revision.module_id = identity.id
+  and identity.id in ('b3000000-0000-4000-8000-000000000001', 'b3000000-0000-4000-8000-000000000002', 'b3000000-0000-4000-8000-000000000003');
 
 insert into public.program_topics(id, created_by)
 values ('b4000000-0000-4000-8000-000000000001', 'b2000000-0000-4000-8000-000000000001');
@@ -63,7 +103,9 @@ insert into public.instructor_revisions(
   ('b5100000-0000-4000-8000-000000000002', 'b5000000-0000-4000-8000-000000000002', 1, 'Published', 'Docente histórico',
    'b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-000000000001', now());
 update public.instructors identity set current_published_revision_id = revision.id
-from public.instructor_revisions revision where revision.instructor_id = identity.id;
+from public.instructor_revisions revision
+where revision.instructor_id = identity.id
+  and identity.id in ('b5000000-0000-4000-8000-000000000001', 'b5000000-0000-4000-8000-000000000002');
 
 insert into public.materials(id, created_by) values
   ('b6000000-0000-4000-8000-000000000001', 'b2000000-0000-4000-8000-000000000001'),
@@ -90,7 +132,10 @@ insert into public.material_revisions(
    'b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-000000000001', now());
 update public.materials identity set current_published_revision_id = revision.id
 from public.material_revisions revision
-where revision.material_id = identity.id and revision.status = 'Published';
+where revision.material_id = identity.id and revision.status = 'Published'
+  and identity.id in (
+    'b6000000-0000-4000-8000-000000000001', 'b6000000-0000-4000-8000-000000000002', 'b6000000-0000-4000-8000-000000000003',
+    'b6000000-0000-4000-8000-000000000004', 'b6000000-0000-4000-8000-000000000005', 'b6000000-0000-4000-8000-000000000006');
 
 insert into public.institutions(id, created_by)
 values ('b7000000-0000-4000-8000-000000000001', 'b2000000-0000-4000-8000-000000000001');
@@ -119,7 +164,9 @@ insert into public.teaching_note_revisions(
    'b3000000-0000-4000-8000-000000000002', null, 'Nota restaurable', 'Texto.',
    'b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-000000000001', now());
 update public.teaching_notes identity set current_published_revision_id = revision.id
-from public.teaching_note_revisions revision where revision.teaching_note_id = identity.id;
+from public.teaching_note_revisions revision
+where revision.teaching_note_id = identity.id
+  and identity.id in ('b8000000-0000-4000-8000-000000000001', 'b8000000-0000-4000-8000-000000000002');
 
 set local session_replication_role = replica;
 insert into public.module_instructors values
@@ -587,10 +634,17 @@ set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 
 select bag_eq(
-  $$select content_type::text, content_id::text from public.list_archived_governed_content()$$,
+  $$select content_type::text, content_id::text from public.list_archived_governed_content(100)
+    where content_id in ('b3000000-0000-4000-8000-000000000001', 'b3000000-0000-4000-8000-000000000002', 'b3000000-0000-4000-8000-000000000003',
+   'b4000000-0000-4000-8000-000000000001',
+   'b5000000-0000-4000-8000-000000000001', 'b5000000-0000-4000-8000-000000000002',
+   'b6000000-0000-4000-8000-000000000001', 'b6000000-0000-4000-8000-000000000002', 'b6000000-0000-4000-8000-000000000003',
+   'b6000000-0000-4000-8000-000000000004', 'b6000000-0000-4000-8000-000000000005', 'b6000000-0000-4000-8000-000000000006',
+   'b7000000-0000-4000-8000-000000000001',
+   'b8000000-0000-4000-8000-000000000001', 'b8000000-0000-4000-8000-000000000002')$$,
   $$values ('instructor', 'b5000000-0000-4000-8000-000000000002'),
            ('module', 'b3000000-0000-4000-8000-000000000003')$$,
-  'eligible Admin lists exactly the archived governed identities');
+  'eligible Admin lists exactly the archived fixture identities');
 
 select is((select count(*) from public.list_archived_governed_content()
   where content_id = 'b3000000-0000-4000-8000-000000000001'), 0::bigint,
@@ -647,30 +701,33 @@ select throws_ok($$select * from public.list_archived_governed_content(50, now()
   '22023', 'archived cursor requires all keyset values', 'archived listing rejects a cursor missing the content type');
 
 -- Keyset pagination walks the whole archived set without repeating a row.
-select is((select count(distinct content_id) from (
-    select content_id from public.list_archived_governed_content(1)
+select is((select count(distinct (content_type, content_id)) from (
+    select content_type, content_id from public.list_archived_governed_content(1)
     union all
-    select page.content_id from public.list_archived_governed_content(1) first
+    select page.content_type, page.content_id from public.list_archived_governed_content(1) first
     cross join lateral public.list_archived_governed_content(
       1, first.archived_at, first.content_id, first.content_type) page
   ) walked), 2::bigint,
-  'archived keyset pagination reaches every archived identity exactly once');
+  'archived keyset pagination advances to a distinct second identity');
 
 -- The archived identity is reachable only through the bounded Admin boundary.
 select is((select count(*) from public.modules where id = 'b3000000-0000-4000-8000-000000000003'), 0::bigint,
   'an archived identity stays invisible to direct Admin table reads');
 
 select is(
-  (select actor_organization_id::text from public.list_curriculum_lifecycle_history(1)),
+  (select actor_organization_id::text from public.list_curriculum_lifecycle_history(
+    1, content_id_filter => 'b5000000-0000-4000-8000-000000000002')),
   'b1000000-0000-4000-8000-000000000001',
   'lifecycle history reports the actor organization id');
 select is(
-  (select actor_organization_name from public.list_curriculum_lifecycle_history(1)),
+  (select actor_organization_name from public.list_curriculum_lifecycle_history(
+    1, content_id_filter => 'b5000000-0000-4000-8000-000000000002')),
   'Red de archivo',
   'lifecycle history resolves the actor organization name through the Admin boundary');
 
 select is((select count(*) from public.list_curriculum_lifecycle_history(100)
   where action in ('content_archived', 'content_restored')
+    and actor_organization_id = 'b1000000-0000-4000-8000-000000000001'
     and (previous_status is not null or resulting_status is not null)), 0::bigint,
   'archive and restore remain identity-level events without invented revision transitions');
 
@@ -724,8 +781,9 @@ where id = 'bf000000-0000-4000-8000-00000000000a';
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"b2000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 
-select is((select count(*) from public.list_archived_governed_content(100)), 4::bigint,
-  'the colliding archived identities are both present in an unpaginated listing');
+select is((select count(*) from public.list_archived_governed_content(100)
+  where content_id in ('b3000000-0000-4000-8000-000000000003', 'b5000000-0000-4000-8000-000000000002', 'bf000000-0000-4000-8000-00000000000a')), 4::bigint,
+  'the fixture archived identities, including the colliding pair, are all present in an unpaginated listing');
 
 -- Walk the whole set one row at a time through the cursor.
 create temporary table archived_walk(step integer, content_type public.curriculum_content_type, content_id uuid) on commit drop;
@@ -751,10 +809,11 @@ begin
 end;
 $walk$;
 
-select is((select count(*) from archived_walk), 4::bigint,
-  'single-row keyset pagination returns every archived identity across tied rows');
-select is((select count(distinct (content_type, content_id)) from archived_walk), 4::bigint,
-  'single-row keyset pagination never duplicates a tied row');
+select is((select count(*) from archived_walk
+  where content_id in ('b3000000-0000-4000-8000-000000000003', 'b5000000-0000-4000-8000-000000000002', 'bf000000-0000-4000-8000-00000000000a')), 4::bigint,
+  'single-row keyset pagination returns every fixture archived identity across tied rows');
+select is((select count(distinct (content_type, content_id)) from archived_walk), (select count(*) from archived_walk),
+  'single-row keyset pagination never duplicates a row, tied or not');
 select bag_eq(
   $$select content_type::text, content_id::text from archived_walk$$,
   $$select content_type::text, content_id::text from public.list_archived_governed_content(100)$$,
