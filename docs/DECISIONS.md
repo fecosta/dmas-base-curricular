@@ -581,14 +581,14 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 ### D-035 — First feedback channel is an external form link
 
-**State:** DECISION (Product Owner) — form URL and privacy governance gates G4 and G5 PENDING
-**Date:** 2026-10-21
+**State:** DECISION (Product Owner) — external-link action IMPLEMENTED; form URL and privacy governance gates G4 and G5 PENDING for production enablement
+**Date:** 2026-10-21 (external-link action implemented 2026-10-28)
 
-**Approved future behavior (NOT IMPLEMENTED).** The first version is a visible feedback action that opens an external JotForm URL. There is no embedded iframe, no modal integration, no custom feedback backend and no new analytics event. Tokens, search queries, private content and user identifiers are not transmitted automatically. The label is Spanish-first and the action is keyboard-accessible and usable on mobile. The action is not enabled until the approved form URL and privacy-governance details exist. Feedback is voluntary and separate from analytics consent.
+**Approved behavior.** The first version is a visible feedback action that opens an external form URL. There is no embedded iframe, no modal integration, no custom feedback backend and no new analytics event. Tokens, search queries, private content and user identifiers are not transmitted automatically. The label is Spanish-first and the action is keyboard-accessible and usable on mobile. Feedback is voluntary and separate from analytics consent.
 
-**Current implemented behavior (verified read-only on `main`).** No feedback action or JotForm reference exists in the application.
+**Current implemented behavior (verified on `main`).** A floating "Enviar comentarios" action is rendered in the authenticated shell (`src/app/app/layout.tsx`) when `NEXT_PUBLIC_FEEDBACK_FORM_URL` is set to a valid absolute `https:` URL. The action is a plain anchor with `target="_blank"` and `rel="noopener noreferrer"`; it appends no query parameters and emits no analytics events. The action is inert and renders nothing when the env var is unset, empty, whitespace-only, or invalid (for example `http:`, `javascript:`, relative or garbage values), which satisfies the "not enabled until URL approved" intent. URL validation is provider-agnostic: any absolute `https:` URL is accepted, so both Google Forms and Jotform work.
 
-**Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008).
+**Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008) remain prerequisites for production enablement; the feature is delivered behind the env var so it can be turned on only after those gates close.
 
 **Deferred.** Embedded or modal feedback, to be considered only by a future spec.
 

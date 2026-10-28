@@ -67,4 +67,4 @@ Historical artifacts may be archived if useful, but they must not remain listed 
 | `GOVERNANCE.md` | Governance core confirmed |
 | `SECURITY.md` | Product security baseline confirmed |
 | `ARCHITECTURE.md` | Initial stack and architecture confirmed |
-| `DECISIONS.md` | Reconciled decision register (D-033–D-037; D-033 implemented 2026-10-23, reconciled 2026-10-25; D-034 origin semantics decided 2026-10-26; D-035 feedback form pending G4/G5; D-036 SPEC-012 baseline exception; D-037 SPEC-013 baseline exception) |
+| `DECISIONS.md` | Reconciled decision register (D-033–D-037; D-033 implemented 2026-10-23, reconciled 2026-10-25; D-034 origin semantics decided 2026-10-26; D-035 external feedback link implemented 2026-10-28, production enablement pending G4/G5; D-036 SPEC-012 baseline exception; D-037 SPEC-013 baseline exception) |
