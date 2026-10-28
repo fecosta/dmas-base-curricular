@@ -84,8 +84,9 @@ test("Non-Admin readers have no contribution management or mutation path", async
   await readerContext.close();
 });
 
-// This scenario requires a freshly reset local database. It intentionally fails rather than skips
-// when existing managed content makes the empty state impossible to observe.
+// This scenario requires a clean local database (`npm run db:reset`): the empty state only renders
+// while no managed content exists. It provisions its own Admin and creates no content, so it can be
+// repeated until another test seeds a Draft. `EmptyState` renders its title as a paragraph, not a heading.
 test("An Admin reaches the creation form from a fresh empty management list", async ({ browser }) => {
   const admin = await provision("Admin");
   const adminContext = await browser.newContext();
@@ -94,9 +95,11 @@ test("An Admin reaches the creation form from a fresh empty management list", as
   await login(adminPage, admin.email);
   await adminPage.goto(`/app/contributions?empty-list-check=${randomUUID()}`);
   await expect(adminPage.getByRole("heading", { name: "Administrar contenido" })).toBeVisible();
-  await expect(adminPage.getByRole("heading", { name: "Todavía no hay contenido administrable" }))
-    .toBeVisible({ timeout: 5_000 })
-    .catch(() => { throw new Error("empty-list scenario requires a freshly reset local database (npm run db:reset)"); });
+  await expect(
+    adminPage.getByText("Todavía no hay contenido administrable", { exact: true }),
+    "empty-list scenario requires a clean local database with no managed content (npm run db:reset)",
+  ).toBeVisible({ timeout: 5_000 });
+  await expect(adminPage.getByText("Todavía no hay contenido administrable", { exact: true })).toHaveCount(1);
   await expect(createContentAction(adminPage)).toHaveCount(1);
   await expect(adminPage.getByRole("main").getByRole("link", { name: "Crear contenido" })).toHaveCount(2);
 
@@ -120,7 +123,7 @@ test("An Admin reaches the creation form from a non-empty management list throug
 
   await adminPage.reload();
   await expect(adminPage.getByText(`Material sembrado ${marker}`)).toBeVisible();
-  await expect(adminPage.getByRole("heading", { name: "Todavía no hay contenido administrable" })).toHaveCount(0);
+  await expect(adminPage.getByText("Todavía no hay contenido administrable", { exact: true })).toHaveCount(0);
   await expect(createContentAction(adminPage)).toHaveCount(1);
   await createContentAction(adminPage).click();
   await expect(adminPage.getByRole("heading", { name: "Crear contenido" })).toBeVisible();
