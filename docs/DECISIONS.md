@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-10-26
+**Last reconciled:** 2026-10-28
 
 ## Decision register
 
@@ -586,7 +586,16 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 **Approved behavior.** The first version is a visible feedback action that opens an external form URL. There is no embedded iframe, no modal integration, no custom feedback backend and no new analytics event. Tokens, search queries, private content and user identifiers are not transmitted automatically. The label is Spanish-first and the action is keyboard-accessible and usable on mobile. Feedback is voluntary and separate from analytics consent.
 
-**Current implemented behavior (verified on `main`).** A floating "Enviar comentarios" action is rendered in the authenticated shell (`src/app/app/layout.tsx`) when `NEXT_PUBLIC_FEEDBACK_FORM_URL` is set to a valid absolute `https:` URL. The action is a plain anchor with `target="_blank"` and `rel="noopener noreferrer"`; it appends no query parameters and emits no analytics events. The action is inert and renders nothing when the env var is unset, empty, whitespace-only, or invalid (for example `http:`, `javascript:`, relative or garbage values), which satisfies the "not enabled until URL approved" intent. URL validation is provider-agnostic: any absolute `https:` URL is accepted, so both Google Forms and Jotform work.
+**Current implemented behavior (verified on `main`).** A floating "Enviar comentarios" action is rendered in the authenticated shell (`src/app/app/layout.tsx`) when `NEXT_PUBLIC_FEEDBACK_FORM_URL` is set to a valid absolute `https:` URL without embedded credentials. The action is a plain anchor with `target="_blank"` and `rel="noopener noreferrer"`; it appends no query parameters and emits no analytics events. The action is inert and renders nothing when the env var is unset, empty, whitespace-only, or invalid (for example `http:`, `javascript:`, relative, garbage, or credential-embedded values), which keeps the action inert until a valid absolute `https:` URL without embedded credentials is configured. URL approval remains an operational control: the Production env var must not be set until G4 and G5 close. URL validation is provider-agnostic: any absolute `https:` URL without embedded credentials is accepted, so both Google Forms and Jotform work.
+
+**Amendment (Product Owner, 2026-10-28).**
+
+- SPEC-010 U5 may be delivered as a standalone implementation unit.
+- Jotform is the currently approved provider for the external form URL.
+- The implementation may remain technically provider-independent (any absolute `https:` URL without embedded credentials; no provider-specific logic).
+- Switching providers requires an authorized configuration change.
+- The icon-only button on mobile is acceptable provided accessibility/usability requirements are met.
+- Production activation remains blocked until SPEC-010 gates G4 and G5 are satisfied.
 
 **Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008) remain prerequisites for production enablement; the feature is delivered behind the env var so it can be turned on only after those gates close.
 

@@ -24,6 +24,8 @@ describe("getFeedbackFormUrl", () => {
     ["not a url"],
     ["//example.com"],
     ["ftp://example.com/form"],
+    ["https://user:pass@forms.example.com"],
+    ["https://user@forms.example.com"],
   ])("fails closed for %o", (value) => {
     expect(getFeedbackFormUrl({ NEXT_PUBLIC_FEEDBACK_FORM_URL: value } as unknown as NodeJS.ProcessEnv)).toBeUndefined();
   });
@@ -46,6 +48,8 @@ describe("FeedbackLink", () => {
     "javascript:alert(1)",
     "/relative/path",
     "not a url",
+    "https://user:pass@forms.example.com",
+    "https://user@forms.example.com",
   ])("renders nothing for invalid URL %o", (value) => {
     setUrl(value);
     expect(render(<FeedbackLink />)).toBe("");
@@ -84,10 +88,16 @@ describe("FeedbackLink", () => {
     expect(html).not.toContain("organizationId");
   });
 
-  it("keeps the visible label hidden on narrow viewports and shows the icon", () => {
+  it("keeps the visible label responsive and preserves the accessible name", () => {
     setUrl("https://forms.gle/abc123");
     const html = render(<FeedbackLink />);
+    // The text span is hidden below the sm breakpoint and shown at sm and up.
     expect(html).toContain("hidden sm:inline");
+    // Icon is always rendered and aria-hidden.
     expect(html).toContain("<svg");
+    expect(html).toContain('aria-hidden="true"');
+    // The accessible name does not depend on the visible span.
+    expect(html).toContain('aria-label="Enviar comentarios"');
+    expect(html).toContain('title="Ayúdanos a mejorar la plataforma"');
   });
 });

@@ -24,8 +24,9 @@ const MESSAGE_ICON = (
  * stays inert until an approved https: form URL is supplied.
  *
  * The label is always available to assistive technology; on narrow viewports it
- * is visually hidden so the button stays compact. The tooltip is supplied by
- * the title attribute and is visible on hover/focus.
+ * is visually hidden so the button stays compact. The title attribute supplies
+ * the tooltip text on mouse hover and is exposed to assistive technology as the
+ * description; the accessible name comes from aria-label and the visible text.
  */
 export function FeedbackLink() {
   const url = getFeedbackFormUrl();
@@ -39,8 +40,12 @@ export function FeedbackLink() {
       aria-label="Enviar comentarios"
       title="Ayúdanos a mejorar la plataforma"
       className={cn(
-        "fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-surface px-4 py-3 text-control font-bold text-primary shadow-panel transition-colors hover:bg-inset hover:text-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
-        "pb-[calc(0.75rem+env(safe-area-inset-bottom))] pr-[calc(0.75rem+env(safe-area-inset-right))]",
+        "fixed z-40 inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-surface px-4 py-3 text-control font-bold text-primary shadow-panel transition-colors hover:bg-inset hover:text-primary-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+        // Offset is on position rather than padding so the button stays
+        // symmetric. env(safe-area-*) falls back to 0 because the root viewport
+        // does not set viewport-fit=cover; it is kept as a harmless future-proof
+        // reserve.
+        "bottom-[calc(1rem+env(safe-area-inset-bottom))] right-[calc(1rem+env(safe-area-inset-right))]",
       )}
     >
       {MESSAGE_ICON}

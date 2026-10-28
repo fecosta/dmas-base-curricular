@@ -24,6 +24,9 @@ export default defineConfig({
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: supabase.key,
       SUPABASE_AUTH_ADMIN_SECRET_KEY: supabase.secret,
       APP_URL: baseURL,
+      // A harmless test URL for the external feedback link E2E. The spec
+      // intercepts this host with page.route so no real network request is made.
+      NEXT_PUBLIC_FEEDBACK_FORM_URL: "https://form.jotform.com/e2e-feedback-test",
     },
     timeout: 120_000,
   },

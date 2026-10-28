@@ -62,7 +62,7 @@ export default async function ApplicationLayout({ children }: { children: React.
 
     <FeedbackLink />
 
-    <footer className="on-dark mt-16 bg-night text-white">
+    <footer className="on-dark mt-16 bg-night pb-20 text-white">
       <Container width="wide" className="py-12">
         <span className="text-xl font-black tracking-[-0.03em] text-accent">DEMOCRACIA+</span>
         <p className="mt-3 max-w-md text-body text-white/70">
