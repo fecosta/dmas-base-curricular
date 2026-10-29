@@ -19,8 +19,9 @@ export function getFeedbackFormUrl(env?: NodeJS.ProcessEnv): string | undefined 
   if (url.protocol !== "https:") return undefined;
 
   // Reject URLs with embedded credentials. They are not a legitimate form-URL
-  // shape for this product surface and would leak the configured secret into
-  // browser links / Referer.
+  // shape for this product surface; credentials in the URL would be exposed in
+  // the client bundle and rendered DOM because NEXT_PUBLIC_ variables are
+  // inlined at build time.
   if (url.username || url.password) return undefined;
 
   return url.href;

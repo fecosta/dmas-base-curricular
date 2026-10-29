@@ -2,9 +2,9 @@
 
 **Product:** D+ Base Curricular
 
-**Status:** PLANNED — RECONCILED; ACTIVATION BLOCKED; U5 STANDALONE DELIVERY AUTHORIZED BY PRODUCT OWNER 2026-10-28
+**Status:** PLANNED — RECONCILED; ACTIVATION BLOCKED; U5 external-link action delivered as a standalone unit (D-035 amendment, 2026-10-28), production enablement blocked on G4/G5.
 
-**Delivery state:** NOT IMPLEMENTED AS A WHOLE. NOT IMPLEMENTATION-READY AS A WHOLE (G4, G5 OPEN; G1 SATISFIED 2026-10-26 WITH C1-C3 CONFIRMED; G3 SATISFIED AS PRODUCT DECISION 2026-10-26; U3 COMPLETED VIA SPEC-013; U4 CONTRACT PENDING; U5 EXTERNAL-LINK ACTION DELIVERED VIA STANDALONE UNIT, PRODUCTION ENABLEMENT BLOCKED ON G4/G5). U2 WAS SPLIT OUT ON 2026-10-23, OWNED BY SPEC-012, AND IS NOW COMPLETED (ACCEPTED WITH BASELINE EXCEPTION PER D-036; G2 SATISFIED). G6 SATISFIED. PRODUCT-OWNER DECISIONS 2026-10-28: U5 MAY BE DELIVERED AS A STANDALONE UNIT; JOTFORM IS THE CURRENTLY APPROVED PROVIDER; IMPLEMENTATION REMAINS PROVIDER-INDEPENDENT; PROVIDER SWITCH REQUIRES AN AUTHORIZED CONFIGURATION CHANGE; ICON-ONLY MOBILE BUTTON ACCEPTED; PRODUCTION ACTIVATION BLOCKED UNTIL G4/G5 CLOSE.
+**Delivery state:** NOT IMPLEMENTED AS A WHOLE. NOT IMPLEMENTATION-READY AS A WHOLE (G4, G5 OPEN; G1 SATISFIED 2026-10-26 WITH C1-C3 CONFIRMED; G3 SATISFIED AS PRODUCT DECISION 2026-10-26; U3 COMPLETED VIA SPEC-013; U4 CONTRACT PENDING; U5 EXTERNAL-LINK ACTION DELIVERED VIA STANDALONE UNIT, PRODUCTION ENABLEMENT BLOCKED ON G4/G5). U2 WAS SPLIT OUT ON 2026-10-23, OWNED BY SPEC-012, AND IS NOW COMPLETED (ACCEPTED WITH BASELINE EXCEPTION PER D-036; G2 SATISFIED). G6 SATISFIED. PRODUCT-OWNER DECISIONS 2026-10-28 ARE RECORDED IN THE D-035 AMENDMENT.
 
 **Dependencies:** SPEC-001–007 and SPEC-009 (completed); SPEC-012 (completed, accepted with baseline exception, D-036); [`SPEC-013`](../completed/013-material-reach-country-restriction.md) (completed 2026-10-26, accepted with baseline exception, D-037). Does not depend on SPEC-008 implementation and does not activate or expand analytics; gate G5 coordinates with SPEC-008 Gate P (Privacy/Legal). U2 is owned by [`SPEC-012`](../completed/012-library-institutional-references-presentation.md) (completed 2026-10-25). U3 is owned by [`SPEC-013`](../completed/013-material-reach-country-restriction.md).
 
@@ -22,14 +22,9 @@ Activation of this spec as a whole to `active/` is **BLOCKED**. Under `resources
 
 **Product-owner decision (Option A, 2026-10-21):** keep SPEC-010 planned. The lifecycle definitions in `resources/specs/README.md` are not changed.
 
-**Product-owner decisions (2026-10-28).**
+**Product-owner decisions (2026-10-28).** Recorded in full in the D-035 Amendment (`docs/DECISIONS.md`): U5 may be delivered as a standalone unit; Jotform is the currently approved provider; implementation remains provider-independent; provider switching requires an authorized configuration change; icon-only mobile button is acceptable; production activation remains blocked until G4/G5 close.
 
-- SPEC-010 U5 may be delivered as a standalone implementation unit.
-- Jotform is the currently approved provider for the external form URL.
-- The implementation may remain technically provider-independent (any absolute `https:` URL without embedded credentials; no provider-specific logic).
-- Switching providers requires an authorized configuration change.
-- The icon-only button on mobile is acceptable provided accessibility/usability requirements are met.
-- Production activation remains blocked until SPEC-010 gates G4 and G5 are satisfied.
+**U5 validation note (2026-10-28).** Full Playwright comparison: closure working tree (`E2E_PORT=3217`) 122 tests — 113 passed, 9 failed; baseline `d811f5f` (`E2E_PORT=3218`) 115 tests — 106 passed, 9 failed. The same nine failures reproduce on both trees: six documented D-036/D-037 baseline failures (`library-explorer.spec.ts` modal overlay Filtros; `module-detail.spec.ts` four tests; `contributions.spec.ts:138`), plus three pre-existing DB-state/attachment-upload failures (`archival.spec.ts:78`, `archival.spec.ts:184`, `contributions.spec.ts:90`). No new regression attributable to the feedback link was observed; `feedback-link.spec.ts` and `shell.spec.ts` pass in the closure tree.
 
 **Minimum conditions for a later activation request:**
 
@@ -195,7 +190,7 @@ Criteria apply when the corresponding unit is activated and implemented. U2's cr
 - **AC-04 (U4):** Origin country is Admin-selected, never inferred, distinct from reach, `Sin dato` for unknown history, preserved across successor revisions, Admin-mutation-only, creates no organization-specific visibility restriction, and is displayed and filtered consistently for the G3-approved types (materials, for v1).
 - **AC-05 (U3, U4):** Search combined with reach, origin and other filters behaves correctly; `Sin dato` and zero-result states are understandable.
 - **AC-06 (U3, U4; U2 owned by SPEC-012 AC-10):** No unpublished, archived, historical or private content leaks through country filters or query endpoints; Admin permissions are unchanged.
-- **AC-07 (U5):** A visible feedback action with a Spanish-first label opens the approved external URL, works with keyboard and on mobile, and is rendered only when a valid absolute `https:` URL without embedded credentials is configured. Production enablement also requires G4/G5. The action is inert when the env var is unset, empty, whitespace-only, or invalid. No iframe, modal integration or custom backend.
+- **AC-07 (U5):** A visible feedback action with a Spanish-first label opens the configured external URL, works with keyboard and on mobile, and is rendered only when a valid absolute `https:` URL without embedded credentials is configured. Production enablement also requires G4/G5. The action is inert when the env var is unset, empty, whitespace-only, or invalid. No iframe, modal integration or custom backend.
 - **AC-08 (U5):** The feedback action transmits no tokens, search queries, private content or user identifiers, appends no context parameters, and adds no analytics events.
 - **AC-09 (all; U2 owned by SPEC-012 AC-11):** Existing consent/revocation behavior and SPEC-008 gates are unchanged; analytics is neither activated nor expanded.
 - **AC-10 (U1 and regression for every unit; U2 owned by SPEC-012 AC-12; U3 owned by SPEC-013 AC-12):** Existing upload, viewing, downloading, publication and archival regressions pass, subject to the SPEC-012 AC-12 baseline exception recorded in D-036 and the SPEC-013 AC-12 baseline exception recorded in D-037; the deployed domain is verified without assuming DNS changes.

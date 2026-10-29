@@ -152,21 +152,48 @@ test("link exposes the expected external URL attributes", async ({ page }) => {
   await expect(link).toHaveAttribute("rel", /noreferrer/);
 });
 
-test("keyboard can focus and activate the link", async ({ page }) => {
+test("keyboard can focus and activate the link", async ({ page, context }) => {
   await signIn(page, "Contributor");
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/app/library");
 
   const link = feedbackLink(page);
-  await link.focus();
+
+  // Tab reachability: start from the document body and press Tab repeatedly
+  // until the feedback link receives focus. The link is rendered at the end of
+  // the authenticated shell, so a bounded number of Tab presses reaches it.
+  await page.evaluate(() => document.body.focus());
+  let focused = false;
+  for (let i = 0; i < 60; i++) {
+    await page.keyboard.press("Tab");
+    if (await link.evaluate((el) => el === document.activeElement)) {
+      focused = true;
+      break;
+    }
+  }
+  expect(focused).toBe(true);
   await expect(link).toBeFocused();
-  // Focus outline is rendered by the browser; visibility is asserted indirectly
-  // by the element being focused and in the viewport.
+
+  // Visible keyboard focus: the link is focused via keyboard, so :focus-visible
+  // should apply an outline (or equivalent focus indicator).
+  const focusIndicator = await link.evaluate((el) => {
+    const style = window.getComputedStyle(el);
+    const hasOutline = style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0;
+    const hasShadow = style.boxShadow !== "none";
+    return { hasOutline, hasShadow, outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth };
+  });
+  expect(
+    focusIndicator.hasOutline || focusIndicator.hasShadow,
+    `expected visible keyboard focus indicator, got outline:${focusIndicator.outlineStyle}/${focusIndicator.outlineWidth}, shadow:${focusIndicator.hasShadow}`,
+  ).toBe(true);
+
   await expect(link).toBeVisible();
 
-  await link.press("Enter");
   // Activation opens the URL in a new page; close it and return.
-  const newPage = await page.context().waitForEvent("page", { timeout: 10_000 });
+  const [newPage] = await Promise.all([
+    context.waitForEvent("page", { timeout: 10_000 }),
+    link.press("Enter"),
+  ]);
   await expect(newPage).toHaveURL(FEEDBACK_URL);
   await newPage.close();
   await expect(page).toHaveURL(/\/app/);

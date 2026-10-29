@@ -21,7 +21,7 @@ const MESSAGE_ICON = (
  * Floating feedback action for the authenticated shell.
  *
  * Renders nothing when the configured URL is missing or invalid, so the action
- * stays inert until an approved https: form URL is supplied.
+ * stays inert until a valid https: form URL is supplied.
  *
  * The label is always available to assistive technology; on narrow viewports it
  * is visually hidden so the button stays compact. The title attribute supplies
