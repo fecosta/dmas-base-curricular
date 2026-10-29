@@ -599,6 +599,8 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 **Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008) remain prerequisites for production enablement; the feature is delivered behind the env var so it can be turned on only after those gates close.
 
+**2026-10-28 — Product Owner confirmation, gates still open.** The Product Owner confirmed G4 ("Confirmed") and G5 ("OK") on 2026-10-28, but no written evidence of the documented closure criteria accompanied them. Both gates remain **OPEN** and production activation remains **BLOCKED** (the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable is not set and no deployment was triggered). Full record, including the observed form fields, what is missing and the rollback plan: SPEC-010 §6, "G4/G5 Product Owner confirmation and production-activation preflight (2026-10-28)". Details are not duplicated here.
+
 **Deferred.** Embedded or modal feedback, to be considered only by a future spec.
 
 Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U5). `resources/specs/planned/011-organizational-testing-feedback-program.md` remains planned.
