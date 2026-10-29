@@ -609,6 +609,12 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 - Retention: 12 months after submission, then deletion, including exports, copies and notification emails under the organization's control. Automatic deletion is not verified as configured.
 - G4 is PARTIALLY SATISFIED and remains **OPEN**; G5 remains **OPEN**; production activation remains **BLOCKED**. SPEC-008 Gate P is not affected and feedback stays separate from analytics consent. Details, staged Notice/Terms text, form wording, procedure and closure criteria: `docs/SPEC-010-G4-G5-FEEDBACK-PRIVACY-EVIDENCE.md`; not duplicated here.
 
+**Amendment (Product Owner, 2026-10-28) — manual retention and privacy publication; gates still open.**
+
+- Retention is no longer than 12 months, then permanent deletion. Automatic deletion is unavailable in the FVR Jotform account; **manual deletion and permanent purge is approved** (monthly review, delete older than 10 months; test submissions purged after each round). Felipe Costa owns the account and is the only person with submission access and the only notification recipient; Felipe and Malu coordinate feedback. These are approved decisions, not verified account configuration; no execution is recorded yet.
+- `docs/PRIVACY_NOTICE.md` 1.2 and `docs/TERMS_OF_USE.md` 1.1 are published in the repository (not live until merged and deployed). `privacyNoticeVersion` is "1.2"; `consentVersion` stays "1.1" and no renewed consent is requested, because analytics processing is unchanged (PRIVACY_UX_CONTRACT §20; feature-specific privacy approval, not legal advice). The Notice is also served at the public route `/privacidad/aviso`; the Terms stay authenticated.
+- G4 remains PARTIALLY SATISFIED and OPEN, G5 remains OPEN, SPEC-008 Gate P is unchanged, and production activation remains **BLOCKED**. Details, procedure, logs, final form wording and closure criteria: `docs/SPEC-010-G4-G5-FEEDBACK-PRIVACY-EVIDENCE.md`; not duplicated here.
+
 **Deferred.** Embedded or modal feedback, to be considered only by a future spec.
 
 Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U5). `resources/specs/planned/011-organizational-testing-feedback-program.md` remains planned.

@@ -447,7 +447,7 @@ Gate P must decide, at minimum. This document makes no legal determination on an
 
 ### 10.1 Privacy Notice dependency — hard activation prerequisite
 
-`docs/PRIVACY_NOTICE.md` (version 1.1, `privacyNoticeVersion = "1.1"`) describes the **PostHog** runtime, which is inert. It is **not** an adequate notice for GA4 or for organizational metrics. This revision does not edit it and publishes no new Notice.
+`docs/PRIVACY_NOTICE.md` (version 1.1; version 1.2 as of 2026-10-28 adds a feedback-form section only, `privacyNoticeVersion = "1.2"`, `consentVersion` unchanged at "1.1"; no Gate P item is affected) describes the **PostHog** runtime, which is inert. It is **not** an adequate notice for GA4 or for organizational metrics. This revision does not edit it and publishes no new Notice.
 
 Before GA4 activation, and before any per-user-linked organizational-metrics recording (if approved), all of the following are required:
 
