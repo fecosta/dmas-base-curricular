@@ -140,9 +140,9 @@ Notice §7 ("No enviamos intencionalmente para analítica…") is scoped to anal
 `docs/PRIVACY_NOTICE.md`, version **1.2**, last updated 28 October 2026. Changes:
 
 - New section **17. Comentarios y sugerencias**: voluntary feedback via the external form; Jotform, account operated by FVR Ltd; storage in the United States; what is received (type, text, optional section, optional email; not account, name, organization, page or searches); purposes; access limited to the person responsible for reviewing feedback (no individual named); retention of up to 12 months with permanent deletion through a manual review process; honest limit (deletion covers the Jotform account and copies under our control; backups and provider-held systems are not controlled); recommendation not to include sensitive or unnecessary data or third parties' data; rights and contact `hola@democraciamas.com`, with the optional email used to locate a submission; independent of analytics consent.
-- One-line additions in §4 (data), §5 (purposes), §13 (United States), §14 (feedback retention distinct from the analytics 12 months), §16 (provider category), and a summary line in §25.
+- One-line additions in §4 (data), §5 (purposes), §13 (United States), §14 (feedback retention distinct from the analytics 12 months), and a summary line in §25. Section 16 no longer lists Jotform in the umbrella provider list; instead, a separate paragraph discloses Jotform as the recipient of feedback and states that no specific contractual arrangement is claimed.
 - Former sections 17–24 are now 18–25. Cross-references ("sección 14", "sección 17") were verified and a test checks them.
-- The "contractual measures" sentence in §16 was left as it was and is **not** repeated for Jotform; no Jotform contractual arrangement has been verified.
+- The "contractual measures" sentence in §16 was left unchanged and does not cover Jotform; no Jotform contractual arrangement has been verified.
 - No GDPR, adequacy, data-processing-agreement or certification claim; no automatic-deletion or backup-deletion promise; no response-time commitment.
 
 ### 6.2 Terms 1.1 — PUBLISHED DOCUMENTATION

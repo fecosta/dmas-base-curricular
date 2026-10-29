@@ -305,10 +305,11 @@ Esto puede incluir proveedores relacionados con:
 - almacenamiento y bases de datos;
 - seguridad;
 - comunicaciones necesarias;
-- recepción de comentarios mediante un formulario externo (Jotform);
 - y analítica opcional del producto.
 
 Estos proveedores deben recibir únicamente la información necesaria para la finalidad correspondiente y estar sujetos a las medidas contractuales y de seguridad aplicables.
+
+Si decides enviar comentarios mediante el formulario externo, esa información es recibida por Jotform, como se describe en la sección 17. No afirmamos que existan medidas contractuales específicas con ese proveedor más allá de sus propios términos y políticas.
 
 No vendemos tus datos personales a anunciantes.
 

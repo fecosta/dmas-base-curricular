@@ -173,6 +173,22 @@ describe("feedback-form privacy publication (Notice 1.2, Terms 1.1)", () => {
     expect(notice).toContain("### No enviamos intencionalmente para analítica:");
   });
 
+  it("separates Jotform from the §16 umbrella-provider list and its contractual-measures claim", () => {
+    const blocks = parsePrivacyDocument(notice);
+    const idx16 = blocks.findIndex((b) => b.kind === "heading" && text(b).startsWith("16."));
+    const idx17 = blocks.findIndex((b) => b.kind === "heading" && text(b).startsWith("17."));
+    expect(idx16).toBeGreaterThanOrEqual(0);
+    expect(idx17).toBeGreaterThan(idx16);
+    const section16 = blocks.slice(idx16 + 1, idx17);
+    const list = section16.find((b) => b.kind === "list") as Extract<Block, { kind: "list" }> | undefined;
+    expect(list).toBeDefined();
+    expect(text(list!)).not.toContain("Jotform");
+    const jotformParagraph = section16.find((b) => b.kind === "paragraph" && text(b).includes("Jotform"));
+    expect(jotformParagraph).toBeDefined();
+    expect(text(jotformParagraph!)).toContain("sección 17");
+    expect(text(jotformParagraph!)).toContain("medidas contractuales específicas");
+  });
+
   it("mentions the feedback form in the Terms without other restructuring", () => {
     expect(terms).toContain("El formulario de comentarios de Base Curricular es un servicio externo y su uso es voluntario.");
     expect(terms).toContain("- cómo se tratan los comentarios que envías mediante el formulario externo de comentarios;");
