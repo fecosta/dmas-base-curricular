@@ -159,6 +159,12 @@ test("keyboard can focus and activate the link", async ({ page, context }) => {
 
   const link = feedbackLink(page);
 
+  // Baseline outline before focus: the focus ring must be focus-driven, not permanent.
+  const unfocusedOutline = await link.evaluate((el) => {
+    const style = window.getComputedStyle(el);
+    return { outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth, outlineColor: style.outlineColor };
+  });
+
   // Tab reachability: start from the document body and press Tab repeatedly
   // until the feedback link receives focus. The link is rendered at the end of
   // the authenticated shell, so a bounded number of Tab presses reaches it.
@@ -175,17 +181,32 @@ test("keyboard can focus and activate the link", async ({ page, context }) => {
   await expect(link).toBeFocused();
 
   // Visible keyboard focus: the link is focused via keyboard, so :focus-visible
-  // should apply an outline (or equivalent focus indicator).
+  // must apply a genuine outline. box-shadow is not accepted as an indicator
+  // because the link permanently carries `shadow-panel`.
   const focusIndicator = await link.evaluate((el) => {
     const style = window.getComputedStyle(el);
-    const hasOutline = style.outlineStyle !== "none" && parseFloat(style.outlineWidth) > 0;
-    const hasShadow = style.boxShadow !== "none";
-    return { hasOutline, hasShadow, outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth };
+    return {
+      outlineStyle: style.outlineStyle,
+      outlineWidth: style.outlineWidth,
+      outlineColor: style.outlineColor,
+    };
   });
+  const hasVisibleOutline = (outline: typeof focusIndicator) =>
+    outline.outlineStyle !== "none" &&
+    parseFloat(outline.outlineWidth) > 0 &&
+    outline.outlineColor !== "transparent" &&
+    outline.outlineColor !== "rgba(0, 0, 0, 0)";
+
   expect(
-    focusIndicator.hasOutline || focusIndicator.hasShadow,
-    `expected visible keyboard focus indicator, got outline:${focusIndicator.outlineStyle}/${focusIndicator.outlineWidth}, shadow:${focusIndicator.hasShadow}`,
+    hasVisibleOutline(focusIndicator),
+    `expected a visible keyboard focus outline, got ${focusIndicator.outlineStyle}/${focusIndicator.outlineWidth}/${focusIndicator.outlineColor}`,
   ).toBe(true);
+
+  // The focused ring must differ from the unfocused state: no ring before focus.
+  expect(
+    hasVisibleOutline(unfocusedOutline),
+    `expected no visible outline before focus, got ${unfocusedOutline.outlineStyle}/${unfocusedOutline.outlineWidth}/${unfocusedOutline.outlineColor}`,
+  ).toBe(false);
 
   await expect(link).toBeVisible();
 
