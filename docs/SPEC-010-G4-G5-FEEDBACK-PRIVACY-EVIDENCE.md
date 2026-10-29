@@ -37,15 +37,16 @@
 | Form title | "Comentarios y sugerencia" | Public fetch | VERIFIED CONTROL |
 | Form owner | FVR account, owned by Felipe Costa | Product Owner statement | APPROVED DECISION (UNVERIFIED) |
 | Feedback coordination | Felipe Costa and Malu | Product Owner statement | APPROVED DECISION |
-| Who reads submissions | **Felipe Costa only** | Product Owner statement | PO-CONFIRMED, UNVERIFIED (attestation in §4 pending) |
-| Notification recipients | **Felipe Costa only** | Product Owner statement | PO-CONFIRMED, UNVERIFIED (attestation in §4 pending) |
-| Fields | Type (required: Sugerencia / Problema técnico / Contenido / Otro); free text (required); section (optional: Inicio / D+ Base Curricular / Cursos y contenidos / Recursos / Otra sección); email (optional); Jotform honeypot "Should be Empty" | Public fetch matches exactly | APPROVED DECISION; field list VERIFIED CONTROL |
+| Who reads submissions | **Felipe Costa only** | Product Owner statement; attested 2026-10-29 | **PO ATTESTED 2026-10-29** (not independently audited) |
+| Notification recipients | **Felipe Costa only** | Product Owner statement; attested 2026-10-29 | **PO ATTESTED 2026-10-29** (not independently audited) |
+| Fields | Type (required: Sugerencia / Problema técnico / Contenido / Otro); free text (required); section (optional: Inicio / D+ Base Curricular / Cursos y contenidos / Recursos / Otra sección); email (optional). The approved four fields match; an additional required Jotform "Terms & Conditions" acceptance checkbox is present and is not in the approved field list | Public fetch 2026-10-29; see §12 | **Approved four fields VERIFIED CONTROL**; additional required checkbox is a **BLOCKER** pending PO decision (accept or remove) |
 | No page context or identity passed | D3 / AC-08 | SPEC-010 §4 D3 and AC-08; `docs/SECURITY.md` line 456; `src/app/app/layout.tsx` renders a plain anchor; public page shows no identity or context fields beyond the honeypot | VERIFIED CONTROL (code and docs); Jotform-side hidden/prefill settings UNVERIFIED |
 | Provider | Jotform | Product Owner statement; URL domain `form.jotform.com` | APPROVED DECISION; VERIFIED CONTROL by URL |
 | United States hosting | United States | Product Owner statement only | APPROVED DECISION (UNVERIFIED) |
 | Retention period | No longer than 12 months, then permanent deletion | Product Owner decision | APPROVED DECISION |
-| Retention enforcement | Manual procedure (§3); automatic deletion unavailable | Procedure approved and commitment recorded 2026-10-29; no run recorded yet; first review window 1–7 November 2026 | **Procedure APPROVED**; execution NOT YET APPLICABLE for scheduled review (no submission can be older than 10 months); **PENDING** confirmation that any pre-existing/test submissions were purged |
-| Form-level privacy text | Final wording in §7 | PO attests applied 2026-10-29; public fetch 2026-10-29 shows only the heading/subheading and no disclosure text or Notice link | **PO ATTESTED 2026-10-29; NOT independently verified — public fetch shows no disclosure; DISCREPANCY OPEN** |
+| Retention enforcement | Manual procedure (§3); automatic deletion unavailable | Procedure approved and commitment recorded 2026-10-29; test-round cleanup reported 2026-10-29 (§3.5); no monthly run recorded yet; first review window 1–7 November 2026 | **Procedure APPROVED**; execution NOT YET APPLICABLE for scheduled review (no submission can be older than 10 months); **test-round cleanup PO-REPORTED/USER-PROVIDED** (§3.5) |
+| Form-level privacy text | Final wording in §7 | PO attests applied 2026-10-29; independent browser verification 2026-10-29 did not observe the approved disclosure text or any Notice link — see §12 | **PO ATTESTED 2026-10-29; NOT independently verified — DISCREPANCY OPEN** |
+| Form Notice link | Must point to `https://bc.democraciamas.com/privacidad/aviso` | Independent browser verification 2026-10-29: form's Terms & Conditions widget links to `https://bc.democraciamas.com/app/privacidad/aviso` (authenticated route), not the public URL — see §12 | **BLOCKER** |
 | Public Notice URL | `https://bc.democraciamas.com/privacidad/aviso` | Route implemented (§6.4) and verified locally; production GET on 2026-10-28 returned 404 (not deployed) — **superseded by 2026-10-29 public fetch: HTTP 200, no redirect, feedback section present** | **VERIFIED CONTROL 2026-10-29** (live production URL) |
 
 ## 3. Retention and deletion procedure (manual — APPROVED DECISION)
@@ -94,11 +95,11 @@ Record counts and confirmations only. **No personal submission content, no email
 |---|---|---|---|---|---|---|
 | | | | | | | |
 
-**Test-round cleanup log — NO RUN RECORDED YET**
+**Test-round cleanup log**
 
 | Test round | Cleanup date | Responsible person | Test submissions deleted (count) | Permanent purge confirmed | Notification-email cleanup confirmed | Export/copy cleanup confirmed | Status |
 |---|---|---|---|---|---|---|---|
-| | | | | | | | |
+| Pre-verification test submissions | PO-reported 2026-10-29 | Felipe Costa | 2 | Trash empty per user-provided screenshot; permanent purge from Jotform internal backups not independently verified | No notification emails received | None | **PO-REPORTED / USER-PROVIDED** (not independently verified) |
 
 ## 4. Access and notification target state (attestation required — PARTIAL)
 
@@ -111,16 +112,16 @@ Record counts and confirmations only. **No personal submission content, no email
 3. there are no integrations, auto-forwarding or notification recipients other than Felipe;
 4. no API keys are in use.
 
-**2026-10-29 update.** Statements 2 and 3 are attested; statement 1 is attested for collaborators only (Jotform users/teams not explicitly stated); statement 4 is not attested.
+**2026-10-29 update.** All four statements are PO ATTESTED 2026-10-29. They are not independently audited (the verifying agent had no Jotform account access).
 
 | Statement | Attested? | Date |
 |---|---|---|
-| No other Jotform users, collaborators or teams | **PO ATTESTED 2026-10-29 (collaborators only; users/teams not explicitly stated)** | 2026-10-29 |
+| No other Jotform users, collaborators or teams | **PO ATTESTED 2026-10-29** | 2026-10-29 |
 | No shared links or public submission views | **PO ATTESTED 2026-10-29** | 2026-10-29 |
-| No integrations, auto-forwarding or other notification recipients | **PO ATTESTED 2026-10-29 (sole notification recipient; no integrations)** | 2026-10-29 |
-| No API keys in use | **NOT ATTESTED** | |
+| No integrations, auto-forwarding or other notification recipients | **PO ATTESTED 2026-10-29** | 2026-10-29 |
+| No API keys in use | **PO ATTESTED 2026-10-29** | 2026-10-29 |
 
-The access and notification statements remain **PO-CONFIRMED, PARTIALLY ATTESTED** until the table is completed. An attestation by the account owner is the strongest evidence available without independent account access.
+The access and notification target state is **PO ATTESTED 2026-10-29, NOT INDEPENDENTLY AUDITED**. An attestation by the account owner is the strongest evidence available without independent account access.
 
 ## 5. G5 analysis — SPEC-008 Gate P mapping
 
@@ -189,7 +190,7 @@ Notice §7 ("No enviamos intencionalmente para analítica…") is scoped to anal
 
 **The live form was NOT modified by this unit.** Jotform UI labels may differ from those used below.
 
-**2026-10-29 update.** Felipe Costa attests that the approved disclosure text (below) was added to the live Jotform form on 2026-10-29 and that the Notice link on the form works. An independent public fetch of `https://form.jotform.com/263007291660049` on 2026-10-29 ~03:08 UTC (no cookies, no submission) did not observe the disclosure wording or any link/text referencing `bc.democraciamas.com` or the Notice. Possible explanations (not asserted as fact): Jotform edge caching, the change not yet saved/published, or the element being rendered client-side and absent from server HTML. This is an open discrepancy: see §8 action 3 and §11.
+**2026-10-29 update.** Felipe Costa attests that the approved disclosure text (below) was added to the live Jotform form on 2026-10-29 and that the Notice link on the form works. An independent browser verification of `https://form.jotform.com/263007291660049` on 2026-10-29 ~03:40 UTC (Playwright Chromium, JS-rendered, anonymous, no cookies, locale es-ES; three loads including cache-busted and eu.jotform.com variant) did not observe the approved disclosure wording or any link/text referencing `bc.democraciamas.com` or the Notice. The only privacy element observed was a Jotform "Terms & Conditions" widget (rendered in English) with a required checkbox linking to `https://bc.democraciamas.com/app/privacidad/aviso` (the authenticated route), not the approved public Notice URL `https://bc.democraciamas.com/privacidad/aviso`. The approved public Notice URL itself is publicly accessible (HTTP 200, version 1.2). Full method and results: §12.
 
 **Final text (Spanish, plain text; ~7 short lines):**
 
@@ -224,9 +225,9 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 |---|---|---|---|
 | 1 | Review, merge and deploy the privacy-publication branch | Repository owner | **DONE 2026-10-28 — PR #8 merged at `9571399`; public Notice URL verified live 2026-10-29** |
 | 2 | Verify the public Notice URL anonymously after deployment (200, feedback section present) | Authorized operator | **DONE 2026-10-29 — HTTP/2 200, no redirect, version 1.2, feedback section present** |
-| 3 | Resolve the form-level disclosure discrepancy and re-verify on the public form | Felipe Costa | Confirm the change is saved/published; re-check in private/incognito after cache refresh; provide screenshot description or exact visible text; agent re-fetches and records result |
-| 4 | Complete the §4 access/notification attestation (API keys; Jotform users/teams/public submission views) | Felipe Costa | Completed §4 table with dates |
-| 5 | Confirm any pre-existing/test submissions made while setting up the form were deleted and purged (count only) | Felipe Costa | Count of deleted submissions and Trash purge confirmation |
+| 3 | Fix the live Jotform form and re-verify in a browser | Felipe Costa | Add the approved §7 disclosure text; repoint the Notice link to the public URL `https://bc.democraciamas.com/privacidad/aviso`; decide whether to keep or remove the additional required acceptance checkbox; re-check in private/incognito after cache refresh; agent re-fetches and records result |
+| 4 | Complete the §4 access/notification attestation (API keys; Jotform users/teams/public submission views) | Felipe Costa | **DONE 2026-10-29 — all four statements PO ATTESTED (not independently audited)** |
+| 5 | Confirm any pre-existing/test submissions made while setting up the form were deleted and purged (count only) | Felipe Costa | **DONE 2026-10-29 on PO-reported/user-provided evidence** — 2 submissions, Trash empty per user-provided screenshot, no notification emails, no exports (§3.5); not independently verified |
 | 6 | Test-round cleanup after each organizational testing round (§3.1) | Felipe Costa | §3.5 test-round log entries |
 | 7 | Perform and record the first monthly review (§3.2); next window 1–7 November 2026 per commitment | Felipe Costa | §3.5 monthly log entry |
 | 8 | Set Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy — **only after G4 closes**. Rollback: unset the variable and redeploy | Authorized operator | Deployment record |
@@ -238,9 +239,11 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 | Form URL, fields, provider approved | G4 | **APPROVED DECISION**; fields + URL **VERIFIED CONTROL** (re-observed 2026-10-29) |
 | Owner, access and notification decisions | G4 | **APPROVED DECISION** + **PO ATTESTED 2026-10-29** (not audited) |
 | Retention period decided and manual procedure approved | G4 | **APPROVED DECISION**; Felipe's responsibility commitment recorded 2026-10-29 |
-| Felipe's configuration attestation recorded (§4) | G4 | **PARTIAL** — PO ATTESTED for collaborators, shared links, integrations/notification recipient; **NOT ATTESTED** for API keys and users/teams/public submission views |
-| Retention procedure executed (test-round cleanup recorded; first monthly review scheduled) | G4 | **NOT YET APPLICABLE** for scheduled monthly review (no submission can yet be older than 10 months) and for test-round cleanup after each future organizational testing round; **PENDING** confirmation that any pre-existing/test submissions made while setting up the form were deleted and purged |
-| Form-level privacy wording live on the form | G4 | **PO ATTESTED, NOT INDEPENDENTLY VERIFIED — DISCREPANCY OPEN** (public fetch 2026-10-29 did not observe the disclosure or Notice link) |
+| Felipe's configuration attestation recorded (§4) | G4 | **PO ATTESTED 2026-10-29** for all four statements (not independently audited) |
+| Retention procedure executed (test-round cleanup recorded; first monthly review scheduled) | G4 | **NOT YET APPLICABLE** for scheduled monthly review (no submission can yet be older than 10 months); test-round cleanup for pre-verification submissions **PO-REPORTED/USER-PROVIDED** (§3.5) |
+| Form-level privacy wording live on the form | G4 | **BLOCKER** — not observed on independent browser verification 2026-10-29; PO attests otherwise; discrepancy open |
+| Form Notice link points to public URL | G4 | **BLOCKER** — form links to authenticated `/app/privacidad/aviso`; must point to `/privacidad/aviso` |
+| Additional required acceptance checkbox | G4 | **BLOCKER** — not in approved field list; PO decision required (accept or remove) |
 | Public Notice URL working in production | G4 | **VERIFIED CONTROL 2026-10-29** (HTTP/2 200, no redirect, version 1.2, feedback section present) |
 | Privacy authority recorded for the feedback feature | G5 | **APPROVED DECISION** (no written artifact; not a legal opinion) |
 | Notice 1.2 and Terms 1.1 published in the repository | G5 | **PUBLISHED DOCUMENTATION** (merged via PR #8 at `9571399`) |
@@ -248,7 +251,7 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 | Versioning and consent decision recorded | G5 | **APPROVED DECISION** (§6.3) |
 | SPEC-008 Gate P unaffected | G5 | **VERIFIED CONTROL** (no Gate P item closed or changed; P7 stays PENDING for GA4 scope) |
 
-**G4 can close** only when its three remaining blockers are resolved and recorded: (1) form-level disclosure wording independently verified on the public form; (2) §4 attestation completed for API keys and users/teams/public submission views; (3) confirmation that any pre-existing/test submissions made while setting up the form were deleted and purged. **G5 is CLOSED** 2026-10-29.
+**G4 can close** only when its three remaining blockers are resolved and recorded: (1) the approved form-level disclosure wording (§7) is independently verified on the public form; (2) the form's Notice link points to the public URL `https://bc.democraciamas.com/privacidad/aviso`; (3) the additional required acceptance checkbox is either accepted as part of the approved form or removed. Resolved by attestation and no longer blockers: §4 access/notification attestation (PO ATTESTED 2026-10-29, not audited); pre-existing/test submission cleanup (PO-reported/user-provided). **G5 is CLOSED** 2026-10-29.
 
 **Outcome: G5 CLOSED 2026-10-29; G4 PARTIALLY SATISFIED — OPEN.**
 
@@ -281,9 +284,14 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 
 **Blockers (must be resolved and recorded before activation):**
 
-1. Form-level privacy disclosure wording must be independently verified on the public form (resolve the open discrepancy between PO attestation and the 2026-10-29 public fetch).
-2. Felipe must complete the §4 attestation for "no API keys in use" and "no Jotform users/teams/public submission views".
-3. Felipe must confirm that any pre-existing/test submissions made while setting up the form were deleted and purged from Jotform Trash (count only).
+1. The approved form-level privacy disclosure wording (§7) must be independently verified on the public form (resolve the open discrepancy between PO attestation and the 2026-10-29 independent browser verification).
+2. The form's Notice link must point to the public URL `https://bc.democraciamas.com/privacidad/aviso` (currently it links to the authenticated `/app/privacidad/aviso` route).
+3. The additional required Jotform "Terms & Conditions" acceptance checkbox must be either accepted as part of the approved form or removed.
+
+**Resolved by attestation and no longer blockers (recorded):**
+
+- §4 access/notification attestation completed (PO ATTESTED 2026-10-29, not independently audited).
+- Pre-existing/test submission cleanup completed on PO-reported/user-provided evidence (2 submissions, §3.5).
 
 **Future operational obligations that do not block initial activation:**
 
@@ -293,3 +301,35 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 - Periodic re-check that the form disclosure remains consistent with the Notice.
 
 **Ready when:** Once blockers 1–3 are resolved and recorded, the outcome becomes **FEEDBACK ACTIVATION READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION**. A separate explicit authorization is still required to set the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable and redeploy.
+
+---
+
+## 12. G4 final browser verification (2026-10-29)
+
+**Date and time:** 2026-10-29, ~03:40 UTC.
+
+**Agent:** verifying agent, read-only, no submission, no Jotform account access.
+
+**Method.** Playwright Chromium (JS-rendered, anonymous, no cookies, locale es-ES). Three loads of `https://form.jotform.com/263007291660049`: plain, cache-busted query, and `eu.jotform.com` host variant. Inspection of the Jotform widget iframe DOM. `curl`/Playwright of the Notice URLs. Viewport screenshot saved at `/tmp/opencode` (not committed).
+
+**Results against the seven G4 criteria.**
+
+| # | Criterion | Result | Label |
+|---|---|---|---|
+| 1 | Form loads anonymously without authentication | HTTP 200, title "Comentarios y sugerencia" | VERIFIED CONTROL |
+| 2 | Disclosure text visibly rendered ("Usamos este formulario", "proveedor externo", "Estados Unidos", "12 meses", `hola@democraciamas.com`) | Approved §7 wording not observed in rendered DOM or page HTML on any of the three loads | BLOCKER |
+| 3 | Provider identified as external (Jotform) | Not disclosed in form-level text; provider inferred only from URL/domain and the Jotform Terms widget | BLOCKER |
+| 4 | US storage and 12-month maximum retention disclosed | Not disclosed in form-level text | BLOCKER |
+| 5 | Notice link points to `https://bc.democraciamas.com/privacidad/aviso` | Form's only privacy link points to `https://bc.democraciamas.com/app/privacidad/aviso` (authenticated route); public URL itself is accessible (HTTP 200, version 1.2) but is not the link target | BLOCKER |
+| 6 | Existing fields and required/optional settings unchanged | Approved four fields match; an additional required Jotform "Terms & Conditions" acceptance checkbox is present and is not in the approved field list | BLOCKER |
+| 7 | Approved public Notice URL accessible anonymously | `GET https://bc.democraciamas.com/privacidad/aviso` → HTTP 200, no redirect, "Aviso de Privacidad — D+ Base Curricular", Versión 1.2, updated 28 October 2026 | VERIFIED CONTROL |
+
+**Additional observations.**
+
+- The only privacy element observed on the rendered form was a Jotform "Terms & Conditions" widget (iframe `www.jotform.com/form-widgets/terms-conditions`), rendered in English, with a required checkbox and text "I agree to Aviso de Privacidad. * REQUIRED". Its link target was `https://bc.democraciamas.com/app/privacidad/aviso` (`target="_blank"`). That authenticated route redirects an anonymous browser to `/login` (HTTP status line 200 because of streaming; final page is the login page).
+- Field rendering: feedback type as checkboxes (Sugerencia / Problema técnico / Contenido / Otro), free text "Cuéntanos más sobre tu experiencia", section dropdown, optional email. The Jotform honeypot "Should be Empty" recorded 2026-10-28 was not observed in the visible/rendered field list on this run.
+- Widget text is rendered by Jotform in English; the verifying agent did not control or configure that.
+
+**Limitations.** No Jotform account access, so hidden/prefill settings, integrations, notifications, API keys, users/teams, submission views and backups were not observable. One rendering browser/locale. The PO attestation of 2026-10-29 (that the approved disclosure is visible and the Notice link works) is recorded in §7 and §4; the independent browser verification above governs the open G4 status.
+
+**Conclusion.** G4 remains **PARTIALLY SATISFIED — OPEN**. U5 is **not ready for production-activation authorization** until the three blockers in §11 are resolved and an agent re-verifies the public form in a browser.
