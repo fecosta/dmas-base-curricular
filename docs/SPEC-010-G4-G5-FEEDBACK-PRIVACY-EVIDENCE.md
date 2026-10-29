@@ -1,10 +1,10 @@
 # SPEC-010 / U5 — G4/G5 Feedback Privacy and Governance Evidence
 
-**Status:** EVIDENCE AND DECISION RECORD — **PRIVACY PUBLICATION READY — GATES PENDING OPERATIONAL VERIFICATION.** G4 PARTIALLY SATISFIED — OPEN. G5 OPEN. Not a legal opinion and not an independent legal review.
+**Status:** EVIDENCE AND DECISION RECORD — **G5 CLOSED 2026-10-29; G4 PARTIALLY SATISFIED — OPEN.** Not a legal opinion and not an independent legal review.
 
-**Date:** 2026-10-28 (initial record and publication-readiness update, same day).
+**Date:** 2026-10-28 (initial record and publication-readiness update, same day); **2026-10-29 (G4/G5 final verification and activation-readiness record).**
 
-**Production activation:** **BLOCKED.** The Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` is not set and nothing was deployed.
+**Production activation:** **FEEDBACK ACTIVATION BLOCKED — ACTION REQUIRED** (see §11). The Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` was not set at the 2026-10-28 preflight and was not changed by this 2026-10-29 record.
 
 **Scope of the publication-readiness unit (branch `feat/spec-010-privacy-publication-manual-retention`):** repository changes only: Notice 1.2 and Terms 1.1 text, the `privacyNoticeVersion` constant, a public Privacy Notice route, focused tests and documentation. No live Jotform change, no submission, no Jotform access, no Vercel change, no deployment, no database or migration change, no change to analytics, authentication or the feedback-link feature.
 
@@ -44,9 +44,9 @@
 | Provider | Jotform | Product Owner statement; URL domain `form.jotform.com` | APPROVED DECISION; VERIFIED CONTROL by URL |
 | United States hosting | United States | Product Owner statement only | APPROVED DECISION (UNVERIFIED) |
 | Retention period | No longer than 12 months, then permanent deletion | Product Owner decision | APPROVED DECISION |
-| Retention enforcement | Manual procedure (§3); automatic deletion unavailable | Procedure documented; no run recorded | **Procedure APPROVED; execution UNVERIFIED — PENDING MANUAL ACTION** |
-| Form-level privacy text | Final wording in §7 | Public fetch 2026-10-28 shows only a one-line intro and no privacy text | **NOT IN PLACE** (VERIFIED absent); PENDING MANUAL ACTION |
-| Public Notice URL | `https://bc.democraciamas.com/privacidad/aviso` | Route implemented (§6.4) and verified locally; production GET on 2026-10-28 returned 404 (not deployed) | PUBLISHED DOCUMENTATION; not live; **to be verified after deployment** |
+| Retention enforcement | Manual procedure (§3); automatic deletion unavailable | Procedure approved and commitment recorded 2026-10-29; no run recorded yet; first review window 1–7 November 2026 | **Procedure APPROVED**; execution NOT YET APPLICABLE for scheduled review (no submission can be older than 10 months); **PENDING** confirmation that any pre-existing/test submissions were purged |
+| Form-level privacy text | Final wording in §7 | PO attests applied 2026-10-29; public fetch 2026-10-29 shows only the heading/subheading and no disclosure text or Notice link | **PO ATTESTED 2026-10-29; NOT independently verified — public fetch shows no disclosure; DISCREPANCY OPEN** |
+| Public Notice URL | `https://bc.democraciamas.com/privacidad/aviso` | Route implemented (§6.4) and verified locally; production GET on 2026-10-28 returned 404 (not deployed) — **superseded by 2026-10-29 public fetch: HTTP 200, no redirect, feedback section present** | **VERIFIED CONTROL 2026-10-29** (live production URL) |
 
 ## 3. Retention and deletion procedure (manual — APPROVED DECISION)
 
@@ -100,7 +100,7 @@ Record counts and confirmations only. **No personal submission content, no email
 |---|---|---|---|---|---|---|---|
 | | | | | | | | |
 
-## 4. Access and notification target state (attestation required — PENDING MANUAL ACTION)
+## 4. Access and notification target state (attestation required — PARTIAL)
 
 **Approved target state.** Felipe Costa is the only person with access to submissions and the only recipient of submission notifications. Malu coordinates the feedback process without access to submissions.
 
@@ -111,14 +111,16 @@ Record counts and confirmations only. **No personal submission content, no email
 3. there are no integrations, auto-forwarding or notification recipients other than Felipe;
 4. no API keys are in use.
 
+**2026-10-29 update.** Statements 2 and 3 are attested; statement 1 is attested for collaborators only (Jotform users/teams not explicitly stated); statement 4 is not attested.
+
 | Statement | Attested? | Date |
 |---|---|---|
-| No other Jotform users, collaborators or teams | **NOT RECORDED** | |
-| No shared links or public submission views | **NOT RECORDED** | |
-| No integrations, auto-forwarding or other notification recipients | **NOT RECORDED** | |
-| No API keys in use | **NOT RECORDED** | |
+| No other Jotform users, collaborators or teams | **PO ATTESTED 2026-10-29 (collaborators only; users/teams not explicitly stated)** | 2026-10-29 |
+| No shared links or public submission views | **PO ATTESTED 2026-10-29** | 2026-10-29 |
+| No integrations, auto-forwarding or other notification recipients | **PO ATTESTED 2026-10-29 (sole notification recipient; no integrations)** | 2026-10-29 |
+| No API keys in use | **NOT ATTESTED** | |
 
-The access and notification statements remain **PO-CONFIRMED, UNVERIFIED** until the table is completed. An attestation by the account owner is the strongest evidence available without independent account access.
+The access and notification statements remain **PO-CONFIRMED, PARTIALLY ATTESTED** until the table is completed. An attestation by the account owner is the strongest evidence available without independent account access.
 
 ## 5. G5 analysis — SPEC-008 Gate P mapping
 
@@ -135,7 +137,7 @@ Notice §7 ("No enviamos intencionalmente para analítica…") is scoped to anal
 
 ## 6. Published privacy text, versioning and consent decision
 
-### 6.1 Notice 1.2 — PUBLISHED DOCUMENTATION (in the repository; effective only after merge and deployment)
+### 6.1 Notice 1.2 — PUBLISHED DOCUMENTATION (merged to `main` via PR #8 at `9571399` and deployed; public URL verified live 2026-10-29)
 
 `docs/PRIVACY_NOTICE.md`, version **1.2**, last updated 28 October 2026. Changes:
 
@@ -168,7 +170,7 @@ Notice §7 ("No enviamos intencionalmente para analítica…") is scoped to anal
 
 **Consent impact.** Existing preferences recorded under Notice 1.1 remain valid. Analytics behavior is unchanged. Stored rows keep `privacy_notice_version = "1.1"`; rows written after deployment carry `"1.2"`. This decision is **not** a SPEC-008 decision: the GA4 re-consent question (P8) stays PENDING.
 
-### 6.4 Public Privacy Notice route — PUBLISHED DOCUMENTATION; locally VERIFIED; not live
+### 6.4 Public Privacy Notice route — PUBLISHED DOCUMENTATION; locally VERIFIED; live production URL VERIFIED CONTROL 2026-10-29
 
 - **Route:** `src/app/privacidad/aviso/page.tsx` at `/privacidad/aviso`, outside `/app`. It reuses `getPrivacyDocument("notice")`, `PrivacyDocumentBody` and `Page`; the text is not copied. `next.config.ts` traces `./docs/PRIVACY_NOTICE.md` for the new route.
 - **Why no auth change is needed.** The app layout's `requireAccess()` applies only under `/app`. The `src/proxy.ts` matcher is `["/", "/login", "/auth/callback", "/access-denied", "/app/:path*", "/api/:path*"]`, which does not cover `/privacidad/aviso`. `proxy.ts` and auth code are untouched. The root layout already sets `robots: noindex`.
@@ -179,11 +181,15 @@ Notice §7 ("No enviamos intencionalmente para analítica…") is scoped to anal
   - `GET /app/privacidad/aviso`, `/app/privacidad/terminos` and `/app/library` (no cookies) returned `HTTP/1.1 200 OK` with `cache-control: private, no-store`. The response is streamed: the body carries `NEXT_REDIRECT;replace;/login;307;` and `<meta http-equiv="refresh" content="1;url=/login"/>`, so the browser is sent to `/login` but the HTTP status line is 200, not 307. The `/app/library` body was only the loading shell ("Cargando…") plus the redirect marker; no curriculum content appeared (the local database was not checked for seeded data, so this is not proof of absence of leakage for populated content).
   - **Observation, unchanged code path, not introduced by this unit:** the streamed bodies of `/app/privacidad/aviso` and `/app/privacidad/terminos` also contained the document text itself (the Notice section "Comentarios y sugerencias"; the Terms text "Bienvenido a"). The Terms text is therefore retrievable without authentication from the streamed response of the existing authenticated route, in spite of the redirect. This is not personal or curriculum data, and it was not tested against `main`, but it means "Terms remain authenticated" holds for the browser flow, not for a raw HTTP client. Decision needed only if the Terms must be non-public at the byte level; no action was taken (fixing it needs a change to the authenticated layout/streaming behavior, outside this unit).
   - Raw headers saved at `/tmp/opencode/public-headers.txt` (not committed).
-- **Production:** `GET https://bc.democraciamas.com/privacidad/aviso` returned `404` on 2026-10-28 (read-only), as expected before deployment. The public URL is **not live**; it is **to be verified after deployment** (§8).
+- **Production history.**
+  - `GET https://bc.democraciamas.com/privacidad/aviso` returned `404` on 2026-10-28 (read-only), as expected before deployment. The public URL was **not live** at that time.
+  - **2026-10-29 public fetch (VERIFIED CONTROL):** `GET https://bc.democraciamas.com/privacidad/aviso` → HTTP/2 200, 0 redirects, `x-matched-path: /privacidad/aviso`, `x-nextjs-prerender: 1`, `Cache-Control: public, max-age=0, must-revalidate`, security headers present (`X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`); the body contains "Versión: 1.2", "Última actualización: 28 de octubre de 2026", section "17. Comentarios y sugerencias", mentions Jotform, Estados Unidos, 12 meses, hola@democraciamas.com. Only the Notice text rendered; no application/curriculum/personal content observed.
 
-## 7. Final Jotform form-level disclosure (PENDING MANUAL ACTION — NOT APPLIED to the live form)
+## 7. Final Jotform form-level disclosure (PENDING MANUAL ACTION — attested applied 2026-10-29, not independently verified)
 
 **The live form was NOT modified by this unit.** Jotform UI labels may differ from those used below.
+
+**2026-10-29 update.** Felipe Costa attests that the approved disclosure text (below) was added to the live Jotform form on 2026-10-29 and that the Notice link on the form works. An independent public fetch of `https://form.jotform.com/263007291660049` on 2026-10-29 ~03:08 UTC (no cookies, no submission) did not observe the disclosure wording or any link/text referencing `bc.democraciamas.com` or the Notice. Possible explanations (not asserted as fact): Jotform edge caching, the change not yet saved/published, or the element being rendered client-side and absent from server HTML. This is an open discrepancy: see §8 action 3 and §11.
 
 **Final text (Spanish, plain text; ~7 short lines):**
 
@@ -216,40 +222,74 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 
 | # | Action | Owner | Evidence to record |
 |---|---|---|---|
-| 1 | Review, merge and deploy this branch | Repository owner | Merge and deployment record |
-| 2 | Verify the public Notice URL anonymously after deployment (200, feedback section present) | Authorized operator | Date, status line |
-| 3 | Record Felipe's configuration attestation (§4) | Felipe Costa | Completed §4 table with dates |
-| 4 | Test-round cleanup after each organizational testing round (§3.1) | Felipe Costa | §3.5 test-round log entries |
-| 5 | Schedule and perform the first monthly review (§3.2) | Felipe Costa | §3.5 monthly log entry |
-| 6 | Authorize and apply the §7 wording on the live form | Felipe Costa (FVR account) | Date, screenshot description, re-fetch |
-| 7 | Set Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy — **only after G4 and G5 close**. Rollback: unset the variable and redeploy | Authorized operator | Deployment record |
+| 1 | Review, merge and deploy the privacy-publication branch | Repository owner | **DONE 2026-10-28 — PR #8 merged at `9571399`; public Notice URL verified live 2026-10-29** |
+| 2 | Verify the public Notice URL anonymously after deployment (200, feedback section present) | Authorized operator | **DONE 2026-10-29 — HTTP/2 200, no redirect, version 1.2, feedback section present** |
+| 3 | Resolve the form-level disclosure discrepancy and re-verify on the public form | Felipe Costa | Confirm the change is saved/published; re-check in private/incognito after cache refresh; provide screenshot description or exact visible text; agent re-fetches and records result |
+| 4 | Complete the §4 access/notification attestation (API keys; Jotform users/teams/public submission views) | Felipe Costa | Completed §4 table with dates |
+| 5 | Confirm any pre-existing/test submissions made while setting up the form were deleted and purged (count only) | Felipe Costa | Count of deleted submissions and Trash purge confirmation |
+| 6 | Test-round cleanup after each organizational testing round (§3.1) | Felipe Costa | §3.5 test-round log entries |
+| 7 | Perform and record the first monthly review (§3.2); next window 1–7 November 2026 per commitment | Felipe Costa | §3.5 monthly log entry |
+| 8 | Set Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy — **only after G4 closes**. Rollback: unset the variable and redeploy | Authorized operator | Deployment record |
 
 ## 9. Closure criteria
 
 | Criterion | Required for | Status |
 |---|---|---|
-| Form URL, fields, provider approved | G4 | APPROVED DECISION (fields VERIFIED CONTROL) |
-| Owner, access and notification decisions | G4 | APPROVED DECISION (UNVERIFIED) |
-| Retention period decided and manual procedure approved | G4 | APPROVED DECISION |
-| Felipe's configuration attestation recorded (§4) | G4 | **PENDING MANUAL ACTION** |
-| Retention procedure executed (test-round cleanup recorded; first monthly review scheduled) | G4 | **PENDING MANUAL ACTION** |
-| Form-level privacy wording live on the form | G4 | **PENDING MANUAL ACTION** (text final, not applied) |
-| Public Notice URL working in production | G4 | PUBLISHED DOCUMENTATION (not deployed); locally VERIFIED CONTROL; production **PENDING** |
-| Privacy authority recorded for the feedback feature | G5 | APPROVED DECISION (no written artifact; not a legal opinion) |
-| Notice 1.2 and Terms 1.1 published in the repository | G5 | PUBLISHED DOCUMENTATION (not yet deployed) |
-| Publication deployed and verified | G5 | **PENDING** |
-| Versioning and consent decision recorded | G5 | APPROVED DECISION (§6.3) |
-| SPEC-008 Gate P unaffected | G5 | VERIFIED CONTROL (no Gate P item closed or changed) |
+| Form URL, fields, provider approved | G4 | **APPROVED DECISION**; fields + URL **VERIFIED CONTROL** (re-observed 2026-10-29) |
+| Owner, access and notification decisions | G4 | **APPROVED DECISION** + **PO ATTESTED 2026-10-29** (not audited) |
+| Retention period decided and manual procedure approved | G4 | **APPROVED DECISION**; Felipe's responsibility commitment recorded 2026-10-29 |
+| Felipe's configuration attestation recorded (§4) | G4 | **PARTIAL** — PO ATTESTED for collaborators, shared links, integrations/notification recipient; **NOT ATTESTED** for API keys and users/teams/public submission views |
+| Retention procedure executed (test-round cleanup recorded; first monthly review scheduled) | G4 | **NOT YET APPLICABLE** for scheduled monthly review (no submission can yet be older than 10 months) and for test-round cleanup after each future organizational testing round; **PENDING** confirmation that any pre-existing/test submissions made while setting up the form were deleted and purged |
+| Form-level privacy wording live on the form | G4 | **PO ATTESTED, NOT INDEPENDENTLY VERIFIED — DISCREPANCY OPEN** (public fetch 2026-10-29 did not observe the disclosure or Notice link) |
+| Public Notice URL working in production | G4 | **VERIFIED CONTROL 2026-10-29** (HTTP/2 200, no redirect, version 1.2, feedback section present) |
+| Privacy authority recorded for the feedback feature | G5 | **APPROVED DECISION** (no written artifact; not a legal opinion) |
+| Notice 1.2 and Terms 1.1 published in the repository | G5 | **PUBLISHED DOCUMENTATION** (merged via PR #8 at `9571399`) |
+| Publication deployed and verified | G5 | **VERIFIED CONTROL** for the public Notice URL 2026-10-29; Terms 1.1 on the authenticated route were **not independently observed live** (present in the same deployed commit) |
+| Versioning and consent decision recorded | G5 | **APPROVED DECISION** (§6.3) |
+| SPEC-008 Gate P unaffected | G5 | **VERIFIED CONTROL** (no Gate P item closed or changed; P7 stays PENDING for GA4 scope) |
 
-**G4 can close** only when its operational requirements are evidenced: attested configuration, form wording live, working public Notice URL, and test-round cleanup recorded. **G5 can close** only after the publication is deployed and verified, with the versioning/consent decision and approver recorded. **Neither closes in this unit.**
+**G4 can close** only when its three remaining blockers are resolved and recorded: (1) form-level disclosure wording independently verified on the public form; (2) §4 attestation completed for API keys and users/teams/public submission views; (3) confirmation that any pre-existing/test submissions made while setting up the form were deleted and purged. **G5 is CLOSED** 2026-10-29.
 
-**Outcome: PRIVACY PUBLICATION READY — GATES PENDING OPERATIONAL VERIFICATION.**
+**Outcome: G5 CLOSED 2026-10-29; G4 PARTIALLY SATISFIED — OPEN.**
 
 ## 10. What this record does not do
 
-- It does not close G4 or G5 and does not activate production.
+- This 2026-10-29 record does not set the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable, does not trigger a Vercel deployment, does not access the Jotform account, does not submit the form, and does not change the live Jotform form. It records Product Owner attestations and one independent public fetch.
+- It does not close G4 (still OPEN) or activate production; G5 is closed as of 2026-10-29.
 - It does not close SPEC-010, which stays PLANNED; U5 stays COHERENCE VERIFIED; U0, U1 and U4 remain pending.
 - It does not change SPEC-008 status or close any Gate P item, and makes no GA4 re-consent decision.
-- It does not change the live Jotform form and does not claim automatic deletion, access restriction or form-level privacy wording is in place.
-- It does not claim the Notice or Terms are live: they take effect only after merge and deployment.
+- It does not independently verify the live Jotform form disclosure (a discrepancy is open), and it does not claim automatic deletion, access restriction or form-level privacy wording is in place.
+- The Notice and Terms are live as of the PR #8 deployment, but this record does not claim they were independently verified before deployment beyond the 2026-10-29 public Notice fetch.
 - It is not a legal opinion and makes no GDPR, adequacy, data-processing-agreement or Jotform certification claim.
+
+## 11. Production activation assessment (2026-10-29)
+
+**Prerequisites checked.**
+
+| Prerequisite | Status | Notes |
+|---|---|---|
+| G4 | **PARTIALLY SATISFIED — OPEN** | Three blockers remain; see §9 table |
+| G5 | **CLOSED** 2026-10-29 | Notice 1.2 live, versioning/consent decision recorded, SPEC-008 Gate P unaffected |
+| U5 code coherence | **COHERENCE VERIFIED** (2026-10-28) | External-link action delivered; no code change in this record |
+| Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` | **NOT SET** at 2026-10-28 preflight; not re-checked today | Vercel API observed no variable on 2026-10-28; this record did not query Vercel again |
+| SPEC-008 analytics activation | **NOT AUTHORIZED** | Separate gate; P7 stays PENDING for GA4 scope |
+| Rebuild required after setting variable | Yes | `NEXT_PUBLIC_` is inlined at build time; see `.env.example` and D-035 |
+| Rollback procedure | Documented | Unset `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy |
+| SPEC-010 other units | U0, U1, U4 pending | Per the §6 table in `resources/specs/planned/010-platform-readiness-organizational-testing.md`, U5 production enablement is gated by G4 and G5 only; U0/U1/U4 do not gate U5 enablement |
+
+**Outcome label:** **FEEDBACK ACTIVATION BLOCKED — ACTION REQUIRED.**
+
+**Blockers (must be resolved and recorded before activation):**
+
+1. Form-level privacy disclosure wording must be independently verified on the public form (resolve the open discrepancy between PO attestation and the 2026-10-29 public fetch).
+2. Felipe must complete the §4 attestation for "no API keys in use" and "no Jotform users/teams/public submission views".
+3. Felipe must confirm that any pre-existing/test submissions made while setting up the form were deleted and purged from Jotform Trash (count only).
+
+**Future operational obligations that do not block initial activation:**
+
+- First monthly review window: 1–7 November 2026 per the recorded commitment. No submission can yet be older than 10 months, so the first review has nothing to delete; this is a future operational obligation, not an activation blocker.
+- Test-round cleanup after each organizational testing round, recorded in §3.5.
+- Any change to the 10-month deletion threshold requires a recorded decision.
+- Periodic re-check that the form disclosure remains consistent with the Notice.
+
+**Ready when:** Once blockers 1–3 are resolved and recorded, the outcome becomes **FEEDBACK ACTIVATION READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION**. A separate explicit authorization is still required to set the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable and redeploy.
