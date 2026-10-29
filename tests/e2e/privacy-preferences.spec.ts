@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { localSupabase } from "./local-supabase";
 import type { Database } from "../../src/lib/supabase/database.types";
+import { privacyNoticeVersion } from "../../src/lib/privacy/contract";
 
 /*
  * SPEC-008 Phase 2 — privacy UX through the real stack.
@@ -113,7 +114,7 @@ test("rejecting analytics persists the negative decision and is not re-prompted"
   expect(stored?.analytics_enabled).toBe(false);
   // The decision metadata is what separates rejected from undecided.
   expect(stored?.analytics_decided_at).toBeTruthy();
-  expect(stored?.privacy_notice_version).toBe("1.1");
+  expect(stored?.privacy_notice_version).toBe(privacyNoticeVersion);
   expect(stored?.consent_version).toBe("1.1");
 
   // A new session does not ask again.
@@ -154,7 +155,7 @@ test("accepting analytics persists the affirmative decision before anything is e
 
   const stored = await storedPreference(userId);
   expect(stored?.analytics_enabled).toBe(true);
-  expect(stored?.privacy_notice_version).toBe("1.1");
+  expect(stored?.privacy_notice_version).toBe(privacyNoticeVersion);
 
   await preferencesTrigger(page).click();
   await expect(analyticsSwitch(page)).toHaveAttribute("aria-checked", "true");

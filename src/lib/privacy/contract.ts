@@ -30,8 +30,14 @@ export type PrivacyDocumentId = keyof typeof privacyDocuments;
 /**
  * Versions the decision is recorded against, so a later material privacy change
  * can tell which information applied when the user decided. These track the
- * authoritative documents: `docs/PRIVACY_NOTICE.md` (1.1) and
+ * authoritative documents: `docs/PRIVACY_NOTICE.md` (1.2) and
  * `docs/PRIVACY_AND_DATA_COLLECTION.md` (1.1).
+ *
+ * `consentVersion` intentionally stays "1.1" when the Notice moves to 1.2: 1.2
+ * only adds the feedback-form section, and the optional analytics processing
+ * that the consent covers is unchanged. Bump it only for a material change to
+ * that processing (docs/PRIVACY_UX_CONTRACT.md §20). Stored decisions recorded
+ * under Notice 1.1 are not invalidated.
  */
-export const privacyNoticeVersion = "1.1";
+export const privacyNoticeVersion = "1.2";
 export const consentVersion = "1.1";
