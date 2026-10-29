@@ -1,6 +1,6 @@
 # Product Decisions — D+ Base Curricular
 
-**Last reconciled:** 2026-10-26
+**Last reconciled:** 2026-10-28
 
 ## Decision register
 
@@ -581,14 +581,23 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 ### D-035 — First feedback channel is an external form link
 
-**State:** DECISION (Product Owner) — form URL and privacy governance gates G4 and G5 PENDING
-**Date:** 2026-10-21
+**State:** DECISION (Product Owner) — external-link action IMPLEMENTED; form URL and privacy governance gates G4 and G5 PENDING for production enablement
+**Date:** 2026-10-21 (external-link action implemented 2026-10-28)
 
-**Approved future behavior (NOT IMPLEMENTED).** The first version is a visible feedback action that opens an external JotForm URL. There is no embedded iframe, no modal integration, no custom feedback backend and no new analytics event. Tokens, search queries, private content and user identifiers are not transmitted automatically. The label is Spanish-first and the action is keyboard-accessible and usable on mobile. The action is not enabled until the approved form URL and privacy-governance details exist. Feedback is voluntary and separate from analytics consent.
+**Approved behavior.** The first version is a visible feedback action that opens an external form URL. There is no embedded iframe, no modal integration, no custom feedback backend and no new analytics event. Tokens, search queries, private content and user identifiers are not transmitted automatically. The label is Spanish-first and the action is keyboard-accessible and usable on mobile. Feedback is voluntary and separate from analytics consent.
 
-**Current implemented behavior (verified read-only on `main`).** No feedback action or JotForm reference exists in the application.
+**Current implemented behavior (verified on `main`).** A floating "Enviar comentarios" action is rendered in the authenticated shell (`src/app/app/layout.tsx`) when `NEXT_PUBLIC_FEEDBACK_FORM_URL` is set to a valid absolute `https:` URL without embedded credentials. The action is a plain anchor with `target="_blank"` and `rel="noopener noreferrer"`; it appends no query parameters and emits no analytics events. The action is inert and renders nothing when the env var is unset, empty, whitespace-only, or invalid (for example `http:`, `javascript:`, relative, garbage, or credential-embedded values). URL validation is provider-agnostic: any absolute `https:` URL without embedded credentials is accepted, so both Google Forms and Jotform work. `NEXT_PUBLIC_FEEDBACK_FORM_URL` is inlined into the client bundle at `next build`; enabling, changing or disabling the action therefore requires a rebuild and redeployment. URL approval remains an operational control: the Production env var must not be set until G4 and G5 close.
 
-**Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008).
+**Amendment (Product Owner, 2026-10-28).**
+
+- SPEC-010 U5 may be delivered as a standalone implementation unit.
+- Jotform is the currently approved provider for the external form URL.
+- The implementation may remain technically provider-independent (any absolute `https:` URL without embedded credentials; no provider-specific logic).
+- Switching providers requires an authorized configuration change.
+- The icon-only button on mobile is acceptable provided accessibility/usability requirements are met.
+- Production activation remains blocked until SPEC-010 gates G4 and G5 are satisfied.
+
+**Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008) remain prerequisites for production enablement; the feature is delivered behind the env var so it can be turned on only after those gates close.
 
 **Deferred.** Embedded or modal feedback, to be considered only by a future spec.
 
@@ -674,7 +683,7 @@ Tracked in `resources/specs/completed/013-material-reach-country-restriction.md`
 
 `SPEC-013` — Material Reach Country Restriction is **COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)** at `resources/specs/completed/013-material-reach-country-restriction.md` (D-034, D-037). Implemented 2026-10-26 in commits `e501f00` (database boundary: `supabase/migrations/20261026000100_material_reach_country.sql`, `supabase/tests/material_reach_country.test.sql`) and `5387f19` (test cleanup). The implementation restricts material Draft `country_or_scope` to the confirmed 20-country Latin American set, preserves legacy values non-destructively, leaves institution/instructor country fields unchanged, adds no new grants/policies/RPC parameters, and maps the database rejection to a specific Spanish message in the Admin form. Cloud migration apply and production deployment were not authorized by the closure itself; they were performed afterwards as separate steps. Production activation (separate from the 2026-10-26 closure): migration `20261026000100` was applied to Supabase Cloud project `qcxcgwpfgclyebkxawyh` on 2026-10-27, with Vercel production (`bc.democraciamas.com`) on commit `9f3dc46`; the production verification record distinguishes structural verification, authenticated read-only smoke verification (passed), and Product Owner-confirmed live trigger enforcement (passed). SQL output, assertion-level results and rollback evidence for the database test were not supplied. Status: ACTIVATED — STRUCTURALLY VERIFIED. Pending operational checks: authenticated Admin material-form inspection; authenticated Contributor library/detail-page inspection.
 
-`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033–D-037). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready. On 2026-10-26 G1 was satisfied (C1-C3 confirmed) and G3 was satisfied as a product decision (U4-a/U4-b resolved); G4 and G5 remain open. G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). On 2026-10-23 U2 was split out into SPEC-012 and G2 was recorded satisfied. SPEC-012 is now COMPLETED (accepted with baseline exception, D-036), satisfying the SPEC-012 dependency. On 2026-10-26 U3 was split out into `resources/specs/completed/013-material-reach-country-restriction.md`, implemented and closed 2026-10-26 as COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (D-037), satisfying the SPEC-013 dependency. Nothing else in SPEC-010 is implemented or started. U4 is blocked only on its own implementation contract; U5 remains blocked. U0/U1 are preparatory, mutation-free activities that are not activation. SPEC-010 cannot close until U0, U1, U4 and U5 are each implemented/verified or explicitly removed by a recorded decision. `SPEC-011` remains planned.
+`SPEC-010` — Platform Readiness for Organizational Testing is **PLANNED — RECONCILED; ACTIVATION BLOCKED** at `resources/specs/planned/010-platform-readiness-organizational-testing.md` (D-033–D-037). Product owner decision (Option A, 2026-10-21): it stays in `planned/` because `active/` means implementation-ready. On 2026-10-26 G1 was satisfied (C1-C3 confirmed) and G3 was satisfied as a product decision (U4-a/U4-b resolved); G4 and G5 remain open. G6 is satisfied (reviewed U0 Cloud inventory, 2026-10-22). On 2026-10-23 U2 was split out into SPEC-012 and G2 was recorded satisfied. SPEC-012 is now COMPLETED (accepted with baseline exception, D-036), satisfying the SPEC-012 dependency. On 2026-10-26 U3 was split out into `resources/specs/completed/013-material-reach-country-restriction.md`, implemented and closed 2026-10-26 as COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (D-037), satisfying the SPEC-013 dependency. U5 external-link action was delivered as a standalone unit (D-035 amendment, 2026-10-28); production enablement is blocked on G4/G5. SPEC-010 remains planned and not closed. U0, U1, U4 and U5 final verification are still needed to close SPEC-010 (or they must be explicitly removed by a recorded decision). `SPEC-011` remains planned.
 
 `SPEC-012` — Library Institutional References Presentation is **COMPLETED — ACCEPTED WITH BASELINE EXCEPTION (AC-12)** at `resources/specs/completed/012-library-institutional-references-presentation.md` (D-033, D-036). Implemented 2026-10-23 in commits `2f29601` (feat: suppress institutional references from Library reader surfaces) and `5d22a5e` (fix: return a literal 404 for the institution reference route): a code-and-tests-only presentation change limited to `src/` and `tests/`, touching no analytics contract, event or consent, privacy-notice, authorization or database behavior (`src/lib/analytics/library-signals.ts` was modified as authorized by SPEC-012 §5 so that a legacy `entity=institution` is no longer counted as an applied filter). Commit `38d1c9c` is a spec-text docs commit recording the footer-assertion exception in the SPEC-012 admin test freeze; it touches only the SPEC-012 file. Seven pre-existing Playwright failures are accepted as a baseline exception (D-036) and are not represented as passing. `docs/TERMS_OF_USE.md` is excluded and carries a Privacy/Legal follow-up.
 
@@ -886,7 +895,7 @@ These seven failures are accepted as pre-existing by Product Owner decision 2026
 
 **Privacy/Legal follow-up.** `docs/TERMS_OF_USE.md` line 26 ("consultar instituciones y referencias") remains excluded from implementation scope and needs Privacy/Legal review of whether a versioned Terms update is required. `TERMS_OF_USE.md` and `PRIVACY_NOTICE.md` remain untouched.
 
-SPEC-010's SPEC-012 dependency is satisfied; SPEC-013 is completed and owns U3 (accepted with baseline exception, D-037). SPEC-010 remains planned: G1 is satisfied and U3 is completed, and G3 is satisfied as a product decision; G4 and G5 remain open; U4 is inactive pending its own implementation contract; U5 remains blocked.
+SPEC-010's SPEC-012 dependency is satisfied; SPEC-013 is completed and owns U3 (accepted with baseline exception, D-037). SPEC-010 remains planned and not closed: G1 is satisfied and U3 is completed, G3 is satisfied as a product decision, and G4 and G5 remain open; U4 is inactive pending its own implementation contract; U5 external-link action was delivered as a standalone unit (D-035 amendment, 2026-10-28) and production enablement is blocked on G4/G5; U0, U1, U4 and U5 final verification are still needed to close SPEC-010.
 
 ---
 

@@ -4,6 +4,7 @@ import { getAnalyticsPreference } from "@/lib/privacy/analytics-preference";
 import { privacyDocuments } from "@/lib/privacy/contract";
 import { AppHeader } from "@/components/app-header";
 import { AnalyticsBoundary } from "@/components/analytics/analytics-boundary";
+import { FeedbackLink } from "@/components/feedback-link";
 import { type NavItem } from "@/components/primary-nav";
 import { Container } from "@/components/ui/page";
 
@@ -59,7 +60,9 @@ export default async function ApplicationLayout({ children }: { children: React.
 
     <div className="flex-1">{children}</div>
 
-    <footer className="on-dark mt-16 bg-night text-white">
+    <FeedbackLink />
+
+    <footer className="on-dark mt-16 bg-night pb-20 text-white">
       <Container width="wide" className="py-12">
         <span className="text-xl font-black tracking-[-0.03em] text-accent">DEMOCRACIA+</span>
         <p className="mt-3 max-w-md text-body text-white/70">
