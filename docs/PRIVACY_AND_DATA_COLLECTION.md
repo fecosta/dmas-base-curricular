@@ -834,7 +834,7 @@ For the initial Base Curricular external pilot:
 - Retention PROVISIONAL; manual deletion procedure must be approved before activation.
 
 ### Privacy Notice dependency
-- The current Privacy Notice (version 1.1) describes the inert PostHog runtime and is not adequate for GA4 or organizational metrics.
+- The current Privacy Notice (version 1.1; 1.2 as of 2026-10-28 adds a feedback-form section only) describes the inert PostHog runtime and is not adequate for GA4 or organizational metrics. This document and `consentVersion` stay at 1.1: the analytics processing did not change.
 - Before GA4 activation (and any approved per-user-linked organizational recording): Privacy/Legal approval of an updated Notice (and Terms if affected), a version bump, user-facing communication, and the re-consent decision (SPEC-008 §10.1).
 - PostHog-era consent does not authorize GA4 unless Privacy/Legal explicitly approves. Default remains OFF.
 

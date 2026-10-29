@@ -1,217 +1,255 @@
 # SPEC-010 / U5 — G4/G5 Feedback Privacy and Governance Evidence
 
-**Status:** EVIDENCE AND DECISION RECORD — **G4 PARTIALLY SATISFIED (decisions approved; operational controls unverified) — OPEN. G5 OPEN.** Not a legal opinion and not an independent legal review.
+**Status:** EVIDENCE AND DECISION RECORD — **PRIVACY PUBLICATION READY — GATES PENDING OPERATIONAL VERIFICATION.** G4 PARTIALLY SATISFIED — OPEN. G5 OPEN. Not a legal opinion and not an independent legal review.
 
-**Date:** 2026-10-28.
+**Date:** 2026-10-28 (initial record and publication-readiness update, same day).
 
 **Production activation:** **BLOCKED.** The Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` is not set and nothing was deployed.
 
-**Scope of this unit:** documentation only. No live Jotform form change was made, no submission was made, no Jotform credentials or administration access were used, and no file under `src/`, `tests/` or `supabase/` was changed.
+**Scope of the publication-readiness unit (branch `feat/spec-010-privacy-publication-manual-retention`):** repository changes only: Notice 1.2 and Terms 1.1 text, the `privacyNoticeVersion` constant, a public Privacy Notice route, focused tests and documentation. No live Jotform change, no submission, no Jotform access, no Vercel change, no deployment, no database or migration change, no change to analytics, authentication or the feedback-link feature.
 
 **Referenced by:** `resources/specs/planned/010-platform-readiness-organizational-testing.md` (§6, gates G4/G5) and `docs/DECISIONS.md` (D-035).
 
 **Labels used throughout.**
 
-- **APPROVED-DECISION:** decided by the Product Owner on 2026-10-28; recorded, not independently checked.
-- **VERIFIED:** observed directly (public fetch of the form, or repository code/docs).
-- **UNVERIFIED:** not observable without Jotform account access; must be confirmed and recorded before gates close.
+- **APPROVED DECISION:** decided by the Product Owner; recorded, not independently checked.
+- **PUBLISHED DOCUMENTATION:** text or code present in the repository on the unit branch; **not live** until merged and deployed.
+- **VERIFIED CONTROL:** observed directly by an agent (public fetch, repository code, local production build).
+- **PENDING MANUAL ACTION:** requires a person with Jotform/Vercel/mailbox access; no evidence recorded yet.
+- **UNVERIFIED:** not observable without account access.
 
 ---
 
-## 1. Approved decisions (Product Owner, 2026-10-28)
+## 1. Approved decisions (Product Owner)
 
-1. **Feedback ownership.** Felipe Costa and Malu are both responsible for coordinating the feedback process.
-2. **Privacy authority.** Felipe Costa confirmed that Democracia+ authorized him to make privacy decisions for this platform. This is recorded as the project's authorized privacy approval **for this feedback feature only**. It is not a legal opinion and not an independent legal review. No written Democracia+ authorization artifact exists in the repository; the authorization is recorded as communicated by the Product Owner/user.
-3. **Provider.** Jotform; form `https://form.jotform.com/263007291660049`, titled "Comentarios y sugerencia", owned by the FVR account; data hosted in the United States (confirmed by the Product Owner, not independently verified).
-4. **Fields (approved, no additions, no automatic identity or context collection):** feedback type (required), free-text feedback (required), section (optional), email (optional; stays available for follow-up).
-5. **Retention.** 12 months after submission, then deletion. The scope covers Jotform submissions **and** any exports, copies or notification emails under the organization's control. Automatic deletion is **not** verified as configured.
+1. **Account ownership and access.** Felipe Costa owns the FVR Jotform organization account. Felipe is the **only** person authorized to access submissions and the **only** recipient of submission notifications. Felipe reviews the feedback and identifies improvements. (APPROVED DECISION; account configuration UNVERIFIED.)
+2. **Coordination.** Felipe Costa and Malu coordinate the feedback process. Malu is **not** described as having access to submissions.
+3. **Privacy authority.** Felipe Costa confirmed that Democracia+ authorized him to approve privacy decisions for this feature. Feature-specific; not a legal opinion or independent legal review. No written Democracia+ authorization artifact exists in the repository; recorded as communicated by the Product Owner.
+4. **Provider.** Jotform; form `https://form.jotform.com/263007291660049` ("Comentarios y sugerencia"), FVR account; data hosted in the United States (confirmed by the Product Owner, not independently verified).
+5. **Fields (approved, no additions, no automatic identity or context collection):** feedback type (required), free text (required), section (optional), email (optional; stays available for follow-up).
+6. **Retention.** No longer than **12 months** after submission, followed by permanent deletion. Automatic deletion is **unavailable** in the FVR account. **Manual deletion and permanent purging is the approved mechanism** (§3). No automated deletion service is implemented or planned. Test submissions are manually deleted and permanently purged immediately after testing.
 
 ## 2. G4 reconciliation
 
 | Item | Approved decision | Evidence | Status |
 |---|---|---|---|
-| Form URL | `https://form.jotform.com/263007291660049` | Public fetch 2026-10-28 and again on the same day; form resolves. The form is reachable by anyone who has the URL (no authentication). | APPROVED-DECISION; URL resolution VERIFIED |
-| Form title | "Comentarios y sugerencia" | Public fetch | VERIFIED |
-| Form owner | FVR account | Product Owner statement; account ownership not observable from the public page | APPROVED-DECISION (ownership UNVERIFIED) |
-| Feedback-handling owners | Felipe Costa and Malu, jointly | Product Owner statement | APPROVED-DECISION |
-| Fields | Type (required: Sugerencia / Problema técnico / Contenido / Otro); free text (required); section (optional: Inicio / D+ Base Curricular / Cursos y contenidos / Recursos / Otra sección); email (optional); Jotform honeypot "Should be Empty" | Public fetch matches exactly; no other fields | APPROVED-DECISION; field list VERIFIED |
-| Form-level privacy text | Required (wording in §7 below) | Public fetch shows only a one-line intro and no privacy notice, consent wording, retention statement or owner text | **NOT IN PLACE** (VERIFIED absent) |
-| No page context or identity passed | D3 / AC-08 | `resources/specs/planned/010-platform-readiness-organizational-testing.md` §4 D3 and AC-08; `docs/SECURITY.md` line 456 (feedback link "must not transmit tokens, search queries, private content or user identifiers, append query parameters, or emit analytics events"); `src/app/app/layout.tsx` renders a plain anchor (U5 coherence verified, SPEC-010 §2). The public page shows no identity or context fields beyond the honeypot. | VERIFIED (code and docs); Jotform-side hidden/prefill settings UNVERIFIED |
-| Provider | Jotform | Product Owner statement; URL domain `form.jotform.com` | APPROVED-DECISION; VERIFIED by URL |
-| United States hosting | Data hosted in the United States | Product Owner statement only | APPROVED-DECISION (UNVERIFIED) |
-| Who can access submissions | Target: Felipe Costa and Malu, plus FVR account administrators strictly as account owners (§4) | None | UNVERIFIED |
-| Account administrators | Unknown | None | UNVERIFIED |
-| Notification-email recipients | Unknown | None | UNVERIFIED |
-| Retention: 12 months | 12 months after submission, then deletion | Product Owner decision | APPROVED-DECISION; enforcement UNVERIFIED |
-| Deletion procedure | §3 below | Documented here; not executed, not verified on the account | DOCUMENTED, NOT EXECUTED |
+| Form URL | `https://form.jotform.com/263007291660049` | Public fetch 2026-10-28; form resolves without authentication | APPROVED DECISION; URL resolution VERIFIED CONTROL |
+| Form title | "Comentarios y sugerencia" | Public fetch | VERIFIED CONTROL |
+| Form owner | FVR account, owned by Felipe Costa | Product Owner statement | APPROVED DECISION (UNVERIFIED) |
+| Feedback coordination | Felipe Costa and Malu | Product Owner statement | APPROVED DECISION |
+| Who reads submissions | **Felipe Costa only** | Product Owner statement | PO-CONFIRMED, UNVERIFIED (attestation in §4 pending) |
+| Notification recipients | **Felipe Costa only** | Product Owner statement | PO-CONFIRMED, UNVERIFIED (attestation in §4 pending) |
+| Fields | Type (required: Sugerencia / Problema técnico / Contenido / Otro); free text (required); section (optional: Inicio / D+ Base Curricular / Cursos y contenidos / Recursos / Otra sección); email (optional); Jotform honeypot "Should be Empty" | Public fetch matches exactly | APPROVED DECISION; field list VERIFIED CONTROL |
+| No page context or identity passed | D3 / AC-08 | SPEC-010 §4 D3 and AC-08; `docs/SECURITY.md` line 456; `src/app/app/layout.tsx` renders a plain anchor; public page shows no identity or context fields beyond the honeypot | VERIFIED CONTROL (code and docs); Jotform-side hidden/prefill settings UNVERIFIED |
+| Provider | Jotform | Product Owner statement; URL domain `form.jotform.com` | APPROVED DECISION; VERIFIED CONTROL by URL |
+| United States hosting | United States | Product Owner statement only | APPROVED DECISION (UNVERIFIED) |
+| Retention period | No longer than 12 months, then permanent deletion | Product Owner decision | APPROVED DECISION |
+| Retention enforcement | Manual procedure (§3); automatic deletion unavailable | Procedure documented; no run recorded | **Procedure APPROVED; execution UNVERIFIED — PENDING MANUAL ACTION** |
+| Form-level privacy text | Final wording in §7 | Public fetch 2026-10-28 shows only a one-line intro and no privacy text | **NOT IN PLACE** (VERIFIED absent); PENDING MANUAL ACTION |
+| Public Notice URL | `https://bc.democraciamas.com/privacidad/aviso` | Route implemented (§6.4) and verified locally; production GET on 2026-10-28 returned 404 (not deployed) | PUBLISHED DOCUMENTATION; not live; **to be verified after deployment** |
 
-## 3. Retention and deletion operating procedure
+## 3. Retention and deletion procedure (manual — APPROVED DECISION)
 
-**Automatic deletion is NOT verified as configured.** Nothing below is in place until recorded under §8.
+**This is a manual control. It is not automatic.** Execution is **NOT VERIFIED** until real entries exist in the logs below.
 
-**Owners.** Felipe Costa and Malu (a second person must check each run).
+**Vendor background (public Jotform documentation, not account-specific).** Auto-Delete Submissions is **not available** in the FVR account. Deleted submissions stay in Trash for about 30 days unless permanently purged, so every deletion below includes a permanent purge from Trash. Source: https://www.jotform.com/help/how-to-purge-form-submissions-automatically.
 
-**Cadence (PROPOSAL, requires Product Owner confirmation).** Review at least monthly, in the first week of each month.
+**Responsible person.** Felipe Costa. Malu does not access submissions.
 
-**Vendor behavior (public Jotform documentation, not account-specific; UNVERIFIED for the FVR account and plan).** Source: https://www.jotform.com/help/how-to-purge-form-submissions-automatically.
+### 3.1 Test submissions (after every organizational testing round)
 
-- Auto-Delete Submissions can be set per form or at account level.
-- It applies only to submissions created **after** it is enabled; older submissions are not deleted automatically.
-- Auto-deleted submissions go to Trashed Entries for up to 30 days unless the "Purge" option is used.
-- Plan limits may cap stored submissions (free plan: 500 total, oldest removed when full). Availability of Auto-Delete on the FVR account's plan is unverified.
+1. Identify the test submissions created during the round.
+2. Delete them in Jotform.
+3. Permanently purge them from Trash.
+4. Delete the corresponding notification emails from the mailbox.
+5. Delete any exported or downloaded copies.
+6. Record the cleanup date and completion status in the §3.5 test-round table (counts and confirmations only).
 
-**Worst-case retention.** If Auto-Delete is enabled **without** Purge, deleted entries remain in Trash for up to 30 days, so worst-case retention is about **13 months**. The procedure therefore requires Purge or a manual trash-clearing step. If neither is done, the 12-month commitment is not met and the form wording in §7 must not be published.
+### 3.2 Ongoing submissions (monthly review)
 
-**Steps.**
+- **Cadence.** One review each calendar month, performed in the first 7 days of the month.
+- **Rule.** At each review, permanently delete **every submission older than 10 months**.
+- **Scope of each review.** (a) Jotform submissions; (b) Trash, permanently purged; (c) notification emails in Felipe's mailbox, by the 10-month rule applied to the email date; (d) exports and downloaded copies; (e) any other confirmed copy under organizational control.
+- **Missed review.** Perform it as soon as possible and record the lateness in the log.
 
-1. **Configuration.** The account owner enables Auto-Delete Submissions with a 12-month period and the Purge option, on this form or at account level, after confirming plan availability. If the plan does not support it, the monthly manual procedure below is the only control and must be recorded as such.
-2. **Pre-existing submissions.** Auto-Delete applies only to new submissions. Until Auto-Delete has covered 12 months of submissions, each monthly review manually deletes every submission older than 12 months. Delete any test or owner-created submissions before activation.
-3. **Trash.** Each review empties Trashed Entries of submissions past retention.
-4. **Copies.** Exports (CSV/PDF/Excel), downloads and notification emails are in the retention scope. They are deleted at the same 12-month point; exports should be avoided unless needed, and any retained export must be listed in the evidence record. Notification emails to the account owner or other recipients must be deleted from mailboxes at the same point.
-5. **Evidence per run.** Date, operator, second-person checker, a screenshot or description of the setting (no personal data and no submission content visible), and counts only (deleted, trash cleared).
-6. **Rights and deletion requests received at hola@democraciamas.com.** Delete the matching submission(s), the Trash copies and any copies in notification emails or exports on request. Identification is only possible through the optional email entered in the form; a submission without an email cannot be matched to a person and the requester must be told that. Request handling follows the institutional procedure described in the Notice §18; no response time is defined by this record.
+**Margin arithmetic.** The worst case on schedule is a submission made on day 8 of a month, just after that month's review window. It is first reviewed in the window ten months later and is still under 10 months old (about 9 months 24–30 days), so it survives. It is deleted at the next window, eleven months after the month of submission, at an age under 11 months (about 10.97 months). On-schedule maximum age at deletion is therefore **under 11 months**, a margin of roughly **one month** against the 12-month limit. That margin is the slippage budget: a review can slip about 30 days past its window before any submission could reach 12 months. The 10-month threshold may be changed only by a recorded decision.
 
-## 4. Access-control requirement (REQUIRED TARGET STATE — NOT VERIFIED)
+### 3.3 Rights and deletion requests (hola@democraciamas.com)
 
-The account owner must answer and record, using names and roles only, never credentials and never submission content:
+Felipe locates the submission through the **optional email** the person entered in the form, deletes and permanently purges it, and removes copies in the mailbox, exports and other confirmed copies. **A submission without an email cannot be matched to a person**, and the requester is told so. Request intake follows the Notice section 19; no response time is defined by this record.
 
-1. Who has Jotform account or team access on the FVR account?
-2. Who receives submission notification emails?
-3. Is the form shared with, or does it have, collaborators?
-4. Can anyone outside the named responsible people read submissions (including shared links, public submission views, team roles, API keys, integrations)?
-5. Which integrations or exports (spreadsheets, email, other apps) copy submissions outside Jotform?
+### 3.4 Explicit non-claims
 
-**Minimum-necessary access rule (target state):** only Felipe Costa and Malu, plus FVR account administrators strictly as account owners. Any other access, shared link, integration or recipient must be removed or recorded with a justification. This is the required target; it is **not** a verified fact.
+- Deletion is **not automatic** and no automated deletion service exists.
+- No promise is made about Jotform backups or other provider-controlled systems; the Notice states this limit.
+- The 12 months is a **maximum enforced by this manual process**. Compliance depends on the procedure being executed.
+
+### 3.5 Evidence logs — **NO RUN RECORDED YET**
+
+Record counts and confirmations only. **No personal submission content, no emails, no names of submitters.**
+
+**Monthly review log — NO RUN RECORDED YET**
+
+| Review date | Responsible person | Submissions deleted (count) | Permanent purge from Trash confirmed | Notification-email cleanup confirmed | Export/copy cleanup confirmed | Late? (days) |
+|---|---|---|---|---|---|---|
+| | | | | | | |
+
+**Test-round cleanup log — NO RUN RECORDED YET**
+
+| Test round | Cleanup date | Responsible person | Test submissions deleted (count) | Permanent purge confirmed | Notification-email cleanup confirmed | Export/copy cleanup confirmed | Status |
+|---|---|---|---|---|---|---|---|
+| | | | | | | | |
+
+## 4. Access and notification target state (attestation required — PENDING MANUAL ACTION)
+
+**Approved target state.** Felipe Costa is the only person with access to submissions and the only recipient of submission notifications. Malu coordinates the feedback process without access to submissions.
+
+**Attestation by Felipe Costa (date and statements only; no credentials, no personal data, no submission content).** Felipe attests, with a date, that:
+
+1. there are no other Jotform users, collaborators or teams with access to the account or the form;
+2. there are no shared links or public submission views;
+3. there are no integrations, auto-forwarding or notification recipients other than Felipe;
+4. no API keys are in use.
+
+| Statement | Attested? | Date |
+|---|---|---|
+| No other Jotform users, collaborators or teams | **NOT RECORDED** | |
+| No shared links or public submission views | **NOT RECORDED** | |
+| No integrations, auto-forwarding or other notification recipients | **NOT RECORDED** | |
+| No API keys in use | **NOT RECORDED** | |
+
+The access and notification statements remain **PO-CONFIRMED, UNVERIFIED** until the table is completed. An attestation by the account owner is the strongest evidence available without independent account access.
 
 ## 5. G5 analysis — SPEC-008 Gate P mapping
 
-**Relationship.** The feedback form is separate from analytics consent (D-035). Feedback is voluntary and is not consent-based on analytics. The feedback-specific privacy approval (authority: Felipe Costa on behalf of Democracia+, per the Product Owner) is recorded **for G5 purposes only**. It does not close, satisfy or pre-empt any SPEC-008 Gate P item and does not change SPEC-008 status.
+**Relationship.** The feedback form is separate from analytics consent (D-035). Feedback is voluntary and not consent-based on analytics. The feedback-specific privacy approval (Felipe Costa on behalf of Democracia+, per the Product Owner) is recorded for G5 purposes only. It does not close, satisfy or pre-empt any SPEC-008 Gate P item and does not change SPEC-008 status.
 
-**P1–P10 (SPEC-008 §11.1).** None is closed by this unit.
-
-| Item | Concern | Applies to feedback? | Status |
-|---|---|---|---|
-| P1, P2 | Organizational usage metrics: legal basis, consent | No | PENDING (unchanged) |
-| P3, P4, P5, P6, P10 | GA4 processing, cookies, Consent Mode, analytics retention, GA4 provider-derived data | No | PENDING (unchanged) |
-| P7 | Privacy Notice (and Terms) changes and version (§10.1) | **Partly:** the only item with a feedback-specific dimension (Notice/Terms wording for the feedback form). The versioned update stays tied to the SPEC-008 analytics scope. | PENDING (unchanged) |
-| P8, P9 | PostHog-era re-consent, PostHog data disposal | No | PENDING (unchanged) |
-
-**Existing Notice (`docs/PRIVACY_NOTICE.md`, version 1.1) and Terms (`docs/TERMS_OF_USE.md`) versus feedback, today.**
-
-| Section | Today | Gap for feedback |
+| Item | Concern | Status |
 |---|---|---|
-| Notice §4 (data) | Account data and optional analytics only | Silent on feedback type, free text, section, optional email |
-| Notice §5 (purposes) | Operation, security, optional analytics | Silent on feedback purpose |
-| Notice §13 (international processing) | Generic "other jurisdictions"; names only PostHog Cloud EU | Does not mention the United States or Jotform |
-| Notice §14 (retention) | "12 meses" is for **analytics events** only; other categories "pueden tener períodos diferentes" | Silent on feedback retention. The 12-month analytics period is a different scope and must not be conflated with the feedback 12 months |
-| Notice §16 (sharing/providers) | Hosting, authentication, storage, security, communications, optional analytics | No feedback-form provider category. It also states providers are subject to contractual and security measures; no Jotform contractual arrangement has been verified, so the staged text does not repeat that claim for Jotform |
-| Notice §18 (rights) | General rights and hola@democraciamas.com | Accurate, but silent on identification for feedback (optional email only) |
-| Notice §22 (changes) | Date/version updated on change | Consistent; publication requires a version bump |
-| Notice §23 (contact) | hola@democraciamas.com | Accurate |
-| Terms §13 (third-party sites) | Generic external-services text | Does not name the feedback form; adequate in general |
-| Terms §14 (privacy) | Lists what the Notice explains (analytics provider, preferences, requests) | Does not list feedback handling |
+| P1, P2 | Organizational usage metrics: legal basis, consent | PENDING (untouched) |
+| P3, P4, P5, P6, P10 | GA4 processing, cookies, Consent Mode, analytics retention, provider-derived data | PENDING (untouched) |
+| P7 | Notice and Terms changes and version for the SPEC-008 analytics scope (§10.1) | **PENDING for GA4 scope.** Notice 1.2 is a **feedback-only** addition, approved by the feedback-feature privacy approver. It describes the inert PostHog runtime exactly as 1.1 did and is still not adequate for GA4 or organizational metrics. |
+| P8, P9 | PostHog-era re-consent, PostHog data disposal | PENDING (untouched). No re-consent decision is made for GA4. |
 
-No existing statement is contradicted by the feedback decisions; the Notice and Terms are incomplete rather than wrong. Notice §7 ("No enviamos intencionalmente para analítica…tu correo") is scoped to analytics and is unaffected.
+Notice §7 ("No enviamos intencionalmente para analítica…") is scoped to analytics and was not edited.
 
-**Why the Notice and Terms are not edited in this unit.** `privacyNoticeVersion = "1.1"` and `consentVersion = "1.1"` live in `src/lib/privacy/contract.ts`, and `tests/privacy-documents.test.ts` asserts that `docs/PRIVACY_NOTICE.md` contains `**Versión:** 1.1`. Both documents are rendered live in production, and consent decisions are recorded against the Notice version. Editing the live text while keeping version 1.1 would misattribute stored consents. Publishing the text requires a separate bounded unit that bumps the Notice (and Terms) version together with `src/lib/privacy/contract.ts` and the version-alignment test, and that decides explicitly whether feedback-only wording needs re-consent (analytics consent is separate and unaffected; feedback does not depend on analytics consent). That unit is governed by SPEC-008 P7/§10.1 and P8.
+## 6. Published privacy text, versioning and consent decision
 
-## 6. STAGED Spanish text — NOT PUBLISHED, NOT VERSIONED
+### 6.1 Notice 1.2 — PUBLISHED DOCUMENTATION (in the repository; effective only after merge and deployment)
 
-Prepared for the privacy approver (Felipe Costa) and for the later versioned publication unit. It must not be copied into `docs/PRIVACY_NOTICE.md` or `docs/TERMS_OF_USE.md` outside that unit. Every statement below must be re-checked against §8 evidence before publication (in particular access and retention).
+`docs/PRIVACY_NOTICE.md`, version **1.2**, last updated 28 October 2026. Changes:
 
-### 6.1 Aviso de Privacidad — nueva sección "Comentarios y sugerencias"
+- New section **17. Comentarios y sugerencias**: voluntary feedback via the external form; Jotform, account operated by FVR Ltd; storage in the United States; what is received (type, text, optional section, optional email; not account, name, organization, page or searches); purposes; access limited to the person responsible for reviewing feedback (no individual named); retention of up to 12 months with permanent deletion through a manual review process; honest limit (deletion covers the Jotform account and copies under our control; backups and provider-held systems are not controlled); recommendation not to include sensitive or unnecessary data or third parties' data; rights and contact `hola@democraciamas.com`, with the optional email used to locate a submission; independent of analytics consent.
+- One-line additions in §4 (data), §5 (purposes), §13 (United States), §14 (feedback retention distinct from the analytics 12 months), and a summary line in §25. Section 16 no longer lists Jotform in the umbrella provider list; instead, a separate paragraph discloses Jotform as the recipient of feedback and states that no specific contractual arrangement is claimed.
+- Former sections 17–24 are now 18–25. Cross-references ("sección 14", "sección 17") were verified and a test checks them.
+- The "contractual measures" sentence in §16 was left unchanged and does not cover Jotform; no Jotform contractual arrangement has been verified.
+- No GDPR, adequacy, data-processing-agreement or certification claim; no automatic-deletion or backup-deletion promise; no response-time commitment.
 
-(Placement: after §16; numbering to be decided at publication.)
+### 6.2 Terms 1.1 — PUBLISHED DOCUMENTATION
 
-> ## Comentarios y sugerencias
->
-> Base Curricular incluye la acción **Enviar comentarios**, que abre un formulario externo. El formulario funciona en **Jotform**, mediante una cuenta operada por FVR Ltd, y la información que envíes se almacena en **Estados Unidos**.
->
-> **Qué recibimos.** El tipo de comentario, el texto que escribes, la sección de la plataforma (opcional) y, solo si decides indicarlo, tu correo electrónico (opcional). El formulario no recibe automáticamente tu cuenta, tu nombre, tu organización, la página en la que estabas ni el texto de tus búsquedas.
->
-> **Para qué.** Para recibir y responder tus comentarios y mejorar Base Curricular. Solo te contactaremos si indicas un correo electrónico.
->
-> **Es voluntario.** Enviar comentarios es opcional, no afecta tu acceso a Base Curricular y es independiente de tu decisión sobre la analítica opcional.
->
-> **Quién accede.** Los comentarios son gestionados por las personas responsables del proceso de comentarios de Base Curricular y por quienes administran la cuenta del formulario.
->
-> **Cuánto tiempo los conservamos.** 12 meses desde el envío; después los eliminamos, incluidas las copias que mantengamos en exportaciones o correos de notificación. Este período es independiente del período de conservación de la analítica descrito en la sección 14.
->
-> **Recomendación.** No incluyas datos personales sensibles ni innecesarios, ni datos de otras personas.
->
-> **Tus derechos.** Para consultar, corregir o solicitar la eliminación de un comentario, escribe a **hola@democraciamas.com**. Para localizar tu envío podremos pedirte el correo electrónico que indicaste en el formulario; si no indicaste uno, es posible que no podamos identificar tu comentario.
+`docs/TERMS_OF_USE.md`, version **1.1**, last updated 28 October 2026. Added: a §13 paragraph saying the feedback form is an external, voluntary service, and a §14 list item that the Notice explains feedback handling. Nothing else changed. The Terms stay authenticated-only.
 
-One-line additions to existing Notice lists:
+### 6.3 Versioning and consent decision (APPROVED DECISION basis: PRIVACY_UX_CONTRACT §20 and the feature-specific privacy approval; not legal advice)
 
-- §16 provider list: `- recepción de comentarios mediante un formulario externo (Jotform);`
-- §13: `Los comentarios enviados mediante el formulario externo de Base Curricular se almacenan en Estados Unidos.`
-- §14: `Los comentarios enviados mediante el formulario externo se conservan 12 meses desde su envío y después se eliminan; este período es independiente del de la analítica.`
+| Item | Before | After | Reason |
+|---|---|---|---|
+| `privacyNoticeVersion` (`src/lib/privacy/contract.ts`) | 1.1 | **1.2** | New analytics decisions are recorded against the Notice text actually shown. `tests/privacy-documents.test.ts` already requires the Notice header to equal this constant. |
+| Terms version | 1.0 | **1.1** | Document-only. No Terms constant exists in code and none was added. |
+| `consentVersion` | 1.1 | **1.1 (unchanged)** | The optional analytics processing (purposes, data categories, provider) is unchanged. `docs/PRIVACY_AND_DATA_COLLECTION.md` stays at 1.1. |
+| Re-consent for existing users | — | **None** | See evidence below. |
 
-### 6.2 Términos de Uso — adición
+**Repository evidence checked before applying:**
 
-In §14, add to the list of what the Notice explains: `- cómo se tratan los comentarios que envías mediante el formulario externo de comentarios;`.
+- `src/lib/privacy/analytics-preference.ts`: the two versions are only **written** by `setAnalyticsPreference` when a user records a decision, and read back into the preference object. No code compares stored versions to the constants or treats an older version as "undecided".
+- `supabase/migrations/20261001000100_analytics_preference_persistence.sql`: both columns are non-empty text (1–40 characters). The database does not pin them to a value.
+- `docs/PRIVACY_UX_CONTRACT.md` §19: versions exist so it is recoverable which information applied when the user decided. §20: a new Notice version does not automatically invalidate existing preferences; a new affirmative decision is required only when a material change alters the nature of the **optional** processing.
+- The feedback form is not analytics and is not consent-based on analytics (D-035). Notice 1.2 adds no analytics purpose, data category or provider. The §20 triggers (new purposes, new categories, raw search, names or emails in analytics, Session Replay, advertising, performance analysis, a materially different provider or model) are not met.
+- Nothing contradicted the expected outcome, so no BLOCKED / DECISION REQUIRED was raised.
 
-In §13, add after the paragraph that begins "Antes de proporcionar información personal":
+**Consent impact.** Existing preferences recorded under Notice 1.1 remain valid. Analytics behavior is unchanged. Stored rows keep `privacy_notice_version = "1.1"`; rows written after deployment carry `"1.2"`. This decision is **not** a SPEC-008 decision: the GA4 re-consent question (P8) stays PENDING.
 
-> El formulario de comentarios de Base Curricular es un servicio externo y su uso es voluntario. Evita incluir datos personales sensibles o innecesarios; el Aviso de Privacidad de D+ Base Curricular explica cómo se tratan los comentarios que envías.
+### 6.4 Public Privacy Notice route — PUBLISHED DOCUMENTATION; locally VERIFIED; not live
 
-## 7. Proposed Jotform form-level privacy wording (NOT APPLIED to the live form)
+- **Route:** `src/app/privacidad/aviso/page.tsx` at `/privacidad/aviso`, outside `/app`. It reuses `getPrivacyDocument("notice")`, `PrivacyDocumentBody` and `Page`; the text is not copied. `next.config.ts` traces `./docs/PRIVACY_NOTICE.md` for the new route.
+- **Why no auth change is needed.** The app layout's `requireAccess()` applies only under `/app`. The `src/proxy.ts` matcher is `["/", "/login", "/auth/callback", "/access-denied", "/app/:path*", "/api/:path*"]`, which does not cover `/privacidad/aviso`. `proxy.ts` and auth code are untouched. The root layout already sets `robots: noindex`.
+- **Boundary.** The page imports only the document reader, the document body and the page primitive. It reads no cookie, session, Supabase, preference or analytics module and shows no personal or curriculum data. `tests/privacy-public-notice.test.ts` enforces the import list, the absence of those modules, Notice-only rendering and the tracing entry. The Terms remain authenticated.
+- **Rendering.** `next build` lists `/privacidad/aviso` as static (○). It is prerendered at build time, so the Notice text is baked in per deployment.
+- **Local anonymous verification (VERIFIED CONTROL, 2026-10-28, `next build` then `next start -p 3917`, no cookies, local server only):**
+  - `GET /privacidad/aviso` → `HTTP/1.1 200 OK`, no redirect, no `Set-Cookie`, `Cache-Control: s-maxage=31536000`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`; the body contains "Aviso de Privacidad", "Comentarios y sugerencias", "Jotform", "Estados Unidos" and `noindex`.
+  - `GET /app/privacidad/aviso`, `/app/privacidad/terminos` and `/app/library` (no cookies) returned `HTTP/1.1 200 OK` with `cache-control: private, no-store`. The response is streamed: the body carries `NEXT_REDIRECT;replace;/login;307;` and `<meta http-equiv="refresh" content="1;url=/login"/>`, so the browser is sent to `/login` but the HTTP status line is 200, not 307. The `/app/library` body was only the loading shell ("Cargando…") plus the redirect marker; no curriculum content appeared (the local database was not checked for seeded data, so this is not proof of absence of leakage for populated content).
+  - **Observation, unchanged code path, not introduced by this unit:** the streamed bodies of `/app/privacidad/aviso` and `/app/privacidad/terminos` also contained the document text itself (the Notice section "Comentarios y sugerencias"; the Terms text "Bienvenido a"). The Terms text is therefore retrievable without authentication from the streamed response of the existing authenticated route, in spite of the redirect. This is not personal or curriculum data, and it was not tested against `main`, but it means "Terms remain authenticated" holds for the browser flow, not for a raw HTTP client. Decision needed only if the Terms must be non-public at the byte level; no action was taken (fixing it needs a change to the authenticated layout/streaming behavior, outside this unit).
+  - Raw headers saved at `/tmp/opencode/public-headers.txt` (not committed).
+- **Production:** `GET https://bc.democraciamas.com/privacidad/aviso` returned `404` on 2026-10-28 (read-only), as expected before deployment. The public URL is **not live**; it is **to be verified after deployment** (§8).
 
-Spanish, for a text/paragraph element near the top or above the submit button:
+## 7. Final Jotform form-level disclosure (PENDING MANUAL ACTION — NOT APPLIED to the live form)
 
-> Usamos este formulario para recibir y responder tus comentarios y mejorar D+ Base Curricular. Es voluntario y no está relacionado con tu decisión sobre la analítica.
-> Tu correo electrónico es opcional: indícalo solo si quieres que te contactemos.
-> Este formulario funciona en Jotform, un proveedor externo. Los datos se almacenan en Estados Unidos y los conservamos 12 meses desde el envío; después los eliminamos.
-> No incluyas datos personales sensibles ni innecesarios, ni datos de otras personas.
-> Más información en el Aviso de Privacidad de D+ Base Curricular, disponible dentro de la plataforma (enlace «Aviso de Privacidad» al pie de página, o en Preferencias de datos → «Leer el Aviso de Privacidad»).
-> Para solicitudes sobre tus datos: hola@democraciamas.com
+**The live form was NOT modified by this unit.** Jotform UI labels may differ from those used below.
 
-**Placement conditions.**
+**Final text (Spanish, plain text; ~7 short lines):**
 
-- Do not publish the 12-month sentence until the §3 deletion procedure is in place and recorded.
-- Do not publish the "Más información en el Aviso de Privacidad" line until the Notice section in §6.1 is published; until then the Notice is silent on feedback and the reference would be misleading.
-- In-app location verified in code: the authenticated footer link "Aviso de Privacidad" (`src/app/app/layout.tsx`) and the link "Leer el Aviso de Privacidad" inside "Preferencias de datos" (`src/components/privacy/data-preferences.tsx`).
+```text
+Usamos este formulario para recibir y responder tus comentarios y mejorar D+ Base Curricular. Es voluntario.
+Tu correo electrónico es opcional: indícalo solo si quieres que te contactemos.
+Este formulario funciona en Jotform, un proveedor externo, y los datos se almacenan en Estados Unidos.
+Conservamos los comentarios hasta 12 meses desde el envío y después los eliminamos de forma permanente mediante una revisión manual.
+No incluyas datos personales sensibles ni innecesarios, ni datos de otras personas.
+Para ejercer tus derechos de privacidad, escribe a hola@democraciamas.com.
+Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
+```
 
-**Notice URL (not approved).** The Notice is rendered at the authenticated route `/app/privacidad/aviso`. The candidate URL `https://bc.democraciamas.com/app/privacidad/aviso` was OBSERVED to resolve, but it is login-gated (an unauthenticated request redirects to `/login`). No fully qualified public Notice URL is approved anywhere in the repository, so none is placed on the form. The Product Owner must confirm either a URL to show on the form or an in-app-only reference (the wording above uses the in-app reference).
+**Placement.**
+
+- Add one Text / paragraph element (not a question field) either between the intro heading and the first question, or directly above the Submit button.
+- Plain text. The last line may be a hyperlink to the URL shown. Do not change, add or remove any question, option, required flag, email field or hidden field.
+- Performed by Felipe Costa in the FVR Jotform account.
+
+**Preconditions (all four before the change):**
+
+1. This branch is merged and deployed.
+2. An anonymous `GET https://bc.democraciamas.com/privacidad/aviso` returns 200 with the "Comentarios y sugerencias" section (record the date).
+3. Explicit authorization for the live-form change.
+4. The retention procedure (§3) and Felipe's access/notification attestation (§4) are recorded.
+
+**After the change, record:** the date, a description of the screenshot (no personal data), and a fresh public fetch of `https://form.jotform.com/263007291660049` confirming the new text is shown and the fields are unchanged.
 
 ## 8. Outstanding manual actions
 
 | # | Action | Owner | Evidence to record |
 |---|---|---|---|
-| 1 | Confirm Jotform account administrators, team members and who can read submissions (§4 questions 1, 3, 4) | FVR account owner | Names/roles, date, operator |
-| 2 | Confirm notification-email recipients and integrations/exports (§4 questions 2, 5); remove any not needed | FVR account owner | Recipient roles, date |
-| 3 | Confirm plan support, then enable Auto-Delete Submissions (12 months) with Purge, per form or account; otherwise record manual-only control | Felipe Costa / Malu | Setting description or screenshot without personal data, date, second-person check |
-| 4 | Review and delete pre-existing and test submissions; clear Trash | Felipe Costa / Malu | Counts only, date, checker |
-| 5 | Product Owner decides the Notice reference on the form (public URL or in-app-only) | Product Owner | Recorded decision |
-| 6 | Place the §7 wording on the live form (requires explicit authorization to change the live form; respect the placement conditions) | Form owner (FVR account) | Date, screenshot of the live form |
-| 7 | Publish the Notice/Terms update (§6) through a separate versioned unit (version bump in `src/lib/privacy/contract.ts`, version-alignment test, decision on re-consent) | Product Owner / privacy approver; bounded implementation unit | Commit, new version number, deployment record |
-| 8 | Record all of the above, then update SPEC-010 §6 gate rows G4/G5 and D-035 | Documentation unit | Updated records |
-| 9 | Only then set Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy. Rollback: unset the variable and redeploy (SPEC-010 §6 record) | Authorized operator | Deployment record |
+| 1 | Review, merge and deploy this branch | Repository owner | Merge and deployment record |
+| 2 | Verify the public Notice URL anonymously after deployment (200, feedback section present) | Authorized operator | Date, status line |
+| 3 | Record Felipe's configuration attestation (§4) | Felipe Costa | Completed §4 table with dates |
+| 4 | Test-round cleanup after each organizational testing round (§3.1) | Felipe Costa | §3.5 test-round log entries |
+| 5 | Schedule and perform the first monthly review (§3.2) | Felipe Costa | §3.5 monthly log entry |
+| 6 | Authorize and apply the §7 wording on the live form | Felipe Costa (FVR account) | Date, screenshot description, re-fetch |
+| 7 | Set Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy — **only after G4 and G5 close**. Rollback: unset the variable and redeploy | Authorized operator | Deployment record |
 
 ## 9. Closure criteria
 
 | Criterion | Required for | Status |
 |---|---|---|
-| Form URL, fields, provider approved | G4 | MET (approved decisions; fields verified) |
-| Form owner and feedback-handling owners named | G4 | MET (FVR account; Felipe Costa and Malu) |
-| Retention period decided | G4 | MET (12 months) |
-| Retention enforced (Auto-Delete + Purge or recorded manual control) | G4 | NOT MET (unverified) |
-| Access restricted to the target state, recipients known | G4 | NOT MET (unverified) |
-| Form-level privacy wording live on the form | G4 | NOT MET (absent) |
-| Notice URL or in-app reference decided | G4 | NOT MET |
-| Privacy authority recorded for the feedback feature | G5 | MET (approved decision; no written authorization artifact; not a legal opinion) |
-| Notice and Terms updated and published with a version bump, and re-consent decision recorded | G5 | NOT MET (text staged only) |
-| SPEC-008 Gate P unaffected | G5 | MET (no Gate P item closed or changed) |
+| Form URL, fields, provider approved | G4 | APPROVED DECISION (fields VERIFIED CONTROL) |
+| Owner, access and notification decisions | G4 | APPROVED DECISION (UNVERIFIED) |
+| Retention period decided and manual procedure approved | G4 | APPROVED DECISION |
+| Felipe's configuration attestation recorded (§4) | G4 | **PENDING MANUAL ACTION** |
+| Retention procedure executed (test-round cleanup recorded; first monthly review scheduled) | G4 | **PENDING MANUAL ACTION** |
+| Form-level privacy wording live on the form | G4 | **PENDING MANUAL ACTION** (text final, not applied) |
+| Public Notice URL working in production | G4 | PUBLISHED DOCUMENTATION (not deployed); locally VERIFIED CONTROL; production **PENDING** |
+| Privacy authority recorded for the feedback feature | G5 | APPROVED DECISION (no written artifact; not a legal opinion) |
+| Notice 1.2 and Terms 1.1 published in the repository | G5 | PUBLISHED DOCUMENTATION (not yet deployed) |
+| Publication deployed and verified | G5 | **PENDING** |
+| Versioning and consent decision recorded | G5 | APPROVED DECISION (§6.3) |
+| SPEC-008 Gate P unaffected | G5 | VERIFIED CONTROL (no Gate P item closed or changed) |
 
-**G4 can be marked SATISFIED** only when every G4 row above is MET and recorded in SPEC-010 §6. **G5 can be marked SATISFIED** only when every G5 row above is MET and recorded.
+**G4 can close** only when its operational requirements are evidenced: attested configuration, form wording live, working public Notice URL, and test-round cleanup recorded. **G5 can close** only after the publication is deployed and verified, with the versioning/consent decision and approver recorded. **Neither closes in this unit.**
 
-**Outcome: G4/G5 PARTIALLY VERIFIED — ACTION REQUIRED** (Product Owner decisions approved; operational controls and published privacy text unverified).
+**Outcome: PRIVACY PUBLICATION READY — GATES PENDING OPERATIONAL VERIFICATION.**
 
 ## 10. What this record does not do
 
 - It does not close G4 or G5 and does not activate production.
 - It does not close SPEC-010, which stays PLANNED; U5 stays COHERENCE VERIFIED; U0, U1 and U4 remain pending.
-- It does not change SPEC-008 status or close any Gate P item.
-- It does not edit `docs/PRIVACY_NOTICE.md` or `docs/TERMS_OF_USE.md` and publishes no version.
+- It does not change SPEC-008 status or close any Gate P item, and makes no GA4 re-consent decision.
 - It does not change the live Jotform form and does not claim automatic deletion, access restriction or form-level privacy wording is in place.
+- It does not claim the Notice or Terms are live: they take effect only after merge and deployment.
 - It is not a legal opinion and makes no GDPR, adequacy, data-processing-agreement or Jotform certification claim.

@@ -117,3 +117,88 @@ describe("the authoritative documents stay renderable", () => {
     expect(markdown).toContain(`**Versión:** ${privacyNoticeVersion}`);
   });
 });
+
+/*
+ * SPEC-010 G5: Notice 1.2 and Terms 1.1 add the external feedback form.
+ */
+describe("feedback-form privacy publication (Notice 1.2, Terms 1.1)", () => {
+  const notice = read(privacyDocuments.notice.file);
+  const terms = read(privacyDocuments.terms.file);
+
+  it("publishes the new document versions and date", async () => {
+    const { privacyNoticeVersion } = await import("@/lib/privacy/contract");
+    expect(privacyNoticeVersion).toBe("1.2");
+    expect(notice).toContain("**Versión:** 1.2");
+    expect(notice).toContain("**Última actualización:** 28 de octubre de 2026");
+    // Terms have no constant in code; the header is the only record.
+    expect(terms).toContain("**Versión:** 1.1");
+    expect(terms).toContain("**Última actualización:** 28 de octubre de 2026");
+  });
+
+  it("keeps consentVersion at 1.1 because the analytics processing did not change", async () => {
+    const { consentVersion } = await import("@/lib/privacy/contract");
+    // Notice 1.2 only adds the feedback section. The analytics purposes, data
+    // categories and provider that consent_version covers are unchanged, so no
+    // renewed consent is requested (docs/PRIVACY_UX_CONTRACT.md §20).
+    expect(consentVersion).toBe("1.1");
+    expect(read("PRIVACY_AND_DATA_COLLECTION.md")).toContain("**Version:** 1.1");
+  });
+
+  it("describes the feedback form honestly in the Notice", () => {
+    expect(notice).toContain("## 17. Comentarios y sugerencias");
+    for (const keyword of ["Jotform", "Estados Unidos", "12 meses", "hola@democraciamas.com", "revisión manual"]) {
+      expect(notice).toContain(keyword);
+    }
+    // No unsupported promises: deletion is manual and backups are not controlled.
+    expect(notice).not.toContain("elimina automáticamente");
+    expect(notice).not.toContain("eliminamos automáticamente");
+    expect(notice).not.toMatch(/copias de seguridad (se )?(eliminan|borramos)/);
+    expect(notice).toContain("No controlamos las copias de seguridad");
+  });
+
+  it("numbers sections consecutively and keeps cross-references on the right sections", () => {
+    const numbers = [...notice.matchAll(/^## (\d+)\. /gm)].map((match) => Number(match[1]));
+    expect(numbers).toEqual(numbers.map((_, index) => index + 1));
+    const heading = (n: number) => new RegExp(`^## ${n}\\. (.*)$`, "m").exec(notice)?.[1] ?? "";
+    expect(heading(14)).toContain("conservamos");
+    expect(heading(17)).toBe("Comentarios y sugerencias");
+    expect(heading(19)).toBe("Tus derechos");
+    // Every "sección N" reference resolves to an existing section.
+    for (const [, n] of notice.matchAll(/sección (\d+)/g)) expect(numbers).toContain(Number(n));
+  });
+
+  it("keeps feedback retention separate from analytics retention and analytics wording untouched", () => {
+    expect(notice).toContain("**12 meses**");
+    expect(notice).toContain("Ese período es independiente del de la analítica.");
+    expect(notice).toContain("### No enviamos intencionalmente para analítica:");
+  });
+
+  it("separates Jotform from the §16 umbrella-provider list and its contractual-measures claim", () => {
+    const blocks = parsePrivacyDocument(notice);
+    const idx16 = blocks.findIndex((b) => b.kind === "heading" && text(b).startsWith("16."));
+    const idx17 = blocks.findIndex((b) => b.kind === "heading" && text(b).startsWith("17."));
+    expect(idx16).toBeGreaterThanOrEqual(0);
+    expect(idx17).toBeGreaterThan(idx16);
+    const section16 = blocks.slice(idx16 + 1, idx17);
+    const list = section16.find((b) => b.kind === "list") as Extract<Block, { kind: "list" }> | undefined;
+    expect(list).toBeDefined();
+    expect(text(list!)).not.toContain("Jotform");
+    const jotformParagraph = section16.find((b) => b.kind === "paragraph" && text(b).includes("Jotform"));
+    expect(jotformParagraph).toBeDefined();
+    expect(text(jotformParagraph!)).toContain("sección 17");
+    expect(text(jotformParagraph!)).toContain("medidas contractuales específicas");
+  });
+
+  it("mentions the feedback form in the Terms without other restructuring", () => {
+    expect(terms).toContain("El formulario de comentarios de Base Curricular es un servicio externo y su uso es voluntario.");
+    expect(terms).toContain("- cómo se tratan los comentarios que envías mediante el formulario externo de comentarios;");
+  });
+
+  it("keeps both documents renderable with a single title", () => {
+    for (const [name, markdown] of [["notice", notice], ["terms", terms]] as const) {
+      expect(() => assertRenderable(markdown, name)).not.toThrow();
+      const titles = parsePrivacyDocument(markdown).filter((block) => block.kind === "heading" && block.level === 1);
+      expect(titles).toHaveLength(1);
+    }
+  });
+});

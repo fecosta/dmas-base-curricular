@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   // path is composed at runtime.
   outputFileTracingIncludes: {
     "/app/privacidad/aviso": ["./docs/PRIVACY_NOTICE.md"],
+    "/privacidad/aviso": ["./docs/PRIVACY_NOTICE.md"],
     "/app/privacidad/terminos": ["./docs/TERMS_OF_USE.md"],
   },
   async headers() {

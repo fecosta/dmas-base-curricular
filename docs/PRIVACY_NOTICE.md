@@ -1,7 +1,7 @@
 # Aviso de Privacidad — D+ Base Curricular
 
-**Última actualización:** 1 de octubre de 2026  
-**Versión:** 1.1
+**Última actualización:** 28 de octubre de 2026  
+**Versión:** 1.2
 
 En Democracia+ valoramos tu privacidad y queremos que entiendas de forma clara qué información utilizamos cuando accedes a **D+ Base Curricular**, para qué la utilizamos y qué opciones tienes sobre tus datos.
 
@@ -85,6 +85,10 @@ Por ejemplo, podemos registrar si:
 
 Esta información nos ayuda a entender cómo mejorar Base Curricular durante el piloto y en futuras versiones.
 
+### Información opcional que envías como comentarios
+
+Si decides enviar comentarios mediante el formulario externo, recibimos el tipo de comentario, el texto que escribes, la sección de la plataforma (opcional) y, solo si decides indicarlo, tu correo electrónico (opcional). La sección 17 explica este tratamiento.
+
 ---
 
 ## 5. ¿Para qué utilizamos la información?
@@ -109,6 +113,8 @@ Cuando autorizas la analítica opcional, utilizamos información limitada de uso
 - qué tipos de contenido generan interés;
 - si determinados recorridos de navegación presentan dificultades;
 - y si las organizaciones continúan utilizando la plataforma a lo largo del tiempo.
+
+Cuando decides enviar comentarios mediante el formulario externo, utilizamos esa información para recibirlos, responderlos y mejorar Base Curricular.
 
 ---
 
@@ -252,6 +258,8 @@ Base Curricular utiliza proveedores tecnológicos que pueden procesar informaci�
 
 Para la analítica del producto utilizamos **PostHog Cloud EU**, configurado en la región europea del servicio.
 
+Los comentarios enviados mediante el formulario externo de Base Curricular se almacenan en Estados Unidos, como se explica en la sección 17.
+
 Otros componentes de Base Curricular pueden utilizar infraestructura tecnológica ubicada en otras jurisdicciones según el proveedor y servicio correspondiente.
 
 Por este motivo, no asumimos que toda la información de Base Curricular sea almacenada o procesada exclusivamente en las Islas Caimán.
@@ -267,6 +275,8 @@ Los eventos de analítica del producto tienen inicialmente un período de retenc
 **12 meses**
 
 Esta política será revisada después del piloto.
+
+Los comentarios enviados mediante el formulario externo se conservan por un período distinto, descrito en la sección 17. Ese período es independiente del de la analítica.
 
 No buscamos conservar información de analítica indefinidamente simplemente porque el proveedor permita hacerlo.
 
@@ -299,11 +309,33 @@ Esto puede incluir proveedores relacionados con:
 
 Estos proveedores deben recibir únicamente la información necesaria para la finalidad correspondiente y estar sujetos a las medidas contractuales y de seguridad aplicables.
 
+Si decides enviar comentarios mediante el formulario externo, esa información es recibida por Jotform, como se describe en la sección 17. No afirmamos que existan medidas contractuales específicas con ese proveedor más allá de sus propios términos y políticas.
+
 No vendemos tus datos personales a anunciantes.
 
 ---
 
-## 17. ¿Cómo protegemos la información?
+## 17. Comentarios y sugerencias
+
+Base Curricular incluye la acción **Enviar comentarios**, que abre un formulario externo. El formulario funciona en **Jotform**, mediante una cuenta operada por FVR Ltd, y la información que envíes se almacena en **Estados Unidos**.
+
+**Qué recibimos.** El tipo de comentario, el texto que escribes, la sección de la plataforma (opcional) y, solo si decides indicarlo, tu correo electrónico (opcional). El formulario no recibe automáticamente tu cuenta, tu nombre, tu organización, la página en la que estabas ni el texto de tus búsquedas.
+
+**Para qué.** Para recibir y responder tus comentarios y mejorar Base Curricular. Solo te contactaremos si indicas un correo electrónico.
+
+**Es voluntario.** Enviar comentarios es opcional, no afecta tu acceso a Base Curricular y es independiente de tu decisión sobre la analítica opcional.
+
+**Quién accede.** El acceso a los comentarios está limitado a la persona responsable de revisarlos.
+
+**Cuánto tiempo los conservamos.** Hasta 12 meses desde el envío; después los eliminamos de forma permanente mediante un proceso de revisión manual. La eliminación se aplica a la cuenta de Jotform y a las copias que mantengamos bajo nuestro control, como exportaciones o correos de notificación. No controlamos las copias de seguridad ni los sistemas que el proveedor pueda conservar según sus propias políticas. Este período es independiente del período de conservación de la analítica descrito en la sección 14.
+
+**Recomendación.** No incluyas datos personales sensibles ni innecesarios, ni datos de otras personas.
+
+**Tus derechos.** Para consultar, corregir o solicitar la eliminación de un comentario, escribe a **hola@democraciamas.com**. Para localizar tu envío podremos pedirte el correo electrónico que indicaste en el formulario; si no indicaste uno, es posible que no podamos identificar tu comentario.
+
+---
+
+## 18. ¿Cómo protegemos la información?
 
 Aplicamos medidas técnicas y organizativas orientadas a proteger la información y limitar el acceso no autorizado.
 
@@ -322,7 +354,7 @@ Ningún sistema puede garantizar seguridad absoluta, pero buscamos aplicar medid
 
 ---
 
-## 18. Tus derechos
+## 19. Tus derechos
 
 Dependiendo de la legislación aplicable, puedes tener derechos relacionados con tus datos personales.
 
@@ -351,7 +383,7 @@ FVR Ltd se encargará de dirigir la solicitud al procedimiento correspondiente.
 
 ---
 
-## 19. Menores de edad
+## 20. Menores de edad
 
 El marco general de privacidad de Democracia+ contempla que determinados productos o servicios puedan involucrar a menores de edad, quienes deben relacionarse con Democracia+ a través de sus representantes legales cuando corresponda.
 
@@ -361,7 +393,7 @@ Si Base Curricular llegara a dirigirse específicamente a menores de edad o habi
 
 ---
 
-## 20. Base legal y autorización
+## 21. Base legal y autorización
 
 Las bases jurídicas aplicables al tratamiento pueden variar según el país, el tipo de información, la finalidad del tratamiento y la relación entre FVR Ltd, las organizaciones participantes y los usuarios.
 
@@ -373,7 +405,7 @@ La aceptación de los Términos de Uso no sustituye esta elección específica s
 
 ---
 
-## 21. Uso en diferentes países
+## 22. Uso en diferentes países
 
 Base Curricular puede ser utilizada por personas de diferentes países de América Latina.
 
@@ -392,7 +424,7 @@ Cuando una legislación aplicable otorgue derechos o protecciones adicionales, e
 
 ---
 
-## 22. Cambios a este Aviso de Privacidad
+## 23. Cambios a este Aviso de Privacidad
 
 Podemos actualizar este Aviso de Privacidad cuando cambien:
 
@@ -409,7 +441,7 @@ Si un cambio modifica de forma relevante un tratamiento opcional previamente aut
 
 ---
 
-## 23. Contacto
+## 24. Contacto
 
 Si tienes preguntas sobre este Aviso de Privacidad, sobre el tratamiento de tus datos o deseas ejercer un derecho relacionado con tu información, puedes contactarnos en:
 
@@ -421,7 +453,7 @@ Si tienes preguntas sobre este Aviso de Privacidad, sobre el tratamiento de tus 
 
 ---
 
-## 24. Resumen de tus opciones
+## 25. Resumen de tus opciones
 
 En Base Curricular:
 
@@ -440,6 +472,8 @@ En Base Curricular:
 **No utilizamos la analítica para publicidad ni para evaluar tu desempeño individual.**
 
 **La grabación de sesiones está desactivada durante el piloto inicial.**
+
+**Enviar comentarios es voluntario e independiente de la analítica; el correo electrónico es opcional.**
 
 Para cualquier pregunta o solicitud sobre privacidad:
 

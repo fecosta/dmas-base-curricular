@@ -483,7 +483,7 @@ Examples requiring privacy/product review include:
 
 The change from PostHog to Google Analytics 4 (D-032) is such a change: acceptances recorded under the PostHog-era `consent_version` must not be treated as GA4 consent, and users must be asked again, unless Privacy/Legal explicitly records a different decision (SPEC-008 §6.1, §10). The re-consent decision remains unresolved.
 
-Hard activation prerequisite: GA4 (and any approved per-user-linked organizational-metrics recording) must not be activated before Privacy/Legal approves an updated Privacy Notice (and Terms if affected), `privacyNoticeVersion`/`consentVersion` are updated, and users are informed (SPEC-008 §10.1). The current Notice describes the inert PostHog runtime and is not an adequate notice for GA4 or organizational metrics. Default remains OFF.
+Hard activation prerequisite: GA4 (and any approved per-user-linked organizational-metrics recording) must not be activated before Privacy/Legal approves an updated Privacy Notice (and Terms if affected), `privacyNoticeVersion`/`consentVersion` are updated, and users are informed (SPEC-008 §10.1). The current Notice (version 1.1; 1.2 as of 2026-10-28 adds a feedback-form section only and still describes the inert PostHog runtime) is not an adequate notice for GA4 or organizational metrics. Default remains OFF.
 
 The implementation must not independently decide that renewed consent is unnecessary for a material privacy change.
 

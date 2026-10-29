@@ -1,7 +1,7 @@
 # Términos de Uso — D+ Base Curricular
 
-**Última actualización:** 1 de octubre de 2026  
-**Versión:** 1.0
+**Última actualización:** 28 de octubre de 2026  
+**Versión:** 1.1
 
 Bienvenido a **D+ Base Curricular**, una plataforma de Democracia+ operada por **FVR Ltd**, registrada en las Islas Caimán con el número **378038**.
 
@@ -240,6 +240,8 @@ FVR Ltd no controla necesariamente estos servicios externos.
 
 Antes de proporcionar información personal o utilizar un servicio externo, debes revisar las condiciones aplicables a ese servicio cuando corresponda.
 
+El formulario de comentarios de Base Curricular es un servicio externo y su uso es voluntario. Evita incluir datos personales sensibles o innecesarios; el Aviso de Privacidad de D+ Base Curricular explica cómo se tratan los comentarios que envías.
+
 ---
 
 ## 14. Privacidad y datos personales
@@ -256,6 +258,7 @@ El Aviso de Privacidad explica, entre otros aspectos:
 - por qué la utiliza;
 - qué información puede ser necesaria para operar el servicio;
 - cómo funciona la analítica opcional;
+- cómo se tratan los comentarios que envías mediante el formulario externo de comentarios;
 - qué proveedor utilizamos para esa analítica;
 - cómo puedes cambiar tus preferencias;
 - y cómo puedes realizar solicitudes relacionadas con tus datos.
