@@ -599,6 +599,16 @@ Tracked in `resources/specs/planned/010-platform-readiness-organizational-testin
 
 **Pending decisions.** G4 (approved URL, owner, fields, retention, privacy requirements) and G5 (Privacy Notice coordination with SPEC-008) remain prerequisites for production enablement; the feature is delivered behind the env var so it can be turned on only after those gates close.
 
+**2026-10-28 — Product Owner confirmation, gates still open.** The Product Owner confirmed G4 ("Confirmed") and G5 ("OK") on 2026-10-28, but no written evidence of the documented closure criteria accompanied them. Both gates remain **OPEN** and production activation remains **BLOCKED** (the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable is not set and no deployment was triggered). Full record, including the observed form fields, what is missing and the rollback plan: SPEC-010 §6, "G4/G5 Product Owner confirmation and production-activation preflight (2026-10-28)". Details are not duplicated here.
+
+**Amendment (Product Owner, 2026-10-28) — feedback decisions approved; gates still open.**
+
+- Felipe Costa and Malu are both responsible for coordinating the feedback process.
+- Felipe Costa confirmed that Democracia+ authorized him to make privacy decisions for this platform; recorded as the authorized privacy approval for this feedback feature only (not a legal opinion; no written authorization artifact in the repository).
+- Provider Jotform (form owned by the FVR account, data hosted in the United States per the Product Owner, unverified). Fields: feedback type (required), free text (required), section (optional), email (optional); no automatic identity or context collection.
+- Retention: 12 months after submission, then deletion, including exports, copies and notification emails under the organization's control. Automatic deletion is not verified as configured.
+- G4 is PARTIALLY SATISFIED and remains **OPEN**; G5 remains **OPEN**; production activation remains **BLOCKED**. SPEC-008 Gate P is not affected and feedback stays separate from analytics consent. Details, staged Notice/Terms text, form wording, procedure and closure criteria: `docs/SPEC-010-G4-G5-FEEDBACK-PRIVACY-EVIDENCE.md`; not duplicated here.
+
 **Deferred.** Embedded or modal feedback, to be considered only by a future spec.
 
 Tracked in `resources/specs/planned/010-platform-readiness-organizational-testing.md` (U5). `resources/specs/planned/011-organizational-testing-feedback-program.md` remains planned.
