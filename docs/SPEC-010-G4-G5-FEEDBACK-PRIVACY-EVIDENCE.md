@@ -1,10 +1,10 @@
 # SPEC-010 / U5 — G4/G5 Feedback Privacy and Governance Evidence
 
-**Status:** EVIDENCE AND DECISION RECORD — **G5 CLOSED 2026-10-29; G4 SATISFIED — CLOSED 2026-10-29.** Not a legal opinion and not an independent legal review.
+**Status:** EVIDENCE AND DECISION RECORD — **G5 CLOSED 2026-10-29; G4 SATISFIED — CLOSED 2026-10-29; U5 PRODUCTION FEEDBACK ACTIVE 2026-10-29 (§14).** Not a legal opinion and not an independent legal review.
 
-**Date:** 2026-10-28 (initial record and publication-readiness update, same day); **2026-10-29 (G4/G5 final verification and activation-readiness record).**
+**Date:** 2026-10-28 (initial record and publication-readiness update, same day); **2026-10-29 (G4/G5 final verification, activation-readiness record and U5 production activation record, §14).**
 
-**Production activation:** **FEEDBACK ACTIVATION READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION** (see §11). The Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` was not set at the 2026-10-28 preflight and was not changed by this 2026-10-29 record.
+**Production activation:** **U5 PRODUCTION FEEDBACK: ACTIVE** (activated 2026-10-29; see §14). Earlier "ready — awaiting authorization" statements in §10, §11 and §13 are retained as historical records and are superseded by §14. The Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` was not set at the 2026-10-28 preflight.
 
 **Scope of the publication-readiness unit (branch `feat/spec-010-privacy-publication-manual-retention`):** repository changes only: Notice 1.2 and Terms 1.1 text, the `privacyNoticeVersion` constant, a public Privacy Notice route, focused tests and documentation. No live Jotform change, no submission, no Jotform access, no Vercel change, no deployment, no database or migration change, no change to analytics, authentication or the feedback-link feature.
 
@@ -230,7 +230,7 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 | 5 | Confirm any pre-existing/test submissions made while setting up the form were deleted and purged (count only) | Felipe Costa | **DONE 2026-10-29 on PO-reported/user-provided evidence** — 2 submissions, Trash empty per user-provided screenshot, no notification emails, no exports (§3.5); not independently verified |
 | 6 | Test-round cleanup after each organizational testing round (§3.1) | Felipe Costa | §3.5 test-round log entries |
 | 7 | Perform and record the first monthly review (§3.2); next window 1–7 November 2026 per commitment | Felipe Costa | §3.5 monthly log entry |
-| 8 | Set Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy — **only after explicit production authorization**. Rollback: unset the variable and redeploy | Authorized operator | **READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION**; no deployment record yet |
+| 8 | Set Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy — **only after explicit production authorization**. Rollback: unset the variable and redeploy | Authorized operator | **DONE 2026-10-29** — deployment `dpl_EsXFKsruGmQAz3ns4f9V4hq2YrA9` (source commit `9114197`, READY); see §14. Previously: READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION |
 
 ## 9. Closure criteria
 
@@ -257,6 +257,8 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 
 ## 10. What this record does not do
 
+> **Historical scope statement (as of the 2026-10-29 G4 closure record).** Production activation was subsequently performed and is recorded in §14; the bullets below describe only what that earlier record did not do.
+
 - This 2026-10-29 record does not set the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable, does not trigger a Vercel deployment, does not access the Jotform account, does not submit the form, and does not change the live Jotform form. It records Product Owner attestations and independent browser reverification.
 - It closes G4 but does not activate production; G5 is closed as of 2026-10-29.
 - It does not close SPEC-010, which stays PLANNED; U5 stays COHERENCE VERIFIED; U0, U1 and U4 remain pending.
@@ -266,6 +268,8 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 - It is not a legal opinion and makes no GDPR, adequacy, data-processing-agreement or Jotform certification claim.
 
 ## 11. Production activation assessment (2026-10-29)
+
+> **Historical assessment — superseded by §14.** The outcome label below was current when written. Production feedback activation was subsequently performed and is recorded in §14 (**ACTIVE**).
 
 **Prerequisites checked.**
 
@@ -300,7 +304,7 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 - Any change to the 10-month deletion threshold requires a recorded decision.
 - Periodic re-check that the form disclosure remains consistent with the Notice.
 
-**Ready when:** The outcome is now **FEEDBACK ACTIVATION READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION**. A separate explicit authorization is still required to set the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable and redeploy.
+**Ready when (historical):** The outcome at the time was **FEEDBACK ACTIVATION READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION**. A separate explicit authorization was then required to set the Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable and redeploy.
 
 ---
 
@@ -380,4 +384,79 @@ Aviso de Privacidad completo: https://bc.democraciamas.com/privacidad/aviso
 
 **Rollback for activation.** Unset Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` and redeploy; a rebuild is required after setting it because `NEXT_PUBLIC_` variables are inlined at build time.
 
-**Outcome.** **G4 SATISFIED — CLOSED 2026-10-29.** Feedback activation is **READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION**. The Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable was not set and no deployment was performed in this record.
+**Outcome.** **G4 SATISFIED — CLOSED 2026-10-29.** Feedback activation was **READY — AWAITING EXPLICIT PRODUCTION AUTHORIZATION** at the time of this record. The Production `NEXT_PUBLIC_FEEDBACK_FORM_URL` variable was not set and no deployment was performed in this record. *(Superseded by §14: activation subsequently performed.)*
+
+---
+
+## 14. U5 production feedback activation (2026-10-29)
+
+**Status:** **U5 PRODUCTION FEEDBACK: ACTIVE.** Documentation-only closure record; nothing was implemented, redeployed or revalidated by this record.
+
+**Activation date:** 2026-10-29. Supported by the Vercel deployment creation metadata (UTC date) and the surrounding records. No exact activation timestamp is asserted.
+
+### 14.1 Production deployment and configuration
+
+| Item | Value |
+|---|---|
+| Deployment | `dpl_EsXFKsruGmQAz3ns4f9V4hq2YrA9` |
+| Application | `https://bc.democraciamas.com` |
+| Source commit | `9114197` |
+| Deployment status | READY |
+| Production variable | `NEXT_PUBLIC_FEEDBACK_FORM_URL=https://form.jotform.com/263007291660049` |
+
+The variable is public by design (`NEXT_PUBLIC_`, inlined at build time). No other environment variables were modified. The deployment ID, READY state, `main` source commit and production alias `bc.democraciamas.com` were also read back from Vercel while preparing this record.
+
+### 14.2 Operational verification (agent, unauthenticated only)
+
+The operational agent confirmed:
+
+- Production deployment READY.
+- Login page accessible on desktop and mobile.
+- Public Privacy Notice accessible anonymously.
+- No observed browser console errors.
+- No observed Vercel runtime errors.
+- No feedback button exposed on the unauthenticated login page.
+
+The agent had no approved login credentials and **did not complete authenticated browser verification**. None of the authenticated checks is represented as completed by the agent.
+
+### 14.3 Product Owner attestation
+
+**PRODUCT OWNER ATTESTATION — authenticated production functionality confirmed.**
+
+After deployment, the Product Owner manually accessed the authenticated application and confirmed that the feedback feature was working correctly. The confirmation followed the requested desktop/mobile checklist (button visibility, opening the Jotform, preserving the application tab, avoiding navigation interference). The confirmation was general: no separate screenshots, timestamps, device details or individual test results are recorded. No feedback submission was required or performed. This is an attestation, not independent automated verification.
+
+### 14.4 Remaining verification limitations
+
+- Authenticated behavior in production rests on the Product Owner attestation only; no independent authenticated browser verification exists.
+- No per-device or per-check results, screenshots or timestamps exist for the Product Owner checklist.
+- No end-to-end feedback submission was made; Jotform receipt, notification and account configuration remain as limited in §4 and §13 (PO attested, not independently audited).
+- No exact activation timestamp is recorded.
+
+### 14.5 Rollback procedure (approved; not executed)
+
+1. Remove `NEXT_PUBLIC_FEEDBACK_FORM_URL` from Vercel Production.
+2. Rebuild and redeploy (the variable is inlined at build time).
+3. Verify that the feedback button is no longer active.
+
+The previous deployment may be used as an alternative only after confirming its suitability for rollback. Rollback was not executed.
+
+### 14.6 Status after this record
+
+| Item | Status |
+|---|---|
+| G4 | CLOSED |
+| G5 | CLOSED |
+| U5 implementation | COHERENCE VERIFIED |
+| U5 production feedback | **ACTIVE** |
+| SPEC-010 | PLANNED |
+| U0 | Pending |
+| U1 | Pending |
+| U4 | Pending |
+| SPEC-008 analytics | Not activated |
+
+### 14.7 Operational obligations (all open; none completed by this record)
+
+- Monthly retention review (first 7 days of each month; first window 1–7 November 2026); the §3.5 monthly log remains **NO RUN RECORDED YET**.
+- Cleanup after each organizational testing round (§3.1, §3.5).
+- Periodic verification that the Jotform disclosure remains consistent with the Privacy Notice.
+- Recorded approval before changing the existing 10-month deletion threshold.
