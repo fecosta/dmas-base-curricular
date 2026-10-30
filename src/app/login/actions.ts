@@ -48,7 +48,7 @@ export async function verifyCode(_state: LoginState, form: FormData): Promise<Lo
   const supabase = await createClient();
   const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
   if (error) return { error: "El código no es válido o ha caducado. Solicita otro e inténtalo de nuevo." };
-  redirect("/app");
+  redirect("/app/library");
 }
 
 export async function signOut() {

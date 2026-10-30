@@ -11,7 +11,7 @@ it("exchanges a valid OAuth code and redirects only to the protected shell", asy
   const response = await GET(new Request("https://base.example.org/auth/callback?code=valid&next=https://attacker.example"));
   expect(exchangeCodeForSession).toHaveBeenCalledExactlyOnceWith("valid");
   expect(response.status).toBe(303);
-  expect(response.headers.get("location")).toBe("/app");
+  expect(response.headers.get("location")).toBe("/app/library");
   expect(response.headers.get("cache-control")).toBe("private, no-store");
 });
 

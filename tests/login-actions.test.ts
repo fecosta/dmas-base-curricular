@@ -49,6 +49,6 @@ it("uses a fixed redirect and email verification type", async () => {
   form.set("email", "member@partner.org");
   form.set("token", "123456");
   form.set("next", "https://attacker.example");
-  await expect(verifyCode({}, form)).rejects.toThrow("redirect:/app");
+  await expect(verifyCode({}, form)).rejects.toThrow("redirect:/app/library");
   expect(verifyOtp).toHaveBeenCalledExactlyOnceWith({ email: "member@partner.org", token: "123456", type: "email" });
 });

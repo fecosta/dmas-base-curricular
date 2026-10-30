@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 
-function redirectTo(path: "/app" | "/login?error=oauth") {
+function redirectTo(path: "/app/library" | "/login?error=oauth") {
   return new Response(null, {
     status: 303,
     headers: { Location: path, "Cache-Control": "private, no-store" },
@@ -15,5 +15,5 @@ export async function GET(request: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
   if (error) return redirectTo("/login?error=oauth");
 
-  return redirectTo("/app");
+  return redirectTo("/app/library");
 }
