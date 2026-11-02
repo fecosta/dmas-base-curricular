@@ -726,7 +726,32 @@ Tracked in `resources/specs/completed/013-material-reach-country-restriction.md`
 
 ---
 
+### D-038 — Default post-login landing is /app/library
+
+**State:** DECISION (Product Owner)
+**Date:** 2026-10-31
+**Decider:** Product Owner, communicated by the user. No personal name is recorded.
+
+**Decision.** After successful email OTP verification (`src/app/login/actions.ts` `verifyCode`) or Google OAuth callback (`src/app/auth/callback/route.ts`), users land on `/app/library`. The destination is fixed; no `next` or arbitrary redirect is accepted. `/app` remains accessible and unchanged, and `/` still redirects to `/app`. `requireAccess()`, eligibility, roles, RLS, session, and sign-out behavior are unchanged. This changes no product scope, authorization, visibility, governance, or data behavior.
+
+Implemented by original commits `dd4f9ca` and `ed135b7`, cherry-picked onto `release/post-login-library-landing`.
+
+**Temporary baseline exception for this release only — APPROVED by the Product Owner (2026-10-31).** Decider: Product Owner, communicated by the user. No personal name is recorded. Four Playwright failures fail identically on baseline `a73580d` and on the redirect HEAD and are not in D-036/D-037:
+
+1. `tests/e2e/archival.spec.ts:78` — `Admins archive and restore published content while readers lose and regain access`;
+2. `tests/e2e/archival.spec.ts:184` — `Archival is blocked by published dependents and by an active successor Draft`;
+3. `tests/e2e/contributions.spec.ts:90` — `An Admin reaches the creation form from a fresh empty management list` (suspected dependency on an empty database: the test name implies a fresh empty management list while the local database contains pre-existing data; hypothesis, not a confirmed root cause; root cause not investigated);
+4. `tests/e2e/archival-governance.spec.ts:216` — `archived management pages through the full three-part keyset without skipping or duplicating` (D-036 failure #1; D-037 recorded it passing in SPEC-013 runs and excluded it; it is not accepted by D-037).
+
+Evidence: `b4d518a` (local `main` HEAD, including the redirect commits plus unrelated footer-preferences commits `9a22a27` and `b4d518a`) was the implementation HEAD used for the full-suite comparison (114 passed / 10 failed) against baseline `a73580d`. This is PROXY evidence; the full Playwright suite was NOT run on the isolated release branch (`release/post-login-library-landing`). On isolated release branch tip `6cd6832`, `npx playwright test tests/e2e/shell.spec.ts tests/e2e/library-explorer.spec.ts tests/e2e/privacy-preferences.spec.ts` produced 58 passed, 1 failed (`library-explorer.spec.ts:522` “Filtros” modal overlay), an accepted D-036/D-037 baseline failure that fails identically on baseline `a73580d` at the same assertion; `tests/e2e/auth.spec.ts` passed 9/9; `npm run build` passed; full `npm test` passed 649 tests with 1 skipped. Logs are temporary and not stored in the repository: `/tmp/opencode/rr/head.log` and `/tmp/opencode/rr/base.log`. The other six failures are the already-accepted D-036/D-037 failures. These four remain **UNRESOLVED**, must never be described as passing, are never permanently waived, and require separate investigation. Root causes were not investigated. This approval applies only to this release and grants no waiver for any new or other failure or any security/authorization criterion; it does not itself authorize push, merge, or deployment.
+
+Tracked in this register.
+
+---
+
 ## Current delivery state
+
+D-038 records the fixed post-login landing destination `/app/library` and the approved, release-scoped baseline exception for four unresolved Playwright failures.
 
 `SPEC-007` — UX/UI Navigation & Interaction Remediation is **COMPLETED — VALIDATED** at `resources/specs/completed/007-ux-ui-navigation-interaction-remediation.md`. `SPEC-009` — Admin Organization & User Management is **COMPLETED — COHERENCE VERIFIED** at `resources/specs/completed/009-admin-organization-user-management.md`; `SPEC-008` — Product Analytics & Pilot Observability is **ACTIVE — REVISED CONTRACT (GA4 + SUPABASE ORGANIZATIONAL METRICS) DOCUMENTED; NOT IMPLEMENTED; PRIVACY/LEGAL DECISIONS PENDING** (D-032). The superseded PostHog direct transport remains on `main`, inert with no key configured; the PostHog Gate B (D-031) was never executed and is withdrawn. Gates P, O and G are pending; the External Pilot Analytics Activation Gate remains closed.
 

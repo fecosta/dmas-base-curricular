@@ -44,7 +44,7 @@ async function signIn(page: Page, role: "Contributor" | "Admin") {
   }, { timeout: 15_000 }).toBe(true);
   await page.getByLabel("Código de acceso").fill(code!);
   await page.getByRole("button", { name: "Ingresar", exact: true }).click();
-  await expect(page).toHaveURL(/\/app$/);
+  await expect(page).toHaveURL(/\/app\/library$/);
 }
 
 test.beforeAll(async () => {

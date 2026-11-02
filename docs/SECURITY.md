@@ -670,7 +670,7 @@ Public `current_access()` and `is_admin()` wrappers are security-invoker and res
 - The returned authorization URL is accepted only at the configured Supabase origin and `/auth/v1/authorize` path.
 - The OAuth callback exchanges the PKCE authorization code server-side.
 - It accepts no `next` or arbitrary redirect destination.
-- Success returns to `/app`, where `requireAccess()` enforces live eligibility.
+- Success returns to `/app/library`, where `requireAccess()` enforces live eligibility.
 - Failure returns to a generic login error.
 - No protected context is read or returned by the callback itself.
 

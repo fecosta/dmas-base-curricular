@@ -103,7 +103,7 @@ async function login(page: Page, email: string) {
   }, { timeout: 15_000 }).toBe(true);
   await page.getByLabel("Código de acceso").fill(code!);
   await page.getByRole("button", { name: "Ingresar", exact: true }).click();
-  await expect(page).toHaveURL(/\/(app|access-denied)$/);
+  await expect(page).toHaveURL(/\/(app\/library|access-denied)$/);
 }
 
 async function userClient(page: Page) {
@@ -221,7 +221,8 @@ test("Spanish validation and invalid OTP do not establish access", async ({ page
 test("eligible Contributor logs in, cannot escalate or switch organizations, and signs out", async ({ page }) => {
   const user = await provision("Contributor");
   await login(page, user.email);
-  await expect(page).toHaveURL(/\/app$/);
+  await expect(page).toHaveURL(/\/app\/library$/);
+  await page.goto("/app");
   await expect(page.getByText("Miembro", { exact: true })).toBeVisible();
   if (process.env.E2E_PRODUCTION) {
     const authCookies = (await page.context().cookies()).filter(cookie => cookie.name.includes("auth-token"));
@@ -242,6 +243,7 @@ test("eligible Contributor logs in, cannot escalate or switch organizations, and
   expect(JSON.parse(response.body)).toMatchObject({ userId: user.id, role: "Contributor", organizationId });
   expect((await appRequest(page, "/api/access?role=Admin", "POST")).status).toBe(405);
   await page.reload();
+  await page.goto("/app");
   await expect(page.getByText("Miembro", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Cerrar sesión" }).click();
   await expect(page).toHaveURL(/\/login$/);
@@ -251,6 +253,7 @@ test("eligible Contributor logs in, cannot escalate or switch organizations, and
 test("Admin authority comes from membership and is revoked without refreshing the token", async ({ page }) => {
   const user = await provision("Admin");
   await login(page, user.email);
+  await page.goto("/app");
   await expect(page.getByText("Administrador", { exact: true })).toBeVisible();
   const ordinary = await userClient(page);
   expect((await ordinary.rpc("is_admin")).data).toBe(true);
